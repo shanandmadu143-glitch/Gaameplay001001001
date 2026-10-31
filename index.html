@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>ශ්‍රී ලාංකීය දාම් - Sinhala Draughts Pro</title>
+  <title>ශ්‍රී ලංකීය දාම් - Sinhala Draughts Pro</title>
   
   <!-- Font Awesome Icons & Google Fonts -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -286,6 +286,13 @@
 
     #customToast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
+    /* ONLINE STATUS PILL */
+    #onlineStatusPill {
+      position: fixed; bottom: 12px; right: 12px; z-index: 5000;
+      background: #101923; border: 1px solid #34495e; border-radius: 30px;
+      padding: 6px 12px; font-size: 12px; color: #4ade80; display: none;
+    }
+
     /* RESPONSIVE DESIGN */
     @media (max-width: 820px) {
       .arena-layout {
@@ -432,7 +439,13 @@
         <button class="btn-gold" id="searchUserBtn" style="width:auto; padding:0 14px;"><i class="fa-solid fa-magnifying-glass"></i></button>
       </div>
 
-      <div id="searchResultsList" style="display:flex; flex-direction:column; gap:6px; max-height:160px; overflow-y:auto; margin-top:8px;">
+      <!-- Recent Players Section -->
+      <div style="font-size:0.85rem; color:var(--gold-accent); margin-top:4px;">මෑතකදී තරඟ කළ යහළුවන්:</div>
+      <div id="recentPlayersList" style="display:flex; flex-direction:column; gap:6px; max-height:120px; overflow-y:auto;">
+        <div style="font-size:0.78rem; color:var(--text-dim); text-align:center;">මෑතකදී තරඟ කළ අය නොමැත.</div>
+      </div>
+
+      <div id="searchResultsList" style="display:flex; flex-direction:column; gap:6px; max-height:140px; overflow-y:auto; margin-top:6px;">
         <div style="font-size:0.8rem; color:var(--text-dim); text-align:center;">Online සිටින යහළුවෙකුගේ නමක් Search කරන්න.</div>
       </div>
     </div>
@@ -454,6 +467,7 @@
 
   <!-- CUSTOM TOAST NOTIFICATION CONTAINER -->
   <div id="customToast">Notification Message</div>
+  <div id="onlineStatusPill"><i class="fa-solid fa-circle"></i> <span id="onlineStatusText">Connected</span></div>
 
   <!-- Firebase Realtime Database SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
@@ -462,8 +476,11 @@
 
   <script>
     /* LOCAL STORAGE & STATE MANAGEMENT */
-    const STORAGE_KEY = 'sinhala_draughts_v4_user';
-    let userState = { name: '', points: 500, wins: 0, losses: 0 };
+    const STORAGE_KEY = 'sinhala_draughts_v5_user';
+    let userState = { name: '', points: 500, wins: 0, losses: 0, uid: null };
+    let recentOpponents = [];
+    let onlineRoomId = null, onlineRoomRef = null, onlineRoomListener = null, onlineRole = null;
+    let activeInviteListener = null;
 
     function showToast(msg) {
       const toast = document.getElementById('customToast');
@@ -472,7 +489,14 @@
       setTimeout(() => toast.classList.remove('show'), 3000);
     }
 
-    /* FIREBASE INITIALIZATION WITH ANONYMOUS AUTH */
+    function setOnlineStatus(text, good=true) {
+      const pill = document.getElementById('onlineStatusPill');
+      pill.style.display = 'block';
+      document.getElementById('onlineStatusText').textContent = text;
+      pill.style.color = good ? '#4ade80' : '#f6c453';
+    }
+
+    /* FIREBASE INITIALIZATION & AUTHENTICATION */
     const firebaseConfig = {
       apiKey: "AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",
       authDomain: "bin-card-42614.firebaseapp.com",
@@ -486,9 +510,28 @@
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const fbAuth = firebase.auth();
     const fbDb = firebase.database();
+    let fbUser = null;
 
-    // Authenticate anonymously to satisfy Firebase Security Rules
-    fbAuth.signInAnonymously().catch(err => console.error("Firebase Auth Error: ", err));
+    async function initFirebase() {
+      try {
+        const cred = await fbAuth.signInAnonymously();
+        fbUser = cred.user;
+        setOnlineStatus('Firebase Connected', true);
+        startPresence();
+        listenForInvites();
+      } catch (err) {
+        console.error("Firebase Auth Error:", err);
+        setOnlineStatus('Connection Error', false);
+      }
+    }
+    initFirebase();
+
+    function startPresence() {
+      if (!fbDb || !fbUser) return;
+      const ref = fbDb.ref('publicProfiles_v5/' + fbUser.uid);
+      ref.child('online').onDisconnect().set(false);
+      ref.update({ online: true, name: userState.name || 'Player', lastSeen: firebase.database.ServerValue.TIMESTAMP });
+    }
 
     /* AUTHENTICATION SYSTEM (UNIQUE USERNAME & PASSWORD) */
     document.getElementById('loginBtn').addEventListener('click', async () => {
@@ -500,8 +543,8 @@
         return;
       }
 
-      const cleanUsername = username.toLowerCase();
-      const userRef = fbDb.ref('users_v4/' + cleanUsername);
+      const cleanName = username.toLowerCase();
+      const userRef = fbDb.ref('users_v5/' + cleanName);
 
       try {
         const snap = await userRef.once('value');
@@ -509,31 +552,38 @@
           const userData = snap.val();
           if (userData.password === password) {
             userState = userData;
+            if (fbUser) userState.uid = fbUser.uid;
             saveUserDataLocal();
             document.getElementById('authModal').classList.remove('active');
             showToast('සාර්ථකව ඇතුළු විය!');
             updateUIHeader();
+            if (fbUser) {
+              fbDb.ref('publicProfiles_v5/' + fbUser.uid).update({ name: userState.name, online: true });
+            }
           } else {
-            showToast('මෙම නම දැනටමත් භාවිතා වේ! මුරපදය වැරදියි.');
+            showToast('මෙම නම වෙනත් අයෙකු භාවිතා කරයි! මුරපදය වැරදියි.');
           }
         } else {
           // Register New Unique User
-          userState = { name: username, password: password, points: 500, wins: 0, losses: 0 };
+          userState = { name: username, password: password, points: 500, wins: 0, losses: 0, uid: fbUser ? fbUser.uid : null };
           await userRef.set(userState);
           saveUserDataLocal();
           document.getElementById('authModal').classList.remove('active');
           showToast('නව ගිණුම සාර්ථකව සාදන ලදී!');
           updateUIHeader();
+          if (fbUser) {
+            fbDb.ref('publicProfiles_v5/' + fbUser.uid).update({ name: username, online: true });
+          }
         }
       } catch (err) {
-        showToast('Firebase සම්බන්ධතාවයේ දෝෂයකි. නැවත උත්සාහ කරන්න.');
+        showToast('දෝෂයකි. නැවත උත්සාහ කරන්න.');
       }
     });
 
     function saveUserDataLocal() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(userState));
       if (userState.name) {
-        fbDb.ref('users_v4/' + userState.name.toLowerCase()).update(userState);
+        fbDb.ref('users_v5/' + userState.name.toLowerCase()).update(userState);
       }
     }
 
@@ -598,6 +648,7 @@
     }
 
     function handleSquareClick(r, c) {
+      if (onlineRoomId && turn !== (onlineRole === 'host' ? 1 : -1)) return;
       if (isSinglePlayer && turn !== 1) return;
 
       const piece = board[r][c];
@@ -658,6 +709,10 @@
       selectedSquare = null;
       validMoves = [];
       renderBoard();
+
+      if (onlineRoomId && onlineRoomRef) {
+        onlineRoomRef.update({ board: board, turn: -turn, updatedAt: firebase.database.ServerValue.TIMESTAMP });
+      }
 
       if (checkGameOver()) return;
 
@@ -721,6 +776,10 @@
       updateUIHeader();
       msg.innerText = message;
       modal.classList.add('active');
+
+      if (onlineRoomId && onlineRoomRef) {
+        onlineRoomRef.update({ status: 'finished', winner: winner, message: message });
+      }
     }
 
     /* IN-GAME CLOSE ICON HANDLER */
@@ -728,9 +787,120 @@
       triggerGameOver(-1, 'ඔබ තරඟයෙන් ඉවත් විය.');
     });
 
+    /* MULTIPLAYER & INVITE SYSTEM */
+    function listenForInvites() {
+      if (!fbDb || !fbUser) return;
+      const ref = fbDb.ref('invites_v5/' + fbUser.uid);
+      if (activeInviteListener) ref.off('child_added', activeInviteListener);
+      
+      activeInviteListener = ref.on('child_added', snap => {
+        const inv = snap.val();
+        if (!inv || inv.status !== 'pending') return;
+        
+        const accept = confirm((inv.fromName || 'යහළුවෙක්') + ' ඔබට Online තරඟයකට ආරාධනා කරයි. පිළිගන්නවාද?');
+        if (accept) {
+          snap.ref.update({ status: 'accepted' });
+          joinOnlineRoom(inv.roomId, 'guest');
+        } else {
+          // Invite declined -> NO POINTS PENALTY
+          snap.ref.update({ status: 'declined' });
+          showToast('ඔබ ආරාධනාව ප්‍රතික්ෂේප කළා (ලකුණු කැපී නැත).');
+        }
+      });
+    }
+
+    document.getElementById('searchUserBtn').addEventListener('click', async () => {
+      const q = document.getElementById('searchUserInput').value.trim().toLowerCase();
+      const list = document.getElementById('searchResultsList');
+      if (!q) return;
+
+      list.innerHTML = '<div style="font-size:0.8rem; color:#f6c453; text-align:center;">සොයමින්...</div>';
+      try {
+        const snap = await fbDb.ref('publicProfiles_v5').once('value');
+        list.innerHTML = '';
+        let found = false;
+
+        snap.forEach(child => {
+          const u = child.val();
+          if (child.key !== (fbUser ? fbUser.uid : '') && u && u.name && u.name.toLowerCase().includes(q)) {
+            found = true;
+            const row = document.createElement('div');
+            row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.06); padding:8px; border-radius:8px;';
+            row.innerHTML = `<span><b>${u.name}</b></span> <button class="btn-gold" style="width:auto; padding:4px 10px; font-size:0.8rem;">Invite</button>`;
+            row.querySelector('button').addEventListener('click', () => sendInvite(u, child.key));
+            list.appendChild(row);
+          }
+        });
+
+        if (!found) list.innerHTML = '<div style="font-size:0.8rem; color:var(--text-dim); text-align:center;">පරිශීලකයා හමු නොවීය.</div>';
+      } catch (err) {
+        list.innerHTML = '<div style="font-size:0.8rem; color:#ff6b81; text-align:center;">දෝෂයක් සිදු විය.</div>';
+      }
+    });
+
+    async function sendInvite(targetUser, targetUid) {
+      try {
+        const roomId = fbDb.ref('rooms_v5').push().key;
+        const initB = Array(8).fill(null).map(() => Array(8).fill(0));
+        for(let r=0; r<8; r++) for(let c=0; c<8; c++) if((r+c)%2===1) {
+          if(r<3) initB[r][c] = -1; else if(r>4) initB[r][c] = 1;
+        }
+
+        await fbDb.ref('rooms_v5/' + roomId).set({
+          status: 'playing', hostUid: fbUser.uid, guestUid: targetUid,
+          hostName: userState.name, guestName: targetUser.name,
+          board: initB, turn: 1
+        });
+
+        await fbDb.ref('invites_v5/' + targetUid).push().set({
+          roomId: roomId, fromUid: fbUser.uid, fromName: userState.name, status: 'pending'
+        });
+
+        document.getElementById('multiplayerModal').classList.remove('active');
+        joinOnlineRoom(roomId, 'host');
+        showToast('Invite යවන ලදී!');
+      } catch (err) {
+        showToast('Invite යැවීමට නොහැකි විය.');
+      }
+    }
+
+    function joinOnlineRoom(roomId, role) {
+      onlineRoomId = roomId;
+      onlineRole = role;
+      isSinglePlayer = false;
+
+      document.getElementById('multiplayerModal').classList.remove('active');
+      document.getElementById('lobbyView').style.display = 'none';
+      document.getElementById('arenaView').style.display = 'grid';
+
+      document.getElementById('p1Name').textContent = role === 'host' ? userState.name : 'ප්‍රතිවාදියා';
+      document.getElementById('p2Name').textContent = role === 'host' ? 'ප්‍රතිවාදියා' : userState.name;
+
+      if (onlineRoomRef && onlineRoomListener) onlineRoomRef.off('value', onlineRoomListener);
+      onlineRoomRef = fbDb.ref('rooms_v5/' + roomId);
+
+      onlineRoomListener = onlineRoomRef.on('value', snap => {
+        const data = snap.val();
+        if (!data) return;
+
+        if (data.status === 'finished') {
+          const localWinner = (data.winner === 1 && role === 'host') || (data.winner === -1 && role === 'guest') ? 1 : -1;
+          triggerGameOver(localWinner, data.message || 'තරඟය අවසන්!');
+          return;
+        }
+
+        board = data.board;
+        turn = data.turn;
+        renderBoard();
+        setOnlineStatus(turn === (role === 'host' ? 1 : -1) ? 'ඔබගේ වාරය' : 'ප්‍රතිවාදියාගේ වාරය', true);
+      });
+    }
+
     /* UI EVENT LISTENERS & NAVIGATION */
     document.getElementById('singlePlayerBtn').addEventListener('click', () => {
       isSinglePlayer = true;
+      onlineRoomId = null;
+      document.getElementById('p2Name').innerText = 'AI පරිගණකය';
       document.getElementById('lobbyView').style.display = 'none';
       document.getElementById('arenaView').style.display = 'grid';
       initBoard();
@@ -745,6 +915,8 @@
     });
 
     document.getElementById('homeBtn').addEventListener('click', () => {
+      if (onlineRoomId && onlineRoomRef) onlineRoomRef.remove();
+      onlineRoomId = null;
       document.getElementById('arenaView').style.display = 'none';
       document.getElementById('lobbyView').style.display = 'flex';
     });
