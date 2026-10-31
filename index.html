@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="si">
 <head>
@@ -11,23 +12,21 @@
 
   <style>
     :root {
-      --bg-dark: #0a0c10;
-      --wood-dark: #1b110b;
-      --wood-board-dark: #3a2212;
-      --wood-board-light: #d1a774;
-      --wood-board-border: #24140a;
-      --gold-accent: #f39c12;
-      --gold-glow: rgba(243, 156, 18, 0.4);
-      --red-accent: #e74c3c;
-      --cyan-glow: #00f2fe;
-      --panel-bg: rgba(18, 22, 31, 0.92);
+      --bg-dark: #080b18;
+      --panel-bg: rgba(18, 24, 43, 0.94);
+      --gold-accent: #ffd166;
+      --gold-glow: rgba(255, 209, 102, 0.32);
+      --cyan-glow: #62e8ff;
+      --red-accent: #ff6b81;
+      --green-accent: #48dcb0;
+      --square-dark: #34416b;
+      --square-light: #e8edff;
+      --wood-board-border: #18213e;
       --text-light: #f8f9fa;
       --text-dim: #a0aec0;
-      --square-dark: #4a2e1b;
-      --square-light: #e8ca9a;
-      --highlight-move: rgba(46, 204, 113, 0.65);
-      --highlight-select: rgba(241, 196, 15, 0.85);
-      --highlight-capture: rgba(231, 76, 60, 0.75);
+      --highlight-move: rgba(80, 232, 174, .82);
+      --highlight-select: rgba(255, 209, 102, .95);
+      --highlight-capture: rgba(255, 107, 129, .85);
     }
 
     * {
@@ -50,70 +49,81 @@
       left: 0;
     }
 
-    /* Background Ambient Gaming Visuals */
+    body {
+      background:
+        radial-gradient(ellipse at 12% 8%, rgba(115, 92, 255, .20), transparent 38%),
+        radial-gradient(ellipse at 90% 88%, rgba(0, 214, 255, .13), transparent 34%),
+        linear-gradient(145deg, #080b18 0%, #111a31 55%, #0a1022 100%);
+    }
+
     .bg-canvas {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: 
-        radial-gradient(circle at 50% 20%, rgba(243, 156, 18, 0.12), transparent 60%),
-        radial-gradient(circle at 80% 80%, rgba(0, 242, 254, 0.08), transparent 50%),
-        linear-gradient(135deg, #06080c 0%, #111622 100%);
+      background:
+        radial-gradient(circle at 18% 18%, rgba(255, 209, 102, .13), transparent 34%),
+        radial-gradient(circle at 85% 78%, rgba(98, 232, 255, .12), transparent 36%),
+        linear-gradient(135deg, rgba(7, 10, 23, .72), rgba(17, 25, 48, .55));
       z-index: 1;
+      pointer-events: none;
     }
 
     .app-container {
       position: relative;
       z-index: 2;
       width: 100%;
-      height: 100%;
+      height: 100vh;
+      height: 100dvh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: space-between;
-      padding: 8px 12px;
+      justify-content: flex-start;
+      padding: max(8px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right))
+               max(8px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+      gap: 10px;
     }
 
-    /* TOP NAVIGATION HEADER */
+    header, footer, .lobby-card, .side-panel, .modal-box {
+      background: linear-gradient(145deg, rgba(24, 33, 59, .96), rgba(13, 19, 37, .96));
+      border: 1px solid rgba(143, 166, 255, .22);
+      box-shadow: 0 12px 34px rgba(0, 0, 0, .32), inset 0 1px rgba(255,255,255,.05);
+      backdrop-filter: blur(16px);
+    }
+
+    /* HEADER */
     header {
       width: 100%;
       max-width: 1200px;
+      min-height: 58px;
+      height: 58px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 8px 16px;
-      background: var(--panel-bg);
-      border: 1px solid rgba(243, 156, 18, 0.25);
-      border-radius: 14px;
-      backdrop-filter: blur(12px);
-      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-      height: 60px;
+      padding: 6px 14px;
+      border-radius: 18px;
       flex-shrink: 0;
     }
 
     .brand-logo {
       display: flex;
       align-items: center;
-      gap: 10px;
-      font-size: 1.5rem;
+      gap: 8px;
+      font-size: clamp(1.05rem, 2.4vw, 1.5rem);
       font-weight: 800;
-      color: var(--gold-accent);
-      text-shadow: 0 0 12px var(--gold-glow);
+      color: #ffe09a;
+      text-shadow: 0 0 18px var(--gold-glow);
     }
 
-    .brand-logo i {
-      font-size: 1.8rem;
-    }
+    .brand-logo i { color: #8be9ff; }
 
-    /* Profile Trigger Button */
     .profile-trigger {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       cursor: pointer;
-      padding: 4px 12px 4px 4px;
+      padding: 3px 12px 3px 3px;
       background: rgba(255,255,255,0.05);
       border-radius: 30px;
       border: 1px solid rgba(255,255,255,0.1);
@@ -127,13 +137,13 @@
     }
 
     .avatar-frame {
-      width: 44px;
-      height: 44px;
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
       position: relative;
-      padding: 3px;
-      background: linear-gradient(135deg, #f39c12, #f1c40f, #e67e22);
-      box-shadow: 0 0 10px var(--gold-glow);
+      padding: 2px;
+      background: linear-gradient(135deg, #ffe08a, #ff8db5 52%, #7ee7ff);
+      box-shadow: 0 0 14px rgba(126, 231, 255, .22);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -149,7 +159,7 @@
       align-items: center;
       justify-content: center;
       color: var(--gold-accent);
-      font-size: 1.2rem;
+      font-size: 1.1rem;
     }
 
     .player-info-mini {
@@ -159,13 +169,13 @@
 
     .player-name-mini {
       font-weight: 700;
-      font-size: 1rem;
+      font-size: 0.95rem;
       color: #fff;
     }
 
     .points-badge {
-      font-size: 0.85rem;
-      color: #f1c40f;
+      font-size: 0.8rem;
+      color: #ffd166;
       display: flex;
       align-items: center;
       gap: 4px;
@@ -174,34 +184,35 @@
 
     .header-actions {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       align-items: center;
     }
 
     .btn-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.15);
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: rgba(116, 140, 220, .13);
+      border: 1px solid rgba(160, 181, 255, .2);
       color: var(--text-light);
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 1.1rem;
+      font-size: 1rem;
       transition: all 0.2s;
     }
 
     .btn-icon:hover {
-      background: var(--gold-accent);
-      color: #000;
-      box-shadow: 0 0 15px var(--gold-glow);
+      background: #8b7cff;
+      color: #fff;
+      box-shadow: 0 0 12px rgba(139, 124, 255, 0.4);
     }
 
-    /* MAIN GAME / LOBBY DISPLAY */
+    /* MAIN CONTENT AREA */
     main {
-      flex: 1;
+      flex: 1 1 auto;
+      min-height: 0;
       width: 100%;
       max-width: 1200px;
       display: flex;
@@ -209,44 +220,40 @@
       justify-content: center;
       position: relative;
       overflow: hidden;
-      margin: 8px 0;
     }
 
-    /* LANDING LOBBY VIEW */
+    /* LOBBY VIEW */
     .lobby-card {
       width: 100%;
       max-width: 780px;
-      background: var(--panel-bg);
-      border: 2px solid rgba(243, 156, 18, 0.3);
-      border-radius: 20px;
-      padding: 24px 30px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-      backdrop-filter: blur(16px);
+      max-height: 100%;
+      overflow-y: auto;
+      border-radius: 26px;
+      border-color: rgba(255, 209, 102, .34);
+      padding: clamp(18px, 4vw, 34px);
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: clamp(14px, 2.5vh, 22px);
       animation: fadeIn 0.4s ease-out;
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
+      from { opacity: 0; transform: scale(0.96); }
       to { opacity: 1; transform: scale(1); }
     }
 
-    .lobby-header {
-      text-align: center;
-    }
-
+    .lobby-header { text-align: center; }
     .lobby-header h1 {
-      font-size: 2.2rem;
-      color: var(--gold-accent);
-      text-transform: uppercase;
-      letter-spacing: 1px;
+      color: #ffe09a;
+      font-size: clamp(1.45rem, 4vw, 2.25rem);
+      line-height: 1.25;
+      text-shadow: 0 4px 20px rgba(255, 209, 102, .16);
     }
 
     .lobby-header p {
       color: var(--text-dim);
-      font-size: 1rem;
+      font-size: 0.95rem;
+      margin-top: 4px;
     }
 
     .input-group {
@@ -256,7 +263,7 @@
     }
 
     .input-group label {
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       color: var(--gold-accent);
       font-weight: 600;
     }
@@ -264,140 +271,148 @@
     .custom-input {
       width: 100%;
       padding: 12px 16px;
-      background: rgba(0,0,0,0.4);
-      border: 1px solid rgba(243, 156, 18, 0.4);
-      border-radius: 10px;
+      background: rgba(5, 10, 25, .62);
+      border: 1px solid rgba(139, 233, 255, .28);
+      border-radius: 14px;
       color: #fff;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       outline: none;
       transition: all 0.3s;
     }
 
     .custom-input:focus {
-      border-color: var(--gold-accent);
-      box-shadow: 0 0 12px var(--gold-glow);
+      border-color: #8be9ff;
+      box-shadow: 0 0 0 3px rgba(98, 232, 255, .12);
     }
 
     .mode-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 16px;
-      margin-top: 10px;
+      margin-top: 6px;
     }
 
     .mode-card {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 14px;
-      padding: 20px;
+      border-radius: 20px;
+      background: linear-gradient(145deg, rgba(117, 133, 205, .12), rgba(255,255,255,.035));
+      border: 1px solid rgba(160, 181, 255, .19);
+      padding: 20px 16px;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
-      gap: 12px;
+      gap: 10px;
       cursor: pointer;
       transition: all 0.3s ease;
+      min-height: 140px;
     }
 
     .mode-card:hover {
-      background: rgba(243, 156, 18, 0.12);
-      border-color: var(--gold-accent);
-      transform: translateY(-4px);
+      background: linear-gradient(145deg, rgba(139, 124, 255, .23), rgba(98, 232, 255, .10));
+      border-color: #8b7cff;
+      box-shadow: 0 10px 28px rgba(94, 115, 255, .17);
+      transform: translateY(-3px);
     }
 
-    .mode-card i {
-      font-size: 2.5rem;
-      color: var(--gold-accent);
-    }
+    .mode-card i { font-size: 2.2rem; color: #8be9ff; }
+    .mode-card h3 { font-size: 1.2rem; color: #fff; }
+    .mode-card p { font-size: 0.82rem; color: var(--text-dim); }
 
-    .mode-card h3 {
-      font-size: 1.3rem;
-      color: #fff;
-    }
-
-    .mode-card p {
-      font-size: 0.85rem;
-      color: var(--text-dim);
-    }
-
-    /* GAME ARENA BOARD & PANEL */
+    /* GAME ARENA */
     .arena-layout {
       width: 100%;
       height: 100%;
       display: grid;
-      grid-template-columns: 260px 1fr 260px;
-      gap: 16px;
+      grid-template-columns: minmax(145px, 220px) minmax(0, 1fr) minmax(145px, 220px);
+      gap: clamp(8px, 1.4vw, 16px);
       align-items: center;
+      position: relative;
     }
 
     .side-panel {
-      background: var(--panel-bg);
-      border: 1px solid rgba(243, 156, 18, 0.2);
-      border-radius: 16px;
-      padding: 16px;
-      height: 100%;
-      max-height: 520px;
+      height: min(100%, 560px);
+      border-radius: 20px;
+      padding: clamp(9px, 1.2vw, 16px);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      backdrop-filter: blur(10px);
+      gap: 12px;
     }
 
     .player-card-arena {
-      background: rgba(0,0,0,0.3);
-      border-radius: 12px;
-      padding: 12px;
+      background: rgba(5, 10, 25, .46);
+      border: 1px solid rgba(170, 190, 255, .12);
+      border-radius: 15px;
+      padding: 10px;
       display: flex;
       align-items: center;
-      gap: 12px;
-      border: 1px solid rgba(255,255,255,0.08);
+      gap: 10px;
+      transition: all 0.3s ease;
     }
 
     .player-card-arena.active-turn {
-      border-color: var(--gold-accent);
-      box-shadow: 0 0 15px var(--gold-glow);
+      border-color: #ffd166;
+      box-shadow: 0 0 0 1px rgba(255,209,102,.18), 0 0 22px rgba(255,209,102,.17);
     }
 
-    /* 3D BOARD VIEW CONTAINER */
+    /* BOARD DISPLAY */
     .board-stage {
       width: 100%;
       height: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
-      perspective: 1000px;
+      position: relative;
+    }
+
+    /* Mid-Game Resign/Close Icon overlayed on top-right of Board Container */
+    .board-close-btn {
+      position: absolute;
+      top: -12px;
+      right: -12px;
+      z-index: 50;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff4d6d, #c9184a);
+      border: 2px solid #fff;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(255, 77, 109, 0.5);
+      transition: all 0.2s ease;
+    }
+
+    .board-close-btn:hover {
+      transform: scale(1.15) rotate(90deg);
+      background: #ff123d;
     }
 
     .board-3d-wrapper {
-      width: min(72vh, 480px);
-      height: min(72vh, 480px);
+      width: min(100%, min(76vh, min(76dvh, 620px)));
+      height: auto;
+      aspect-ratio: 1 / 1;
       position: relative;
-      transform-style: preserve-3d;
-      transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-      transform: rotateX(28deg) rotateZ(0deg);
-      border-radius: 16px;
-      box-shadow: 
-        0 30px 60px rgba(0,0,0,0.9),
-        0 0 40px rgba(243, 156, 18, 0.2);
+      border-radius: 17px;
+      box-shadow: 0 24px 50px rgba(0,0,0,.52), 0 0 28px rgba(98,232,255,.12);
     }
 
-    .board-3d-wrapper.flat-view {
-      transform: rotateX(0deg) rotateZ(0deg);
-    }
-
-    /* CHESS BOARD DESIGN */
     .draughts-board {
       width: 100%;
       height: 100%;
       display: grid;
       grid-template-columns: repeat(8, 1fr);
       grid-template-rows: repeat(8, 1fr);
-      border: 16px solid var(--wood-board-border);
-      border-radius: 12px;
-      background: var(--wood-board-border);
+      border: clamp(7px, 1.3vw, 13px) solid #18213e;
+      border-radius: 15px;
+      background: #18213e;
       box-sizing: border-box;
       position: relative;
       overflow: hidden;
+      touch-action: manipulation;
     }
 
     .square {
@@ -411,87 +426,82 @@
     }
 
     .square.dark {
-      background: var(--square-dark);
-      box-shadow: inset 0 0 8px rgba(0,0,0,0.5);
+      background: linear-gradient(145deg, #3d4d7d, #29365e);
+      box-shadow: inset 0 0 8px rgba(5, 9, 25, .35);
     }
 
     .square.light {
-      background: var(--square-light);
+      background: linear-gradient(145deg, #f4f5ff, #d9e1ff);
     }
 
     .square.highlight-selected {
-      background: var(--highlight-select) !important;
+      background: #ffd166 !important;
+      box-shadow: inset 0 0 0 3px rgba(255,255,255,.75);
     }
 
     .square.highlight-move::after {
       content: '';
-      width: 30%;
-      height: 30%;
-      background: var(--highlight-move);
+      width: 28%;
+      height: 28%;
+      background: #48dcb0;
       border-radius: 50%;
-      box-shadow: 0 0 10px #2ecc71;
+      box-shadow: 0 0 14px rgba(72,220,176,.8);
     }
 
     .square.highlight-capture::after {
       content: '';
-      width: 40%;
-      height: 40%;
-      background: var(--highlight-capture);
+      width: 42%;
+      height: 42%;
+      background: #ff6b81;
       border-radius: 50%;
-      box-shadow: 0 0 10px #e74c3c;
+      box-shadow: 0 0 14px rgba(255,107,129,.8);
     }
 
-    /* 3D PIECES */
     .piece {
-      width: 80%;
-      height: 80%;
+      width: 78%;
+      height: 78%;
       border-radius: 50%;
       position: relative;
       transition: all 0.25s ease;
       z-index: 10;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.6);
+      box-shadow: 0 5px 9px rgba(4, 8, 20, .48), inset 0 2px 3px rgba(255,255,255,.48);
       display: flex;
       align-items: center;
       justify-content: center;
+      border: 2px solid transparent;
     }
 
-    /* White Piece */
     .piece.white-piece {
-      background: radial-gradient(circle at 30% 30%, #ffffff, #dcdde1);
-      border: 3px solid #b2bec3;
+      background: radial-gradient(circle at 32% 25%, #fff, #dce6ff 58%, #aab8df);
+      border-color: #a6b5df;
     }
 
-    /* Red/Black Piece */
     .piece.red-piece {
-      background: radial-gradient(circle at 30% 30%, #e74c3c, #962d22);
-      border: 3px solid #631c15;
+      background: radial-gradient(circle at 32% 25%, #ffb1c1, #ff637f 58%, #bd3159);
+      border-color: #9f294b;
     }
 
     .piece.king::before {
-      content: '521';
+      content: '\f521';
       font-family: 'Font Awesome 6 Free';
       font-weight: 900;
-      font-size: 1.3rem;
-      color: #f1c40f;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+      font-size: clamp(.75rem, 2vw, 1.3rem);
+      color: #ffcf5c;
     }
 
-    /* GAME CONTROLS PANEL BOTTOM */
     footer {
       width: 100%;
       max-width: 1200px;
-      height: 50px;
+      min-height: 48px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 16px;
-      background: var(--panel-bg);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 12px;
+      padding: 6px 14px;
+      border-radius: 16px;
       flex-shrink: 0;
     }
 
-    /* MODAL POPUPS */
+    /* MODALS */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -517,10 +527,11 @@
     .modal-box {
       width: 90%;
       max-width: 480px;
-      background: #121824;
+      max-height: min(90dvh, 760px);
+      overflow-y: auto;
+      border-radius: 24px;
       border: 2px solid var(--gold-accent);
-      border-radius: 20px;
-      padding: 24px;
+      padding: 22px;
       box-shadow: 0 0 30px var(--gold-glow);
       position: relative;
       display: flex;
@@ -533,39 +544,37 @@
       top: 16px;
       right: 16px;
       color: var(--text-dim);
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       cursor: pointer;
     }
 
-    .close-modal:hover {
-      color: #fff;
-    }
+    .close-modal:hover { color: #fff; }
 
     .btn-gold {
       width: 100%;
       padding: 12px;
-      background: linear-gradient(135deg, #f39c12, #e67e22);
+      background: linear-gradient(135deg, #ffe08a, #ffad62);
       border: none;
-      border-radius: 10px;
+      border-radius: 14px;
       color: #000;
       font-weight: 800;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       cursor: pointer;
-      box-shadow: 0 4px 15px var(--gold-glow);
+      box-shadow: 0 6px 18px rgba(255, 173, 98, .22);
       transition: all 0.2s;
     }
 
     .btn-gold:hover {
       transform: translateY(-2px);
-      filter: brightness(1.1);
+      filter: brightness(1.08);
     }
 
     .btn-outline {
       width: 100%;
       padding: 10px;
-      background: transparent;
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 10px;
+      background: rgba(116, 140, 220, .08);
+      border: 1px solid rgba(160, 181, 255, .28);
+      border-radius: 13px;
       color: #fff;
       font-weight: 600;
       cursor: pointer;
@@ -573,23 +582,10 @@
     }
 
     .btn-outline:hover {
-      border-color: var(--gold-accent);
-      color: var(--gold-accent);
+      border-color: #8be9ff;
+      color: #8be9ff;
     }
 
-    /* Timer Bonus Box */
-    .bonus-box {
-      background: rgba(243, 156, 18, 0.1);
-      border: 1px dashed var(--gold-accent);
-      border-radius: 12px;
-      padding: 12px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    /* Move Logs */
     .move-log-box {
       flex: 1;
       background: rgba(0,0,0,0.3);
@@ -600,7 +596,7 @@
       display: flex;
       flex-direction: column;
       gap: 4px;
-      max-height: 200px;
+      max-height: 180px;
     }
 
     .log-entry {
@@ -609,287 +605,54 @@
       padding-bottom: 2px;
     }
 
-    /* RESPONSIVE DESIGN FOR TABLET / MOBILE ZERO-SCROLL */
-    @media (max-width: 900px) {
-      .arena-layout {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto 1fr auto;
-      }
-      .side-panel {
-        height: auto;
-        max-height: 120px;
-        flex-direction: row;
-        align-items: center;
-      }
-      .move-log-box {
-        display: none;
-      }
-    }
-  
-    /* ===== PREMIUM CUTE GAMING UI + RESPONSIVE GAME ARENA ===== */
-    :root {
-      --bg-dark: #080b18;
-      --panel-bg: rgba(18, 24, 43, .94);
-      --gold-accent: #ffd166;
-      --gold-glow: rgba(255, 209, 102, .32);
-      --cyan-glow: #62e8ff;
-      --square-dark: #34416b;
-      --square-light: #e8edff;
-      --wood-board-border: #18213e;
-      --highlight-move: rgba(80, 232, 174, .82);
-      --highlight-select: rgba(255, 209, 102, .95);
-      --highlight-capture: rgba(255, 107, 129, .85);
-    }
-
-    html, body {
-      width: 100%;
-      height: 100%;
-      min-height: 100%;
-      overflow: hidden;
-      overscroll-behavior: none;
-      background: #080b18;
-    }
-
-    body {
-      background:
-        radial-gradient(ellipse at 12% 8%, rgba(115, 92, 255, .20), transparent 38%),
-        radial-gradient(ellipse at 90% 88%, rgba(0, 214, 255, .13), transparent 34%),
-        linear-gradient(145deg, #080b18 0%, #111a31 55%, #0a1022 100%);
-    }
-
-    .bg-canvas {
-      background:
-        radial-gradient(circle at 18% 18%, rgba(255, 209, 102, .13), transparent 34%),
-        radial-gradient(circle at 85% 78%, rgba(98, 232, 255, .12), transparent 36%),
-        linear-gradient(135deg, rgba(7, 10, 23, .72), rgba(17, 25, 48, .55));
-      pointer-events: none;
-    }
-
-    .app-container {
-      width: 100%;
-      height: 100vh;
-      height: 100dvh;
-      min-height: 0;
-      padding: max(8px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right))
-               max(8px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
-      gap: 10px;
-      justify-content: flex-start;
-    }
-
-    header, footer, .lobby-card, .side-panel, .modal-box {
-      background: linear-gradient(145deg, rgba(24, 33, 59, .96), rgba(13, 19, 37, .96));
-      border: 1px solid rgba(143, 166, 255, .22);
-      box-shadow: 0 12px 34px rgba(0, 0, 0, .32), inset 0 1px rgba(255,255,255,.05);
-      backdrop-filter: blur(16px);
-    }
-
-    header {
-      min-height: 58px;
-      height: 58px;
-      border-radius: 18px;
-      padding: 6px 12px;
-    }
-
-    .brand-logo {
-      color: #ffe09a;
-      text-shadow: 0 0 18px rgba(255, 209, 102, .35);
-      font-size: clamp(1.05rem, 2.4vw, 1.5rem);
-    }
-
-    .brand-logo i { color: #8be9ff; }
-    .avatar-frame {
-      background: linear-gradient(135deg, #ffe08a, #ff8db5 52%, #7ee7ff);
-      box-shadow: 0 0 16px rgba(126, 231, 255, .22);
-    }
-
-    .btn-icon {
-      border-radius: 13px;
-      background: rgba(116, 140, 220, .13);
-      border-color: rgba(160, 181, 255, .2);
-    }
-    .btn-icon:hover { background: #8b7cff; color: #fff; }
-
-    main {
-      flex: 1 1 auto;
-      min-height: 0;
-      height: 0;
-      margin: 0;
-      overflow: hidden;
-    }
-
-    .lobby-card {
-      max-height: 100%;
-      overflow-y: auto;
-      border-radius: 26px;
-      border-color: rgba(255, 209, 102, .34);
-      padding: clamp(18px, 4vw, 34px);
-      gap: clamp(14px, 2.5vh, 22px);
-    }
-
-    .lobby-header h1 {
-      color: #ffe09a;
-      font-size: clamp(1.45rem, 4vw, 2.25rem);
-      line-height: 1.25;
-      text-shadow: 0 4px 20px rgba(255, 209, 102, .16);
-    }
-
-    .mode-card {
-      border-radius: 20px;
-      background: linear-gradient(145deg, rgba(117, 133, 205, .12), rgba(255,255,255,.035));
-      border-color: rgba(160, 181, 255, .19);
-      min-height: 150px;
-    }
-    .mode-card i { color: #8be9ff; }
-    .mode-card:hover {
-      background: linear-gradient(145deg, rgba(139, 124, 255, .23), rgba(98, 232, 255, .10));
-      border-color: #8b7cff;
-      box-shadow: 0 10px 28px rgba(94, 115, 255, .17);
-    }
-
-    .custom-input {
+    /* RECENT OPPONENTS LIST & ITEMS */
+    .opponents-section {
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.08);
       border-radius: 14px;
-      border-color: rgba(139, 233, 255, .28);
-      background: rgba(5, 10, 25, .62);
-    }
-    .custom-input:focus {
-      border-color: #8be9ff;
-      box-shadow: 0 0 0 3px rgba(98, 232, 255, .12);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
 
-    /* The board is kept square and fully visible; no perspective tilt on touch screens. */
-    .arena-layout {
-      width: 100%;
-      height: 100%;
-      min-height: 0;
-      display: grid;
-      grid-template-columns: minmax(145px, 220px) minmax(0, 1fr) minmax(145px, 220px);
-      grid-template-rows: minmax(0, 1fr);
-      gap: clamp(8px, 1.4vw, 16px);
+    .opponent-item {
+      display: flex;
+      justify-content: space-between;
       align-items: center;
+      background: rgba(255,255,255,0.05);
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.05);
     }
 
-    .side-panel {
-      min-width: 0;
-      min-height: 0;
-      height: min(100%, 560px);
-      max-height: 560px;
-      border-radius: 20px;
-      padding: clamp(9px, 1.2vw, 16px);
-      gap: 12px;
-    }
-
-    .player-card-arena {
-      border-radius: 15px;
-      padding: 10px;
-      min-width: 0;
-      background: rgba(5, 10, 25, .46);
-      border-color: rgba(170, 190, 255, .12);
-    }
-    .player-card-arena.active-turn {
-      border-color: #ffd166;
-      box-shadow: 0 0 0 1px rgba(255,209,102,.18), 0 0 22px rgba(255,209,102,.17);
-    }
-
-    .board-stage {
-      min-width: 0;
-      min-height: 0;
-      width: 100%;
-      height: 100%;
-      overflow: visible;
-      perspective: none;
-    }
-
-    .board-3d-wrapper {
-      width: min(100%,  min(76vh,  min(76dvh, 620px)));
-      height: auto;
-      aspect-ratio: 1 / 1;
-      flex: 0 1 auto;
-      transform: none;
-      border-radius: 17px;
-      box-shadow: 0 24px 50px rgba(0,0,0,.52), 0 0 28px rgba(98,232,255,.12);
-    }
-    .board-3d-wrapper.flat-view { transform: none; }
-
-    .draughts-board {
-      border: clamp(7px, 1.3vw, 13px) solid #18213e;
-      border-radius: 15px;
-      background: #18213e;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.12);
-      touch-action: manipulation;
-    }
-
-    .square.dark {
-      background: linear-gradient(145deg, #3d4d7d, #29365e);
-      box-shadow: inset 0 0 8px rgba(5, 9, 25, .35);
-    }
-    .square.light {
-      background: linear-gradient(145deg, #f4f5ff, #d9e1ff);
-    }
-    .square.highlight-selected {
-      background: #ffd166 !important;
-      box-shadow: inset 0 0 0 3px rgba(255,255,255,.75);
-    }
-    .square.highlight-move::after {
-      width: 28%;
-      height: 28%;
-      background: #48dcb0;
-      box-shadow: 0 0 14px rgba(72,220,176,.8);
-    }
-    .square.highlight-capture::after {
-      width: 42%;
-      height: 42%;
-      background: #ff6b81;
-      box-shadow: 0 0 14px rgba(255,107,129,.8);
-    }
-
-    .piece {
-      width: 78%;
-      height: 78%;
-      box-shadow: 0 5px 9px rgba(4, 8, 20, .48), inset 0 2px 3px rgba(255,255,255,.48);
-      border-width: 2px !important;
-    }
-    .piece.white-piece {
-      background: radial-gradient(circle at 32% 25%, #fff, #dce6ff 58%, #aab8df);
-      border-color: #a6b5df;
-    }
-    .piece.red-piece {
-      background: radial-gradient(circle at 32% 25%, #ffb1c1, #ff637f 58%, #bd3159);
-      border-color: #9f294b;
-    }
-    .piece.king::before {
-      content: '\\f521';
-      font-size: clamp(.75rem, 2vw, 1.3rem);
-      color: #ffcf5c;
-    }
-
-    footer {
-      min-height: 48px;
-      height: auto;
-      border-radius: 16px;
+    .opponent-info {
+      display: flex;
+      align-items: center;
       gap: 10px;
-      padding: 6px 12px;
     }
 
-    .btn-gold {
-      border-radius: 14px;
-      background: linear-gradient(135deg, #ffe08a, #ffad62);
-      box-shadow: 0 6px 18px rgba(255, 173, 98, .22);
-    }
-    .btn-outline {
-      border-radius: 13px;
-      border-color: rgba(160, 181, 255, .28);
-      background: rgba(116, 140, 220, .08);
-    }
-    .btn-outline:hover { border-color: #8be9ff; color: #8be9ff; }
-
-    .modal-box {
-      max-height: min(90dvh, 760px);
-      overflow-y: auto;
-      border-radius: 24px;
-      border-color: rgba(255, 209, 102, .55);
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green-accent);
+      box-shadow: 0 0 8px var(--green-accent);
     }
 
-    /* Compact tablet / portrait phone: player strips above and below the board. */
+    /* REMATCH ACTION CONTAINER IN GAME OVER */
+    .rematch-status-box {
+      background: rgba(255,255,255,0.05);
+      border: 1px dashed rgba(255,209,102,0.4);
+      border-radius: 12px;
+      padding: 10px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--gold-accent);
+      display: none;
+    }
+
+    /* RESPONSIVE DESIGN */
     @media (max-width: 900px) {
       .arena-layout {
         grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -897,138 +660,28 @@
         grid-template-areas:
           "player1 player2"
           "board board";
-        align-items: center;
         gap: 8px;
       }
-      .arena-layout > .side-panel:first-child {
-        grid-area: player1;
-        height: auto;
-        max-height: 74px;
-        min-height: 0;
-        padding: 6px;
-        justify-content: center;
-      }
-      .arena-layout > .side-panel:last-child {
-        grid-area: player2;
-        height: auto;
-        max-height: 74px;
-        min-height: 0;
-        padding: 6px;
-        justify-content: center;
-      }
-      .board-stage {
-        grid-area: board;
-        min-height: 0;
-      }
-      .player-card-arena {
-        padding: 6px 8px;
-        gap: 7px;
-      }
-      .player-card-arena .avatar-frame {
-        width: 32px !important;
-        height: 32px !important;
-        flex: 0 0 32px;
-      }
+      .arena-layout > .side-panel:first-child { grid-area: player1; height: auto; max-height: 70px; padding: 6px; }
+      .arena-layout > .side-panel:last-child { grid-area: player2; height: auto; max-height: 70px; padding: 6px; }
+      .board-stage { grid-area: board; }
       .move-log-box { display: none; }
-      #surrenderBtn {
-        width: 100%;
-        padding: 7px 8px;
-        font-size: .82rem;
-      }
       .board-3d-wrapper {
-        width: min(100%, calc(100dvh - 190px),  min(74vw, 600px));
-        max-width: 100%;
+        width: min(100%, calc(100dvh - 190px), min(74vw, 600px));
       }
     }
 
     @media (max-width: 600px) {
-      .app-container { padding: max(5px, env(safe-area-inset-top)) 6px max(5px, env(safe-area-inset-bottom)); gap: 7px; }
-      header { min-height: 48px; height: 48px; padding: 4px 7px; border-radius: 14px; }
-      .brand-logo { gap: 6px; font-size: .98rem; }
-      .brand-logo i { font-size: 1.2rem; }
-      .avatar-frame { width: 34px; height: 34px; }
-      .profile-trigger { gap: 6px; padding: 3px 8px 3px 3px; }
-      .player-name-mini { font-size: .82rem; max-width: 92px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-      .points-badge { font-size: .72rem; }
-      .header-actions { gap: 5px; }
-      .btn-icon { width: 34px; height: 34px; border-radius: 10px; font-size: .95rem; }
-      main { margin: 0; }
-      .lobby-card { border-radius: 20px; padding: 18px 14px; gap: 15px; }
-      .lobby-header h1 { font-size: clamp(1.25rem, 6vw, 1.8rem); }
-      .lobby-header p { font-size: .88rem; }
-      .mode-grid { gap: 9px; margin-top: 2px; }
-      .mode-card { min-height: 132px; padding: 12px 8px; gap: 7px; border-radius: 15px; }
-      .mode-card i { font-size: 1.8rem; }
-      .mode-card h3 { font-size: 1rem; line-height: 1.25; }
-      .mode-card p { font-size: .75rem; line-height: 1.3; }
-      .input-group label { font-size: .85rem; }
-      .custom-input { padding: 10px 12px; font-size: 1rem; }
-      .arena-layout {
-        grid-template-rows: auto minmax(0, 1fr);
-        gap: 6px;
-      }
-      .arena-layout > .side-panel:first-child,
-      .arena-layout > .side-panel:last-child {
-        max-height: 58px;
-        padding: 4px;
-        border-radius: 13px;
-      }
-      .player-card-arena { padding: 4px 6px; border-radius: 10px; }
-      .player-card-arena > div:last-child { min-width: 0; }
-      .player-card-arena > div:last-child > div:first-child {
-        font-size: .78rem !important;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        max-width: 34vw;
-      }
-      .player-card-arena > div:last-child > div:last-child { font-size: .66rem !important; }
-      #surrenderBtn { font-size: .7rem; padding: 6px 4px; white-space: nowrap; }
-      .board-3d-wrapper {
-        width: min(calc(100vw - 18px), calc(100dvh - 158px));
-        max-width: 100%;
-        border-radius: 12px;
-      }
-      .draughts-board { border-width: 6px; border-radius: 11px; }
-      .piece { width: 80%; height: 80%; }
-      footer { min-height: 40px; padding: 4px 8px; border-radius: 12px; }
-      footer > div:first-child { font-size: .66rem !important; line-height: 1.2; max-width: 58%; }
-      footer .btn-outline { padding: 5px 8px !important; font-size: .72rem !important; white-space: nowrap; }
-      .modal-box { padding: 19px 14px; width: calc(100% - 20px); }
+      .app-container { padding: 4px 6px; gap: 6px; }
+      header { min-height: 46px; height: 46px; padding: 4px 8px; }
+      .brand-logo { font-size: 1rem; }
+      .player-name-mini { max-width: 85px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .lobby-card { padding: 16px 12px; gap: 14px; }
+      .mode-grid { grid-template-columns: 1fr; gap: 10px; }
+      .mode-card { min-height: 100px; padding: 12px; }
+      .board-3d-wrapper { width: min(calc(100vw - 16px), calc(100dvh - 150px)); }
+      .draughts-board { border-width: 6px; }
     }
-
-    /* Landscape phones and small tablets: use the full width while preserving a square board. */
-    @media (max-height: 520px) and (orientation: landscape) {
-      .app-container { gap: 5px; padding: 4px 8px; }
-      header { height: 42px; min-height: 42px; }
-      footer { min-height: 34px; padding: 3px 8px; }
-      .arena-layout {
-        grid-template-columns: minmax(100px, 160px) minmax(0, 1fr) minmax(100px, 160px);
-        grid-template-rows: minmax(0, 1fr);
-      }
-      .arena-layout > .side-panel:first-child,
-      .arena-layout > .side-panel:last-child {
-        height: 100%;
-        max-height: 100%;
-        padding: 6px;
-      }
-      .arena-layout > .side-panel:first-child { grid-area: auto; }
-      .arena-layout > .side-panel:last-child { grid-area: auto; }
-      .board-stage { grid-area: auto; }
-      .board-3d-wrapper { width: min(70vh,  calc(100vw - 250px)); }
-      .move-log-box { display: none; }
-      #surrenderBtn { padding: 6px; }
-    }
-
-    @media (min-width: 901px) and (max-height: 700px) {
-      .board-3d-wrapper { width: min(65vh, 480px); }
-      .side-panel { max-height: 470px; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
-    }
-
   </style>
 </head>
 <body>
@@ -1041,10 +694,10 @@
     <header>
       <div class="brand-logo">
         <i class="fa-solid fa-chess-board"></i>
-        <span>ශ්‍රී ලංකා දාම්</span>
+        <span>ශ්‍රී ලංකා දාම් Pro</span>
       </div>
 
-      <!-- Profile Trigger Top-Left/Right -->
+      <!-- Profile Trigger -->
       <div class="profile-trigger" id="profileTriggerBtn">
         <div class="avatar-frame" id="headerAvatarFrame">
           <div class="avatar-placeholder"><i class="fa-solid fa-user"></i></div>
@@ -1056,7 +709,6 @@
       </div>
 
       <div class="header-actions">
-        <button class="btn-icon" id="toggle3dBtn" title="3D / 2D මාරු කරන්න"><i class="fa-solid fa-cube"></i></button>
         <button class="btn-icon" id="soundToggleBtn" title="ශබ්දය"><i class="fa-solid fa-volume-high"></i></button>
       </div>
     </header>
@@ -1079,29 +731,29 @@
         <div class="mode-grid">
           <div class="mode-card" id="singlePlayerBtn">
             <i class="fa-solid fa-robot"></i>
-            <h3>තනිව සෙල්ලම් කරන්න (Single Player)</h3>
-            <p>AI පරිගණකය සමඟ තරඟ කර ජයග්‍රහණය කරන්න</p>
+            <h3>තනිව සෙල්ලම් කරන්න (Offline AI)</h3>
+            <p>පරිගණකය සමඟ තරඟ කර පුහුණු වන්න</p>
           </div>
 
           <div class="mode-card" id="multiplayerBtn">
             <i class="fa-solid fa-users"></i>
             <h3>Multiplayer (Online)</h3>
-            <p>ඔන්ලයින් යහළුවෙකුට Invite කර සෙල්ලම් කරන්න</p>
+            <p>යහළුවන්ට Invite කර ඔන්ලයින් සෙල්ලම් කරන්න</p>
           </div>
         </div>
       </div>
 
       <!-- 2. GAME PLAY ARENA -->
       <div class="arena-layout" id="arenaView" style="display: none;">
-        <!-- Left Panel: You -->
+        <!-- Left Panel: You / Host -->
         <div class="side-panel">
           <div class="player-card-arena active-turn" id="p1Card">
-            <div class="avatar-frame" style="width: 36px; height: 36px;">
+            <div class="avatar-frame" style="width: 34px; height: 34px;">
               <div class="avatar-placeholder" id="p1AvatarMini"><i class="fa-solid fa-user"></i></div>
             </div>
             <div>
-              <div style="font-weight: 700;" id="p1Name">ඔබ</div>
-              <div style="font-size: 0.8rem; color: #2ecc71;">සුදු පෙති (White)</div>
+              <div style="font-weight: 700; font-size: 0.9rem;" id="p1Name">ඔබ</div>
+              <div style="font-size: 0.75rem; color: #4ade80;">සුදු පෙති (White)</div>
             </div>
           </div>
 
@@ -1110,26 +762,30 @@
           </div>
         </div>
 
-        <!-- Center Stage: 3D Board -->
+        <!-- Center Stage: Board with Close Icon overlay -->
         <div class="board-stage">
           <div class="board-3d-wrapper" id="boardWrapper">
+            <!-- Close / Resign Icon added directly to the top corner of the game board -->
+            <button class="board-close-btn" id="boardCloseBtn" title="තරඟයෙන් ඉවත් වන්න (Close Game)">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
             <div class="draughts-board" id="draughtsBoard"></div>
           </div>
         </div>
 
-        <!-- Right Panel: Opponent / AI -->
+        <!-- Right Panel: Opponent / Guest / AI -->
         <div class="side-panel">
           <div class="player-card-arena" id="p2Card">
-            <div class="avatar-frame" style="width: 36px; height: 36px; background: #e74c3c;">
+            <div class="avatar-frame" style="width: 34px; height: 34px; background: #e74c3c;">
               <div class="avatar-placeholder"><i class="fa-solid fa-robot"></i></div>
             </div>
             <div>
-              <div style="font-weight: 700;" id="p2Name">AI පරිගණකය</div>
-              <div style="font-size: 0.8rem; color: #e74c3c;">රතු පෙති (Red)</div>
+              <div style="font-weight: 700; font-size: 0.9rem;" id="p2Name">AI පරිගණකය</div>
+              <div style="font-size: 0.75rem; color: #ff6b81;">රතු පෙති (Red)</div>
             </div>
           </div>
 
-          <button class="btn-outline" id="surrenderBtn"><i class="fa-solid fa-flag"></i> ඉවත් වෙන්න</button>
+          <button class="btn-outline" id="surrenderBtn"><i class="fa-solid fa-flag"></i> පරාජය භාරගන්න</button>
         </div>
       </div>
 
@@ -1137,31 +793,26 @@
 
     <!-- FOOTER CONTROLS -->
     <footer>
-      <div style="font-size: 0.85rem; color: var(--text-dim);">
-        ලකුණු පද්ධතිය: ජයග්‍රහණයකට +10 | පරාජයකට -10 | ආරම්භක Points: 500
+      <div style="font-size: 0.8rem; color: var(--text-dim);">
+        ලකුණු: ජයග්‍රහණයට +10 | පරාජයට -10 | ආරම්භක Points: 500
       </div>
       <div>
-        <button class="btn-outline" style="padding: 4px 12px; font-size: 0.85rem;" id="homeBtn"><i class="fa-solid fa-house"></i> ප්‍රධාන පිටුවට</button>
+        <button class="btn-outline" style="padding: 4px 12px; font-size: 0.82rem;" id="homeBtn"><i class="fa-solid fa-house"></i> ප්‍රධාන පිටුවට</button>
       </div>
     </footer>
 
   </div>
 
-  <!-- POPUP MODAL 1: PROFILE & PHOTO FRAME MODAL -->
+  <!-- POPUP MODAL 1: PROFILE MODAL -->
   <div class="modal-overlay" id="profileModal">
     <div class="modal-box">
       <span class="close-modal" id="closeProfileModal">&times;</span>
       <h2 style="color: var(--gold-accent); text-align: center;"><i class="fa-solid fa-user-gear"></i> ක්‍රීඩක ගිණුම (Profile)</h2>
       
       <div style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
-        <div class="avatar-frame" style="width: 90px; height: 90px;">
-          <div class="avatar-placeholder" id="modalAvatarDisplay"><i class="fa-solid fa-user" style="font-size: 2.5rem;"></i></div>
+        <div class="avatar-frame" style="width: 80px; height: 80px;">
+          <div class="avatar-placeholder" id="modalAvatarDisplay"><i class="fa-solid fa-user" style="font-size: 2rem;"></i></div>
         </div>
-        
-        <input type="file" id="photoUploadInput" accept="image/*" style="display: none;">
-        <button class="btn-outline" onclick="document.getElementById('photoUploadInput').click();">
-          <i class="fa-solid fa-camera"></i> ඡායාරූපයක් එක් කරන්න
-        </button>
       </div>
 
       <div class="input-group">
@@ -1169,78 +820,106 @@
         <input type="text" id="modalPlayerNameInput" class="custom-input">
       </div>
 
-      <div style="display: flex; justify-content: space-around; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px;">
+      <div style="display: flex; justify-content: space-around; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 12px;">
         <div style="text-align: center;">
-          <div style="font-size: 0.8rem; color: var(--text-dim);">මුළු ලකුණු</div>
-          <div style="font-size: 1.4rem; font-weight: 700; color: #f1c40f;" id="modalPoints">500</div>
+          <div style="font-size: 0.75rem; color: var(--text-dim);">ලකුණු</div>
+          <div style="font-size: 1.3rem; font-weight: 700; color: #ffd166;" id="modalPoints">500</div>
         </div>
         <div style="text-align: center;">
-          <div style="font-size: 0.8rem; color: var(--text-dim);">ජයග්‍රහණ</div>
-          <div style="font-size: 1.4rem; font-weight: 700; color: #2ecc71;" id="modalWins">0</div>
+          <div style="font-size: 0.75rem; color: var(--text-dim);">ජයග්‍රහණ</div>
+          <div style="font-size: 1.3rem; font-weight: 700; color: #4ade80;" id="modalWins">0</div>
         </div>
         <div style="text-align: center;">
-          <div style="font-size: 0.8rem; color: var(--text-dim);">පරාජයන්</div>
-          <div style="font-size: 1.4rem; font-weight: 700; color: #e74c3c;" id="modalLosses">0</div>
+          <div style="font-size: 0.75rem; color: var(--text-dim);">පරාජයන්</div>
+          <div style="font-size: 1.3rem; font-weight: 700; color: #ff6b81;" id="modalLosses">0</div>
         </div>
-      </div>
-
-      <!-- 24h Zero Points Bonus Container -->
-      <div class="bonus-box" id="bonusContainer" style="display: none;">
-        <div style="font-weight: 700; color: #e74c3c;">ලකුණු සියල්ල ඉවර වී ඇත!</div>
-        <div style="font-size: 0.85rem;" id="bonusTimerText">නැවත Points 100 ලබා ගැනීමට ඉතිරි කාලය: 24:00:00</div>
-        <button class="btn-gold" id="claimBonusBtn" style="margin-top: 6px; display: none;">ලකුණු 100 ලබාගන්න</button>
       </div>
 
       <button class="btn-gold" id="saveProfileBtn">තොරතුරු සුරකින්න</button>
-      <button class="btn-outline" id="logoutBtn" style="color: #e74c3c; border-color: rgba(231,76,60,0.4);"><i class="fa-solid fa-right-from-bracket"></i> Logout වන්න</button>
+      <button class="btn-outline" id="logoutBtn" style="color: #ff6b81; border-color: rgba(255,107,129,0.4);"><i class="fa-solid fa-right-from-bracket"></i> Logout වන්න</button>
     </div>
   </div>
 
-  <!-- POPUP MODAL 2: MULTIPLAYER SEARCH & INVITE MODAL -->
+  <!-- POPUP MODAL 2: MULTIPLAYER SEARCH & RECENT OPPONENTS MODAL -->
   <div class="modal-overlay" id="multiplayerModal">
     <div class="modal-box">
       <span class="close-modal" id="closeMultiModal">&times;</span>
-      <h2 style="color: var(--gold-accent); text-align: center;"><i class="fa-solid fa-globe"></i> ඔන්ලයින් යහළුවන් සෙවීම</h2>
+      <h2 style="color: var(--gold-accent); text-align: center;"><i class="fa-solid fa-globe"></i> Multiplayer Online Hub</h2>
       
+      <!-- Recent Opponents Section -->
+      <div class="opponents-section">
+        <div style="font-size: 0.9rem; font-weight: 700; color: var(--gold-accent); display: flex; align-items: center; gap: 6px;">
+          <i class="fa-solid fa-clock-rotate-left"></i> මෑතකදී සෙල්ලම් කළ යහළුවන් (Recent)
+        </div>
+        <div id="recentOpponentsList" style="display: flex; flex-direction: column; gap: 6px;">
+          <div style="font-size: 0.8rem; color: var(--text-dim); text-align: center; padding: 6px;">මෑතකදී ක්‍රීඩා කළ යහළුවන් නොමැත</div>
+        </div>
+      </div>
+
       <div class="input-group">
-        <label>යහළුවාගේ නම සොයන්න (Search Online User)</label>
+        <label>අලුත් යහළුවෙකු සොයන්න (Search Online User)</label>
         <div style="display: flex; gap: 8px;">
           <input type="text" id="searchUserInput" class="custom-input" placeholder="යහළුවාගේ නම...">
           <button class="btn-gold" id="searchUserBtn" style="width: auto; padding: 0 16px;"><i class="fa-solid fa-magnifying-glass"></i></button>
         </div>
       </div>
 
-      <div style="min-height: 120px; background: rgba(0,0,0,0.3); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 8px;" id="searchResultsList">
-        <div style="text-align: center; color: var(--text-dim); margin-top: 30px;">ඔන්ලයින් සිටින යහළුවෙකුගේ නමක් Search කරන්න</div>
+      <div style="min-height: 90px; background: rgba(0,0,0,0.3); border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 8px;" id="searchResultsList">
+        <div style="text-align: center; color: var(--text-dim); margin-top: 20px; font-size: 0.85rem;">නමක් Search කර Invite කරන්න</div>
       </div>
     </div>
   </div>
 
-  <!-- POPUP MODAL 3: GAME OVER OVERLAY -->
+  <!-- POPUP MODAL 3: GAME OVER & REMATCH MODAL -->
   <div class="modal-overlay" id="gameOverModal">
     <div class="modal-box" style="text-align: center;">
-      <h1 id="gameOverTitle" style="font-size: 2.2rem; color: var(--gold-accent);">තරඟය අවසන්!</h1>
-      <p id="gameOverMessage" style="font-size: 1.1rem; color: var(--text-dim); margin: 10px 0;"></p>
+      <h1 id="gameOverTitle" style="font-size: 2rem; color: var(--gold-accent);">තරඟය අවසන්!</h1>
+      <p id="gameOverMessage" style="font-size: 1rem; color: var(--text-dim); margin: 6px 0;"></p>
       
-      <div style="font-size: 1.3rem; font-weight: 700; color: #f1c40f; margin-bottom: 15px;" id="gameOverPointsChange">
+      <div style="font-size: 1.2rem; font-weight: 700; color: #ffd166; margin-bottom: 10px;" id="gameOverPointsChange">
         +10 Points හිමිවිය!
       </div>
 
-      <button class="btn-gold" id="playAgainBtn"><i class="fa-solid fa-rotate-right"></i> නැවත සෙල්ලම් කරන්න</button>
+      <!-- Realtime Rematch sync status feedback -->
+      <div class="rematch-status-box" id="rematchStatusBox">
+        විරුද්ධවාදියාගේ එකඟතාවය ලැබෙන තෙක් රැඳී සිටින්න...
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+        <button class="btn-gold" id="rematchBtn"><i class="fa-solid fa-rotate-right"></i> නැවත ක්‍රීඩා කරන්න (Rematch)</button>
+        <button class="btn-outline" id="exitGameBtn"><i class="fa-solid fa-door-open"></i> ඉවත් වෙන්න (Exit)</button>
+      </div>
     </div>
   </div>
 
+  <!-- FIRST ENTRY / PROFILE CREATION -->
+  <div class="modal-overlay active" id="firstEntryModal" style="z-index:10000;">
+    <div class="modal-box" style="max-width:430px;text-align:center;">
+      <div style="font-size:2.8rem;color:var(--gold-accent);margin-bottom:6px;"><i class="fa-solid fa-chess-knight"></i></div>
+      <h2 style="color:var(--gold-accent);">ඔබගේ ක්‍රීඩක Profile එක සාදන්න</h2>
+      <p style="color:var(--text-dim);margin:8px 0 14px;font-size:0.9rem;">ක්‍රීඩාවට පිවිසීමට ඔබගේ නම ඇතුළත් කරන්න.</p>
+      <div class="input-group" style="text-align:left;">
+        <label for="firstEntryName">ක්‍රීඩක නම</label>
+        <input id="firstEntryName" class="custom-input" maxlength="24" placeholder="ඔබගේ නම ඇතුළත් කරන්න">
+      </div>
+      <div id="firebaseSetupNotice" style="font-size:.82rem;color:#f6c453;margin:8px 0;">Online සේවාව සම්බන්ධ වෙමින් පවතී...</div>
+      <button class="btn-gold" id="createProfileBtn" style="width:100%;"><i class="fa-solid fa-user-plus"></i> ඇතුළු වන්න</button>
+      <div id="entryError" style="color:#ff7777;font-size:.85rem;margin-top:8px;"></div>
+    </div>
+  </div>
 
-  <!-- Firebase Realtime Database + Anonymous Authentication (compat SDK) -->
+  <div id="onlineStatusPill" style="position:fixed;bottom:12px;right:12px;z-index:5000;background:#101923;border:1px solid #34495e;border-radius:30px;padding:6px 12px;font-size:12px;color:#f6c453;display:none;">
+    <i class="fa-solid fa-circle"></i> <span id="onlineStatusText">Connecting...</span>
+  </div>
+
+  <!-- Firebase Realtime Database Compat SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-\n  <!-- MAIN SCRIPT LOGIC -->
+
   <script>
-    /* ==========================================
-       STATE MANAGEMENT & LOCAL STORAGE
-    ========================================== */
-    const STORAGE_KEY = 'sinhala_draughts_user_data';
+    /* LOCAL STATE & RECENT OPPONENTS STORAGE */
+    const STORAGE_KEY = 'sinhala_draughts_user_data_v2';
 
     let userState = {
       name: 'ක්‍රීඩකයා 1',
@@ -1248,42 +927,69 @@
       avatarData: null,
       wins: 0,
       losses: 0,
-      zeroPointsTimestamp: null
+      recentOpponents: [] // [{uid, name}]
     };
 
-    // Load saved data
     function loadUserData() {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         try {
           userState = { ...userState, ...JSON.parse(saved) };
+          if (!userState.recentOpponents) userState.recentOpponents = [];
         } catch(e){}
       }
       updateUIHeader();
+      renderRecentOpponents();
     }
 
     function saveUserData() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(userState));
       updateUIHeader();
+      renderRecentOpponents();
+    }
+
+    function addRecentOpponent(uid, name) {
+      if (!uid || !name) return;
+      userState.recentOpponents = userState.recentOpponents.filter(o => o.uid !== uid);
+      userState.recentOpponents.unshift({ uid, name, timestamp: Date.now() });
+      if (userState.recentOpponents.length > 5) userState.recentOpponents.pop();
+      saveUserData();
+    }
+
+    function renderRecentOpponents() {
+      const container = document.getElementById('recentOpponentsList');
+      if (!container) return;
+      
+      if (!userState.recentOpponents || userState.recentOpponents.length === 0) {
+        container.innerHTML = `<div style="font-size: 0.8rem; color: var(--text-dim); text-align: center; padding: 6px;">මෑතකදී ක්‍රීඩා කළ යහළුවන් නොමැත</div>`;
+        return;
+      }
+
+      container.innerHTML = '';
+      userState.recentOpponents.forEach(op => {
+        const item = document.createElement('div');
+        item.className = 'opponent-item';
+        item.innerHTML = `
+          <div class="opponent-info">
+            <span class="status-dot"></span>
+            <span style="font-weight:600; font-size:0.9rem;">${op.name}</span>
+          </div>
+          <button class="btn-gold" style="width:auto; padding:4px 10px; font-size:0.8rem;">Invite</button>
+        `;
+        item.querySelector('button').addEventListener('click', () => {
+          sendOnlineInvite({ uid: op.uid, name: op.name });
+        });
+        container.appendChild(item);
+      });
     }
 
     function updateUIHeader() {
       document.getElementById('headerPlayerName').innerText = userState.name;
       document.getElementById('headerPoints').innerText = userState.points;
       document.getElementById('playerNameInput').value = userState.name;
-
-      // Update avatar frame
-      const framePlaceholder = document.getElementById('headerAvatarFrame');
-      if (userState.avatarData) {
-        framePlaceholder.innerHTML = `<img src="${userState.avatarData}" alt="Avatar">`;
-      } else {
-        framePlaceholder.innerHTML = `<div class="avatar-placeholder"><i class="fa-solid fa-user"></i></div>`;
-      }
     }
 
-    /* ==========================================
-       AUDIO SYNTHESIZER (WEB AUDIO API)
-    ========================================== */
+    /* AUDIO SYNTHESIZER */
     let soundEnabled = true;
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -1300,33 +1006,26 @@
           osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.08);
           gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
           gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
-          osc.start();
-          osc.stop(audioCtx.currentTime + 0.08);
+          osc.start(); osc.stop(audioCtx.currentTime + 0.08);
         } else if (type === 'capture') {
           osc.frequency.setValueAtTime(600, audioCtx.currentTime);
           osc.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.15);
           gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
           gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
-          osc.start();
-          osc.stop(audioCtx.currentTime + 0.15);
+          osc.start(); osc.stop(audioCtx.currentTime + 0.15);
         } else if (type === 'win') {
           osc.frequency.setValueAtTime(400, audioCtx.currentTime);
-          osc.frequency.setValueAtTime(600, audioCtx.currentTime + 0.1);
           osc.frequency.setValueAtTime(800, audioCtx.currentTime + 0.2);
           gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
-          gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
-          osc.start();
-          osc.stop(audioCtx.currentTime + 0.4);
+          gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+          osc.start(); osc.stop(audioCtx.currentTime + 0.3);
         }
       } catch(e){}
     }
 
-    /* ==========================================
-       DRAUGHTS / CHECKERS GAME ENGINE
-    ========================================== */
-    const BOARD_SIZE = 8;
-    let board = []; // 8x8 array: 0=empty, 1=white, 2=white_king, -1=red, -2=red_king
-    let turn = 1; // 1 = White (Human), -1 = Red (AI/P2)
+    /* DRAUGHTS ENGINE */
+    let board = [];
+    let turn = 1;
     let selectedSquare = null;
     let validMoves = [];
     let isSinglePlayer = true;
@@ -1336,8 +1035,8 @@
       for (let r = 0; r < 8; r++) {
         for (let c = 0; c < 8; c++) {
           if ((r + c) % 2 === 1) {
-            if (r < 3) board[r][c] = -1; // Red top
-            else if (r > 4) board[r][c] = 1; // White bottom
+            if (r < 3) board[r][c] = -1;
+            else if (r > 4) board[r][c] = 1;
           }
         }
       }
@@ -1383,11 +1082,10 @@
     }
 
     function handleSquareClick(r, c) {
-      if (isSinglePlayer && turn !== 1) return; // Wait for AI
+      if (isSinglePlayer && turn !== 1) return;
 
       const piece = board[r][c];
 
-      // If clicking own piece
       if (piece !== 0 && Math.sign(piece) === turn) {
         selectedSquare = { r, c };
         validMoves = getPieceMoves(r, c);
@@ -1395,7 +1093,6 @@
         return;
       }
 
-      // If square clicked is a valid move target
       if (selectedSquare) {
         const move = validMoves.find(m => m.toR === r && m.toC === c);
         if (move) {
@@ -1413,12 +1110,9 @@
       const isKing = Math.abs(piece) === 2;
       const dirs = isKing ? [[1,1], [1,-1], [-1,1], [-1,-1]] : (piece > 0 ? [[-1,1], [-1,-1]] : [[1,1], [1,-1]]);
 
-      // Check captures first (Forced capture standard)
       dirs.forEach(([dr, dc]) => {
-        const midR = r + dr;
-        const midC = c + dc;
-        const endR = r + dr * 2;
-        const endC = c + dc * 2;
+        const midR = r + dr, midC = c + dc;
+        const endR = r + dr * 2, endC = c + dc * 2;
 
         if (inBounds(endR, endC)) {
           const midVal = board[midR][midC];
@@ -1430,10 +1124,8 @@
 
       if (captures.length > 0) return captures;
 
-      // Normal moves
       dirs.forEach(([dr, dc]) => {
-        const endR = r + dr;
-        const endC = c + dc;
+        const endR = r + dr, endC = c + dc;
         if (inBounds(endR, endC) && board[endR][endC] === 0) {
           moves.push({ fromR: r, fromC: c, toR: endR, toC: endC, isCapture: false });
         }
@@ -1442,9 +1134,7 @@
       return moves;
     }
 
-    function inBounds(r, c) {
-      return r >= 0 && r < 8 && c >= 0 && c < 8;
-    }
+    function inBounds(r, c) { return r >= 0 && r < 8 && c >= 0 && c < 8; }
 
     function executeMove(move) {
       const piece = board[move.fromR][move.fromC];
@@ -1458,7 +1148,6 @@
         playSound('move');
       }
 
-      // King promotion
       if (piece === 1 && move.toR === 0) board[move.toR][move.toC] = 2;
       if (piece === -1 && move.toR === 7) board[move.toR][move.toC] = -2;
 
@@ -1466,10 +1155,8 @@
       validMoves = [];
       renderBoard();
 
-      // Check win condition
       if (checkGameOver()) return;
 
-      // Turn change
       turn = -turn;
       updateTurnCards();
 
@@ -1490,32 +1177,21 @@
       }
     }
 
-    /* AI BOT LOGIC */
     function makeAIMove() {
-      let allCaptures = [];
-      let allMoves = [];
-
+      let allCaptures = [], allMoves = [];
       for (let r = 0; r < 8; r++) {
         for (let c = 0; c < 8; c++) {
           if (board[r][c] < 0) {
-            const moves = getPieceMoves(r, c);
-            moves.forEach(m => {
-              if (m.isCapture) allCaptures.push(m);
-              else allMoves.push(m);
-            });
+            getPieceMoves(r, c).forEach(m => m.isCapture ? allCaptures.push(m) : allMoves.push(m));
           }
         }
       }
-
-      const chosenMove = allCaptures.length > 0 ? 
+      const chosen = allCaptures.length > 0 ? 
         allCaptures[Math.floor(Math.random() * allCaptures.length)] : 
         allMoves[Math.floor(Math.random() * allMoves.length)];
 
-      if (chosenMove) {
-        executeMove(chosenMove);
-      } else {
-        triggerGameOver(1, 'AI පරිගණකයට කරගෙන යාමට හැකි චලනයන් නොමැත!');
-      }
+      if (chosen) executeMove(chosen);
+      else triggerGameOver(1, 'AI පරිගණකයට චලනයන් නොමැත!');
     }
 
     function checkGameOver() {
@@ -1526,15 +1202,8 @@
           if (board[r][c] < 0) redCount++;
         }
       }
-
-      if (whiteCount === 0) {
-        triggerGameOver(-1, 'ඔබේ පෙති සියල්ල කැපී අවසන්!');
-        return true;
-      }
-      if (redCount === 0) {
-        triggerGameOver(1, 'ඔබ විරුද්ධවාදියාගේ සියලු පෙති කපා ජයග්‍රහණය කළා!');
-        return true;
-      }
+      if (whiteCount === 0) { triggerGameOver(-1, 'ඔබේ පෙති සියල්ල කැපී අවසන්!'); return true; }
+      if (redCount === 0) { triggerGameOver(1, 'විරුද්ධවාදියාගේ සියලු පෙති කපා ජයග්‍රහණය කළා!'); return true; }
       return false;
     }
 
@@ -1543,80 +1212,264 @@
       const title = document.getElementById('gameOverTitle');
       const msg = document.getElementById('gameOverMessage');
       const pointsText = document.getElementById('gameOverPointsChange');
+      const statusBox = document.getElementById('rematchStatusBox');
+
+      statusBox.style.display = 'none';
 
       if (winner === 1) {
         title.innerText = 'ඔබ ජයග්‍රහණය කළා! 🎉';
-        title.style.color = '#2ecc71';
+        title.style.color = '#4ade80';
         msg.innerText = message;
         userState.points += 10;
         userState.wins++;
         pointsText.innerText = '+10 Points හිමිවිය!';
-        pointsText.style.color = '#2ecc71';
+        pointsText.style.color = '#4ade80';
         playSound('win');
       } else {
         title.innerText = 'ඔබ පරාජය විය! 💔';
-        title.style.color = '#e74c3c';
+        title.style.color = '#ff6b81';
         msg.innerText = message;
         userState.points = Math.max(0, userState.points - 10);
         userState.losses++;
         pointsText.innerText = '-10 Points අඩුවිය!';
-        pointsText.style.color = '#e74c3c';
-
-        if (userState.points === 0 && !userState.zeroPointsTimestamp) {
-          userState.zeroPointsTimestamp = Date.now();
-        }
+        pointsText.style.color = '#ff6b81';
       }
 
       saveUserData();
       modal.classList.add('active');
     }
 
-    /* ==========================================
-       PROFILE & 24H BONUS TIMER SYSTEM
-    ========================================== */
-    function checkBonusTimer() {
-      const bonusBox = document.getElementById('bonusContainer');
-      const timerText = document.getElementById('bonusTimerText');
-      const claimBtn = document.getElementById('claimBonusBtn');
+    /* FIREBASE & ONLINE LOGIC */
+    const firebaseConfig = {
+      apiKey: "AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",
+      authDomain: "bin-card-42614.firebaseapp.com",
+      databaseURL: "https://bin-card-42614-default-rtdb.firebaseio.com",
+      projectId: "bin-card-42614",
+      storageBucket: "bin-card-42614.firebasestorage.app",
+      messagingSenderId: "1063550230753",
+      appId: "1:1063550230753:web:1ad8306405e709ac5b17a0"
+    };
 
-      if (userState.points === 0 && userState.zeroPointsTimestamp) {
-        bonusBox.style.display = 'flex';
-        const elapsed = Date.now() - userState.zeroPointsTimestamp;
-        const total24h = 24 * 60 * 60 * 1000;
+    let fbAuth = null, fbDb = null, fbUser = null;
+    let onlineRoomId = null, onlineRoomRef = null, onlineRoomListener = null, onlineRole = null;
+    let applyingRemoteState = false, processedFinishedRoomId = null;
 
-        if (elapsed >= total24h) {
-          timerText.innerText = 'ඔබට Points 100 ලබාගත හැක!';
-          claimBtn.style.display = 'block';
-        } else {
-          const remaining = total24h - elapsed;
-          const hours = Math.floor(remaining / (1000 * 60 * 60));
-          const mins = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
-          const secs = Math.floor((remaining % (1000 * 60)) / 1000);
-          timerText.innerText = `නැවත Points 100 ලබා ගැනීමට ඉතිරි කාලය: ${hours}h ${mins}m ${secs}s`;
-          claimBtn.style.display = 'none';
-        }
-      } else {
-        bonusBox.style.display = 'none';
+    async function initializeFirebaseAndProfile() {
+      try {
+        const app = firebase.apps.length ? firebase.app() : firebase.initializeApp(firebaseConfig);
+        fbAuth = firebase.auth(app);
+        fbDb = firebase.database(app);
+
+        const credential = fbAuth.currentUser ? { user: fbAuth.currentUser } : await fbAuth.signInAnonymously();
+        fbUser = credential.user;
+
+        document.getElementById('firebaseSetupNotice').textContent = 'Firebase Online සම්බන්ධ විය.';
+        
+        listenForInvites();
+      } catch (err) {
+        console.error(err);
       }
     }
 
-    setInterval(checkBonusTimer, 1000);
+    function listenForInvites() {
+      if (!fbDb || !fbUser) return;
+      fbDb.ref('invites/' + fbUser.uid).on('child_added', snap => {
+        const invite = snap.val();
+        if (!invite || invite.status !== 'pending') return;
+        
+        const accept = confirm((invite.fromName || 'යහළුවෙක්') + ' ඔබට Online දාම් තරඟයකට ආරාධනා කර ඇත. Accept කරනවාද?');
+        if (accept) {
+          snap.ref.update({ status: 'accepted' });
+          joinOnlineRoom(invite.roomId, 'guest');
+        } else {
+          snap.ref.update({ status: 'declined' });
+        }
+      });
+    }
 
-    document.getElementById('claimBonusBtn').addEventListener('click', () => {
-      userState.points = 100;
-      userState.zeroPointsTimestamp = null;
-      saveUserData();
-      alert('ඔබට සාර්ථකව නොමිලේ Points 100 ලැබුණි!');
-      checkBonusTimer();
-    });
+    async function sendOnlineInvite(opponent) {
+      try {
+        const roomId = fbDb.ref('rooms').push().key;
+        const room = {
+          status: 'playing',
+          hostUid: fbUser.uid,
+          guestUid: opponent.uid,
+          hostName: userState.name,
+          guestName: opponent.name,
+          board: createInitialOnlineBoard(),
+          turn: 1,
+          rematch: { host: false, guest: false },
+          updatedAt: firebase.database.ServerValue.TIMESTAMP
+        };
+        await fbDb.ref('rooms/' + roomId).set(room);
+        await fbDb.ref('invites/' + opponent.uid).push().set({
+          roomId, fromUid: fbUser.uid, fromName: userState.name, status: 'pending'
+        });
 
-    /* ==========================================
-       UI INTERACTION HANDLERS
-    ========================================== */
+        // Add to recent list
+        addRecentOpponent(opponent.uid, opponent.name);
+
+        document.getElementById('multiplayerModal').classList.remove('active');
+        await joinOnlineRoom(roomId, 'host');
+      } catch(e) { alert(e.message); }
+    }
+
+    function createInitialOnlineBoard() {
+      const b = Array.from({length:8},()=>Array(8).fill(0));
+      for(let r=0;r<8;r++) for(let c=0;c<8;c++) if((r+c)%2===1) {
+        if(r<3)b[r][c]=-1; else if(r>4)b[r][c]=1;
+      }
+      return b;
+    }
+
+    async function joinOnlineRoom(roomId, role) {
+      onlineRoomId = roomId;
+      onlineRole = role;
+      isSinglePlayer = false;
+
+      document.getElementById('multiplayerModal').classList.remove('active');
+      document.getElementById('lobbyView').style.display = 'none';
+      document.getElementById('arenaView').style.display = 'grid';
+
+      if (onlineRoomRef && onlineRoomListener) onlineRoomRef.off('value', onlineRoomListener);
+      onlineRoomRef = fbDb.ref('rooms/' + roomId);
+
+      onlineRoomListener = snap => {
+        const data = snap.val();
+        if (!data) { leaveOnlineRoom(false); return; }
+
+        // Mid-game close or forfeit by opponent
+        if (data.status === 'abandoned' || data.status === 'closed') {
+          if (data.closedBy !== fbUser.uid) {
+            triggerGameOver(1, 'විරුද්ධවාදියා තරඟය අතහැර ඉවත් විය! ඔබට ජයග්‍රහණය හිමිවිය.');
+          }
+          leaveOnlineRoom(false);
+          return;
+        }
+
+        // Rematch agreement check
+        if (data.status === 'playing' && processedFinishedRoomId) {
+          processedFinishedRoomId = null;
+          document.getElementById('gameOverModal').classList.remove('active');
+        }
+
+        if (data.status === 'finished') {
+          if (processedFinishedRoomId !== roomId) {
+            processedFinishedRoomId = roomId;
+            const localSide = role === 'host' ? 1 : -1;
+            let localWinner = (data.winnerUid === fbUser.uid) ? 1 : -1;
+
+            // Save recent opponent info
+            const oppUid = role === 'host' ? data.guestUid : data.hostUid;
+            const oppName = role === 'host' ? data.guestName : data.hostName;
+            addRecentOpponent(oppUid, oppName);
+
+            applyingRemoteState = true;
+            triggerGameOver(localWinner, localWinner === 1 ? 'ඔබ තරඟය ජයග්‍රහණය කළා!' : 'විරුද්ධවාදියා තරඟය ජයග්‍රහණය කළා!');
+            applyingRemoteState = false;
+          }
+
+          // Dynamic Rematch Status Update
+          const statusBox = document.getElementById('rematchStatusBox');
+          if (data.rematch) {
+            const myVote = role === 'host' ? data.rematch.host : data.rematch.guest;
+            const oppVote = role === 'host' ? data.rematch.guest : data.rematch.host;
+
+            if (myVote && !oppVote) {
+              statusBox.style.display = 'block';
+              statusBox.innerText = 'විරුද්ධවාදියාගේ Rematch එකඟතාවය ලැබෙන තෙක් රැඳී සිටින්න...';
+            } else if (data.rematch.host && data.rematch.guest) {
+              // Both agreed - Host resets room
+              if (role === 'host') {
+                onlineRoomRef.update({
+                  status: 'playing',
+                  board: createInitialOnlineBoard(),
+                  turn: 1,
+                  winnerUid: null,
+                  rematch: { host: false, guest: false }
+                });
+              }
+            }
+          }
+          return;
+        }
+
+        applyingRemoteState = true;
+        board = data.board || createInitialOnlineBoard();
+        turn = Number(data.turn || 1);
+        selectedSquare = null;
+        validMoves = [];
+        document.getElementById('p1Name').textContent = data.hostName || 'Host';
+        document.getElementById('p2Name').textContent = data.guestName || 'Guest';
+        renderBoard();
+        updateTurnCards();
+        applyingRemoteState = false;
+      };
+
+      onlineRoomRef.on('value', onlineRoomListener);
+    }
+
+    function leaveOnlineRoom(markClosed=true) {
+      if (onlineRoomRef && onlineRoomListener) onlineRoomRef.off('value', onlineRoomListener);
+      if (markClosed && onlineRoomRef) {
+        onlineRoomRef.update({
+          status: 'closed',
+          closedBy: fbUser ? fbUser.uid : null
+        }).catch(() => {});
+      }
+      onlineRoomRef = null; onlineRoomListener = null; onlineRoomId = null; onlineRole = null;
+      document.getElementById('arenaView').style.display = 'none';
+      document.getElementById('lobbyView').style.display = 'flex';
+      document.getElementById('gameOverModal').classList.remove('active');
+    }
+
+    /* OVERRIDDEN MOVE & CLICK HANDLERS FOR ONLINE */
+    const originalHandleSquareClick = handleSquareClick;
+    handleSquareClick = function(r, c) {
+      if (onlineRoomId && turn !== (onlineRole === 'host' ? 1 : -1)) return;
+      return originalHandleSquareClick(r, c);
+    };
+
+    const originalExecuteMove = executeMove;
+    executeMove = function(move) {
+      if (onlineRoomId && (applyingRemoteState || turn !== (onlineRole === 'host' ? 1 : -1))) return;
+      originalExecuteMove(move);
+      if (onlineRoomId && onlineRoomRef && !applyingRemoteState) {
+        onlineRoomRef.update({
+          board: board,
+          turn: turn,
+          updatedAt: firebase.database.ServerValue.TIMESTAMP
+        });
+      }
+    };
+
+    /* MID-GAME CLOSE ICON & SURRENDER ACTION */
+    function handleMidGameClose() {
+      if (!confirm('ඔබට මෙම තරඟයෙන් ඉවත් වීමට අවශ්‍යද? (ඉවත් වුවහොත් විරුද්ධවාදියා ජයග්‍රහණය කරයි)')) return;
+
+      if (onlineRoomId) {
+        // Award auto-win to opponent in online room
+        const winnerUid = onlineRole === 'host' ? onlineRoomRef.parent.child('guestUid') : onlineRoomRef.parent.child('hostUid');
+        onlineRoomRef.update({
+          status: 'finished',
+          winnerUid: (onlineRole === 'host') ? 'guest' : 'host',
+          closedBy: fbUser.uid
+        });
+        triggerGameOver(-1, 'ඔබ තරඟයෙන් ඉවත් වූ නිසා පරාජය හිමිවිය.');
+      } else {
+        triggerGameOver(-1, 'ඔබ තරඟයෙන් ඉවත් විය.');
+      }
+    }
+
+    /* INITIALIZATION & UI LISTENERS */
     document.addEventListener('DOMContentLoaded', () => {
       loadUserData();
+      initializeFirebaseAndProfile();
 
-      // Navigation Mode Selection
+      // Board Close Button Click
+      document.getElementById('boardCloseBtn').addEventListener('click', handleMidGameClose);
+
+      // Modes
       document.getElementById('singlePlayerBtn').addEventListener('click', () => {
         isSinglePlayer = true;
         document.getElementById('p2Name').innerText = 'AI පරිගණකය';
@@ -1626,21 +1479,16 @@
       });
 
       document.getElementById('multiplayerBtn').addEventListener('click', () => {
+        renderRecentOpponents();
         document.getElementById('multiplayerModal').classList.add('active');
       });
 
       document.getElementById('homeBtn').addEventListener('click', () => {
-        document.getElementById('arenaView').style.display = 'none';
-        document.getElementById('lobbyView').style.display = 'flex';
-      });
-
-      // 3D View Toggle
-      let is3D = true;
-      document.getElementById('toggle3dBtn').addEventListener('click', () => {
-        is3D = !is3D;
-        const wrapper = document.getElementById('boardWrapper');
-        if (is3D) wrapper.classList.remove('flat-view');
-        else wrapper.classList.add('flat-view');
+        if (onlineRoomId) leaveOnlineRoom(true);
+        else {
+          document.getElementById('arenaView').style.display = 'none';
+          document.getElementById('lobbyView').style.display = 'flex';
+        }
       });
 
       // Sound Toggle
@@ -1649,18 +1497,12 @@
         e.currentTarget.innerHTML = soundEnabled ? '<i class="fa-solid fa-volume-high"></i>' : '<i class="fa-solid fa-volume-xmark"></i>';
       });
 
-      // Profile Modal Open/Close
+      // Profile Modal
       document.getElementById('profileTriggerBtn').addEventListener('click', () => {
         document.getElementById('modalPlayerNameInput').value = userState.name;
         document.getElementById('modalPoints').innerText = userState.points;
         document.getElementById('modalWins').innerText = userState.wins;
         document.getElementById('modalLosses').innerText = userState.losses;
-
-        const modalAvatar = document.getElementById('modalAvatarDisplay');
-        if (userState.avatarData) {
-          modalAvatar.innerHTML = `<img src="${userState.avatarData}" alt="Avatar">`;
-        }
-        checkBonusTimer();
         document.getElementById('profileModal').classList.add('active');
       });
 
@@ -1672,21 +1514,6 @@
         document.getElementById('multiplayerModal').classList.remove('active');
       });
 
-      // Profile Photo Upload & Frame Update
-      document.getElementById('photoUploadInput').addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = function(evt) {
-            userState.avatarData = evt.target.result;
-            document.getElementById('modalAvatarDisplay').innerHTML = `<img src="${evt.target.result}" alt="Avatar">`;
-            saveUserData();
-          };
-          reader.readAsDataURL(file);
-        }
-      });
-
-      // Save Profile
       document.getElementById('saveProfileBtn').addEventListener('click', () => {
         const newName = document.getElementById('modalPlayerNameInput').value.trim();
         if (newName) userState.name = newName;
@@ -1694,538 +1521,71 @@
         document.getElementById('profileModal').classList.remove('active');
       });
 
-      // Logout
-      document.getElementById('logoutBtn').addEventListener('click', () => {
-        if (confirm('ඔබට පද්ධතියෙන් Logout වීමට අවශ්‍යද?')) {
-          localStorage.removeItem(STORAGE_KEY);
-          location.reload();
+      // Surrender Button
+      document.getElementById('surrenderBtn').addEventListener('click', handleMidGameClose);
+
+      // Rematch Button Logic
+      document.getElementById('rematchBtn').addEventListener('click', () => {
+        if (onlineRoomId) {
+          const updateObj = {};
+          if (onlineRole === 'host') updateObj['rematch/host'] = true;
+          else updateObj['rematch/guest'] = true;
+          onlineRoomRef.update(updateObj);
+        } else {
+          // Single player restart
+          document.getElementById('gameOverModal').classList.remove('active');
+          initBoard();
         }
       });
 
-      // Play Again
-      document.getElementById('playAgainBtn').addEventListener('click', () => {
-        document.getElementById('gameOverModal').classList.remove('active');
-        initBoard();
+      // Exit Button Logic
+      document.getElementById('exitGameBtn').addEventListener('click', () => {
+        leaveOnlineRoom(true);
       });
 
-      // Surrender
-      document.getElementById('surrenderBtn').addEventListener('click', () => {
-        if (confirm('ඔබ තරඟයෙන් ඉවත් වීමට කැමතිද?')) {
-          triggerGameOver(-1, 'ඔබ තරඟයෙන් ඉවත් විය.');
-        }
-      });
-
-      // Mock Search User
-      document.getElementById('searchUserBtn').addEventListener('click', () => {
-        const query = document.getElementById('searchUserInput').value.trim();
+      // Search Users
+      document.getElementById('searchUserBtn').addEventListener('click', async () => {
+        const query = document.getElementById('searchUserInput').value.trim().toLocaleLowerCase();
         const list = document.getElementById('searchResultsList');
         if (!query) return;
+        list.textContent = 'සොයමින්...';
 
-        list.innerHTML = `
-          <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 8px;">
-            <div>
-              <div style="font-weight: 700;">${query}</div>
-              <div style="font-size: 0.75rem; color: #2ecc71;">Online</div>
-            </div>
-            <button class="btn-gold" style="width: auto; padding: 4px 12px; font-size: 0.85rem;" onclick="inviteUser('${query}')">Invite යවන්න</button>
-          </div>
-        `;
-      });
-    });
-
-    function inviteUser(name) {
-      alert(`${name} වෙත Invite පණිවිඩය යවන ලදී! ඔහු එය Accept කළ පසු තරඟය ආරම්භ වේ.`);
-      document.getElementById('multiplayerModal').classList.remove('active');
-      isSinglePlayer = false;
-      document.getElementById('p2Name').innerText = name;
-      document.getElementById('lobbyView').style.display = 'none';
-      document.getElementById('arenaView').style.display = 'grid';
-      initBoard();
-    }
-  </script>
-
-  <!-- FIRST ENTRY / PROFILE CREATION -->
-  <div class="modal-overlay active" id="firstEntryModal" style="z-index:10000;">
-    <div class="modal-box" style="max-width:430px;text-align:center;">
-      <div style="font-size:3rem;color:var(--gold-accent);margin-bottom:8px;"><i class="fa-solid fa-chess-knight"></i></div>
-      <h2 style="color:var(--gold-accent);">ඔබගේ ක්‍රීඩක Profile එක සාදන්න</h2>
-      <p style="color:var(--text-dim);margin:10px 0 18px;">ක්‍රීඩාවට පිවිසීමට ඔබ භාවිතා කරන නම ඇතුළත් කරන්න. මෙම නම ඔබගේ Online Profile එකටත් භාවිතා වේ.</p>
-      <div class="input-group" style="text-align:left;">
-        <label for="firstEntryName">ක්‍රීඩක නම</label>
-        <input id="firstEntryName" class="custom-input" maxlength="24" autocomplete="nickname" placeholder="ඔබගේ නම ඇතුළත් කරන්න">
-      </div>
-      <div id="firebaseSetupNotice" style="font-size:.82rem;color:#f6c453;margin:8px 0;">Online සේවාව සම්බන්ධ වෙමින් පවතී...</div>
-      <button class="btn-gold" id="createProfileBtn" style="width:100%;"><i class="fa-solid fa-user-plus"></i> Profile සාදා ඇතුළු වන්න</button>
-      <div id="entryError" style="color:#ff7777;font-size:.85rem;margin-top:10px;"></div>
-    </div>
-  </div>
-
-  <div id="onlineStatusPill" style="position:fixed;bottom:12px;right:12px;z-index:5000;background:#101923;border:1px solid #34495e;border-radius:30px;padding:6px 12px;font-size:12px;color:#f6c453;display:none;">
-    <i class="fa-solid fa-circle"></i> <span id="onlineStatusText">Connecting...</span>
-  </div>
-
-  <script>
-  /* ==========================================================
-     FIREBASE ONLINE PROFILE + REALTIME MULTIPLAYER
-     Firebase project Web App configuration is configured below.
-     Anonymous Authentication and Realtime Database must be enabled.
-  ========================================================== */
-  const firebaseConfig = {
-    apiKey: "AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",
-    authDomain: "bin-card-42614.firebaseapp.com",
-    databaseURL: "https://bin-card-42614-default-rtdb.firebaseio.com",
-    projectId: "bin-card-42614",
-    storageBucket: "bin-card-42614.firebasestorage.app",
-    messagingSenderId: "1063550230753",
-    appId: "1:1063550230753:web:1ad8306405e709ac5b17a0",
-    measurementId: "G-CSKQECBGL7"
-  };
-
-  let fbAuth = null, fbDb = null, fbUser = null;
-  // Wait for the initial Firebase sign-in before processing a fast profile tap.
-  let firebaseInitPromise = null;
-  let onlineRoomId = null, onlineRoomRef = null, onlineRoomListener = null, onlineRoomData = null;
-  let onlineRole = null, applyingRemoteState = false, profileReady = false;
-  let processedFinishedRoomId = null;
-  let activeInviteListener = null;
-
-  const entryModal = document.getElementById('firstEntryModal');
-  const entryError = document.getElementById('entryError');
-  const entryNotice = document.getElementById('firebaseSetupNotice');
-  const onlinePill = document.getElementById('onlineStatusPill');
-  const onlineStatusText = document.getElementById('onlineStatusText');
-
-  function setOnlineStatus(message, good=false) {
-    onlinePill.style.display = 'block';
-    onlineStatusText.textContent = message;
-    onlinePill.style.color = good ? '#4ade80' : '#f6c453';
-  }
-  function firebaseConfigured() {
-    return Boolean(firebaseConfig.apiKey && firebaseConfig.projectId &&
-      firebaseConfig.databaseURL && firebaseConfig.authDomain);
-  }
-  function showEntryError(message) { entryError.textContent = message; }
-
-  async function initializeFirebaseAndProfile() {
-    if (!firebaseConfigured()) {
-      entryNotice.textContent = 'Firebase Config එක තවම ඇතුළත් කර නැත. Online Play සක්‍රිය කිරීමට පහත උපදෙස් අනුව Config එක යොදන්න.';
-      setOnlineStatus('Firebase setup required');
-      return;
-    }
-    try {
-      if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-      fbAuth = firebase.auth();
-      fbDb = firebase.database();
-      const credential = fbAuth.currentUser
-        ? { user: fbAuth.currentUser }
-        : await fbAuth.signInAnonymously();
-      fbUser = credential.user;
-      entryNotice.textContent = 'Firebase සම්බන්ධතාව සාර්ථකයි. ඔබගේ නම ඇතුළත් කරන්න.';
-      setOnlineStatus('Firebase Connected', true);
-
-      const savedProfile = await fbDb.ref('users/' + fbUser.uid).once('value');
-      const cloudProfile = savedProfile.val();
-      if (cloudProfile && cloudProfile.name) {
-        userState = {...userState, ...cloudProfile, uid: fbUser.uid};
-        saveUserDataLocalOnly();
-        completeProfileEntry();
-      } else {
-        const local = localStorage.getItem(STORAGE_KEY);
-        if (local) {
-          try {
-            const parsed = JSON.parse(local);
-            if (parsed.name && parsed.name !== 'ක්‍රීඩකයා 1') document.getElementById('firstEntryName').value = parsed.name;
-          } catch(e) {}
-        }
-      }
-      await startPresence();
-      listenForInvites();
-    } catch (error) {
-      console.error('Firebase initialization failed:', error);
-      entryNotice.textContent = 'Firebase සම්බන්ධ වීමට නොහැකි විය.';
-      showEntryError(firebaseErrorMessage(error));
-      setOnlineStatus('Connection failed');
-    }
-  }
-
-  function firebaseErrorMessage(error) {
-    if (error && error.code === 'auth/operation-not-allowed') return 'Firebase Console → Authentication → Sign-in method තුළ Anonymous සක්‍රිය කරන්න.';
-    if (error && (error.code === 'PERMISSION_DENIED' || error.code === 'database/permission-denied')) {
-      return 'Realtime Database Rules පරීක්ෂා කරන්න. users, rooms සහ invites සඳහා අවසර තිබිය යුතුයි.';
-    }
-    if (error && error.code === 'auth/network-request-failed') return 'Internet සම්බන්ධතාව පරීක්ෂා කර නැවත උත්සාහ කරන්න.';
-    if (error && error.code === 'auth/invalid-api-key') return 'Firebase API Key එක වැරදියි. Firebase Config පරීක්ෂා කරන්න.';
-    return (error && error.message) ? error.message : 'නැවත උත්සාහ කරන්න.';
-  }
-  function saveUserDataLocalOnly() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(userState));
-    updateUIHeader();
-  }
-  async function saveCloudProfile() {
-    if (!fbDb || !fbUser) return;
-    const profile = {
-      uid: fbUser.uid, name: userState.name,
-      nameLower: userState.name.toLocaleLowerCase(),
-      points: userState.points, wins: userState.wins, losses: userState.losses,
-      avatarData: userState.avatarData || null,
-      online: true, lastSeen: firebase.database.ServerValue.TIMESTAMP
-    };
-    await fbDb.ref('users/' + fbUser.uid).update(profile);
-    await fbDb.ref('publicProfiles/' + fbUser.uid).update({
-      uid: fbUser.uid,
-      name: userState.name,
-      nameLower: userState.name.toLocaleLowerCase(),
-      online: true,
-      lastSeen: firebase.database.ServerValue.TIMESTAMP
-    });
-  }
-  function completeProfileEntry() {
-    profileReady = true;
-    entryModal.classList.remove('active');
-    updateUIHeader();
-    saveUserDataLocalOnly();
-    if (fbDb && fbUser) saveCloudProfile().catch(e => console.error(e));
-  }
-  document.getElementById('createProfileBtn').addEventListener('click', async () => {
-    const createButton = document.getElementById('createProfileBtn');
-    const originalButtonHtml = createButton.innerHTML;
-    createButton.disabled = true;
-    createButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> සම්බන්ධ වෙමින්...';
-    try {
-    // On slower mobile connections, do not treat sign-in still in progress as failure.
-    if (!fbUser && firebaseInitPromise) await firebaseInitPromise;
-
-    const name = document.getElementById('firstEntryName').value.trim().replace(/\s+/g,' ');
-    if (name.length < 2 || name.length > 24) {
-      showEntryError('නම අකුරු 2ත් 24ත් අතර විය යුතුයි.');
-      return;
-    }
-    if (!fbUser) {
-      showEntryError('Online Profile එකක් සෑදීමට Firebase සම්බන්ධතාව අවශ්‍යයි. Firebase Config සකස් කර නැවත උත්සාහ කරන්න.');
-      return;
-    }
-    userState.name = name;
-    userState.uid = fbUser.uid;
-    try {
-      const existing = await fbDb.ref('publicProfiles').orderByChild('nameLower').equalTo(name.toLocaleLowerCase()).once('value');
-      let duplicate = false;
-      existing.forEach(child => { if (child.key !== fbUser.uid) duplicate = true; });
-      if (duplicate) { showEntryError('මෙම නම දැනටමත් භාවිතා වේ. වෙනත් නමක් තෝරන්න.'); return; }
-      await saveCloudProfile();
-      completeProfileEntry();
-    } catch(e) {
-      showEntryError(firebaseErrorMessage(e));
-    } finally {
-      createButton.disabled = false;
-      createButton.innerHTML = originalButtonHtml;
-    }
-    } catch(e) {
-      showEntryError(firebaseErrorMessage(e));
-    } finally {
-      createButton.disabled = false;
-      createButton.innerHTML = originalButtonHtml;
-    }
-  });
-  document.getElementById('firstEntryName').addEventListener('keydown', e => {
-    if (e.key === 'Enter') document.getElementById('createProfileBtn').click();
-  });
-
-  async function startPresence() {
-    if (!fbDb || !fbUser) return;
-    const ref = fbDb.ref('publicProfiles/' + fbUser.uid);
-    await ref.child('online').onDisconnect().set(false);
-    await ref.update({online:true, lastSeen:firebase.database.ServerValue.TIMESTAMP});
-  }
-  function listenForInvites() {
-    if (!fbDb || !fbUser) return;
-    const inviteRef = fbDb.ref('invites/' + fbUser.uid);
-    if (activeInviteListener) inviteRef.off('child_added', activeInviteListener);
-    activeInviteListener = snap => {
-      const invite = snap.val();
-      if (!invite || invite.status !== 'pending') return;
-      const accept = confirm((invite.fromName || 'යහළුවෙක්') + ' ඔබට Online දාම් තරඟයකට ආරාධනා කර ඇත. Accept කරනවාද?');
-      if (accept) acceptOnlineInvite(snap.key, invite);
-      else snap.ref.update({status:'declined'});
-    };
-    inviteRef.on('child_added', activeInviteListener);
-  }
-  async function acceptOnlineInvite(inviteKey, invite) {
-    try {
-      await fbDb.ref('invites/' + fbUser.uid + '/' + inviteKey).update({status:'accepted'});
-      await joinOnlineRoom(invite.roomId, 'guest');
-    } catch(e) { alert(firebaseErrorMessage(e)); }
-  }
-
-  // Replace the old demo search with a real Firebase user search.
-  document.getElementById('searchUserBtn').addEventListener('click', async () => {
-    const query = document.getElementById('searchUserInput').value.trim().toLocaleLowerCase();
-    const list = document.getElementById('searchResultsList');
-    if (!query) return;
-    if (!fbDb || !fbUser) { list.textContent = 'Firebase සම්බන්ධ වී නැත.'; return; }
-    list.textContent = 'සොයමින්...';
-    try {
-      const snap = await fbDb.ref('publicProfiles').once('value');
-      const matches = [];
-      snap.forEach(child => {
-        const u = child.val();
-        if (child.key !== fbUser.uid && u && u.online === true && u.nameLower && u.nameLower.includes(query)) matches.push(u);
-      });
-      list.innerHTML = '';
-      if (!matches.length) {
-        list.textContent = 'එම නමට ගැළපෙන Online ක්‍රීඩකයෙකු හමු නොවීය.';
-        return;
-      }
-      matches.slice(0,10).forEach(u => {
-        const row = document.createElement('div');
-        row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;gap:8px;background:rgba(255,255,255,.06);padding:10px;border-radius:9px;';
-        const info = document.createElement('div');
-        info.innerHTML = '<b></b><div style="font-size:.75rem;color:#4ade80">● Online</div>';
-        info.querySelector('b').textContent = u.name;
-        const btn = document.createElement('button');
-        btn.className = 'btn-gold'; btn.style.cssText = 'width:auto;padding:6px 12px;';
-        btn.textContent = 'Invite';
-        btn.addEventListener('click', () => sendOnlineInvite(u));
-        row.append(info,btn); list.appendChild(row);
-      });
-    } catch(e) { list.textContent = firebaseErrorMessage(e); }
-  });
-
-  async function sendOnlineInvite(opponent) {
-    try {
-      const roomId = fbDb.ref('rooms').push().key;
-      const initialBoard = createInitialOnlineBoard();
-      const room = {
-        status:'playing', hostUid:fbUser.uid, guestUid:opponent.uid,
-        hostName:userState.name, guestName:opponent.name,
-        board:initialBoard, turn:1, createdAt:firebase.database.ServerValue.TIMESTAMP,
-        updatedAt:firebase.database.ServerValue.TIMESTAMP
-      };
-      await fbDb.ref('rooms/' + roomId).set(room);
-      await fbDb.ref('invites/' + opponent.uid).push().set({
-        roomId, fromUid:fbUser.uid, fromName:userState.name,
-        status:'pending', createdAt:firebase.database.ServerValue.TIMESTAMP
-      });
-      document.getElementById('multiplayerModal').classList.remove('active');
-      await joinOnlineRoom(roomId, 'host');
-    } catch(e) { alert(firebaseErrorMessage(e)); }
-  }
-  function createInitialOnlineBoard() {
-    const b = Array.from({length:8},()=>Array(8).fill(0));
-    for(let r=0;r<8;r++) for(let c=0;c<8;c++) if((r+c)%2===1) {
-      if(r<3)b[r][c]=-1; else if(r>4)b[r][c]=1;
-    }
-    return b;
-  }
-  async function joinOnlineRoom(roomId, role) {
-    if (!fbDb || !fbUser || !roomId) throw new Error('Firebase room details missing.');
-    onlineRoomId = roomId;
-    onlineRole = role;
-    onlineRoomData = null;
-    processedFinishedRoomId = null;
-    isSinglePlayer = false;
-
-    document.getElementById('multiplayerModal').classList.remove('active');
-    document.getElementById('lobbyView').style.display = 'none';
-    document.getElementById('arenaView').style.display = 'grid';
-    document.getElementById('p1Name').textContent = role === 'host' ? userState.name : 'විරුද්ධවාදියා';
-    document.getElementById('p2Name').textContent = role === 'host' ? 'විරුද්ධවාදියා' : userState.name;
-
-    if (onlineRoomRef && onlineRoomListener) onlineRoomRef.off('value', onlineRoomListener);
-    onlineRoomRef = fbDb.ref('rooms/' + roomId);
-
-    onlineRoomListener = snap => {
-      const data = snap.val();
-      if (!data) {
-        setOnlineStatus('තරඟය අවසන් කර ඇත');
-        leaveOnlineRoom(false);
-        return;
-      }
-
-      onlineRoomData = data;
-      if (data.status === 'abandoned' || data.status === 'cancelled') {
-        setOnlineStatus('ප්‍රතිවාදියා තරඟයෙන් ඉවත් විය');
-        leaveOnlineRoom(false);
-        return;
-      }
-
-      if (data.status !== 'finished') {
-        processedFinishedRoomId = null;
-        if (data.status === 'playing') document.getElementById('gameOverModal').classList.remove('active');
-      }
-      if (data.status === 'finished') {
-        if (processedFinishedRoomId !== roomId) {
-          processedFinishedRoomId = roomId;
-          const localSide = role === 'host' ? 1 : -1;
-          let localWinner;
-          if (data.winnerUid) {
-            localWinner = data.winnerUid === fbUser.uid ? 1 : -1;
-          } else if (Number(data.winnerSide) === 1 || Number(data.winnerSide) === -1) {
-            localWinner = Number(data.winnerSide) === localSide ? 1 : -1;
-          } else {
-            localWinner = -1;
+        try {
+          const snap = await fbDb.ref('publicProfiles').once('value');
+          const matches = [];
+          snap.forEach(child => {
+            const u = child.val();
+            if (child.key !== fbUser.uid && u && u.name && u.name.toLowerCase().includes(query)) matches.push(u);
+          });
+          list.innerHTML = '';
+          if (!matches.length) {
+            list.textContent = 'එම නමට ගැළපෙන ක්‍රීඩකයෙකු හමු නොවීය.';
+            return;
           }
-          applyingRemoteState = true;
-          baseTriggerGameOver(localWinner, localWinner === 1
-            ? 'ඔබ තරඟය ජයග්‍රහණය කළා!'
-            : 'විරුද්ධවාදියා තරඟය ජයග්‍රහණය කළා!');
-          applyingRemoteState = false;
+          matches.forEach(u => {
+            const row = document.createElement('div');
+            row.className = 'opponent-item';
+            row.innerHTML = `
+              <span style="font-weight:600;">${u.name}</span>
+              <button class="btn-gold" style="width:auto; padding:4px 12px; font-size:0.85rem;">Invite</button>
+            `;
+            row.querySelector('button').onclick = () => sendOnlineInvite({ uid: u.uid, name: u.name });
+            list.appendChild(row);
+          });
+        } catch(e) { list.textContent = 'Search කිරීමට නොහැකි විය.'; }
+      });
+
+      // Profile creation initial dialog
+      document.getElementById('createProfileBtn').addEventListener('click', () => {
+        const val = document.getElementById('firstEntryName').value.trim();
+        if (val) {
+          userState.name = val;
+          saveUserData();
+          document.getElementById('firstEntryModal').classList.remove('active');
         }
-        setOnlineStatus('තරඟය අවසන්');
-        return;
-      }
-
-      applyingRemoteState = true;
-      board = data.board || createInitialOnlineBoard();
-      turn = Number(data.turn || 1);
-      selectedSquare = null;
-      validMoves = [];
-      // Board side +1 is always Host and -1 is always Guest.
-      document.getElementById('p1Name').textContent = data.hostName || 'Host';
-      document.getElementById('p2Name').textContent = data.guestName || 'Guest';
-      renderBoard();
-      updateTurnCards();
-      applyingRemoteState = false;
-      setOnlineStatus(turn === (role === 'host' ? 1 : -1) ? 'ඔබගේ වාරය' : 'ප්‍රතිවාදියාගේ වාරය', true);
-    };
-
-    onlineRoomRef.on('value', onlineRoomListener, error => {
-      console.error('Room listener:', error);
-      setOnlineStatus(firebaseErrorMessage(error));
+      });
     });
-    setOnlineStatus('Online Match Connected', true);
-  }
-  function leaveOnlineRoom(markFinished=true) {
-    if (onlineRoomRef && onlineRoomListener) onlineRoomRef.off('value', onlineRoomListener);
-    if (markFinished && onlineRoomRef) {
-      onlineRoomRef.update({
-        status:'abandoned',
-        endedBy:fbUser ? fbUser.uid : null,
-        updatedAt:firebase.database.ServerValue.TIMESTAMP
-      }).catch(e => console.warn('Could not close room:', e));
-    }
-    onlineRoomRef = null; onlineRoomListener = null; onlineRoomId = null; onlineRole = null; onlineRoomData = null;
-    document.getElementById('arenaView').style.display = 'none';
-    document.getElementById('lobbyView').style.display = 'flex';
-  }
-
-  // Enforce whose turn it is and publish each completed move to Firebase.
-  const originalHandleSquareClick = handleSquareClick;
-  handleSquareClick = function(r,c) {
-    if (onlineRoomId && turn !== (onlineRole === 'host' ? 1 : -1)) return;
-    return originalHandleSquareClick(r,c);
-  };
-  const originalExecuteMove = executeMove;
-  executeMove = function(move) {
-    if (onlineRoomId && (applyingRemoteState || turn !== (onlineRole === 'host' ? 1 : -1))) return;
-    originalExecuteMove(move);
-    if (onlineRoomId && onlineRoomRef && !applyingRemoteState) {
-      onlineRoomRef.update({
-        board:board, turn:turn,
-        updatedAt:firebase.database.ServerValue.TIMESTAMP
-      }).catch(e => { console.error(e); alert('Move එක Online සුරැකීමට නොහැකි විය.'); });
-    }
-  };
-
-  // Keep cloud profile stats synchronized after existing game/profile saves.
-  const oldSaveUserData = saveUserData;
-  saveUserData = function() {
-    oldSaveUserData();
-    if (fbDb && fbUser) saveCloudProfile().catch(e => console.error('Profile sync:',e));
-  };
-  // Keep profile name changes unique and reflected in Firebase.
-  const oldSaveProfileHandler = document.getElementById('saveProfileBtn').onclick;
-  document.getElementById('saveProfileBtn').addEventListener('click', async () => {
-    if (!fbDb || !fbUser) return;
-    const newName = document.getElementById('modalPlayerNameInput').value.trim().replace(/\s+/g,' ');
-    if (newName.length < 2 || newName.length > 24) return;
-    try {
-      const snap = await fbDb.ref('publicProfiles').orderByChild('nameLower').equalTo(newName.toLocaleLowerCase()).once('value');
-      let duplicate=false; snap.forEach(ch=>{if(ch.key!==fbUser.uid)duplicate=true;});
-      if(duplicate){alert('මෙම නම වෙනත් ක්‍රීඩකයෙකු භාවිතා කරයි.');return;}
-      userState.name=newName; await saveCloudProfile(); updateUIHeader();
-    } catch(e){alert(firebaseErrorMessage(e));}
-  });
-  // Complete logout before the older UI handler can reload the page.
-  document.addEventListener('click', async e => {
-    if (!e.target.closest('#logoutBtn')) return;
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    if (!confirm('ඔබට පද්ධතියෙන් Logout වීමට අවශ්‍යද?')) return;
-    try {
-      if (onlineRoomId) leaveOnlineRoom(true);
-      if (fbDb && fbUser) await fbDb.ref('publicProfiles/' + fbUser.uid).update({online:false});
-      if (fbAuth) await fbAuth.signOut();
-      localStorage.removeItem(STORAGE_KEY);
-      location.reload();
-    } catch(err) {
-      alert(firebaseErrorMessage(err));
-    }
-  }, true);
-
-
-  // Online match navigation, result synchronization and rematch handling.
-  document.getElementById('homeBtn').addEventListener('click', () => {
-    if (onlineRoomId) leaveOnlineRoom(true);
-  }, true);
-
-  const baseTriggerGameOver = triggerGameOver;
-  triggerGameOver = function(winner, message) {
-    if (!onlineRoomId || applyingRemoteState) return baseTriggerGameOver(winner, message);
-
-    const roomIdAtFinish = onlineRoomId;
-    const localWinner = (onlineRole === 'host') ? winner : -winner;
-    const winnerUid = winner === 1
-      ? (onlineRoomData && onlineRoomData.hostUid ? onlineRoomData.hostUid : (onlineRole === 'host' ? fbUser.uid : null))
-      : (onlineRoomData && onlineRoomData.guestUid ? onlineRoomData.guestUid : (onlineRole === 'guest' ? fbUser.uid : null));
-
-    // Prevent the local room listener from awarding points a second time.
-    processedFinishedRoomId = roomIdAtFinish;
-    applyingRemoteState = true;
-    baseTriggerGameOver(localWinner, message);
-    applyingRemoteState = false;
-
-    if (onlineRoomRef) onlineRoomRef.update({
-      status:'finished',
-      winnerSide:winner,
-      winnerUid:winnerUid,
-      resultMessage:message,
-      board:board,
-      turn:turn,
-      updatedAt:firebase.database.ServerValue.TIMESTAMP
-    }).catch(e => console.error('Result sync:',e));
-  };
-
-  // The original surrender handler assumes the local player is side +1.
-  // Correct that mapping for the Guest player.
-  document.addEventListener('click', e => {
-    if (!e.target.closest('#surrenderBtn') || !onlineRoomId) return;
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    if (confirm('ඔබ තරඟයෙන් ඉවත් වීමට කැමතිද?')) {
-      triggerGameOver(onlineRole === 'host' ? -1 : 1, 'ක්‍රීඩකයා තරඟයෙන් ඉවත් විය.');
-    }
-  }, true);
-
-  document.addEventListener('click', async e => {
-    if (e.target.closest('#playAgainBtn') && onlineRoomId) {
-      e.preventDefault(); e.stopImmediatePropagation();
-      if (onlineRole !== 'host') { alert('නව තරඟයක් ආරම්භ කිරීමට Host ක්‍රීඩකයාට ඉඩ දෙන්න.'); return; }
-      try {
-        await onlineRoomRef.update({status:'playing',board:createInitialOnlineBoard(),turn:1,winnerUid:null,resultMessage:null,updatedAt:firebase.database.ServerValue.TIMESTAMP});
-        document.getElementById('gameOverModal').classList.remove('active');
-      } catch(err) { alert(firebaseErrorMessage(err)); }
-    }
-  }, true);
-
-  // Start Firebase only after the original page's DOM handlers have initialized.
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      firebaseInitPromise = initializeFirebaseAndProfile();
-    }, { once: true });
-  } else {
-    firebaseInitPromise = initializeFirebaseAndProfile();
-  }
   </script>
-
 </body>
 </html>
+```
