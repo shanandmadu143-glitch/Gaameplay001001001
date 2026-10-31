@@ -462,7 +462,7 @@
 
   <script>
     /* LOCAL STORAGE & STATE MANAGEMENT */
-    const STORAGE_KEY = 'sinhala_draughts_v3_user';
+    const STORAGE_KEY = 'sinhala_draughts_v4_user';
     let userState = { name: '', points: 500, wins: 0, losses: 0 };
 
     function showToast(msg) {
@@ -472,7 +472,7 @@
       setTimeout(() => toast.classList.remove('show'), 3000);
     }
 
-    /* FIREBASE CONFIGURATION */
+    /* FIREBASE INITIALIZATION WITH ANONYMOUS AUTH */
     const firebaseConfig = {
       apiKey: "AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",
       authDomain: "bin-card-42614.firebaseapp.com",
@@ -484,7 +484,11 @@
     };
 
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const fbAuth = firebase.auth();
     const fbDb = firebase.database();
+
+    // Authenticate anonymously to satisfy Firebase Security Rules
+    fbAuth.signInAnonymously().catch(err => console.error("Firebase Auth Error: ", err));
 
     /* AUTHENTICATION SYSTEM (UNIQUE USERNAME & PASSWORD) */
     document.getElementById('loginBtn').addEventListener('click', async () => {
@@ -496,7 +500,9 @@
         return;
       }
 
-      const userRef = fbDb.ref('users_v3/' + username.toLowerCase());
+      const cleanUsername = username.toLowerCase();
+      const userRef = fbDb.ref('users_v4/' + cleanUsername);
+
       try {
         const snap = await userRef.once('value');
         if (snap.exists()) {
@@ -511,7 +517,7 @@
             showToast('මෙම නම දැනටමත් භාවිතා වේ! මුරපදය වැරදියි.');
           }
         } else {
-          // Register New User
+          // Register New Unique User
           userState = { name: username, password: password, points: 500, wins: 0, losses: 0 };
           await userRef.set(userState);
           saveUserDataLocal();
@@ -520,14 +526,14 @@
           updateUIHeader();
         }
       } catch (err) {
-        showToast('සම්බන්ධතාවයේ දෝෂයකි. නැවත උත්සාහ කරන්න.');
+        showToast('Firebase සම්බන්ධතාවයේ දෝෂයකි. නැවත උත්සාහ කරන්න.');
       }
     });
 
     function saveUserDataLocal() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(userState));
       if (userState.name) {
-        fbDb.ref('users_v3/' + userState.name.toLowerCase()).update(userState);
+        fbDb.ref('users_v4/' + userState.name.toLowerCase()).update(userState);
       }
     }
 
@@ -759,7 +765,7 @@
       location.reload();
     });
 
-    // Auto Load Local User Data
+    // Auto Load Local Saved User Data
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       userState = JSON.parse(saved);
