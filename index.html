@@ -404,11 +404,10 @@ function finish(winner,message){
  $('overTitle').style.color=won?'var(--green)':'var(--red)';
  $('overMessage').textContent=message;
  $('overPoints').textContent=won?'+10 Points':'-10 Points';
- $('rematchStatus').textContent=single?'':'Rematch සඳහා ඔබගේ කැමැත්ත ලබාදෙන්න.';
  modal('overModal',true);
 }
 
-async function publishFinish(winner,message){if(!roomRef)return;try{await roomRef.transaction(d=>{if(!d||d.status!=='playing')return;d.status='finished';d.winner=winner;d.message=message;d.finishedAt=Date.now();d.rematchVotes={};return d})}catch(e){}}
+async function publishFinish(winner,message){if(!roomRef)return;try{await roomRef.transaction(d=>{if(!d||d.status!=='playing')return;d.status='finished';d.winner=winner;d.message=message;d.finishedAt=Date.now();d.rematchRequestedBy=null;return d})}catch(e){}}
 
 function listenRoom(){
  if(roomRef&&roomCb)roomRef.off('value',roomCb);
@@ -425,6 +424,7 @@ function listenRoom(){
    return;
   }
   if(d.status==='playing'){
+   modal('overModal',false); // Modal වසන්න
    window.currentGameId=d.gameId||1;
    board=d.board.map(row=>row.slice());
    turn=d.turn;gameOver=false;processing=false;selected=null;moves=[];missedCapture=null;
@@ -452,8 +452,37 @@ function listenRoom(){
     $('overPoints').textContent=localWin?'+10 Points':'-10 Points';
     modal('overModal',true);
    }
-   const votes=d.rematchVotes||{};
-   $('rematchStatus').textContent=(votes.host?'Host කැමතියි. ':'Host බලාපොරොත්තුවෙන්. ')+(votes.guest?'Guest කැමතියි.':'Guest බලාපොරොත්තුවෙන්.');
+
+   // Rematch Logic - පරාජිතයාට පමණක් ඉල්ලිය හැක, ජයග්‍රාහකයාට පිළිගත හැක
+   const rematchBtn=$('rematch');
+   if(single){
+    rematchBtn.style.display='block';
+    rematchBtn.textContent='නැවත ක්‍රීඩා කරන්න';
+    rematchBtn.disabled=false;
+    $('rematchStatus').textContent='';
+   }else{
+    const requestedBy=d.rematchRequestedBy;
+    if(!requestedBy){
+     if(localWin){
+      rematchBtn.style.display='none';
+      $('rematchStatus').textContent='පරාජිත ක්‍රීඩකයා Rematch ඉල්ලන තෙක් රැඳී සිටින්න...';
+     }else{
+      rematchBtn.style.display='block';
+      rematchBtn.textContent='Rematch ඉල්ලන්න';
+      rematchBtn.disabled=false;
+      $('rematchStatus').textContent='ඔබට Rematch එකක් ඉල්ලා සිටිය හැක.';
+     }
+    }else if(requestedBy===role){
+     rematchBtn.style.display='none';
+     $('rematchStatus').textContent='ඔබ Rematch ඉල්ලීමක් යවා ඇත. ප්‍රතිවාදියා පිළිගන්නා තෙක් රැඳී සිටින්න...';
+    }else{
+     // ජයග්‍රාහකයාට ප්‍රතිවාදියාගේ ඉල්ලීම පෙනේ
+     rematchBtn.style.display='block';
+     rematchBtn.textContent='Rematch පිළිගන්න (Accept)';
+     rematchBtn.disabled=false;
+     $('rematchStatus').textContent='ප්‍රතිවාදියා (පරාජිතයා) Rematch එකක් ඉල්ලා ඇත!';
+    }
+   }
   }
  });
 }
@@ -515,48 +544,23 @@ function listenInvites(){
  inviteRef=db.ref('invites_v6/'+fbUser.uid);
  inviteCb=inviteRef.on('child_added',async s=>{
   const v=s.val();if(!v||v.status!=='pending'||!v.roomId)return;
-  
-  // ආරාධනාව කල් ඉකුත් වීමේ කාලය මිනිත්තු 5ක් දක්වා වැඩි කරන ලදී (300000 ms)
-  if(Date.now()-(v.createdAt||Date.now())>300000){
-   await s.ref.update({status:'expired'});
-   return;
-  }
+  if(Date.now()-(v.createdAt||Date.now())>300000){await s.ref.update({status:'expired'});return}
   if(roomId)return;
   
   const ok=confirm((v.fromName||'යහළුවෙක්')+' ඔබට Online දාම් තරඟයකට ආරාධනා කරයි. පිළිගන්නවාද?');
-  if(!ok){
-   await s.ref.update({status:'declined',respondedAt:Date.now()});
-   toast('ආරාධනාව ප්‍රතික්ෂේප කළා.');
-   return;
-  }
+  if(!ok){await s.ref.update({status:'declined',respondedAt:Date.now()});toast('ආරාධනාව ප්‍රතික්ෂේප කළා.');return}
   
   try{
    const roomRefSnap=db.ref('rooms_v6/'+v.roomId);
    const roomSnap=await roomRefSnap.once('value');
-   if(!roomSnap.exists()){
-    toast('මෙම ආරාධනාව දැන් වලංගු නැත.');
-    await s.ref.update({status:'expired'});
-    return;
-   }
+   if(!roomSnap.exists()){toast('මෙම ආරාධනාව දැන් වලංගු නැත.');await s.ref.update({status:'expired'});return}
    
-   // Room එක එකවර status='playing' බවට පත් කිරීම
-   await roomRefSnap.update({
-    status:'playing',
-    startedAt:Date.now(),
-    turnStartedAt:Date.now(),
-    lastMoveAt:Date.now(),
-    turn:1,
-    forced:null
-   });
-   
+   await roomRefSnap.update({status:'playing',startedAt:Date.now(),turnStartedAt:Date.now(),lastMoveAt:Date.now(),turn:1,forced:null});
    await s.ref.update({status:'accepted',respondedAt:Date.now()});
    rememberOpponent(v.fromName,v.fromUid);
    enterRoom(v.roomId,'guest');
    toast('තරඟය සාර්ථකව ආරම්භ විය!');
-  }catch(e){
-   console.error(e);
-   toast('Invite පිළිගැනීමේ දෝෂයකි. නැවත උත්සාහ කරන්න.');
-  }
+  }catch(e){toast('Invite පිළිගැනීමේ දෝෂයකි.')}
  });
 }
 
@@ -596,22 +600,45 @@ $('forfeit').onclick=async()=>{
  else{const winner=role==='host'?-1:1;await publishFinish(winner,'ප්‍රතිවාදියා තරඟයෙන් ඉවත් විය.')}
 };
 
+// Rematch Button Click Handler
 $('rematch').onclick=async()=>{
  if(single){modal('overModal',false);initBoard();return}
  if(!roomRef)return;
  try{
-  await roomRef.transaction(d=>{
-   if(!d||d.status!=='finished')return;
-   d.rematchVotes=d.rematchVotes||{};d.rematchVotes[role]=true;
-   if(d.rematchVotes.host&&d.rematchVotes.guest){
-    d.status='playing';d.gameId=(d.gameId||1)+1;
-    d.board=Array.from({length:8},(_,r)=>Array.from({length:8},(_,c)=>(r+c)%2?(r<3?-1:r>4?1:0):0));
-    d.turn=1;d.startedAt=Date.now();d.turnStartedAt=Date.now();d.forced=null;d.rematchVotes={};d.winner=null;d.message=null;d.finishedAt=null;
-   }
-   return d;
-  });
-  toast('Rematch කැමැත්ත යැවීය.');
- }catch(e){toast('Rematch යැවීමට නොහැකි විය.')}
+  const snap=await roomRef.once('value');
+  const d=snap.val();
+  if(!d||d.status!=='finished')return;
+  const localWin=(d.winner===1&&role==='host')||(d.winner===-1&&role==='guest');
+  
+  if(!localWin&&!d.rematchRequestedBy){
+   // පරාජිතයා Rematch ඉල්ලීමක් යැවීම
+   await roomRef.transaction(room=>{
+    if(!room||room.status!=='finished')return;
+    room.rematchRequestedBy=role;
+    return room;
+   });
+   toast('Rematch ඉල්ලීම යවන ලදී. ප්‍රතිවාදියාගේ පිළිතුර බලාපොරොත්තු වන්න.');
+  }else if(localWin&&d.rematchRequestedBy&&d.rematchRequestedBy!==role){
+   // ජයග්‍රාහකයා Rematch එක Accept කිරීම -> තරඟය නැවත පටන් ගැනීම
+   await roomRef.transaction(room=>{
+    if(!room||room.status!=='finished')return;
+    room.status='playing';
+    room.gameId=(room.gameId||1)+1;
+    room.board=Array.from({length:8},(_,r)=>Array.from({length:8},(_,c)=>(r+c)%2?(r<3?-1:r>4?1:0):0));
+    room.turn=1;
+    room.startedAt=Date.now();
+    room.turnStartedAt=Date.now();
+    room.forced=null;
+    room.rematchRequestedBy=null;
+    room.winner=null;
+    room.message=null;
+    room.finishedAt=null;
+    return room;
+   });
+   modal('overModal',false);
+   toast('තරඟය නැවත ආරම්භ විය!');
+  }
+ }catch(e){toast('Rematch ක්‍රියාවලිය අසාර්ථක විය.')}
 };
 
 $('exit').onclick=()=>{modal('overModal',false);leaveRoom()};
