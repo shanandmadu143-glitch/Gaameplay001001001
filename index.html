@@ -6,18 +6,45 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Gemunu+Libre:wght@400;600;700;800&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#080b18;--panel:rgba(18,24,43,.96);--gold:#ffd166;--dim:#a0aec0;--red:#ff6b81;--green:#2ecc71;--blue:#4facfe}*{box-sizing:border-box;margin:0;padding:0;font-family:'Gemunu Libre','Poppins',sans-serif;user-select:none}html,body{width:100%;min-height:100%;background:radial-gradient(circle at 18% 18%,#3b2e2530,transparent 35%),linear-gradient(145deg,#080b18,#111a31 55%,#0a1022);color:#f8f9fa}body{min-height:100dvh}.app{min-height:100dvh;max-width:1100px;margin:auto;padding:10px;display:flex;flex-direction:column;gap:12px;position:relative}header,footer,.panel,.lobby,.side{background:var(--panel);border:1px solid #ffd16640;border-radius:15px;padding:10px 14px}header,footer{display:flex;align-items:center;justify-content:space-between;gap:10px}header{min-height:58px}.brand{font-size:1.25rem;color:var(--gold);font-weight:800}
+:root{--bg:#080b18;--panel:rgba(18,24,43,.96);--gold:#ffd166;--dim:#a0aec0;--red:#ff6b81;--green:#2ecc71;--blue:#4facfe}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Gemunu Libre','Poppins',sans-serif;user-select:none}
+html,body{width:100%;min-height:100%;background:radial-gradient(circle at 18% 18%,#3b2e2530,transparent 35%),linear-gradient(145deg,#080b18,#111a31 55%,#0a1022);color:#f8f9fa}
+body{min-height:100dvh}.app{min-height:100dvh;max-width:1100px;margin:auto;padding:10px;display:flex;flex-direction:column;gap:12px;position:relative}
+header,footer,.panel,.lobby,.side{background:var(--panel);border:1px solid #ffd16640;border-radius:15px;padding:10px 14px}
+header,footer{display:flex;align-items:center;justify-content:space-between;gap:10px}header{min-height:58px}.brand{font-size:1.25rem;color:var(--gold);font-weight:800}
 
 /* Floating Profile Card */
 .profile-float{position:fixed;bottom:20px;right:20px;z-index:15;background:var(--panel);border:2px solid var(--gold);border-radius:14px;padding:8px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:0 4px 15px rgba(0,0,0,0.5);transition:.2s}
 .profile-float:hover{transform:scale(1.03);background:rgba(28,36,60,.98)}
 .avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe08a,#ff8db5,#7ee7ff);color:#18213e;font-size:1.1rem}
 
-.btn,.btn-gold,.btn-outline{border:0;border-radius:9px;padding:9px 13px;cursor:pointer;font-weight:700;transition:.2s;text-decoration:none;display:inline-flex;align-items:center;gap:6px;justify-content:center}.btn,.btn-outline{background:#ffffff12;color:white;border:1px solid #ffffff30}.btn:hover{background:#ffffff20}.btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111}.btn-gold:hover{filter:brightness(1.1)}.btn:disabled,.btn-gold:disabled{opacity:.45;cursor:not-allowed}
+.btn,.btn-gold,.btn-outline{border:0;border-radius:9px;padding:9px 13px;cursor:pointer;font-weight:700;transition:.2s;text-decoration:none;display:inline-flex;align-items:center;gap:6px;justify-content:center}
+.btn,.btn-outline{background:#ffffff12;color:white;border:1px solid #ffffff30}.btn:hover{background:#ffffff20}
+.btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111}.btn-gold:hover{filter:brightness(1.1)}
+.btn:disabled,.btn-gold:disabled{opacity:.45;cursor:not-allowed}
 
 main{flex:1;display:grid;place-items:center;min-height:400px}.lobby{width:min(100%,550px);padding:22px;display:grid;gap:16px}.lobby h2{text-align:center;color:var(--gold)}.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.mode{padding:22px 10px;border:1px solid #ffffff25;border-radius:12px;text-align:center;background:#ffffff08;cursor:pointer;transition:.2s}.mode:hover{border-color:var(--gold);background:#ffffff12}.mode i{font-size:2rem;color:var(--gold);display:block;margin-bottom:8px}
 
-.arena{width:100%;display:grid;grid-template-columns:170px minmax(0,1fr) 170px;gap:12px;align-items:center}.side{min-height:120px;display:flex;flex-direction:column;justify-content:center;gap:10px}.player{padding:10px;background:#0005;border:1px solid #ffffff20;border-radius:10px}.player.active{border-color:var(--gold);box-shadow:0 0 12px #ffd16655}.board-wrap{width:min(100%,min(65vh,520px));aspect-ratio:1;position:relative;margin:auto}.board{width:100%;height:100%;display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);border:9px solid #18213e;border-radius:12px;overflow:hidden}.sq{display:grid;place-items:center;position:relative;cursor:pointer;touch-action:manipulation}.sq.light{background:#e8edff}.sq.dark{background:linear-gradient(145deg,#3d4d7d,#29365e)}.sq.selected{background:#ffd166!important}.sq.target:after{content:'';width:32%;height:32%;border-radius:50%;background:#50e8ae}.sq.capture:after{content:'';width:42%;height:42%;border-radius:50%;background:#ff6b81}.piece{width:78%;height:78%;border-radius:50%;box-shadow:0 4px 8px rgba(0,0,0,0.4);display:grid;place-items:center;font-size:1.1rem}.king:after{content:'♛';font-size:clamp(12px,3vw,20px);position:absolute;bottom:2px;right:2px;color:#ffd166;text-shadow:0 1px 2px #000}.close{position:absolute;right:-9px;top:-9px;border:2px solid white;border-radius:50%;width:32px;height:32px;background:#e74c3c;color:white;z-index:3;cursor:pointer;display:grid;place-items:center}.close:hover{transform:scale(1.1)}.status{text-align:center;color:var(--gold);min-height:25px}
+.arena{width:100%;display:grid;grid-template-columns:170px minmax(0,1fr) 170px;gap:12px;align-items:center}.side{min-height:120px;display:flex;flex-direction:column;justify-content:center;gap:10px}.player{padding:10px;background:#0005;border:1px solid #ffffff20;border-radius:10px}.player.active{border-color:var(--gold);box-shadow:0 0 12px #ffd16655}
+.board-wrap{width:min(100%,min(65vh,520px));aspect-ratio:1;position:relative;margin:auto}
+.board{width:100%;height:100%;display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);border:9px solid #18213e;border-radius:12px;overflow:hidden}
+.sq{display:grid;place-items:center;position:relative;cursor:pointer;touch-action:manipulation}.sq.light{background:#e8edff}.sq.dark{background:linear-gradient(145deg,#3d4d7d,#29365e)}.sq.selected{background:#ffd166!important}.sq.target:after{content:'';width:32%;height:32%;border-radius:50%;background:#50e8ae}.sq.capture:after{content:'';width:42%;height:42%;border-radius:50%;background:#ff6b81}
+
+.piece{width:78%;height:78%;border-radius:50%;box-shadow:0 4px 8px rgba(0,0,0,0.4);display:grid;place-items:center;font-size:1.1rem;position:relative}
+.king:after{content:'♛';font-size:clamp(12px,3vw,20px);position:absolute;bottom:2px;right:2px;color:#ffd166;text-shadow:0 1px 2px #000}
+
+/* In-game Visual Effects */
+.fx-glow{box-shadow:0 0 15px #ffd166, 0 0 30px #ffad62!important}
+.fx-fire{box-shadow:0 0 15px #ff4757, 0 0 30px #ffa502!important;animation:pulseFire 1s infinite alternate}
+.fx-rainbow{box-shadow:0 0 18px #ff6b81, 0 0 28px #7ee7ff!important;animation:spinRainbow 3s linear infinite}
+.fx-lightning{box-shadow:0 0 16px #4facfe, 0 0 30px #00f2fe!important;animation:pulseLight .8s infinite alternate}
+.fx-matrix{box-shadow:0 0 16px #2ed573, 0 0 28px #26de81!important}
+
+@keyframes pulseFire{0%{filter:brightness(1)}100%{filter:brightness(1.4)}}
+@keyframes pulseLight{0%{opacity:0.7}100%{opacity:1}}
+
+.close{position:absolute;right:-9px;top:-9px;border:2px solid white;border-radius:50%;width:32px;height:32px;background:#e74c3c;color:white;z-index:3;cursor:pointer;display:grid;place-items:center}
+.status{text-align:center;color:var(--gold);min-height:25px}
 
 #clockPanel{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:12px;padding:5px 10px}
 #clockRing{--progress:100;width:66px;height:66px;border-radius:50%;display:grid;place-items:center;position:relative;background:conic-gradient(var(--gold) calc(var(--progress)*1%),#ffffff18 0);box-shadow:0 0 18px #ffd16635;transition:background .18s linear,box-shadow .2s}
@@ -34,7 +61,7 @@ main{flex:1;display:grid;place-items:center;min-height:400px}.lobby{width:min(10
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes scaleUp{from{transform:scale(0.85);opacity:0}to{transform:scale(1);opacity:1}}
 
-.modalbox{width:min(100%,440px);background:linear-gradient(145deg,#121824,#1a233a);border:2px solid var(--gold);border-radius:20px;padding:24px;display:grid;gap:16px;max-height:85vh;overflow-y:auto;box-shadow:0 15px 35px rgba(0,0,0,0.6);animation:scaleUp .25s cubic-bezier(0.175,0.885,0.32,1.275)}
+.modalbox{width:min(100%,480px);background:linear-gradient(145deg,#121824,#1a233a);border:2px solid var(--gold);border-radius:20px;padding:22px;display:grid;gap:14px;max-height:88vh;overflow-y:auto;box-shadow:0 15px 35px rgba(0,0,0,0.6);animation:scaleUp .25s cubic-bezier(0.175,0.885,0.32,1.275)}
 .modalbox h2,.modalbox h3{text-align:center;color:var(--gold);font-weight:700}
 input{width:100%;padding:12px 14px;background:rgba(0,0,0,0.4);border:1px solid rgba(255,209,102,0.4);border-radius:11px;color:white;font-size:1rem;outline:none;transition:.2s}
 input:focus{border-color:var(--gold);box-shadow:0 0 10px rgba(255,209,102,0.3)}
@@ -42,7 +69,6 @@ input:focus{border-color:var(--gold);box-shadow:0 0 10px rgba(255,209,102,0.3)}
 .row{display:flex;gap:10px;align-items:center}.row>*{min-width:0}
 .list{display:grid;gap:8px;max-height:180px;overflow:auto;padding-right:4px}
 .listitem{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px 12px;gap:8px;transition:.2s}
-.listitem:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,209,102,0.3)}
 
 .pieces-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:5px}
 .piece-option{background:rgba(255,255,255,0.04);border:2px solid rgba(255,255,255,0.1);border-radius:12px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;transition:.2s}
@@ -68,7 +94,7 @@ footer{font-size:.85rem;color:var(--dim)}
 <div class="app">
 
 <!-- Floating Profile Card -->
-<div class="profile-float" id="openProfile" title="ප්‍රොෆයිලය සහ ඉත්තන් වෙනස් කරන්න">
+<div class="profile-float" id="openProfile" title="ප්‍රොෆයිලය සහ අයිතම වෙනස් කරන්න">
 <span class="avatar" id="headerAvatar"><i class="fa-solid fa-user"></i></span>
 <div><b id="headerName" style="font-size:0.9rem">ක්‍රීඩකයා</b><br><small style="color:var(--gold);font-weight:700">🪙 <span id="points">500</span> pts</small></div>
 </div>
@@ -97,7 +123,6 @@ footer{font-size:.85rem;color:var(--dim)}
 </section>
 </main>
 
-<!-- Footer: වම්පස Shop & Reward බොත්තම සහ දකුණුපස ප්‍රධාන පිටුව බොත්තම -->
 <footer>
 <a href="shopandreward.html" class="btn-gold"><i class="fa-solid fa-store"></i> Shop & Reward</a>
 <button class="btn" id="home"><i class="fa-solid fa-house"></i> ප්‍රධාන පිටුව</button>
@@ -120,14 +145,19 @@ footer{font-size:.85rem;color:var(--dim)}
 <!-- Profile Modal -->
 <div class="modal" id="profileModal">
 <div class="modalbox">
-<div class="row"><h3 style="flex:1">ප්‍රොෆයිලය සහ ඉත්තන් තෝරන්න</h3><button class="btn" id="closeProfile">×</button></div>
-<p style="font-size:.9rem;color:var(--dim)">ඔබට ගැලපෙන වර්ණයෙන් සහ හැඩයෙන් යුත් ඉත්තෙක් තෝරන්න:</p>
+<div class="row"><h3 style="flex:1">ප්‍රොෆයිලය සහ අයිතම (Customization)</h3><button class="btn" id="closeProfile">×</button></div>
+
+<p style="font-size:.9rem;color:var(--dim)">දාම් ඉත්තන්ගේ මෝස්තර:</p>
 <div class="pieces-grid" id="piecesGrid"></div>
+
+<p style="font-size:.9rem;color:var(--gold);margin-top:10px">මිලදීගත් විශේෂ Effects (Special Effects):</p>
+<div class="pieces-grid" id="effectsGrid"></div>
+
 <button class="btn-gold" id="saveProfile" style="margin-top:10px">සුරකින්න (Save)</button>
 </div>
 </div>
 
-<!-- Multiplayer Step 1: Bet Points Modal -->
+<!-- Multiplayer Bet Modal -->
 <div class="modal" id="betModal">
 <div class="modalbox">
 <h3 style="color:var(--gold)">Multiplayer - ඔට්ටු තැබීම (Step 1)</h3>
@@ -140,7 +170,7 @@ footer{font-size:.85rem;color:var(--dim)}
 </div>
 </div>
 
-<!-- Multiplayer Step 2: Friends Modal -->
+<!-- Multiplayer Friends Modal -->
 <div class="modal" id="multiModal">
 <div class="modalbox">
 <div class="row"><h3 style="flex:1">ඔන්ලයින් යහළුවන් (Step 2)</h3><button class="btn" id="closeMulti">×</button></div>
@@ -152,7 +182,7 @@ footer{font-size:.85rem;color:var(--dim)}
 </div>
 </div>
 
-<!-- Universal Custom Notice / Message Alert Modal -->
+<!-- Universal Alert Modal -->
 <div class="modal" id="customAlertModal">
 <div class="modalbox alert-box-content">
 <div id="customAlertIcon" class="alert-icon info"><i class="fa-solid fa-circle-info"></i></div>
@@ -208,7 +238,7 @@ footer{font-size:.85rem;color:var(--dim)}
 'use strict';
 const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
 const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user',RECENT='sinhala_draughts_recent_v7';
-let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0},board=[],turn=1,selected=null,moves=[],single=true,roomId=null,roomRef=null,roomCb=null,role=null,gameOver=false,aiTimer=null,processing=false,inviteRef=null,inviteCb=null,awarded={},turnClockTimer=null,turnDeadline=0,dragFrom=null,missedCapture=null;
+let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,selectedEffect:'',unlockedEffects:[]},board=[],turn=1,selected=null,moves=[],single=true,roomId=null,roomRef=null,roomCb=null,role=null,gameOver=false,aiTimer=null,processing=false,inviteRef=null,inviteCb=null,awarded={},turnClockTimer=null,turnDeadline=0,dragFrom=null,missedCapture=null;
 
 let userSide = 1; 
 let nextStartingSide = 1; 
@@ -223,17 +253,15 @@ const PIECE_DESIGNS=[
  {name:'ගිනියම් තැඹිලි',bg:'radial-gradient(circle at 30% 30%,#fab1a0,#e17055)',border:'#d35400',color:'#fff',icon:'☀'},
  {name:'රෝස මල්',bg:'radial-gradient(circle at 30% 30%,#ff9ff3,#f368e0)',border:'#ff5252',color:'#fff',icon:'♥'},
  {name:'මුතු මැණික්',bg:'radial-gradient(circle at 30% 30%,#81ecec,#00cec9)',border:'#01a3a4',color:'#2d3436',icon:'✦'},
- {name:'රන් හැඩය',bg:'linear-gradient(135deg,#ffeaa7,#e1b12c)',border:'#c678dd',color:'#2d3436',icon:'◈'},
- {name:'සිල්වර් ලෝහ',bg:'radial-gradient(circle at 30% 30%,#dfe6e9,#b2bec3)',border:'#636e72',color:'#2d3436',icon:'⚙'},
- {name:'කොළ පැහැති තරුව',bg:'radial-gradient(circle at 30% 30%,#55efc4,#00b894)',border:'#009432',color:'#fff',icon:'✪'},
- {name:'දැව පැහැය',bg:'radial-gradient(circle at 30% 30%,#e17055,#b33939)',border:'#842029',color:'#fff',icon:'⬠'},
- {name:'දේදුනු විදුලිය',bg:'linear-gradient(135deg,#ff9ff3,#74b9ff,#55efc4)',border:'#ffeaa7',color:'#2d3436',icon:'⚡'},
- {name:'නිල් පලිහ',bg:'radial-gradient(circle at 30% 30%,#0984e3,#74b9ff)',border:'#0048ba',color:'#fff',icon:'🛡'},
- {name:'මී මැස්ස',bg:'linear-gradient(135deg,#ffeaa7,#fab1a0)',border:'#e17055',color:'#2d3436',icon:'⬡'},
- {name:'මරකත මනෝ',bg:'radial-gradient(circle at 30% 30%,#00b894,#55efc4)',border:'#009432',color:'#fff',icon:'❖'},
- {name:'රෝස දියමන්ති',bg:'radial-gradient(circle at 30% 30%,#fd79a8,#e84393)',border:'#d63031',color:'#fff',icon:'💎'},
- {name:'ගිනි පුපුර',bg:'linear-gradient(135deg,#ff7675,#fab1a0)',border:'#d63031',color:'#fff',icon:'🔥'},
- {name:'රාජකීය රන්',bg:'linear-gradient(135deg,#fdcb6e,#e1b12c)',border:'#f39c12',color:'#2d3436',icon:'👑'}
+ {name:'රන් හැඩය',bg:'linear-gradient(135deg,#ffeaa7,#e1b12c)',border:'#c678dd',color:'#2d3436',icon:'◈'}
+];
+
+const AVAILABLE_EFFECTS = [
+ {id: 'glow', name: 'රන් කැටයම්', class: 'fx-glow', icon: '★'},
+ {id: 'fire', name: 'ගිනි දැල්', class: 'fx-fire', icon: '🔥'},
+ {id: 'rainbow', name: 'දේදුනු විදුලිය', class: 'fx-rainbow', icon: '⚡'},
+ {id: 'lightning', name: 'විදුලි කුණාටුව', class: 'fx-lightning', icon: '🛡'},
+ {id: 'matrix', name: 'මරකත මැජික්', class: 'fx-matrix', icon: '❖'}
 ];
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -350,7 +378,7 @@ try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);auth=firebas
      modal('authModal', true);
     }
    }else{
-    user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0};
+    user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,selectedEffect:'',unlockedEffects:[]};
     modal('loadingModal', false);
     modal('authModal', true);
    }
@@ -362,7 +390,7 @@ try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);auth=firebas
  }
 })();
 
-function presence(){if(!fbUser||!user.name)return;const r=db.ref('publicProfiles_v6/'+fbUser.uid);r.child('online').onDisconnect().set(false).catch(e=>{});r.update({name:user.name,online:true,points:user.points,pieceIndex:user.pieceIndex||0,lastSeen:firebase.database.ServerValue.TIMESTAMP}).catch(e=>{})}
+function presence(){if(!fbUser||!user.name)return;const r=db.ref('publicProfiles_v6/'+fbUser.uid);r.child('online').onDisconnect().set(false).catch(e=>{});r.update({name:user.name,online:true,points:user.points,pieceIndex:user.pieceIndex||0,selectedEffect:user.selectedEffect||'',lastSeen:firebase.database.ServerValue.TIMESTAMP}).catch(e=>{})}
 
 function updateHeader(){
  $('headerName').textContent=user.name||'ක්‍රීඩකයා';
@@ -377,7 +405,7 @@ function updateHeader(){
 
 function saveUser(){
  localStorage.setItem(KEY,JSON.stringify(user));
- if(db&&fbUser)db.ref('users_v6/'+fbUser.uid).update({name:user.name,points:user.points,pieceIndex:user.pieceIndex||0}).catch(console.error);
+ if(db&&fbUser)db.ref('users_v6/'+fbUser.uid).update({name:user.name,points:user.points,pieceIndex:user.pieceIndex||0,selectedEffect:user.selectedEffect||'',unlockedEffects:user.unlockedEffects||[]}).catch(console.error);
  updateHeader();
  presence();
 }
@@ -401,7 +429,9 @@ async function loadSignedInUser(){
    wins:Number(d.wins)||0,
    losses:Number(d.losses)||0,
    uid:fbUser.uid,
-   pieceIndex:Number(d.pieceIndex)!==undefined?Number(d.pieceIndex):(local?Number(local.pieceIndex)||0:0)
+   pieceIndex:Number(d.pieceIndex)!==undefined?Number(d.pieceIndex):(local?Number(local.pieceIndex)||0:0),
+   selectedEffect:d.selectedEffect || (local?local.selectedEffect:''),
+   unlockedEffects:Array.isArray(d.unlockedEffects) ? d.unlockedEffects : (local?local.unlockedEffects||[]:[])
   };
   $('username').value=user.name;
   updateHeader();
@@ -429,8 +459,8 @@ async function registerAccount(){
   const key=name.toLowerCase();
   const idx=await db.ref('usernameIndex_v6/'+key).transaction(v=>v===null?fbUser.uid:undefined);
   if(!idx.committed){await auth.signOut();return showCustomAlert('අසාර්ථකයි', 'මෙම Username එක දැනටමත් භාවිතා වේ.', 'error')}
-  user={name,points:500,wins:0,losses:0,uid:fbUser.uid,pieceIndex:0};
-  await db.ref('users_v6/'+fbUser.uid).set({name,points:500,pieceIndex:0,createdAt:firebase.database.ServerValue.TIMESTAMP});
+  user={name,points:500,wins:0,losses:0,uid:fbUser.uid,pieceIndex:0,selectedEffect:'',unlockedEffects:[]};
+  await db.ref('users_v6/'+fbUser.uid).set({name,points:500,pieceIndex:0,selectedEffect:'',unlockedEffects:[],createdAt:firebase.database.ServerValue.TIMESTAMP});
   window.__creatingAccount=false;
   localStorage.setItem(KEY,JSON.stringify(user));
   updateHeader();modal('authModal',false);presence();listenInvites();
@@ -457,34 +487,83 @@ $('login').onclick=loginAccount;
 $('register').onclick=registerAccount;
 
 let tempSelectedPiece = 0;
-function renderPiecesGrid(){
+let tempSelectedEffect = '';
+
+function renderCustomizationGrids(){
  const grid=$('piecesGrid');
  grid.innerHTML='';
  PIECE_DESIGNS.forEach((p,idx)=>{
   const div=document.createElement('div');
-  div.className='piece-option'+(idx===(tempSelectedPiece!==undefined?tempSelectedPiece:(user.pieceIndex||0))?' selected':'');
+  div.className='piece-option'+(idx===tempSelectedPiece?' selected':'');
   div.innerHTML=`<div style="width:36px;height:36px;border-radius:50%;background:${p.bg};border:2px solid ${p.border};color:${p.color};display:grid;place-items:center;font-size:1rem;box-shadow:0 2px 5px #0006">${p.icon}</div><span style="font-size:0.75rem;text-align:center;color:var(--dim)">${p.name}</span>`;
   div.onclick=()=>{
    playSound('click');
    tempSelectedPiece=idx;
-   document.querySelectorAll('.piece-option').forEach(el=>el.classList.remove('selected'));
+   document.querySelectorAll('#piecesGrid .piece-option').forEach(el=>el.classList.remove('selected'));
    div.classList.add('selected');
   };
   grid.appendChild(div);
  });
+
+ const fxGrid=$('effectsGrid');
+ fxGrid.innerHTML='';
+ 
+ const noneDiv=document.createElement('div');
+ noneDiv.className='piece-option'+(tempSelectedEffect===''?' selected':'');
+ noneDiv.innerHTML=`<div style="width:36px;height:36px;border-radius:50%;background:#333;border:2px solid #555;color:#fff;display:grid;place-items:center;font-size:0.8rem">නැත</div><span style="font-size:0.75rem;text-align:center;color:var(--dim)">සාමාන්‍ය</span>`;
+ noneDiv.onclick=()=>{
+  playSound('click');
+  tempSelectedEffect='';
+  document.querySelectorAll('#effectsGrid .piece-option').forEach(el=>el.classList.remove('selected'));
+  noneDiv.classList.add('selected');
+ };
+ fxGrid.appendChild(noneDiv);
+
+ if(user.unlockedEffects && user.unlockedEffects.length > 0){
+  AVAILABLE_EFFECTS.forEach(fx=>{
+   if(user.unlockedEffects.includes(fx.id)){
+    const div=document.createElement('div');
+    div.className='piece-option'+(tempSelectedEffect===fx.id?' selected':'');
+    div.innerHTML=`<div class="${fx.class}" style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#ffeaa7,#fdcb6e);border:2px solid var(--gold);color:#111;display:grid;place-items:center;font-size:1rem">${fx.icon}</div><span style="font-size:0.75rem;text-align:center;color:var(--dim)">${fx.name}</span>`;
+    div.onclick=()=>{
+     playSound('click');
+     tempSelectedEffect=fx.id;
+     document.querySelectorAll('#effectsGrid .piece-option').forEach(el=>el.classList.remove('selected'));
+     div.classList.add('selected');
+    };
+    fxGrid.appendChild(div);
+   }
+  });
+ } else {
+  const emptyMsg = document.createElement('small');
+  emptyMsg.style.color = 'var(--dim)';
+  emptyMsg.style.gridColumn = '1/-1';
+  emptyMsg.style.textAlign = 'center';
+  emptyMsg.textContent = 'මිලදීගත් Effects නොමැත. Shop එකට ගොස් මිලදී ගන්න.';
+  fxGrid.appendChild(emptyMsg);
+ }
 }
 
 $('openProfile').onclick=()=>{
+ const local = JSON.parse(localStorage.getItem(KEY)||"{}");
+ user.points = local.points !== undefined ? local.points : user.points;
+ user.unlockedEffects = local.unlockedEffects || user.unlockedEffects || [];
+ user.selectedEffect = local.selectedEffect !== undefined ? local.selectedEffect : user.selectedEffect;
+ updateHeader();
+
  tempSelectedPiece=user.pieceIndex||0;
- renderPiecesGrid();
+ tempSelectedEffect=user.selectedEffect||'';
+ renderCustomizationGrids();
  modal('profileModal',true);
 };
 $('closeProfile').onclick=()=>modal('profileModal',false);
+
 $('saveProfile').onclick=()=>{
  user.pieceIndex=tempSelectedPiece;
+ user.selectedEffect=tempSelectedEffect;
  saveUser();
  modal('profileModal',false);
- toast('ඉත්තා සාර්ථකව වෙනස් කරන ලදී!', 'fa-circle-check');
+ toast('ප්‍රොෆයිලය සාර්ථකව යාවත්කාලීන විය!', 'fa-circle-check');
 };
 
 function initBoard(){
@@ -587,15 +666,27 @@ function render(){
     const p=document.createElement('div');
     
     let pieceDesignIndex = 0;
+    let appliedEffect = '';
+
     if(single){
-     pieceDesignIndex = (Math.sign(val) === userSide) ? (user.pieceIndex || 0) : 0;
+     const isUser = (Math.sign(val) === userSide);
+     pieceDesignIndex = isUser ? (user.pieceIndex || 0) : 0;
+     if(isUser) appliedEffect = user.selectedEffect || '';
     } else {
      const isHostPiece = (Math.sign(val) === 1);
      pieceDesignIndex = isHostPiece ? (window.hostPieceIndex || 0) : (window.guestPieceIndex || 0);
+     if(role === 'host' && isHostPiece) appliedEffect = user.selectedEffect || '';
+     if(role === 'guest' && !isHostPiece) appliedEffect = user.selectedEffect || '';
     }
     
     const design = PIECE_DESIGNS[pieceDesignIndex] || PIECE_DESIGNS[0];
-    p.className = 'piece' + (Math.abs(val) === 2 ? ' king' : '');
+    let fxClass = '';
+    if(appliedEffect){
+     const fxObj = AVAILABLE_EFFECTS.find(x=>x.id === appliedEffect);
+     if(fxObj) fxClass = ' ' + fxObj.class;
+    }
+
+    p.className = 'piece' + (Math.abs(val) === 2 ? ' king' : '') + fxClass;
     p.style.background = design.bg;
     p.style.border = `2px solid ${design.border}`;
     p.style.color = design.color;
@@ -1226,7 +1317,7 @@ $('logout').onclick=async()=>{
     if(inviteRef&&inviteCb)inviteRef.off('child_added',inviteCb);
     if(roomRef&&roomCb)roomRef.off('value',roomRef);
     localStorage.removeItem(KEY);await auth.signOut();
-    fbUser=null;user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0};
+    fbUser=null;user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,selectedEffect:'',unlockedEffects:[]};
     leaveRoom();modal('authModal',true);toast('සාර්ථකව Logout විය.', 'fa-circle-check');
    }catch(e){toast('Logout වීමට නොහැකි විය.', 'fa-circle-xmark')}
   },
