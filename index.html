@@ -8,7 +8,7 @@
 <style>
 :root{--bg:#080b18;--panel:rgba(18,24,43,.96);--gold:#ffd166;--dim:#a0aec0;--red:#ff6b81;--green:#2ecc71}*{box-sizing:border-box;margin:0;padding:0;font-family:'Gemunu Libre','Poppins',sans-serif;user-select:none}html,body{width:100%;min-height:100%;background:radial-gradient(circle at 18% 18%,#3b2e2530,transparent 35%),linear-gradient(145deg,#080b18,#111a31 55%,#0a1022);color:#f8f9fa}body{min-height:100dvh}.app{min-height:100dvh;max-width:1100px;margin:auto;padding:10px;display:flex;flex-direction:column;gap:12px;position:relative}header,footer,.panel,.lobby,.side{background:var(--panel);border:1px solid #ffd16640;border-radius:15px;padding:10px 14px}header,footer{display:flex;align-items:center;justify-content:space-between;gap:10px}header{min-height:58px}.brand{font-size:1.25rem;color:var(--gold);font-weight:800}
 
-/* Floating Bottom-Right Profile Card */
+/* Floating Bottom-Right Profile Card (මුල් පිටුවේදී පමණක් පෙන්වීමට) */
 .profile-float{position:fixed;bottom:20px;right:20px;z-index:15;background:var(--panel);border:2px solid var(--gold);border-radius:14px;padding:8px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:0 4px 15px rgba(0,0,0,0.5);transition:.2s}
 .profile-float:hover{transform:scale(1.03);background:rgba(28,36,60,.98)}
 .avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe08a,#ff8db5,#7ee7ff);color:#18213e;font-size:1.1rem}
@@ -27,8 +27,8 @@
 </head>
 <body><div class="app">
 
-<!-- Floating Bottom-Right Profile Card -->
-<div class="profile-float" id="openProfile" title="ප්‍රොෆයිලය සහ ඉත්තන් වෙනස් කරන්න">
+<!-- Floating Bottom-Right Profile Card (මුල් පිටුවේදී පමණක් පෙන්වයි) -->
+<div class="profile-float" id="openProfile" title="প্রොෆයිලය සහ ඉත්තන් වෙනස් කරන්න">
 <span class="avatar" id="headerAvatar"><i class="fa-solid fa-user"></i></span>
 <div><b id="headerName" style="font-size:0.9rem">ක්‍රීඩකයා</b><br><small style="color:var(--gold);font-weight:700">🪙 <span id="points">500</span> pts</small></div>
 </div>
@@ -40,27 +40,40 @@
 <main>
 <section class="lobby" id="lobby"><h2>දාම් ක්‍රීඩාවට සාදරයෙන් පිළිගනිමු</h2><p style="text-align:center;color:var(--dim)">ක්‍රීඩා මාදිලියක් තෝරන්න</p><div class="mode-grid"><div class="mode" id="single"><i class="fa-solid fa-robot"></i><b>Single Player</b><p>AI පරිගණකය සමඟ</p></div><div class="mode" id="multi"><i class="fa-solid fa-users"></i><b>Multiplayer</b><p>ඔන්ලයින් යහළුවන් සමඟ</p></div></div><div id="connection">● Firebase සම්බන්ධ වෙමින්...</div></section>
 <section class="arena" id="arena" style="display:none"><div class="side"><div class="player active" id="p1"><b id="p1name">ඔබ</b><br><small id="p1sub">සුදු (White)</small></div></div><div class="board-wrap"><button class="close" id="forfeit" title="තරඟයෙන් ඉවත් වන්න">×</button><div class="board" id="board"></div></div><div class="side"><div class="player" id="p2"><b id="p2name">ප්‍රතිවාදියා</b><br><small id="p2sub">රතු (Red)</small></div></div><div class="status" id="gameStatus" style="grid-column:1/-1"></div><div id="clockPanel"><div id="clockRing" role="timer" aria-live="off"><span id="turnClock">10</span></div><span id="clockCaption">ඉතිරි කාලය</span></div></section>
-</main><footer><span>ජයග්‍රහණය / පරාජය - ඔට්ටු ලකුණු අනුව</span><button class="btn" id="home">⌂ ප්‍රධාන පිටුව</button></footer></div>
+</main><footer><span>ජයග්‍රහණය (+Bet × 2) | පරාජය (-Bet)</span><button class="btn" id="home">⌂ ප්‍රධාන පිටුව</button></footer></div>
+
+<!-- Single Player Bet Select Modal -->
+<div class="modal" id="singleBetModal">
+<div class="modalbox">
+<h3 style="color:var(--gold)">Single Player - ඔට්ටු තැබීම</h3>
+<label for="singleBetInput">ඔට්ටු අල්ලන Point ගණන (උපරිම ඔබේ ලකුණු: <span id="maxSinglePoints">500</span>)</label>
+<input id="singleBetInput" type="number" min="10" value="50" placeholder="Points ගණන">
+<div class="row">
+<button class="btn-gold" id="startSingleGame" style="flex:1">ක්‍රීඩාව අරඹන්න</button>
+<button class="btn" id="closeSingleBet" style="flex:1">අවලංගු කරන්න</button>
+</div>
+</div>
+</div>
 
 <!-- Profile & Piece Customization Modal -->
 <div class="modal" id="profileModal">
 <div class="modalbox">
 <div class="row"><h3 style="flex:1">ප්‍රොෆයිලය සහ ඉත්තන් තෝරන්න</h3><button class="btn" id="closeProfile">×</button></div>
-<p style="font-size:.9rem;color:var(--dim)">ඔබට ගැලපෙන වර්ණයෙන් සහ හැඩයෙන් යුත් ඉත්තෙක් තෝරාගන්න:</p>
+<p style="font-size:.9rem;color:var(--dim)">ඔබට ගැලපෙන වර්ණයෙන් සහ හැඩයෙන් යුත් ඉත්තෙක් තෝරන්න:</p>
 <div class="pieces-grid" id="piecesGrid"></div>
 <button class="btn-gold" id="saveProfile" style="margin-top:10px">සුරකින්න (Save)</button>
 </div>
 </div>
 
-<!-- Multiplayer Bet Modal -->
+<!-- Multiplayer Bet Modal (Step 1) -->
 <div class="modal" id="betModal">
 <div class="modalbox">
-<h3 style="color:var(--gold)">ඔට්ටු තැබීම (Bet Points)</h3>
+<h3 style="color:var(--gold)">Multiplayer - ඔට්ටු තැබීම (Step 1/2)</h3>
 <p id="betTargetName" style="text-align:center;color:var(--dim)"></p>
 <label for="betAmountInput">ඔට්ටු අල්ලන Point ගණන (උපරිම ඔබේ ලකුණු: <span id="maxUserPoints">500</span>)</label>
 <input id="betAmountInput" type="number" min="10" value="50" placeholder="Points ගණන ඇතුළත් කරන්න">
 <div class="row">
-<button class="btn-gold" id="sendInviteWithBet" style="flex:1">ආරාධනාව යවන්න</button>
+<button class="btn-gold" id="proceedInvite" style="flex:1">ඉස්සරහට (Next)</button>
 <button class="btn" id="closeBetModal" style="flex:1">අවලංගු කරන්න</button>
 </div>
 </div>
@@ -647,11 +660,16 @@ function finish(winner,message){
   awarded[key]=true;
   let bet=window.currentBetPoints||10;
   if(won){
-   user.points += bet;
+   if(single){
+    user.points += (bet * 2); // Single Player දිනුවොත් Bet Point මෙන් දෙගුණයක් (+bet * 2) එකතු වේ
+    $('overPoints').textContent = '+' + (bet * 2) + ' Points (Double Bet Won!)';
+   }else{
+    user.points += bet; // Multiplayer හි සාමාන්‍ය ජයග්‍රහණය
+    $('overPoints').textContent = '+' + bet + ' Points (Win!)';
+   }
    user.wins++;
-   $('overPoints').textContent = '+' + bet + ' Points (Double Win!)';
   }else{
-   user.points = Math.max(0, user.points - bet);
+   user.points = Math.max(0, user.points - bet); // පැරදුන විට ඔට්ටු අල්ලන Bet Point ගණන පමණක් අඩුවේ (-bet)
    user.losses++;
    $('overPoints').textContent = '-' + bet + ' Points';
   }
@@ -706,7 +724,7 @@ function listenRoom(){
     let bet=window.currentBetPoints||10;
     if(localWin){
      user.points+=bet; user.wins++; playSound('win');
-     $('overPoints').textContent='+'+bet+' Points (Double Win!)';
+     $('overPoints').textContent='+'+bet+' Points (Win!)';
     }else{
      user.points=Math.max(0,user.points-bet); user.losses++; playSound('lose');
      $('overPoints').textContent='-'+bet+' Points';
@@ -757,6 +775,7 @@ function setTurnUIRoom(){
 
 async function enterRoom(id,r){
  roomId=id; role=r; single=false;
+ $('openProfile').style.display='none'; // ක්‍රීඩාව ආරම්භ වූ විට Floating Profile වසයි
  modal('multiModal',false);
  $('lobby').style.display='none';
  $('arena').style.display='grid';
@@ -776,12 +795,13 @@ function renderRecent(){
   const d=document.createElement('div');d.className='listitem';
   const n=document.createElement('b');n.textContent=x.name;
   const b=document.createElement('button');b.className='btn-gold';b.textContent='Invite';
-  b.onclick=()=>promptBetAndInvite(x);
+  b.onclick=()=>startStepByStepInvite(x);
   d.append(n,b);el.append(d);
  });
 }
 
-function promptBetAndInvite(target){
+// STEP 1: Multiplayer Bet Modal එක පෙන්වීම
+function startStepByStepInvite(target){
  pendingInviteTarget=target;
  $('maxUserPoints').textContent = user.points;
  $('betTargetName').textContent = target.name + ' සමඟ තරඟය සඳහා ඔට්ටුව තබන්න';
@@ -791,12 +811,14 @@ function promptBetAndInvite(target){
 
 $('closeBetModal').onclick=()=>modal('betModal', false);
 
-$('sendInviteWithBet').onclick=async()=>{
+// STEP 2: Bet එක තහවුරු කර Room සහ Invite එක Database වෙත යැවීම
+$('proceedInvite').onclick=async()=>{
  const betVal = parseInt($('betAmountInput').value) || 10;
  if(betVal < 1) return toast('කරුණාකර නිවැරදි ඔට්ටු මුදලක් ඇතුළත් කරන්න.');
  if(betVal > user.points) return toast('ඔබ සතුව ප්‍රමාණවත් Points නොමැත!');
  
  modal('betModal', false);
+ modal('multiModal', false);
  const target = pendingInviteTarget;
  if(!fbUser || !target || target.uid === fbUser.uid) return;
 
@@ -813,7 +835,7 @@ $('sendInviteWithBet').onclick=async()=>{
   await db.ref('invites_v6/'+target.uid).push().set({roomId:id,fromUid:fbUser.uid,fromName:user.name,betPoints:betVal,status:'pending',createdAt:Date.now()});
   rememberOpponent(target.name,target.uid);
   enterRoom(id,'host');
-  toast('ආරාධනාව (ඔට්ටුව: '+betVal+' Points) යවන ලදී!');
+  toast('ආරාධනාව (ඔට්ටුව: '+betVal+' Points) සාර්ථකව යවන ලදී!');
  }catch(e){toast('Invite යැවීමට නොහැකි විය.');}
 };
 
@@ -844,7 +866,31 @@ function listenInvites(){
  });
 }
 
-$('single').onclick=()=>{single=true;roomId=null;role=null;nextStartingSide=1;window.currentBetPoints=10;$('lobby').style.display='none';$('arena').style.display='grid';$('p1name').textContent=user.name||'ඔබ';$('p2name').textContent='AI පරිගණකය (Hard)';initBoard()};
+// Single Player ආරම්භ කිරීමේදී මුලින් Bet එක තෝරා ගැනීමට සැලැස්වීම
+$('single').onclick=()=>{
+ $('maxSinglePoints').textContent = user.points;
+ $('singleBetInput').value = Math.min(50, user.points);
+ modal('singleBetModal', true);
+};
+
+$('closeSingleBet').onclick=()=>modal('singleBetModal', false);
+
+$('startSingleGame').onclick=()=>{
+ const betVal = parseInt($('singleBetInput').value) || 10;
+ if(betVal < 1) return toast('කරුණාකර නිවැරදි ඔට්ටු මුදලක් ඇතුළත් කරන්න.');
+ if(betVal > user.points) return toast('ඔබ සතුව ප්‍රමාණවත් Points නොමැත!');
+
+ modal('singleBetModal', false);
+ window.currentBetPoints = betVal;
+ single=true;roomId=null;role=null;nextStartingSide=1;
+ $('openProfile').style.display='none'; // ක්‍රීඩාව ආරම්භ වූ විට Profile වසයි
+ $('lobby').style.display='none';
+ $('arena').style.display='grid';
+ $('p1name').textContent=user.name||'ඔබ';
+ $('p2name').textContent='AI පරිගණකය (Hard)';
+ initBoard();
+};
+
 $('multi').onclick=()=>{renderRecent();modal('multiModal',true)};
 $('closeMulti').onclick=()=>modal('multiModal',false);
 
@@ -863,7 +909,7 @@ async function searchOnlinePlayers(){
    const row=document.createElement('div');row.className='listitem';
    const name=document.createElement('b');name.textContent=v.name;
    const inviteBtn=document.createElement('button');inviteBtn.className='btn-gold';inviteBtn.textContent='Invite';
-   inviteBtn.onclick=()=>promptBetAndInvite({name:v.name,uid:v.uid});
+   inviteBtn.onclick=()=>startStepByStepInvite({name:v.name,uid:v.uid});
    row.append(name,inviteBtn);el.append(row);
   });
  }catch(e){el.textContent='Search දෝෂයකි.';}
@@ -924,6 +970,7 @@ function leaveRoom(){
  if(roomRef&&roomCb)roomRef.off('value',roomRef);
  roomRef=null;roomCb=null;roomId=null;role=null;single=true;gameOver=false;clearTimeout(aiTimer);
  $('arena').style.display='none';$('lobby').style.display='grid';
+ $('openProfile').style.display='flex'; // මුල් පිටුවට පැමිණි විට නැවත Profile පෙන්වයි
 }
 
 $('home').onclick=()=>{if(roomId&&!gameOver){if(confirm('තරඟයෙන් ඉවත් වීමට අවශ්‍යද?'))$('forfeit').click();}leaveRoom()};
