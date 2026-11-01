@@ -28,7 +28,7 @@
 <body><div class="app">
 
 <!-- Floating Bottom-Right Profile Card -->
-<div class="profile-float" id="openProfile" title="প্রොෆයිලය සහ ඉත්තන් වෙනස් කරන්න">
+<div class="profile-float" id="openProfile" title="ප්‍රොෆයිලය සහ ඉත්තන් වෙනස් කරන්න">
 <span class="avatar" id="headerAvatar"><i class="fa-solid fa-user"></i></span>
 <div><b id="headerName" style="font-size:0.9rem">ක්‍රීඩකයා</b><br><small style="color:var(--gold);font-weight:700">🪙 <span id="points">500</span> pts</small></div>
 </div>
@@ -286,7 +286,6 @@ async function loginAccount(){
 $('login').onclick=loginAccount;
 $('register').onclick=registerAccount;
 
-// Profile Piece Selection Modal Render
 let tempSelectedPiece = 0;
 function renderPiecesGrid(){
  const grid=$('piecesGrid');
