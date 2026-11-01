@@ -13,7 +13,7 @@
 .profile-float:hover{transform:scale(1.03);background:rgba(28,36,60,.98)}
 .avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe08a,#ff8db5,#7ee7ff);color:#18213e;font-size:1.1rem}
 
-.btn,.btn-gold,.btn-outline{border:0;border-radius:9px;padding:9px 13px;cursor:pointer;font-weight:700;transition:.2s}.btn,.btn-outline{background:#ffffff12;color:white;border:1px solid #ffffff30}.btn:hover{background:#ffffff20}.btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111}.btn-gold:hover{filter:brightness(1.1)}.btn:disabled,.btn-gold:disabled{opacity:.45;cursor:not-allowed}
+.btn,.btn-gold,.btn-outline{border:0;border-radius:9px;padding:9px 13px;cursor:pointer;font-weight:700;transition:.2s;text-decoration:none;display:inline-flex;align-items:center;gap:6px;justify-content:center}.btn,.btn-outline{background:#ffffff12;color:white;border:1px solid #ffffff30}.btn:hover{background:#ffffff20}.btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111}.btn-gold:hover{filter:brightness(1.1)}.btn:disabled,.btn-gold:disabled{opacity:.45;cursor:not-allowed}
 
 main{flex:1;display:grid;place-items:center;min-height:400px}.lobby{width:min(100%,550px);padding:22px;display:grid;gap:16px}.lobby h2{text-align:center;color:var(--gold)}.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.mode{padding:22px 10px;border:1px solid #ffffff25;border-radius:12px;text-align:center;background:#ffffff08;cursor:pointer;transition:.2s}.mode:hover{border-color:var(--gold);background:#ffffff12}.mode i{font-size:2rem;color:var(--gold);display:block;margin-bottom:8px}
 
@@ -29,7 +29,6 @@ main{flex:1;display:grid;place-items:center;min-height:400px}.lobby{width:min(10
 @keyframes clockPulse{50%{transform:scale(1.07);filter:brightness(1.25)}}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* Modern UI Modal & Alert System */
 .modal{position:fixed;inset:0;background:rgba(5,8,20,0.8);backdrop-filter:blur(6px);display:none;place-items:center;z-index:100;padding:15px;animation:fadeIn .25s ease}
 .modal.show{display:grid}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -50,7 +49,6 @@ input:focus{border-color:var(--gold);box-shadow:0 0 10px rgba(255,209,102,0.3)}
 .piece-option:hover{border-color:var(--gold);background:rgba(255,255,255,0.08)}
 .piece-option.selected{border-color:var(--gold);background:rgba(255,209,102,0.2);box-shadow:0 0 12px rgba(255,209,102,0.3)}
 
-/* Custom Notice / Message Alert Box */
 .alert-box-content{text-align:center;display:grid;gap:14px;place-items:center}
 .alert-icon{font-size:3rem;margin-bottom:-4px}
 .alert-icon.info{color:var(--blue)}
@@ -58,7 +56,6 @@ input:focus{border-color:var(--gold);box-shadow:0 0 10px rgba(255,209,102,0.3)}
 .alert-icon.warning{color:var(--gold)}
 .alert-icon.error{color:var(--red)}
 
-/* Enhanced Toast Notification */
 #toast{position:fixed;bottom:25px;left:50%;transform:translate(-50%,120px);opacity:0;background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--gold);color:#f8f9fa;border-radius:30px;padding:12px 22px;z-index:150;box-shadow:0 8px 25px rgba(0,0,0,0.5);transition:.3s cubic-bezier(0.175,0.885,0.32,1.275);font-weight:600;display:flex;align-items:center;gap:10px}
 #toast.show{transform:translate(-50%,0);opacity:1}
 
@@ -99,7 +96,12 @@ footer{font-size:.85rem;color:var(--dim)}
 <div id="clockPanel"><div id="clockRing" role="timer" aria-live="off"><span id="turnClock">10</span></div><span id="clockCaption">ඉතිරි කාලය</span></div>
 </section>
 </main>
-<footer><span>ජයග්‍රහණය (+Bet × 2) | පරාජය (-Bet)</span><button class="btn" id="home">⌂ ප්‍රධාන පිටුව</button></footer>
+
+<!-- Footer: වම්පස Shop & Reward බොත්තම සහ දකුණුපස ප්‍රධාන පිටුව බොත්තම -->
+<footer>
+<a href="shopandreward.html" class="btn-gold"><i class="fa-solid fa-store"></i> Shop & Reward</a>
+<button class="btn" id="home"><i class="fa-solid fa-house"></i> ප්‍රධාන පිටුව</button>
+</footer>
 </div>
 
 <!-- Single Player Bet Select Modal -->
@@ -277,7 +279,6 @@ function playSound(type){
  }catch(e){}
 }
 
-/* Custom UI Alert Function (Replaces standard alert & confirm) */
 function showCustomAlert(title, message, type='info', onConfirm=null, showCancel=false, cancelText='අවලංගු කරන්න', okText='හරි (OK)'){
  $('customAlertTitle').textContent = title;
  $('customAlertMessage').textContent = message;
@@ -1025,7 +1026,6 @@ function listenInvites(){
   
   const betVal = v.betPoints || 10;
   
-  // Custom Alert Confirmation for Invitation
   showCustomAlert(
    'ක්‍රීඩා ආරාධනාවක්! 🎮',
    (v.fromName||'යහළුවෙක්')+' ඔබට Online දාම් තරඟයකට ආරාධනා කරයි!\nඔට්ටු තැබෙන Points ප්‍රමාණය: '+betVal+' pts',
@@ -1057,7 +1057,6 @@ function listenInvites(){
    'පිළිගන්න (Accept)'
   );
   
-  // If user clicks cancel on custom alert modal
   document.querySelector('#customAlertModal .btn:not(.btn-gold)').onclick = async () => {
    modal('customAlertModal', false);
    await s.ref.update({status:'declined',respondedAt:Date.now()});
