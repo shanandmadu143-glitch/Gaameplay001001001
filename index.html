@@ -439,7 +439,6 @@ function render(){
     const val=board[r][c];
     const p=document.createElement('div');
     
-    // Multiplayer සහ Single Player හිදී දෙපාර්ශවයේම තෝරාගත් ඉත්තන් (Design) නිවැරදිව පෙන්වීම
     let pieceDesignIndex = 0;
     if(single){
      pieceDesignIndex = (Math.sign(val) === userSide) ? (user.pieceIndex || 0) : 0;
@@ -690,7 +689,20 @@ function finish(winner,message){
  modal('overModal',true);
 }
 
-async function publishFinish(winner,message){if(!roomRef)return;try{await roomRef.transaction(d=>{if(!d||d.status!=='playing')return;d.status='finished';d.winner=winner;d.message=message;d.finishedAt=Date.now();d.rematchRequestedBy=null;return d})}catch(e){}}
+async function publishFinish(winner,message){
+ if(!roomRef)return;
+ try{
+  await roomRef.transaction(d=>{
+   if(!d||d.status!=='playing')return;
+   d.status='finished';
+   d.winner=winner;
+   d.message=message;
+   d.finishedAt=Date.now();
+   d.rematchRequestedBy=null;
+   return d;
+  });
+ }catch(e){}
+}
 
 function listenRoom(){
  if(roomRef&&roomCb)roomRef.off('value',roomCb);
@@ -878,7 +890,6 @@ function listenInvites(){
    if(!roomSnap.exists()){toast('මෙම ආරාධනාව දැන් වලංගු නැත.');await s.ref.update({status:'expired'});return}
    
    window.currentBetPoints = betVal;
-   // Guest පිළිගත් විට ඔහුගේ Piece Index එකද Room එකට Update කරයි
    await roomRefSnap.update({
     guestPieceIndex: user.pieceIndex || 0,
     status:'playing',
@@ -946,11 +957,16 @@ async function searchOnlinePlayers(){
 $('searchBtn').onclick=searchOnlinePlayers;
 $('search').addEventListener('keydown',e=>{if(e.key==='Enter')searchOnlinePlayers()});
 
+// සෙල්ලමෙන් ඉවත් වීම (Forfeit Button / '×' Icon) නිවැරදිව ක්‍රියාත්මක වීම
 $('forfeit').onclick=async()=>{
  if(gameOver)return;
- if(!confirm('තරඟයෙන් ඉවත් වීමට අවශ්‍යද?'))return;
- if(single){finish(-userSide,'ඔබ තරඟයෙන් ඉවත් විය.')}
- else{const winner=role==='host'?-1:1;await publishFinish(winner,'ප්‍රතිවාදියා තරඟයෙන් ඉවත් විය.')}
+ if(!confirm('තරඟයෙන් ඉවත් වීමට අවශ්‍යද? (මෙය පැරදීමක් ලෙස සටහන් වේ)'))return;
+ if(single){
+  finish(-userSide,'ඔබ තරඟයෙන් ඉවත් විය.');
+ } else {
+  const winner = (role === 'host') ? -1 : 1;
+  await publishFinish(winner, 'ප්‍රතිවාදියා තරඟයෙන් ඉවත් විය.');
+ }
 };
 
 $('rematch').onclick=async()=>{
@@ -1000,7 +1016,15 @@ function leaveRoom(){
  $('openProfile').style.display='flex';
 }
 
-$('home').onclick=()=>{if(roomId&&!gameOver){if(confirm('තරඟයෙන් ඉවත් වීමට අවශ්‍යද?'))$('forfeit').click();}leaveRoom()};
+$('home').onclick=()=>{
+ if(roomId && !gameOver){
+  if(confirm('තරඟයෙන් ඉවත් වීමට අවශ්‍යද?')) {
+   $('forfeit').click();
+   return;
+  }
+ }
+ leaveRoom();
+};
 
 $('logout').onclick=async()=>{
  try{
