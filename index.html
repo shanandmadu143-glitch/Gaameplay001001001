@@ -8,7 +8,7 @@
 <style>
 :root{--bg:#080b18;--panel:rgba(18,24,43,.96);--gold:#ffd166;--dim:#a0aec0;--red:#ff6b81;--green:#2ecc71}*{box-sizing:border-box;margin:0;padding:0;font-family:'Gemunu Libre','Poppins',sans-serif;user-select:none}html,body{width:100%;min-height:100%;background:radial-gradient(circle at 18% 18%,#3b2e2530,transparent 35%),linear-gradient(145deg,#080b18,#111a31 55%,#0a1022);color:#f8f9fa}body{min-height:100dvh}.app{min-height:100dvh;max-width:1100px;margin:auto;padding:10px;display:flex;flex-direction:column;gap:12px;position:relative}header,footer,.panel,.lobby,.side{background:var(--panel);border:1px solid #ffd16640;border-radius:15px;padding:10px 14px}header,footer{display:flex;align-items:center;justify-content:space-between;gap:10px}header{min-height:58px}.brand{font-size:1.25rem;color:var(--gold);font-weight:800}
 
-/* Floating Bottom-Right Profile Card (මුල් පිටුවේදී පමණක් පෙන්වයි) */
+/* Floating Bottom-Right Profile Card */
 .profile-float{position:fixed;bottom:20px;right:20px;z-index:15;background:var(--panel);border:2px solid var(--gold);border-radius:14px;padding:8px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:0 4px 15px rgba(0,0,0,0.5);transition:.2s}
 .profile-float:hover{transform:scale(1.03);background:rgba(28,36,60,.98)}
 .avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe08a,#ff8db5,#7ee7ff);color:#18213e;font-size:1.1rem}
@@ -27,7 +27,7 @@
 </head>
 <body><div class="app">
 
-<!-- Floating Bottom-Right Profile Card (මුල් පිටුවේදී පමණක් පෙන්වයි) -->
+<!-- Floating Bottom-Right Profile Card -->
 <div class="profile-float" id="openProfile" title="প্রොෆයිලය සහ ඉත්තන් වෙනස් කරන්න">
 <span class="avatar" id="headerAvatar"><i class="fa-solid fa-user"></i></span>
 <div><b id="headerName" style="font-size:0.9rem">ක්‍රීඩකයා</b><br><small style="color:var(--gold);font-weight:700">🪙 <span id="points">500</span> pts</small></div>
@@ -55,7 +55,7 @@
 </div>
 </div>
 
-<!-- Profile & Piece Customization Modal -->
+<!-- Profile Modal -->
 <div class="modal" id="profileModal">
 <div class="modalbox">
 <div class="row"><h3 style="flex:1">ප්‍රොෆයිලය සහ ඉත්තන් තෝරන්න</h3><button class="btn" id="closeProfile">×</button></div>
@@ -78,7 +78,7 @@
 </div>
 </div>
 
-<!-- Multiplayer Step 2: Friends & Invite Modal -->
+<!-- Multiplayer Step 2: Friends Modal -->
 <div class="modal" id="multiModal">
 <div class="modalbox">
 <div class="row"><h3 style="flex:1">ඔන්ලයින් යහළුවන් (Step 2)</h3><button class="btn" id="closeMulti">×</button></div>
@@ -101,6 +101,7 @@
 
 <div class="modal" id="authModal"><div class="modalbox"><h2>ඇතුළු වන්න / ගිණුම සාදන්න</h2><label for="username">ක්‍රීඩක නම</label><input id="username" autocomplete="username" minlength="3" placeholder="Username"><label for="password">මුරපදය</label><input id="password" type="password" autocomplete="current-password" minlength="6" placeholder="Password"><div class="row"><button class="btn-gold" id="login" style="flex:1">ඇතුළු වන්න</button><button class="btn" id="register" style="flex:1">ගිණුම සාදන්න</button></div><small style="color:var(--dim)">ආරක්ෂිත Firebase Authentication භාවිතා වේ.</small></div></div>
 <div class="modal" id="overModal"><div class="modalbox"><h2 id="overTitle">තරඟය අවසන්</h2><p id="overMessage" style="text-align:center"></p><b id="overPoints" style="text-align:center"></b><p id="rematchStatus" style="text-align:center;color:var(--gold)"></p><div class="row"><button class="btn-gold" id="rematch">නැවත ක්‍රීඩා කරන්න</button><button class="btn" id="exit">ඉවත් වෙන්න</button></div></div></div><div id="toast"></div>
+
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 <script>
 'use strict';
@@ -822,7 +823,6 @@ function renderRecent(){
  });
 }
 
-// Multiplayer Step 1: Bet Modal විවෘත වේ
 $('multi').onclick = () => {
  $('maxUserPoints').textContent = user.points;
  $('betAmountInput').value = Math.min(50, user.points);
@@ -831,7 +831,6 @@ $('multi').onclick = () => {
 
 $('closeBetModal').onclick = () => modal('betModal', false);
 
-// Multiplayer Step 2: Bet Point තහවුරු කර යහළුවන් ලැයිස්තුව පෙන්වීම
 $('proceedToInvite').onclick = () => {
  const betVal = parseInt($('betAmountInput').value) || 10;
  if(betVal < 1) return toast('කරුණාකර නිවැරදි ඔට්ටු මුදලක් ඇතුළත් කරන්න.');
@@ -847,7 +846,6 @@ $('proceedToInvite').onclick = () => {
 
 $('closeMulti').onclick = () => modal('multiModal', false);
 
-// Multiplayer Step 3: නිශ්චිත යහළුවෙකුට Bet Point සහ තමන්ගේ Piece Index සමග Invite යැවීම
 async function sendInviteToUser(target){
  const betVal = window.currentBetPoints || 10;
  if(!fbUser || !target || target.uid === fbUser.uid) return;
@@ -907,7 +905,6 @@ function listenInvites(){
  });
 }
 
-// Single Player ආරම්භ කිරීම
 $('single').onclick=()=>{
  $('maxSinglePoints').textContent = user.points;
  $('singleBetInput').value = Math.min(50, user.points);
@@ -957,10 +954,36 @@ async function searchOnlinePlayers(){
 $('searchBtn').onclick=searchOnlinePlayers;
 $('search').addEventListener('keydown',e=>{if(e.key==='Enter')searchOnlinePlayers()});
 
-// සෙල්ලමෙන් ඉවත් වීම (Forfeit Button / '×' Icon) නිවැරදිව ක්‍රියාත්මක වීම
+// මුල් පිටුවට / Lobby වෙත යොමු කිරීමේ ස්ථාවර ශ්‍රිතය (leaveRoom)
+function leaveRoom(){
+ clearInterval(turnClockTimer);
+ window._clockKey=null;
+ if(roomRef&&roomCb){
+  roomRef.off('value',roomCb);
+ }
+ roomRef=null;
+ roomCb=null;
+ roomId=null;
+ role=null;
+ single=true;
+ gameOver=false;
+ clearTimeout(aiTimer);
+
+ // Modal එක වැසීම සහ මුල් පිටුව පෙන්වීම
+ modal('overModal', false);
+ $('arena').style.display='none';
+ $('lobby').style.display='grid';
+ $('openProfile').style.display='flex';
+}
+
+// සෙල්ලමෙන් ඉවත් වීමේ '×' (Forfeit) Button එක
 $('forfeit').onclick=async()=>{
- if(gameOver)return;
- if(!confirm('තරඟයෙන් ඉවත් වීමට අවශ්‍යද? (මෙය පැරදීමක් ලෙස සටහන් වේ)'))return;
+ if(gameOver) {
+  leaveRoom();
+  return;
+ }
+ if(!confirm('තරඟයෙන් ඉවත් වීමට අවශ්‍යද?')) return;
+
  if(single){
   finish(-userSide,'ඔබ තරඟයෙන් ඉවත් විය.');
  } else {
@@ -1007,21 +1030,18 @@ $('rematch').onclick=async()=>{
  }catch(e){toast('Rematch ක්‍රියාවලිය අසාර්ථක විය.')}
 };
 
-$('exit').onclick=()=>{modal('overModal',false);leaveRoom()};
-function leaveRoom(){
- clearInterval(turnClockTimer);window._clockKey=null;
- if(roomRef&&roomCb)roomRef.off('value',roomRef);
- roomRef=null;roomCb=null;roomId=null;role=null;single=true;gameOver=false;clearTimeout(aiTimer);
- $('arena').style.display='none';$('lobby').style.display='grid';
- $('openProfile').style.display='flex';
-}
+// තරඟය අවසානයේ "ඉවත් වෙන්න" (Exit) ක්ලික් කළ විට කෙළින්ම මුල් පිටුවට යයි
+$('exit').onclick=()=>{
+ leaveRoom();
+};
 
+// පහළ තීරුවේ ඇති "⌂ ප්‍රධාන පිටුව" (Home) ක්ලික් කළ විට
 $('home').onclick=()=>{
  if(roomId && !gameOver){
   if(confirm('තරඟයෙන් ඉවත් වීමට අවශ්‍යද?')) {
    $('forfeit').click();
-   return;
   }
+  return;
  }
  leaveRoom();
 };
@@ -1030,7 +1050,7 @@ $('logout').onclick=async()=>{
  try{
   if(fbUser)await db.ref('publicProfiles_v6/'+fbUser.uid).update({online:false});
   if(inviteRef&&inviteCb)inviteRef.off('child_added',inviteCb);
-  if(roomRef&&roomCb)roomRef.off('value',roomRef);
+  if(roomRef&&roomCb)roomRef.off('value',roomCb);
   localStorage.removeItem(KEY);await auth.signOut();
   fbUser=null;user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0};
   leaveRoom();modal('authModal',true);toast('සාර්ථකව Logout විය.');
