@@ -22,7 +22,7 @@
 <header><div class="brand"><i class="fa-solid fa-chess-board"></i> ශ්‍රී ලංකා දාම්</div><div class="profile"><span class="avatar"><i class="fa-solid fa-user"></i></span><span><b id="headerName">ක්‍රීඩකයා</b><br><small>🪙 <span id="points">500</span></small></span></div><button class="btn" id="logout">Logout</button></header>
 <main>
 <section class="lobby" id="lobby"><h2>දාම් ක්‍රීඩාවට සාදරයෙන් පිළිගනිමු</h2><p style="text-align:center;color:var(--dim)">ක්‍රීඩා මාදිලියක් තෝරන්න</p><div class="mode-grid"><div class="mode" id="single"><i class="fa-solid fa-robot"></i><b>Single Player</b><p>AI පරිගණකය සමඟ</p></div><div class="mode" id="multi"><i class="fa-solid fa-users"></i><b>Multiplayer</b><p>ඔන්ලයින් යහළුවන් සමඟ</p></div></div><div id="connection">● Firebase සම්බන්ධ වෙමින්...</div></section>
-<section class="arena" id="arena" style="display:none"><div class="side"><div class="player active" id="p1"><b id="p1name">ඔබ</b><br><small>සුදු (White)</small></div></div><div class="board-wrap"><button class="close" id="forfeit" title="තරඟයෙන් ඉවත් වන්න">×</button><div class="board" id="board"></div></div><div class="side"><div class="player" id="p2"><b id="p2name">AI පරිගණකය</b><br><small>රතු (Red)</small></div></div><div class="status" id="gameStatus" style="grid-column:1/-1"></div><div id="clockPanel"><div id="clockRing" role="timer" aria-live="off"><span id="turnClock">10</span></div><span id="clockCaption">ඉතිරි කාලය</span></div></section>
+<section class="arena" id="arena" style="display:none"><div class="side"><div class="player active" id="p1"><b id="p1name">ඔබ</b><br><small>සුදු (White)</small></div></div><div class="board-wrap"><button class="close" id="forfeit" title="තරඟයෙන් ඉවත් වන්න">×</button><div class="board" id="board"></div></div><div class="side"><div class="player" id="p2"><b id="p2name">AI පරිගණකය (Hard)</b><br><small>රතු (Red)</small></div></div><div class="status" id="gameStatus" style="grid-column:1/-1"></div><div id="clockPanel"><div id="clockRing" role="timer" aria-live="off"><span id="turnClock">10</span></div><span id="clockCaption">ඉතිරි කාලය</span></div></section>
 </main><footer><span>ජයග්‍රහණය +10 | පරාජය / ඉවත් වීම -10</span><button class="btn" id="home">⌂ ප්‍රධාන පිටුව</button></footer></div>
 <div class="modal show" id="authModal"><div class="modalbox"><h2>ඇතුළු වන්න / ගිණුම සාදන්න</h2><label for="username">ක්‍රීඩක නම</label><input id="username" autocomplete="username" minlength="3" placeholder="Username"><label for="password">මුරපදය</label><input id="password" type="password" autocomplete="current-password" minlength="6" placeholder="Password"><div class="row"><button class="btn-gold" id="login" style="flex:1">ඇතුළු වන්න</button><button class="btn" id="register" style="flex:1">ගිණුම සාදන්න</button></div><small style="color:var(--dim)">නව ආරක්ෂිත Firebase Authentication භාවිතා වේ. පැරණි users_v5 දත්ත මකා නොදමයි; පැරණි ගිණුම් නව Auth ගිණුමකට වෙනම මාරු කළ යුතුය.</small></div></div>
 <div class="modal" id="multiModal"><div class="modalbox"><div class="row"><h3 style="flex:1">ඔන්ලයින් යහළුවන්</h3><button class="btn" id="closeMulti">×</button></div><div class="row"><input id="search" placeholder="නම සොයන්න"><button class="btn-gold" id="searchBtn">Search</button></div><b style="color:var(--gold)">මෑතකදී තරඟ කළ යහළුවන්</b><div class="list" id="recentList">මෑතකදී තරඟ කළ අය නොමැත.</div><div class="list" id="results">Online සිටින යහළුවෙකු සොයන්න.</div></div></div>
@@ -47,7 +47,7 @@ $('login').onclick=loginAccount;$('register').onclick=registerAccount;
 function initBoard(){clearInterval(turnClockTimer);board=Array.from({length:8},()=>Array(8).fill(0));for(let r=0;r<8;r++)for(let c=0;c<8;c++)if((r+c)%2){if(r<3)board[r][c]=-1;else if(r>4)board[r][c]=1}turn=1;selected=null;moves=[];gameOver=false;processing=false;render();setTurnUI()}
 const inside=(r,c)=>r>=0&&r<8&&c>=0&&c<8;
 
-// රජ වූ ඉත්තන්ගේ (Flying Kings) සහ සාමාන්‍ය ඉත්තන්ගේ චලන සහ කැපීම් සෑදීමේ Logic එක 
+// Flying Kings සහ සාමාන්‍ය ඉත්තන්ගේ චලන සහ කැපීම්
 function pieceMoves(r,c,b=board){
  const p=b[r][c];if(!p)return[];
  const isKing=Math.abs(p)===2;
@@ -55,18 +55,16 @@ function pieceMoves(r,c,b=board){
  const caps=[],normal=[];
 
  if(isKing){
-  // 1. King Normal Moves - දිගු දුර යාම (බාධක නොමැති තාක්)
   for(const[dr,dc]of dirs){
    let step=1;
    while(true){
     const tr=r+dr*step,tc=c+dc*step;
     if(!inside(tr,tc))break;
-    if(b[tr][tc]!==0)break; // ඉත්තෙක් හමුවූ විට යාම නතර වේ
+    if(b[tr][tc]!==0)break;
     normal.push({fromR:r,fromC:c,toR:tr,toC:tc,capture:false});
     step++;
    }
   }
-  // 2. King Capture Moves - දිගු දුර කැපීම (අතරමග 1 ප්‍රතිවාදී ඉත්තෙක් පමණක් ඇති විට)
   for(const[dr,dc]of dirs){
    let step=1;
    let enemyR=-1,enemyC=-1;
@@ -76,13 +74,12 @@ function pieceMoves(r,c,b=board){
     const val=b[tr][tc];
     if(val!==0){
      if(Math.sign(val)===Math.sign(p)){
-      break; // තමන්ගේම ඉත්තෙක් හමුවුවහොත් නවතී
+      break;
      }else{
-      if(enemyR!==-1)break; // ප්‍රතිවාදී ඉත්තන් 2ක් එක දිගට හෝ පසුව හමුවුවහොත් නවතී
+      if(enemyR!==-1)break;
       enemyR=tr;enemyC=tc;
      }
     }else{
-     // ප්‍රතිවාදී ඉත්තෙකු කැපූ පසු ඇති හිස් කොටස් සඳහා capture moves එක් කරයි
      if(enemyR!==-1){
       caps.push({fromR:r,fromC:c,toR:tr,toC:tc,capR:enemyR,capC:enemyC,capture:true});
      }
@@ -91,7 +88,6 @@ function pieceMoves(r,c,b=board){
    }
   }
  }else{
-  // සාමාන්‍ය ඉත්තන් සඳහා Logic
   const moveDirs=(p>0?[[-1,1],[-1,-1]]:[[1,1],[1,-1]]);
   for(const[dr,dc]of dirs){
    const mr=r+dr,mc=c+dc,tr=r+2*dr,tc=c+2*dc;
@@ -144,7 +140,6 @@ function applyMove(b,m){
  b[m.fromR][m.fromC]=0;
  b[m.toR][m.toC]=p;
  if(m.capture)b[m.capR][m.capC]=0;
- // King promotion logic
  if(p===1&&m.toR===0)b[m.toR][m.toC]=2;
  if(p===-1&&m.toR===7)b[m.toR][m.toC]=-2;
  return p;
@@ -218,8 +213,147 @@ function startTurnClock(deadline,mode='single'){
  tick();turnClockTimer=setInterval(tick,100);
 }
 
-function aiMove(){if(gameOver||!single||turn!==-1)return;const legal=allMoves(-1);if(!legal.length)return finish(1,'AI පරිගණකයට Move නොමැත.');const ranked=legal.map(m=>{const b=board.map(x=>x.slice());applyMove(b,m);return{m,score:(m.capture?10:0)+(Math.abs(b[m.toR][m.toC])===2?3:0)+Math.random()*2}}).sort((a,b)=>b.score-a.score);const m=ranked[0].m;applyMove(board,m);render();const chain=m.capture?pieceMoves(m.toR,m.toC).filter(x=>x.capture):[];if(chain.length){aiTimer=setTimeout(()=>{if(gameOver)return;const n=chain[Math.floor(Math.random()*chain.length)];applyMove(board,n);render();const more=n.capture?pieceMoves(n.toR,n.toC).filter(x=>x.capture):[];if(more.length){selected={r:n.toR,c:n.toC};moves=more;aiTimer=setTimeout(()=>{selected=null;moves=[];aiContinue(n.toR,n.toC)},300)}else{turn=1;if(!allMoves(1).length)finish(-1,'ඔබට නීත්‍යානුකූල Move නොමැත.');else setTurnUI()}},350);return}turn=1;if(!allMoves(1).length)finish(-1,'ඔබට නීත්‍යානුකූල Move නොමැත.');else setTurnUI()}
-function aiContinue(r,c){if(gameOver)return;const caps=pieceMoves(r,c).filter(x=>x.capture);if(!caps.length){turn=1;if(!allMoves(1).length)finish(-1,'ඔබට නීත්‍යානුකූල Move නොමැත.');else setTurnUI();return}const m=caps[Math.floor(Math.random()*caps.length)];applyMove(board,m);render();aiTimer=setTimeout(()=>aiContinue(m.toR,m.toC),300)}
+// ==========================================
+// HARD AI - MINIMAX ALGORITHM IMPLEMENTATION
+// ==========================================
+function evaluateBoard(b) {
+ let score = 0;
+ for(let r=0; r<8; r++) {
+  for(let c=0; c<8; c++) {
+   const p = b[r][c];
+   if(p !== 0) {
+    const isKing = Math.abs(p) === 2;
+    const val = isKing ? 40 : 10;
+    const posBonus = (p < 0) ? (r * 0.6) : ((7 - r) * 0.6); // AI (red, negative) wants to reach row 7
+    if(p < 0) {
+     score += val + posBonus;
+    } else {
+     score -= (val + posBonus);
+    }
+   }
+  }
+ }
+ return score;
+}
+
+function minimax(b, depth, alpha, beta, maximizingPlayer) {
+ const side = maximizingPlayer ? -1 : 1;
+ const legal = allMoves(side, b);
+ 
+ if(depth === 0 || legal.length === 0) {
+  if(legal.length === 0) {
+   return maximizingPlayer ? -10000 : 10000;
+  }
+  return evaluateBoard(b);
+ }
+
+ if(maximizingPlayer) {
+  let maxEval = -Infinity;
+  for(const m of legal) {
+   const nextB = b.map(row => row.slice());
+   applyMove(nextB, m);
+   let evalScore;
+   if(m.capture && pieceMoves(m.toR, m.toC, nextB).some(x => x.capture)) {
+    evalScore = minimax(nextB, depth, alpha, beta, true);
+   } else {
+    evalScore = minimax(nextB, depth - 1, alpha, beta, false);
+   }
+   maxEval = Math.max(maxEval, evalScore);
+   alpha = Math.max(alpha, evalScore);
+   if(beta <= alpha) break;
+  }
+  return maxEval;
+ } else {
+  let minEval = Infinity;
+  for(const m of legal) {
+   const nextB = b.map(row => row.slice());
+   applyMove(nextB, m);
+   let evalScore;
+   if(m.capture && pieceMoves(m.toR, m.toC, nextB).some(x => x.capture)) {
+    evalScore = minimax(nextB, depth, alpha, beta, false);
+   } else {
+    evalScore = minimax(nextB, depth - 1, alpha, beta, true);
+   }
+   minEval = Math.min(minEval, evalScore);
+   beta = Math.min(beta, evalScore);
+   if(beta <= alpha) break;
+  }
+  return minEval;
+ }
+}
+
+function aiMove(){
+ if(gameOver||!single||turn!==-1)return;
+ const legal=allMoves(-1);
+ if(!legal.length)return finish(1,'AI පරිගණකයට Move නොමැත.');
+
+ let bestScore=-Infinity;
+ let bestMoves=[];
+ const depth=3; // පියවර 3ක් ගැඹුරට සිතයි (ඉතා දක්ෂයි)
+
+ for(const m of legal){
+  const nextB=board.map(row=>row.slice());
+  applyMove(nextB, m);
+  let score;
+  if(m.capture && pieceMoves(m.toR, m.toC, nextB).some(x=>x.capture)){
+   score=minimax(nextB, depth, -Infinity, Infinity, true);
+  }else{
+   score=minimax(nextB, depth-1, -Infinity, Infinity, false);
+  }
+
+  if(score>bestScore){
+   bestScore=score;
+   bestMoves=[m];
+  }else if(score===bestScore){
+   bestMoves.push(m);
+  }
+ }
+
+ const m=bestMoves[Math.floor(Math.random()*bestMoves.length)];
+ applyMove(board, m);
+ render();
+
+ const chain=m.capture?pieceMoves(m.toR,m.toC).filter(x=>x.capture):[];
+ if(chain.length){
+  aiTimer=setTimeout(()=>{
+   if(gameOver)return;
+   const n=chain[0];
+   applyMove(board,n);
+   render();
+   const more=n.capture?pieceMoves(n.toR,n.toC).filter(x=>x.capture):[];
+   if(more.length){
+    selected={r:n.toR,c:n.toC};
+    moves=more;
+    aiTimer=setTimeout(()=>{selected=null;moves=[];aiContinue(n.toR,n.toC)},300)
+   }else{
+    turn=1;
+    if(!allMoves(1).length)finish(-1,'ඔබට නීත්‍යානුකූල Move නොමැත.');
+    else setTurnUI()
+   }
+  },350);
+  return;
+ }
+ turn=1;
+ if(!allMoves(1).length)finish(-1,'ඔබට නීත්‍යානුකූල Move නොමැත.');
+ else setTurnUI();
+}
+
+function aiContinue(r,c){
+ if(gameOver)return;
+ const caps=pieceMoves(r,c).filter(x=>x.capture);
+ if(!caps.length){
+  turn=1;
+  if(!allMoves(1).length)finish(-1,'ඔබට නීත්‍යානුකූල Move නොමැත.');
+  else setTurnUI();
+  return;
+ }
+ const m=caps[Math.floor(Math.random()*caps.length)];
+ applyMove(board,m);
+ render();
+ aiTimer=setTimeout(()=>aiContinue(m.toR,m.toC),300);
+}
+// ==========================================
+
 function finish(winner,message){if(gameOver)return;gameOver=true;clearTimeout(aiTimer);clearInterval(turnClockTimer);const won=single?winner===1:(role==='host'?winner===1:winner===-1);const key=roomId?roomId+':'+(window.currentGameId||1):'single:'+Date.now();if(!awarded[key]){awarded[key]=true;if(won){user.points+=10;user.wins++}else{user.points=Math.max(0,user.points-10);user.losses++}saveUser()}$('overTitle').textContent=won?'ඔබ ජයග්‍රහණය කළා! 🎉':'ඔබ පරාජය විය!';$('overTitle').style.color=won?'var(--green)':'var(--red)';$('overMessage').textContent=message;$('overPoints').textContent=won?'+10 Points':'-10 Points';$('rematchStatus').textContent=single?'':'Rematch සඳහා ඔබගේ කැමැත්ත ලබාදෙන්න.';modal('overModal',true)}
 async function publishFinish(winner,message){if(!roomRef)return;try{await roomRef.transaction(d=>{if(!d||d.status!=='playing')return;d.status='finished';d.winner=winner;d.message=message;d.finishedAt=Date.now();d.rematchVotes={};return d})}catch(e){console.error(e)}}
 function listenRoom(){
@@ -276,7 +410,7 @@ function listenInvites(){
   }catch(e){console.error('Invite acceptance failed:',e);toast('Invite එක පිළිගැනීමට නොහැකි විය. නැවත උත්සාහ කරන්න.');}
  });
 }
-$('single').onclick=()=>{single=true;roomId=null;role=null;$('lobby').style.display='none';$('arena').style.display='grid';$('p1name').textContent=user.name||'ඔබ';$('p2name').textContent='AI පරිගණකය';initBoard()};$('multi').onclick=()=>{renderRecent();modal('multiModal',true)};$('closeMulti').onclick=()=>modal('multiModal',false);
+$('single').onclick=()=>{single=true;roomId=null;role=null;$('lobby').style.display='none';$('arena').style.display='grid';$('p1name').textContent=user.name||'ඔබ';$('p2name').textContent='AI පරිගණකය (Hard)';initBoard()};$('multi').onclick=()=>{renderRecent();modal('multiModal',true)};$('closeMulti').onclick=()=>modal('multiModal',false);
 async function searchOnlinePlayers(){
  const q=$('search').value.trim().toLowerCase(),el=$('results'),btn=$('searchBtn');
  if(!q){el.textContent='සෙවීමට Username එකක් ඇතුළත් කරන්න.';return}
