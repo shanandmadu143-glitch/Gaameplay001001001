@@ -41,16 +41,15 @@ function saveUser(){localStorage.setItem(KEY,JSON.stringify(user));if(db&&fbUser
 function usernameEmail(name){return name.toLowerCase()+'@sinhala-draughts.app'}
 async function loadSignedInUser(){const s=await db.ref('users_v6/'+fbUser.uid).once('value');const d=s.val();if(!d||!d.name){await auth.signOut();return}const local=JSON.parse(localStorage.getItem(KEY)||'null');user={name:d.name,points:local&&local.uid===fbUser.uid?Number(local.points)||500:500,wins:Number(d.wins)||0,losses:Number(d.losses)||0,uid:fbUser.uid};$('username').value=user.name;modal('authModal',false);updateHeader();presence();listenInvites()}
 function validUsername(n){return /^[a-zA-Z0-9_]{3,20}$/.test(n)}
-// Authentication is handled by Firebase Auth; passwords are never stored in Realtime Database.
 async function registerAccount(){const name=$('username').value.trim(),pass=$('password').value;if(!validUsername(name)||pass.length<6)return toast('Username අකුරු/ඉලක්කම්/_ 3-20 අතර විය යුතු අතර මුරපදය අකුරු 6ක්වත් විය යුතුයි.');try{window.__creatingAccount=true;const email=usernameEmail(name);const cred=await auth.createUserWithEmailAndPassword(email,pass);fbUser=cred.user;const key=name.toLowerCase();const idx=await db.ref('usernameIndex_v6/'+key).transaction(v=>v===null?fbUser.uid:undefined);if(!idx.committed){await auth.signOut();return toast('මෙම Username එක දැනටමත් භාවිතා වේ.')}user={name,points:500,wins:0,losses:0,uid:fbUser.uid};await db.ref('users_v6/'+fbUser.uid).set({name,createdAt:firebase.database.ServerValue.TIMESTAMP});window.__creatingAccount=false;localStorage.setItem(KEY,JSON.stringify(user));updateHeader();modal('authModal',false);presence();listenInvites();toast('ගිණුම සාර්ථකව සාදන ලදී.')}catch(e){window.__creatingAccount=false;console.error(e);toast(e.code==='auth/email-already-in-use'?'මෙම Username එක දැනටමත් පවතී.':'ගිණුම සෑදීමට නොහැකි විය: '+(e.message||e.code))}}
-async function loginAccount(){const name=$('username').value.trim(),pass=$('password').value;if(!validUsername(name)||pass.length<1)return toast('නිවැරදි Username සහ මුරපදය ඇතුළත් කරන්න.');try{await auth.signInWithEmailAndPassword(usernameEmail(name),pass);fbUser=auth.currentUser;await loadSignedInUser();toast('සාර්ථකව ඇතුළු විය!')}catch(e){console.error(e);toast('Username හෝ මුරපදය වැරදියි. පැරණි users_v5 ගිණුමක් නම් නව ගිණුමක් සාදන්න.')}}
+async function loginAccount(){const name=$('username').value.trim(),pass=$('password').value;if(!validUsername(name)||pass.length<1)return toast('නිවැරදි Username සහ මුරපදය ඇතුළත් කරන්න.');try{await auth.signInWithEmailAndPassword(usernameEmail(name),pass);fbUser=auth.currentUser;await loadSignedInUser();toast('සාර්ථකව ඇතුළු විය!')}catch(e){console.error(e);toast('Username හෝ මුරපදය වැරදියි.')}}
 $('login').onclick=loginAccount;$('register').onclick=registerAccount;
-function initBoard(){clearInterval(turnClockTimer);board=Array.from({length:8},()=>Array(8).fill(0));for(let r=0;r<8;r++)for(let c=0;c<8;c++)if((r+c)%2){if(r<3)board[r][c]=-1;else if(r>4)board[r][c]=1}turn=1;selected=null;moves=[];gameOver=false;processing=false;render();setTurnUI()}
+function createInitialBoard(){const b=Array.from({length:8},()=>Array(8).fill(0));for(let r=0;r<8;r++)for(let c=0;c<8;c++)if((r+c)%2){if(r<3)b[r][c]=-1;else if(r>4)b[r][c]=1}return b}
+function initBoard(){clearInterval(turnClockTimer);board=createInitialBoard();turn=1;selected=null;moves=[];gameOver=false;processing=false;render();setTurnUI()}
 const inside=(r,c)=>r>=0&&r<8&&c>=0&&c<8;
 function pieceMoves(r,c,b=board){
  const p=b[r][c];if(!p)return[];
  const king=Math.abs(p)===2;
- // සාමාන්‍ය ගමන් ඉදිරියට පමණයි; නමුත් කැපීම ඉදිරියටත් පසුපසටත් කළ හැක.
  const captureDirs=[[1,1],[1,-1],[-1,1],[-1,-1]];
  const moveDirs=king?captureDirs:(p>0?[[-1,1],[-1,-1]]:[[1,1],[1,-1]]);
  const caps=[],normal=[];
@@ -138,40 +137,86 @@ function startTurnClock(deadline,mode='single'){
 function aiMove(){if(gameOver||!single||turn!==-1)return;const legal=allMoves(-1);if(!legal.length)return finish(1,'AI පරිගණකයට Move නොමැත.');const ranked=legal.map(m=>{const b=board.map(x=>x.slice());applyMove(b,m);return{m,score:(m.capture?10:0)+(Math.abs(b[m.toR][m.toC])===2?3:0)+Math.random()*2}}).sort((a,b)=>b.score-a.score);const m=ranked[0].m;applyMove(board,m);render();const chain=m.capture?pieceMoves(m.toR,m.toC).filter(x=>x.capture):[];if(chain.length){aiTimer=setTimeout(()=>{if(gameOver)return;const n=chain[Math.floor(Math.random()*chain.length)];applyMove(board,n);render();const more=n.capture?pieceMoves(n.toR,n.toC).filter(x=>x.capture):[];if(more.length){selected={r:n.toR,c:n.toC};moves=more;aiTimer=setTimeout(()=>{selected=null;moves=[];aiContinue(n.toR,n.toC)},300)}else{turn=1;if(!allMoves(1).length)finish(-1,'ඔබට නීත්‍යානුකූල Move නොමැත.');else setTurnUI()}},350);return}turn=1;if(!allMoves(1).length)finish(-1,'ඔබට නීත්‍යානුකූල Move නොමැත.');else setTurnUI()}
 function aiContinue(r,c){if(gameOver)return;const caps=pieceMoves(r,c).filter(x=>x.capture);if(!caps.length){turn=1;if(!allMoves(1).length)finish(-1,'ඔබට නීත්‍යානුකූල Move නොමැත.');else setTurnUI();return}const m=caps[Math.floor(Math.random()*caps.length)];applyMove(board,m);render();aiTimer=setTimeout(()=>aiContinue(m.toR,m.toC),300)}
 function finish(winner,message){if(gameOver)return;gameOver=true;clearTimeout(aiTimer);clearInterval(turnClockTimer);const won=single?winner===1:(role==='host'?winner===1:winner===-1);const key=roomId?roomId+':'+(window.currentGameId||1):'single:'+Date.now();if(!awarded[key]){awarded[key]=true;if(won){user.points+=10;user.wins++}else{user.points=Math.max(0,user.points-10);user.losses++}saveUser()}$('overTitle').textContent=won?'ඔබ ජයග්‍රහණය කළා! 🎉':'ඔබ පරාජය විය!';$('overTitle').style.color=won?'var(--green)':'var(--red)';$('overMessage').textContent=message;$('overPoints').textContent=won?'+10 Points':'-10 Points';$('rematchStatus').textContent=single?'':'Rematch සඳහා ඔබගේ කැමැත්ත ලබාදෙන්න.';modal('overModal',true)}
-// Multiplayer room state is authoritative; transactions prevent two clients overwriting the same turn.
 async function publishFinish(winner,message){if(!roomRef)return;try{await roomRef.transaction(d=>{if(!d||d.status!=='playing')return;d.status='finished';d.winner=winner;d.message=message;d.finishedAt=Date.now();d.rematchVotes={};return d})}catch(e){console.error(e)}}
+
 function listenRoom(){
  if(roomRef&&roomCb)roomRef.off('value',roomCb);
  roomRef=db.ref('rooms_v6/'+roomId);
  roomCb=roomRef.on('value',s=>{
   const d=s.val();if(!d)return;
-  $('p1name').textContent=d.hostName||'Host';$('p2name').textContent=d.guestName||'Guest';
+  $('p1name').textContent=d.hostName||'Host';
+  $('p2name').textContent=d.guestName||'Guest';
+  
   if(d.status==='waiting'){
-   clearInterval(turnClockTimer);$('gameStatus').textContent='ඔබගේ ආරාධනාව පිළිගන්නා තෙක් රැඳී සිටින්න...';
-   $('turnClock').textContent='—';$('clockCaption').textContent='Invite Pending';$('clockRing').style.setProperty('--progress',100);$('clockRing').classList.remove('urgent');return;
+   clearInterval(turnClockTimer);
+   $('gameStatus').textContent='ඔබගේ ආරාධනාව පිළිගන්නා තෙක් රැඳී සිටින්න...';
+   $('turnClock').textContent='—';$('clockCaption').textContent='Invite Pending';$('clockRing').style.setProperty('--progress',100);$('clockRing').classList.remove('urgent');
+   return;
   }
+  
   if(d.status==='playing'){
-   window.currentGameId=d.gameId||1;board=d.board.map(row=>row.slice());turn=d.turn;gameOver=false;processing=false;selected=null;moves=[];missedCapture=null;
-   if(d.forced&&turn===(role==='host'?1:-1)){selected={r:d.forced.r,c:d.forced.c};moves=pieceMoves(d.forced.r,d.forced.c).filter(m=>m.capture)}
-   render();setTurnUIRoom();
+   modal('overModal',false);
+   window.currentGameId=d.gameId||1;
+   board=Array.isArray(d.board)?d.board.map(row=>row.slice()):createInitialBoard();
+   turn=d.turn||1;
+   gameOver=false;processing=false;selected=null;moves=[];missedCapture=null;
+   
+   if(d.forced&&turn===(role==='host'?1:-1)){
+    selected={r:d.forced.r,c:d.forced.c};
+    moves=pieceMoves(d.forced.r,d.forced.c).filter(m=>m.capture);
+   }
+   
+   render();
+   setTurnUIRoom();
+   
    const clockKey=[d.gameId||1,d.turn,d.turnStartedAt||d.startedAt||0].join(':');
-   if(window._clockKey!==clockKey){window._clockKey=clockKey;startTurnClock((d.turnStartedAt||d.startedAt||Date.now())+10000,'multi')}
+   if(window._clockKey!==clockKey){
+    window._clockKey=clockKey;
+    startTurnClock((d.turnStartedAt||d.startedAt||Date.now())+10000,'multi');
+   }
    $('gameStatus').textContent=turn===(role==='host'?1:-1)?'ඔබගේ වාරය':'ප්‍රතිවාදියාගේ වාරය';
-   let wc=0,rc=0;for(const row of board)for(const v of row){if(v>0)wc++;if(v<0)rc++}
-   if(!wc||!rc||!allMoves(turn).length){const win=(!wc)?-1:(!rc)?1:-turn;publishFinish(win,'තරඟය අවසන් විය. ප්‍රතිවාදියාට තවත් Move නොමැත.')}
+   
+   let wc=0,rc=0;
+   for(const row of board)for(const v of row){if(v>0)wc++;if(v<0)rc++}
+   if(!wc||!rc||!allMoves(turn).length){
+    const win=(!wc)?-1:(!rc)?1:-turn;
+    publishFinish(win,'තරඟය අවසන් විය. ප්‍රතිවාදියාට තවත් Move නොමැත.');
+   }
   }else if(d.status==='finished'){
    clearInterval(turnClockTimer);gameOver=true;
    const localWin=(d.winner===1&&role==='host')||(d.winner===-1&&role==='guest');
    const id=roomId+':'+(d.gameId||1);
-   if(!awarded[id]){awarded[id]=true;if(localWin){user.points+=10;user.wins++}else{user.points=Math.max(0,user.points-10);user.losses++}saveUser();$('overTitle').textContent=localWin?'ඔබ ජයග්‍රහණය කළා! 🎉':'ඔබ පරාජය විය!';$('overMessage').textContent=d.message||'තරඟය අවසන්';$('overPoints').textContent=localWin?'+10 Points':'-10 Points';modal('overModal',true)}
-   const votes=d.rematchVotes||{};$('rematchStatus').textContent=(votes.host?'Host කැමතියි. ':'Host බලාපොරොත්තුවෙන්. ')+(votes.guest?'Guest කැමතියි.':'Guest බලාපොරොත්තුවෙන්.');
+   if(!awarded[id]){
+    awarded[id]=true;
+    if(localWin){user.points+=10;user.wins++}else{user.points=Math.max(0,user.points-10);user.losses++}
+    saveUser();
+    $('overTitle').textContent=localWin?'ඔබ ජයග්‍රහණය කළා! 🎉':'ඔබ පරාජය විය!';
+    $('overMessage').textContent=d.message||'තරඟය අවසන්';
+    $('overPoints').textContent=localWin?'+10 Points':'-10 Points';
+    modal('overModal',true);
+   }
+   const votes=d.rematchVotes||{};
+   $('rematchStatus').textContent=(votes.host?'Host කැමතියි. ':'Host බලාපොරොත්තුවෙන්. ')+(votes.guest?'Guest කැමතියි.':'Guest බලාපොරොත්තුවෙන්.');
   }
  });
 }
-async function enterRoom(id,r){roomId=id;role=r;single=false;modal('multiModal',false);$('lobby').style.display='none';$('arena').style.display='grid';$('p1name').textContent=r==='host'?user.name:'ප්‍රතිවාදියා';$('p2name').textContent=r==='host'?'ප්‍රතිවාදියා':user.name;listenRoom()}
+
+async function enterRoom(id,r){
+ roomId=id;role=r;single=false;
+ modal('multiModal',false);
+ $('lobby').style.display='none';
+ $('arena').style.display='grid';
+ $('p1name').textContent=r==='host'?user.name:'ප්‍රතිවාදියා';
+ $('p2name').textContent=r==='host'?'ප්‍රතිවාදියා':user.name;
+ board=createInitialBoard();
+ render();
+ listenRoom();
+}
+
 function rememberOpponent(name,uid){let a=JSON.parse(localStorage.getItem(RECENT)||'[]');a=a.filter(x=>x.uid!==uid);a.unshift({name,uid});localStorage.setItem(RECENT,JSON.stringify(a.slice(0,15)))}
 function renderRecent(){const el=$('recentList'),a=JSON.parse(localStorage.getItem(RECENT)||'[]');el.innerHTML='';if(!a.length){el.textContent='මෑතකදී තරඟ කළ අය නොමැත.';return}a.forEach(x=>{const d=document.createElement('div');d.className='listitem';const n=document.createElement('b');n.textContent=x.name;const b=document.createElement('button');b.className='btn-gold';b.textContent='Invite';b.onclick=()=>invite({name:x.name},x.uid);d.append(n,b);el.append(d)})}
-async function invite(target,uid){if(!fbUser||!uid||uid===fbUser.uid)return;try{const ref=db.ref('rooms_v6').push(),id=ref.key,initial=Array.from({length:8},()=>Array(8).fill(0));for(let r=0;r<8;r++)for(let c=0;c<8;c++)if((r+c)%2){if(r<3)initial[r][c]=-1;else if(r>4)initial[r][c]=1}await ref.set({status:'waiting',hostUid:fbUser.uid,guestUid:uid,hostName:user.name,guestName:target.name,board:initial,turn:1,gameId:1,turnStartedAt:null,lastMoveAt:null,createdAt:Date.now()});await db.ref('invites_v6/'+uid).push().set({roomId:id,fromUid:fbUser.uid,fromName:user.name,status:'pending',createdAt:Date.now()});rememberOpponent(target.name,uid);enterRoom(id,'host');toast('ආරාධනාව යවන ලදී.');}catch(e){console.error(e);toast('Invite යැවීමට නොහැකි විය.')}}
+async function invite(target,uid){if(!fbUser||!uid||uid===fbUser.uid)return;try{const ref=db.ref('rooms_v6').push(),id=ref.key,initial=createInitialBoard();await ref.set({status:'waiting',hostUid:fbUser.uid,guestUid:uid,hostName:user.name,guestName:target.name,board:initial,turn:1,gameId:1,turnStartedAt:null,lastMoveAt:null,createdAt:Date.now()});await db.ref('invites_v6/'+uid).push().set({roomId:id,fromUid:fbUser.uid,fromName:user.name,status:'pending',createdAt:Date.now()});rememberOpponent(target.name,uid);enterRoom(id,'host');toast('ආරාධනාව යවන ලදී.');}catch(e){console.error(e);toast('Invite යැවීමට නොහැකි විය.')}}
+
 function listenInvites(){
  if(!fbUser)return;
  if(inviteRef&&inviteCb)inviteRef.off('child_added',inviteCb);
@@ -184,17 +229,21 @@ function listenInvites(){
   if(!ok){await s.ref.update({status:'declined',respondedAt:Date.now()});toast('ආරාධනාව ප්‍රතික්ෂේප කළා.');return}
   try{
    const room=db.ref('rooms_v6/'+v.roomId);
+   const initialBoard=createInitialBoard();
    const accepted=await room.transaction(d=>{
     if(!d||d.status!=='waiting'||d.guestUid!==fbUser.uid)return;
-    d.status='playing';d.startedAt=Date.now();d.turnStartedAt=Date.now();d.lastMoveAt=Date.now();d.turn=1;d.forced=null;return d;
+    d.status='playing';d.startedAt=Date.now();d.turnStartedAt=Date.now();d.lastMoveAt=Date.now();d.turn=1;d.board=initialBoard;d.forced=null;return d;
    });
    if(!accepted.committed){await s.ref.update({status:'expired',respondedAt:Date.now()});toast('මෙම ආරාධනාව තවදුරටත් වලංගු නැත.');return}
    await s.ref.update({status:'accepted',respondedAt:Date.now()});
-   rememberOpponent(v.fromName,v.fromUid);enterRoom(v.roomId,'guest');
+   rememberOpponent(v.fromName,v.fromUid);
+   enterRoom(v.roomId,'guest');
   }catch(e){console.error('Invite acceptance failed:',e);toast('Invite එක පිළිගැනීමට නොහැකි විය. නැවත උත්සාහ කරන්න.');}
  });
 }
+
 $('single').onclick=()=>{single=true;roomId=null;role=null;$('lobby').style.display='none';$('arena').style.display='grid';$('p1name').textContent=user.name||'ඔබ';$('p2name').textContent='AI පරිගණකය';initBoard()};$('multi').onclick=()=>{renderRecent();modal('multiModal',true)};$('closeMulti').onclick=()=>modal('multiModal',false);
+
 async function searchOnlinePlayers(){
  const q=$('search').value.trim().toLowerCase(),el=$('results'),btn=$('searchBtn');
  if(!q){el.textContent='සෙවීමට Username එකක් ඇතුළත් කරන්න.';return}
@@ -213,9 +262,52 @@ async function searchOnlinePlayers(){
 $('searchBtn').onclick=searchOnlinePlayers;
 $('search').addEventListener('keydown',e=>{if(e.key==='Enter')searchOnlinePlayers()});
 $('forfeit').onclick=async()=>{if(gameOver)return;if(!confirm('තරඟයෙන් ඉවත් වීමට අවශ්‍යද?'))return;if(single){finish(-1,'ඔබ තරඟයෙන් ඉවත් විය.')}else{const winner=role==='host'?-1:1;await publishFinish(winner,'ප්‍රතිවාදියා තරඟයෙන් ඉවත් විය.')}};
-$('rematch').onclick=async()=>{if(single){modal('overModal',false);initBoard();return}if(!roomRef)return;try{const res=await roomRef.transaction(d=>{if(!d||d.status!=='finished')return;d.rematchVotes=d.rematchVotes||{};d.rematchVotes[role]=true;if(d.rematchVotes.host&&d.rematchVotes.guest){d.status='playing';d.gameId=(d.gameId||1)+1;d.board=Array.from({length:8},(_,r)=>Array.from({length:8},(_,c)=>(r+c)%2?(r<3?-1:r>4?1:0):0));d.turn=1;d.startedAt=Date.now();d.turnStartedAt=Date.now();d.lastMoveAt=Date.now();d.forced=null;d.rematchVotes={};d.winner=null;d.message=null;d.finishedAt=null}return d});if(res.committed){window._clockKey=null;toast('Rematch කැමැත්ත යැවීය. ප්‍රතිවාදියාගේ කැමැත්ත බලාපොරොත්තු වන්න.')}}catch(e){toast('Rematch යැවීමට නොහැකි විය.')}};
-$('exit').onclick=()=>{modal('overModal',false);leaveRoom()};function leaveRoom(){clearInterval(turnClockTimer);window._clockKey=null;if(roomRef&&roomCb)roomRef.off('value',roomCb);roomRef=null;roomCb=null;roomId=null;role=null;single=true;gameOver=false;clearTimeout(aiTimer);$('arena').style.display='none';$('lobby').style.display='grid'}$('home').onclick=()=>{if(roomId&&!gameOver){if(confirm('තරඟයෙන් ඉවත් වීමට අවශ්‍යද?'))$('forfeit').click();}leaveRoom()};
-// Proper logout: mark presence offline, detach realtime listeners, clear local session and sign out from Firebase Auth.
-$('logout').onclick=async()=>{const btn=$('logout');if(btn.disabled)return;btn.disabled=true;btn.textContent='Logging out...';const oldUid=fbUser&&fbUser.uid;try{if(oldUid){try{await db.ref('publicProfiles_v6/'+oldUid).update({online:false,lastSeen:firebase.database.ServerValue.TIMESTAMP});}catch(presenceError){console.warn('Could not update offline presence:',presenceError);}}if(inviteRef&&inviteCb){inviteRef.off('child_added',inviteCb);inviteRef=null;inviteCb=null;}if(roomRef&&roomCb){roomRef.off('value',roomCb);roomRef=null;roomCb=null;}clearTimeout(aiTimer);clearInterval(turnClockTimer);localStorage.removeItem(KEY);await auth.signOut();fbUser=null;user={name:'',points:500,wins:0,losses:0,uid:null};roomId=null;role=null;single=true;gameOver=false;selected=null;moves=[];$('password').value='';$('headerName').textContent='ක්‍රීඩකයා';$('points').textContent='500';$('arena').style.display='none';$('lobby').style.display='grid';modal('multiModal',false);modal('overModal',false);modal('authModal',true);toast('ඔබ සාර්ථකව Logout විය.');}catch(e){console.error('Logout failed:',e);toast('Logout කිරීමට නොහැකි විය. නැවත උත්සාහ කරන්න.');}finally{btn.disabled=false;btn.textContent='Logout';}};
+
+$('rematch').onclick=async()=>{
+ if(single){modal('overModal',false);initBoard();return}
+ if(!roomRef)return;
+ try{
+  const res=await roomRef.transaction(d=>{
+   if(!d||d.status!=='finished')return;
+   d.rematchVotes=d.rematchVotes||{};
+   d.rematchVotes[role]=true;
+   if(d.rematchVotes.host&&d.rematchVotes.guest){
+    d.status='playing';
+    d.gameId=(d.gameId||1)+1;
+    d.board=createInitialBoard();
+    d.turn=1;
+    d.startedAt=Date.now();
+    d.turnStartedAt=Date.now();
+    d.lastMoveAt=Date.now();
+    d.forced=null;
+    d.rematchVotes={};
+    d.winner=null;
+    d.message=null;
+    d.finishedAt=null;
+   }
+   return d;
+  });
+  if(res.committed){
+   window._clockKey=null;
+   toast('Rematch කැමැත්ත යැවීය. ප්‍රතිවාදියාගේ කැමැත්ත බලාපොරොත්තු වන්න.');
+  }
+ }catch(e){toast('Rematch යැවීමට නොහැකි විය.');}
+};
+
+$('exit').onclick=()=>{modal('overModal',false);leaveRoom()};
+function leaveRoom(){clearInterval(turnClockTimer);window._clockKey=null;if(roomRef&&roomCb)roomRef.off('value',roomCb);roomRef=null;roomCb=null;roomId=null;role=null;single=true;gameOver=false;clearTimeout(aiTimer);$('arena').style.display='none';$('lobby').style.display='grid'}
+$('home').onclick=()=>{if(roomId&&!gameOver){if(confirm('තරඟයෙන් ඉවත් වීමට අවශ්‍යද?'))$('forfeit').click();}leaveRoom()};
+
+$('logout').onclick=async()=>{
+ const btn=$('logout');if(btn.disabled)return;btn.disabled=true;btn.textContent='Logging out...';const oldUid=fbUser&&fbUser.uid;
+ try{
+  if(oldUid){try{await db.ref('publicProfiles_v6/'+oldUid).update({online:false,lastSeen:firebase.database.ServerValue.TIMESTAMP});}catch(presenceError){console.warn('Could not update offline presence:',presenceError);}}
+  if(inviteRef&&inviteCb){inviteRef.off('child_added',inviteCb);inviteRef=null;inviteCb=null;}
+  if(roomRef&&roomCb){roomRef.off('value',roomCb);roomRef=null;roomCb=null;}
+  clearTimeout(aiTimer);clearInterval(turnClockTimer);localStorage.removeItem(KEY);await auth.signOut();fbUser=null;user={name:'',points:500,wins:0,losses:0,uid:null};roomId=null;role=null;single=true;gameOver=false;selected=null;moves=[];$('password').value='';$('headerName').textContent='ක්‍රීඩකයා';$('points').textContent='500';$('arena').style.display='none';$('lobby').style.display='grid';modal('multiModal',false);modal('overModal',false);modal('authModal',true);toast('ඔබ සාර්ථකව Logout විය.');
+ }catch(e){console.error('Logout failed:',e);toast('Logout කිරීමට නොහැකි විය. නැවත උත්සාහ කරන්න.');}
+ finally{btn.disabled=false;btn.textContent='Logout';}
+};
+
 window.addEventListener('beforeunload',()=>{if(fbUser)db.ref('publicProfiles_v6/'+fbUser.uid+'/online').set(false)});
 </script></body></html>
