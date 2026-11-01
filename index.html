@@ -14,7 +14,7 @@
 #clockRing.urgent{animation:clockPulse .65s ease-in-out infinite;box-shadow:0 0 22px #ff6b8180}
 #clockRing.urgent #turnClock{color:var(--red)}
 @keyframes clockPulse{50%{transform:scale(1.07);filter:brightness(1.25)}}
-@media(prefers-reduced-motion:reduce){#clockRing.urgent{animation:none}}
+@keyframes spin{to{transform:rotate(360deg)}}
 .sq{touch-action:none}.modal{position:fixed;inset:0;background:#000c;display:none;place-items:center;z-index:20;padding:15px}.modal.show{display:grid}.modalbox{width:min(100%,430px);background:#121824;border:2px solid var(--gold);border-radius:17px;padding:20px;display:grid;gap:12px}.modalbox h2,.modalbox h3{text-align:center;color:var(--gold)}input{width:100%;padding:11px;background:#0007;border:1px solid #ffd16670;border-radius:9px;color:white;font-size:1rem}.row{display:flex;gap:8px;align-items:center}.row>*{min-width:0}.list{display:grid;gap:7px;max-height:160px;overflow:auto}.listitem{display:flex;justify-content:space-between;align-items:center;background:#ffffff10;border-radius:8px;padding:8px;gap:8px}#toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,100px);opacity:0;background:#1e293b;border:1px solid var(--gold);border-radius:22px;padding:10px 18px;z-index:50;transition:.25s}#toast.show{transform:translate(-50%,0);opacity:1}#connection{font-size:.8rem;color:#4ade80}footer{font-size:.85rem;color:var(--dim)}@media(max-width:760px){.arena{grid-template-columns:1fr 1fr;grid-template-areas:'a b' 'board board';align-items:start}.side:first-child{grid-area:a;min-height:72px}.side:last-child{grid-area:b;min-height:72px}.board-wrap{grid-area:board;width:min(calc(100vw - 30px),calc(100dvh - 230px));}.side{padding:7px}.player{padding:7px;font-size:.9rem}}@media(max-height:600px) and (max-width:760px){.app{gap:5px;padding:5px}.board-wrap{width:min(calc(100vw - 24px),calc(100dvh - 165px))}.side{min-height:55px}header{min-height:45px}footer{min-height:32px}}
 </style>
 </head>
@@ -24,7 +24,17 @@
 <section class="lobby" id="lobby"><h2>දාම් ක්‍රීඩාවට සාදරයෙන් පිළිගනිමු</h2><p style="text-align:center;color:var(--dim)">ක්‍රීඩා මාදිලියක් තෝරන්න</p><div class="mode-grid"><div class="mode" id="single"><i class="fa-solid fa-robot"></i><b>Single Player</b><p>AI පරිගණකය සමඟ</p></div><div class="mode" id="multi"><i class="fa-solid fa-users"></i><b>Multiplayer</b><p>ඔන්ලයින් යහළුවන් සමඟ</p></div></div><div id="connection">● Firebase සම්බන්ධ වෙමින්...</div></section>
 <section class="arena" id="arena" style="display:none"><div class="side"><div class="player active" id="p1"><b id="p1name">ඔබ</b><br><small id="p1sub">සුදු (White)</small></div></div><div class="board-wrap"><button class="close" id="forfeit" title="තරඟයෙන් ඉවත් වන්න">×</button><div class="board" id="board"></div></div><div class="side"><div class="player" id="p2"><b id="p2name">ප්‍රතිවාදියා</b><br><small id="p2sub">රතු (Red)</small></div></div><div class="status" id="gameStatus" style="grid-column:1/-1"></div><div id="clockPanel"><div id="clockRing" role="timer" aria-live="off"><span id="turnClock">10</span></div><span id="clockCaption">ඉතිරි කාලය</span></div></section>
 </main><footer><span>ජයග්‍රහණය +10 | පරාජය / ඉවත් වීම -10</span><button class="btn" id="home">⌂ ප්‍රධාන පිටුව</button></footer></div>
-<div class="modal show" id="authModal"><div class="modalbox"><h2>ඇතුළු වන්න / ගිණුම සාදන්න</h2><label for="username">ක්‍රීඩක නම</label><input id="username" autocomplete="username" minlength="3" placeholder="Username"><label for="password">මුරපදය</label><input id="password" type="password" autocomplete="current-password" minlength="6" placeholder="Password"><div class="row"><button class="btn-gold" id="login" style="flex:1">ඇතුළු වන්න</button><button class="btn" id="register" style="flex:1">ගිණුම සාදන්න</button></div><small style="color:var(--dim)">ආරක්ෂිත Firebase Authentication භාවිතා වේ.</small></div></div>
+
+<!-- Loading Modal -->
+<div class="modal show" id="loadingModal">
+<div class="modalbox" style="text-align:center; display:grid; place-items:center; gap:14px; padding:30px;">
+<div style="width:48px;height:48px;border:4px solid #ffffff20;border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite"></div>
+<h3 style="color:var(--gold)">ප්‍රොෆයිලය වෙත පිවිසෙමින් පවතී...</h3>
+<p style="color:var(--dim)">Profile එකට log වෙන තුරු රැඳී සිටින්න...</p>
+</div>
+</div>
+
+<div class="modal" id="authModal"><div class="modalbox"><h2>ඇතුළු වන්න / ගිණුම සාදන්න</h2><label for="username">ක්‍රීඩක නම</label><input id="username" autocomplete="username" minlength="3" placeholder="Username"><label for="password">මුරපදය</label><input id="password" type="password" autocomplete="current-password" minlength="6" placeholder="Password"><div class="row"><button class="btn-gold" id="login" style="flex:1">ඇතුළු වන්න</button><button class="btn" id="register" style="flex:1">ගිණුම සාදන්න</button></div><small style="color:var(--dim)">ආරක්ෂිත Firebase Authentication භාවිතා වේ.</small></div></div>
 <div class="modal" id="multiModal"><div class="modalbox"><div class="row"><h3 style="flex:1">ඔන්ලයින් යහළුවන්</h3><button class="btn" id="closeMulti">×</button></div><div class="row"><input id="search" placeholder="නම සොයන්න"><button class="btn-gold" id="searchBtn">Search</button></div><b style="color:var(--gold)">මෑතකදී තරඟ කළ යහළුවන්</b><div class="list" id="recentList">මෑතකදී තරඟ කළ අය නොමැත.</div><div class="list" id="results">Online සිටින යහළුවෙකු සොයන්න.</div></div></div>
 <div class="modal" id="overModal"><div class="modalbox"><h2 id="overTitle">තරඟය අවසන්</h2><p id="overMessage" style="text-align:center"></p><b id="overPoints" style="text-align:center"></b><p id="rematchStatus" style="text-align:center;color:var(--gold)"></p><div class="row"><button class="btn-gold" id="rematch">නැවත ක්‍රීඩා කරන්න</button><button class="btn" id="exit">ඉවත් වෙන්න</button></div></div></div><div id="toast"></div>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
@@ -43,7 +53,41 @@ function setStatus(s,ok=true){$('connection').textContent='● '+s;$('connection
 
 try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);auth=firebase.auth();db=firebase.database();}catch(e){console.error(e);setStatus('Firebase ආරම්භ කළ නොහැක',false)}
 
-(async()=>{try{await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);fbUser=auth.currentUser;if(fbUser){await loadSignedInUser()}setStatus('Firebase සූදානම්');auth.onAuthStateChanged(async u=>{fbUser=u;if(u){if(window.__creatingAccount)return;try{await loadSignedInUser()}catch(e){console.error(e)}}else{user={name:'',points:500,wins:0,losses:0,uid:null};modal('authModal',true)}})}catch(e){console.error(e);setStatus('Firebase දෝෂයකි',false)}})();
+(async()=>{
+ try{
+  modal('loadingModal', true);
+  modal('authModal', false);
+  await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+  fbUser=auth.currentUser;
+  if(fbUser){
+   await loadSignedInUser();
+  } else {
+   modal('loadingModal', false);
+   modal('authModal', true);
+  }
+  setStatus('Firebase සූදානම්');
+  auth.onAuthStateChanged(async u=>{
+   fbUser=u;
+   if(u){
+    if(window.__creatingAccount)return;
+    try{await loadSignedInUser()}catch(e){
+     console.error(e);
+     modal('loadingModal', false);
+     modal('authModal', true);
+    }
+   }else{
+    user={name:'',points:500,wins:0,losses:0,uid:null};
+    modal('loadingModal', false);
+    modal('authModal', true);
+   }
+  });
+ }catch(e){
+  console.error(e);
+  modal('loadingModal', false);
+  modal('authModal', true);
+  setStatus('Firebase දෝෂයකි',false);
+ }
+})();
 
 function presence(){if(!fbUser||!user.name)return;const r=db.ref('publicProfiles_v6/'+fbUser.uid);r.child('online').onDisconnect().set(false).catch(e=>{});r.update({name:user.name,online:true,lastSeen:firebase.database.ServerValue.TIMESTAMP}).catch(e=>{})}
 function updateHeader(){$('headerName').textContent=user.name||'ක්‍රීඩකයා';$('points').textContent=user.points}
@@ -51,11 +95,31 @@ function saveUser(){localStorage.setItem(KEY,JSON.stringify(user));if(db&&fbUser
 function usernameEmail(name){return name.toLowerCase()+'@sinhala-draughts.app'}
 
 async function loadSignedInUser(){
- const s=await db.ref('users_v6/'+fbUser.uid).once('value');
- const d=s.val();if(!d||!d.name){await auth.signOut();return}
- const local=JSON.parse(localStorage.getItem(KEY)||'null');
- user={name:d.name,points:local&&local.uid===fbUser.uid?Number(local.points)||500:500,wins:Number(d.wins)||0,losses:Number(d.losses)||0,uid:fbUser.uid};
- $('username').value=user.name;modal('authModal',false);updateHeader();presence();listenInvites();
+ try {
+  const s=await db.ref('users_v6/'+fbUser.uid).once('value');
+  const d=s.val();
+  if(!d||!d.name){
+   await auth.signOut();
+   modal('loadingModal', false);
+   modal('authModal', true);
+   return;
+  }
+  const local=JSON.parse(localStorage.getItem(KEY)||'null');
+  user={name:d.name,points:local&&local.uid===fbUser.uid?Number(local.points)||500:500,wins:Number(d.wins)||0,losses:Number(d.losses)||0,uid:fbUser.uid};
+  $('username').value=user.name;
+  updateHeader();
+  presence();
+  listenInvites();
+  
+  // Load complete - hide loading animation and open the main lobby page
+  modal('loadingModal', false);
+  modal('authModal', false);
+ } catch(e) {
+  console.error(e);
+  modal('loadingModal', false);
+  modal('authModal', true);
+  toast('ගිණුම් දත්ත ලබාගත නොහැක.');
+ }
 }
 
 function validUsername(n){return /^[a-zA-Z0-9_]{3,20}$/.test(n)}
@@ -424,7 +488,7 @@ function listenRoom(){
    return;
   }
   if(d.status==='playing'){
-   modal('overModal',false); // Modal වසන්න
+   modal('overModal',false);
    window.currentGameId=d.gameId||1;
    board=d.board.map(row=>row.slice());
    turn=d.turn;gameOver=false;processing=false;selected=null;moves=[];missedCapture=null;
@@ -453,7 +517,6 @@ function listenRoom(){
     modal('overModal',true);
    }
 
-   // Rematch Logic - පරාජිතයාට පමණක් ඉල්ලිය හැක, ජයග්‍රාහකයාට පිළිගත හැක
    const rematchBtn=$('rematch');
    if(single){
     rematchBtn.style.display='block';
@@ -476,7 +539,6 @@ function listenRoom(){
      rematchBtn.style.display='none';
      $('rematchStatus').textContent='ඔබ Rematch ඉල්ලීමක් යවා ඇත. ප්‍රතිවාදියා පිළිගන්නා තෙක් රැඳී සිටින්න...';
     }else{
-     // ජයග්‍රාහකයාට ප්‍රතිවාදියාගේ ඉල්ලීම පෙනේ
      rematchBtn.style.display='block';
      rematchBtn.textContent='Rematch පිළිගන්න (Accept)';
      rematchBtn.disabled=false;
@@ -600,7 +662,6 @@ $('forfeit').onclick=async()=>{
  else{const winner=role==='host'?-1:1;await publishFinish(winner,'ප්‍රතිවාදියා තරඟයෙන් ඉවත් විය.')}
 };
 
-// Rematch Button Click Handler
 $('rematch').onclick=async()=>{
  if(single){modal('overModal',false);initBoard();return}
  if(!roomRef)return;
@@ -611,7 +672,6 @@ $('rematch').onclick=async()=>{
   const localWin=(d.winner===1&&role==='host')||(d.winner===-1&&role==='guest');
   
   if(!localWin&&!d.rematchRequestedBy){
-   // පරාජිතයා Rematch ඉල්ලීමක් යැවීම
    await roomRef.transaction(room=>{
     if(!room||room.status!=='finished')return;
     room.rematchRequestedBy=role;
@@ -619,7 +679,6 @@ $('rematch').onclick=async()=>{
    });
    toast('Rematch ඉල්ලීම යවන ලදී. ප්‍රතිවාදියාගේ පිළිතුර බලාපොරොත්තු වන්න.');
   }else if(localWin&&d.rematchRequestedBy&&d.rematchRequestedBy!==role){
-   // ජයග්‍රාහකයා Rematch එක Accept කිරීම -> තරඟය නැවත පටන් ගැනීම
    await roomRef.transaction(room=>{
     if(!room||room.status!=='finished')return;
     room.status='playing';
@@ -655,7 +714,7 @@ $('logout').onclick=async()=>{
  try{
   if(fbUser)await db.ref('publicProfiles_v6/'+fbUser.uid).update({online:false});
   if(inviteRef&&inviteCb)inviteRef.off('child_added',inviteCb);
-  if(roomRef&&roomCb)roomRef.off('value',roomCb);
+  if(roomRef&&roomCb)roomRef.off('value',roomRef);
   localStorage.removeItem(KEY);await auth.signOut();
   fbUser=null;user={name:'',points:500,wins:0,losses:0,uid:null};
   leaveRoom();modal('authModal',true);toast('සාර්ථකව Logout විය.');
