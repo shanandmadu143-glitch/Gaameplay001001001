@@ -9,14 +9,16 @@
 :root{--bg:#080b18;--panel:rgba(18,24,43,.96);--gold:#ffd166;--dim:#a0aec0;--green:#2ecc71;--red:#ff6b81;--blue:#4facfe}
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Gemunu Libre','Poppins',sans-serif;user-select:none}
 html,body{width:100%;min-height:100%;background:radial-gradient(circle at 20% 20%,#3b2e2530,transparent 40%),linear-gradient(145deg,#080b18,#111a31 60%,#0a1022);color:#f8f9fa;padding:12px}
-.app{max-width:960px;margin:auto;display:grid;gap:16px}
+.app{max-width:960px;margin:auto;display:grid;gap:16px;padding-bottom:60px}
 
 /* Header */
 header{background:var(--panel);border:1px solid #ffd16640;border-radius:16px;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 8px 25px rgba(0,0,0,0.4)}
 .brand{font-size:1.2rem;color:var(--gold);font-weight:800;display:flex;align-items:center;gap:8px}
 .points-box{background:rgba(0,0,0,0.5);border:1px solid var(--gold);padding:6px 14px;border-radius:20px;font-weight:700;color:var(--gold);font-size:0.95rem}
-.btn-back{background:rgba(255,255,255,0.08);color:white;border:1px solid rgba(255,255,255,0.2);border-radius:9px;padding:7px 12px;cursor:pointer;text-decoration:none;font-weight:600;font-size:0.85rem;display:inline-flex;align-items:center;gap:6px;transition:.2s}
-.btn-back:hover{background:rgba(255,255,255,0.15)}
+
+/* Floating Home Button (Bottom Right) */
+.float-home-btn{position:fixed;bottom:20px;right:20px;z-index:99;background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;border:2px solid var(--gold);border-radius:30px;padding:10px 18px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;box-shadow:0 6px 20px rgba(0,0,0,0.6);transition:.2s;font-size:0.95rem}
+.float-home-btn:hover{transform:scale(1.05);filter:brightness(1.1)}
 
 /* Category Navigation Tabs */
 .cat-tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
@@ -25,7 +27,6 @@ header{background:var(--panel);border:1px solid #ffd16640;border-radius:16px;pad
 
 /* Highlighted Reward Banner */
 .highlight-reward{background:linear-gradient(135deg,rgba(255,209,102,0.12),rgba(46,204,113,0.12));border:2px solid var(--gold);border-radius:16px;padding:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;position:relative;overflow:hidden;box-shadow:0 8px 20px rgba(0,0,0,0.3)}
-.highlight-reward:before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle,rgba(255,209,102,0.05) 0%,transparent 70%);pointer-events:none}
 .reward-left{display:flex;align-items:center;gap:14px}
 .reward-icon-wrap{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#ffeaa7,#fdcb6e);color:#111;display:grid;place-items:center;font-size:1.5rem;box-shadow:0 0 15px rgba(255,209,102,0.5);animation:pulseIcon 2s infinite ease-in-out}
 @keyframes pulseIcon{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
@@ -77,8 +78,10 @@ header{background:var(--panel);border:1px solid #ffd16640;border-radius:16px;pad
 <header>
 <div class="brand"><i class="fa-solid fa-store"></i> Shop & Reward</div>
 <div class="points-box">🪙 <span id="userPoints">500</span> pts</div>
-<a href="index.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i> ප්‍රධාන පිටුවට</a>
 </header>
+
+<!-- Floating Home Button at Bottom Right -->
+<a href="index.html" class="float-home-btn"><i class="fa-solid fa-house"></i> ප්‍රධාන පිටුවට</a>
 
 <!-- Category Tabs -->
 <div class="cat-tabs">
