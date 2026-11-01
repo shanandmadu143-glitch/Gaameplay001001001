@@ -65,7 +65,7 @@
 </div>
 </div>
 
-<!-- Multiplayer Bet Modal (Step 1: මුලින්ම Bet Point ඇතුළත් කිරීම) -->
+<!-- Multiplayer Step 1: Bet Points Modal -->
 <div class="modal" id="betModal">
 <div class="modalbox">
 <h3 style="color:var(--gold)">Multiplayer - ඔට්ටු තැබීම (Step 1)</h3>
@@ -78,7 +78,7 @@
 </div>
 </div>
 
-<!-- Multiplayer Friends & Invite Modal (Step 2: Bet එක දුන් පසු යාළුවාට ආරාධනා කිරීම) -->
+<!-- Multiplayer Step 2: Friends & Invite Modal -->
 <div class="modal" id="multiModal">
 <div class="modalbox">
 <div class="row"><h3 style="flex:1">ඔන්ලයින් යහළුවන් (Step 2)</h3><button class="btn" id="closeMulti">×</button></div>
@@ -670,15 +670,15 @@ function finish(winner,message){
   let bet=window.currentBetPoints||10;
   if(won){
    if(single){
-    user.points += (bet * 2); // Single Player දිනුවොත් Bet Point මෙන් දෙගුණයක් එකතු වේ
+    user.points += (bet * 2);
     $('overPoints').textContent = '+' + (bet * 2) + ' Points (Double Bet Won!)';
    }else{
-    user.points += bet; // Multiplayer ජයග්‍රහණය
+    user.points += bet;
     $('overPoints').textContent = '+' + bet + ' Points (Win!)';
    }
    user.wins++;
   }else{
-   user.points = Math.max(0, user.points - bet); // පැරදුන විට Bet Point පමණක් අඩුවේ
+   user.points = Math.max(0, user.points - bet);
    user.losses++;
    $('overPoints').textContent = '-' + bet + ' Points';
   }
@@ -686,7 +686,7 @@ function finish(winner,message){
  }
 
  $('overTitle').textContent=won?'ඔබ ජයග්‍රහණය කළා! 🎉':'ඔබ පරාජය විය!';
- $('overTitle'].style.color=won?'var(--green)':'var(--red)';
+ $('overTitle').style.color=won?'var(--green)':'var(--red)';
  $('overMessage').textContent=message;
  modal('overModal',true);
 }
@@ -784,7 +784,7 @@ function setTurnUIRoom(){
 
 async function enterRoom(id,r){
  roomId=id; role=r; single=false;
- $('openProfile').style.display='none'; // ක්‍රීඩාව ආරම්භ වූ විට Profile වසයි
+ $('openProfile').style.display='none';
  modal('multiModal',false);
  $('lobby').style.display='none';
  $('arena').style.display='grid';
@@ -809,9 +809,7 @@ function renderRecent(){
  });
 }
 
-let pendingInviteUser = null;
-
-// STEP 1: Multiplayer ක්ලික් කළ විට මුලින්ම Bet Modal එක පෙන්වීම
+// Multiplayer Step 1: Multiplayer ක්ලික් කළ විට Bet Modal විවෘත වේ
 $('multi').onclick = () => {
  $('maxUserPoints').textContent = user.points;
  $('betAmountInput').value = Math.min(50, user.points);
@@ -820,7 +818,7 @@ $('multi').onclick = () => {
 
 $('closeBetModal').onclick = () => modal('betModal', false);
 
-// STEP 2: Bet Point තහවුරු කර ඊළඟට Online යහළුවන් සෙවීමේ මෝඩල් එක (multiModal) විවෘත කිරීම
+// Multiplayer Step 2: Bet Point තහවුරු කර ඊළඟට යහළුවන් ලැයිස්තුව පෙන්වීම
 $('proceedToInvite').onclick = () => {
  const betVal = parseInt($('betAmountInput').value) || 10;
  if(betVal < 1) return toast('කරුණාකර නිවැරදි ඔට්ටු මුදලක් ඇතුළත් කරන්න.');
@@ -836,7 +834,7 @@ $('proceedToInvite').onclick = () => {
 
 $('closeMulti').onclick = () => modal('multiModal', false);
 
-// STEP 3: නිශ්චිත යහළුවෙකුට Bet Point සමග Invite යැවීම
+// Multiplayer Step 3: නිශ්චිත යහළුවෙකුට Bet Point සමග Invite යැවීම
 async function sendInviteToUser(target){
  const betVal = window.currentBetPoints || 10;
  if(!fbUser || !target || target.uid === fbUser.uid) return;
@@ -904,7 +902,7 @@ $('startSingleGame').onclick=()=>{
  modal('singleBetModal', false);
  window.currentBetPoints = betVal;
  single=true;roomId=null;role=null;nextStartingSide=1;
- $('openProfile').style.display='none'; // ක්‍රීඩාව ආරම්භ වූ විට Profile වසයි
+ $('openProfile').style.display='none';
  $('lobby').style.display='none';
  $('arena').style.display='grid';
  $('p1name').textContent=user.name||'ඔබ';
@@ -988,7 +986,7 @@ function leaveRoom(){
  if(roomRef&&roomCb)roomRef.off('value',roomRef);
  roomRef=null;roomCb=null;roomId=null;role=null;single=true;gameOver=false;clearTimeout(aiTimer);
  $('arena').style.display='none';$('lobby').style.display='grid';
- $('openProfile').style.display='flex'; // මුල් පිටුවට පැමිණි විට නැවත Profile පෙන්වයි
+ $('openProfile').style.display='flex';
 }
 
 $('home').onclick=()=>{if(roomId&&!gameOver){if(confirm('තරඟයෙන් ඉවත් වීමට අවශ්‍යද?'))$('forfeit').click();}leaveRoom()};
