@@ -11,10 +11,16 @@
 html,body{width:100%;min-height:100%;background:radial-gradient(circle at 20% 20%,#3b2e2530,transparent 40%),linear-gradient(145deg,#080b18,#111a31 60%,#0a1022);color:#f8f9fa;padding:12px}
 .app{max-width:960px;margin:auto;display:grid;gap:16px;padding-bottom:60px}
 
-/* Header */
-header{background:var(--panel);border:1px solid #ffd16640;border-radius:16px;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 8px 25px rgba(0,0,0,0.4)}
-.brand{font-size:1.2rem;color:var(--gold);font-weight:800;display:flex;align-items:center;gap:8px}
-.points-box{background:rgba(0,0,0,0.5);border:1px solid var(--gold);padding:6px 14px;border-radius:20px;font-weight:700;color:var(--gold);font-size:0.95net}
+/* Modern & Clean Gaming Header */
+header{background:linear-gradient(135deg,rgba(25,34,60,0.95),rgba(15,20,38,0.98));border:2px solid rgba(255,209,102,0.3);border-radius:20px;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 10px 30px rgba(0,0,0,0.5);position:relative;overflow:hidden}
+header:after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.brand-wrapper{display:flex;align-items:center;gap:12px}
+.brand-icon{width:45px;height:45px;border-radius:12px;background:linear-gradient(135deg,#ffeaa7,#fdcb6e);color:#111;display:grid;place-items:center;font-size:1.4rem;box-shadow:0 0 15px rgba(255,209,102,0.4)}
+.brand-title{font-size:1.35rem;color:var(--gold);font-weight:800;letter-spacing:0.5px;line-height:1.2}
+.brand-subtitle{font-size:0.75rem;color:var(--dim);font-weight:600;text-transform:uppercase;letter-spacing:1px}
+
+.points-badge{background:rgba(0,0,0,0.6);border:2px solid var(--gold);padding:8px 16px;border-radius:25px;font-weight:800;color:var(--gold);font-size:1.05rem;display:flex;align-items:center;gap:8px;box-shadow:inset 0 2px 5px rgba(0,0,0,0.5)}
+.points-badge i{color:#ffd166;font-size:1.1rem}
 
 /* Floating Home Button (Bottom Right) */
 .float-home-btn{position:fixed;bottom:20px;right:20px;z-index:99;background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;border:2px solid var(--gold);border-radius:30px;padding:10px 18px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;box-shadow:0 6px 20px rgba(0,0,0,0.6);transition:.2s;font-size:0.95rem}
@@ -71,6 +77,9 @@ header{background:var(--panel);border:1px solid #ffd16640;border-radius:16px;pad
 
 /* Tablet & Mobile Media Queries */
 @media(max-width:600px){
+ header{padding:12px 14px}
+ .brand-title{font-size:1.15rem}
+ .points-badge{padding:6px 12px;font-size:0.9rem}
  .grid{grid-template-columns:repeat(2,1fr);gap:10px}
  .highlight-reward{flex-direction:column;align-items:flex-start}
  .highlight-reward .btn-gold{width:100%}
@@ -79,9 +88,18 @@ header{background:var(--panel);border:1px solid #ffd16640;border-radius:16px;pad
 </head>
 <body>
 <div class="app">
+<!-- New Modern Gaming Header -->
 <header>
-<div class="brand"><i class="fa-solid fa-store"></i> Shop & Reward</div>
-<div class="points-box">🪙 <span id="userPoints">500</span> pts</div>
+<div class="brand-wrapper">
+<div class="brand-icon"><i class="fa-solid fa-store"></i></div>
+<div>
+<div class="brand-title">Shop & Reward</div>
+<div class="brand-subtitle">ශ්‍රී ලංකා දාම් Store</div>
+</div>
+</div>
+<div class="points-badge">
+<i class="fa-solid fa-coins"></i> <span id="userPoints">500</span> pts
+</div>
 </header>
 
 <!-- Floating Home Button at Bottom Right -->
