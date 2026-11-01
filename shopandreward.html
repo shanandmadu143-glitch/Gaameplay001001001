@@ -14,11 +14,15 @@ html,body{width:100%;min-height:100%;background:radial-gradient(circle at 20% 20
 /* Header */
 header{background:var(--panel);border:1px solid #ffd16640;border-radius:16px;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 8px 25px rgba(0,0,0,0.4)}
 .brand{font-size:1.2rem;color:var(--gold);font-weight:800;display:flex;align-items:center;gap:8px}
-.points-box{background:rgba(0,0,0,0.5);border:1px solid var(--gold);padding:6px 14px;border-radius:20px;font-weight:700;color:var(--gold);font-size:0.95rem}
+.points-box{background:rgba(0,0,0,0.5);border:1px solid var(--gold);padding:6px 14px;border-radius:20px;font-weight:700;color:var(--gold);font-size:0.95net}
 
 /* Floating Home Button (Bottom Right) */
 .float-home-btn{position:fixed;bottom:20px;right:20px;z-index:99;background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;border:2px solid var(--gold);border-radius:30px;padding:10px 18px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;box-shadow:0 6px 20px rgba(0,0,0,0.6);transition:.2s;font-size:0.95rem}
 .float-home-btn:hover{transform:scale(1.05);filter:brightness(1.1)}
+
+/* Points Popup Notification (Bottom Left) */
+#pointsPopup{position:fixed;bottom:20px;left:20px;z-index:99;background:rgba(18,24,43,0.95);border:2px solid var(--gold);color:var(--gold);padding:10px 16px;border-radius:14px;font-weight:700;box-shadow:0 6px 20px rgba(0,0,0,0.6);display:flex;align-items:center;gap:8px;transform:translateY(100px);opacity:0;transition:all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);font-size:0.95rem}
+#pointsPopup.show{transform:translateY(0);opacity:1}
 
 /* Category Navigation Tabs */
 .cat-tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
@@ -83,6 +87,11 @@ header{background:var(--panel);border:1px solid #ffd16640;border-radius:16px;pad
 <!-- Floating Home Button at Bottom Right -->
 <a href="index.html" class="float-home-btn"><i class="fa-solid fa-house"></i> ප්‍රධාන පිටුවට</a>
 
+<!-- Floating Points Popup at Bottom Left -->
+<div id="pointsPopup">
+<i class="fa-solid fa-coins"></i> <span>Points: <b id="popupPointsVal">500</b></span>
+</div>
+
 <!-- Category Tabs -->
 <div class="cat-tabs">
 <button class="tab-btn active" onclick="filterCategory('all', this)">සියල්ල (All)</button>
@@ -143,8 +152,18 @@ function toast(msg){
  setTimeout(()=>t.classList.remove('show'), 2500);
 }
 
+function showPointsPopup(newPoints){
+ const popup = document.getElementById('pointsPopup');
+ document.getElementById('popupPointsVal').textContent = newPoints;
+ popup.classList.add('show');
+ setTimeout(() => {
+  popup.classList.remove('show');
+ }, 3500);
+}
+
 function updatePointsUI(){
- document.getElementById('userPoints').textContent = user.points !== undefined ? user.points : 500;
+ const pts = user.points !== undefined ? user.points : 500;
+ document.getElementById('userPoints').textContent = pts;
 }
 
 function syncUserWithDB(){
@@ -159,6 +178,7 @@ function syncUserWithDB(){
   }).catch(console.error);
  }
  updatePointsUI();
+ showPointsPopup(user.points);
 }
 
 auth.onAuthStateChanged(async u => {
