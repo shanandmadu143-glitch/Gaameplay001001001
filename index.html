@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Gemunu+Libre:wght@400;600;700;800&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#080b18;--panel:rgba(18,24,43,.96);--gold:#ffd166;--dim:#a0aec0;--red:#ff6b81;--green:#2ecc71}*{box-sizing:border-box;margin:0;padding:0;font-family:'Gemunu Libre','Poppins',sans-serif;user-select:none}html,body{width:100%;min-height:100%;background:radial-gradient(circle at 18% 18%,#3b2e2530,transparent 35%),linear-gradient(145deg,#080b18,#111a31 55%,#0a1022);color:#f8f9fa}body{min-height:100dvh}.app{min-height:100dvh;max-width:1100px;margin:auto;padding:10px;display:flex;flex-direction:column;gap:12px}header,footer,.panel,.lobby,.side{background:var(--panel);border:1px solid #ffd16640;border-radius:15px;padding:10px 14px}header,footer{display:flex;align-items:center;justify-content:space-between;gap:10px}header{min-height:58px}.brand{font-size:1.25rem;color:var(--gold);font-weight:800}.profile{display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 8px;border-radius:8px;border:1px dashed #ffd16655;transition:.2s}.profile:hover{background:#ffffff10}.avatar{width:35px;height:35px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe08a,#ff8db5,#7ee7ff);color:#18213e;font-size:1.1rem}.btn,.btn-gold,.btn-outline{border:0;border-radius:9px;padding:9px 13px;cursor:pointer;font-weight:700}.btn,.btn-outline{background:#ffffff12;color:white;border:1px solid #ffffff30}.btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111}.btn:disabled,.btn-gold:disabled{opacity:.45;cursor:not-allowed}main{flex:1;display:grid;place-items:center;min-height:400px}.lobby{width:min(100%,550px);padding:22px;display:grid;gap:16px}.lobby h2{text-align:center;color:var(--gold)}.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.mode{padding:22px 10px;border:1px solid #ffffff25;border-radius:12px;text-align:center;background:#ffffff08;cursor:pointer}.mode i{font-size:2rem;color:var(--gold);display:block;margin-bottom:8px}.arena{width:100%;display:grid;grid-template-columns:170px minmax(0,1fr) 170px;gap:12px;align-items:center}.side{min-height:120px;display:flex;flex-direction:column;justify-content:center;gap:10px}.player{padding:10px;background:#0005;border:1px solid #ffffff20;border-radius:10px}.player.active{border-color:var(--gold);box-shadow:0 0 12px #ffd16655}.board-wrap{width:min(100%,min(65vh,520px));aspect-ratio:1;position:relative;margin:auto}.board{width:100%;height:100%;display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);border:9px solid #18213e;border-radius:12px;overflow:hidden}.sq{display:grid;place-items:center;position:relative;cursor:pointer;touch-action:manipulation}.sq.light{background:#e8edff}.sq.dark{background:linear-gradient(145deg,#3d4d7d,#29365e)}.sq.selected{background:#ffd166!important}.sq.target:after{content:'';width:32%;height:32%;border-radius:50%;background:#50e8ae}.sq.capture:after{content:'';width:42%;height:42%;border-radius:50%;background:#ff6b81}.piece{width:78%;height:78%;border-radius:50%;box-shadow:0 3px 7px #0009;display:grid;place-items:center;font-size:1.1rem}.king:after{content:'♛';font-size:clamp(10px,2.5vw,18px);position:absolute;bottom:2px;right:2px;color:#ffd166}.close{position:absolute;right:-9px;top:-9px;border:2px solid white;border-radius:50%;width:32px;height:32px;background:#e74c3c;color:white;z-index:3;cursor:pointer}.status{text-align:center;color:var(--gold);min-height:25px}#clockPanel{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:12px;padding:5px 10px}
+:root{--bg:#080b18;--panel:rgba(18,24,43,.96);--gold:#ffd166;--dim:#a0aec0;--red:#ff6b81;--green:#2ecc71}*{box-sizing:border-box;margin:0;padding:0;font-family:'Gemunu Libre','Poppins',sans-serif;user-select:none}html,body{width:100%;min-height:100%;background:radial-gradient(circle at 18% 18%,#3b2e2530,transparent 35%),linear-gradient(145deg,#080b18,#111a31 55%,#0a1022);color:#f8f9fa}body{min-height:100dvh}.app{min-height:100dvh;max-width:1100px;margin:auto;padding:10px;display:flex;flex-direction:column;gap:12px}header,footer,.panel,.lobby,.side{background:var(--panel);border:1px solid #ffd16640;border-radius:15px;padding:10px 14px}header,footer{display:flex;align-items:center;justify-content:space-between;gap:10px}header{min-height:58px}.brand{font-size:1.25rem;color:var(--gold);font-weight:800}.profile{display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 8px;border-radius:8px;border:1px dashed #ffd16655;transition:.2s}.profile:hover{background:#ffffff10}.avatar{width:35px;height:35px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe08a,#ff8db5,#7ee7ff);color:#18213e;font-size:1.1rem}.btn,.btn-gold,.btn-outline{border:0;border-radius:9px;padding:9px 13px;cursor:pointer;font-weight:700}.btn,.btn-outline{background:#ffffff12;color:white;border:1px solid #ffffff30}.btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111}.btn:disabled,.btn-gold:disabled{opacity:.45;cursor:not-allowed}main{flex:1;display:grid;place-items:center;min-height:400px}.lobby{width:min(100%,550px);padding:22px;display:grid;gap:16px}.lobby h2{text-align:center;color:var(--gold)}.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.mode{padding:22px 10px;border:1px solid #ffffff25;border-radius:12px;text-align:center;background:#ffffff08;cursor:pointer}.mode i{font-size:2rem;color:var(--gold);display:block;margin-bottom:8px}.arena{width:100%;display:grid;grid-template-columns:170px minmax(0,1fr) 170px;gap:12px;align-items:center}.side{min-height:120px;display:flex;flex-direction:column;justify-content:center;gap:10px}.player{padding:10px;background:#0005;border:1px solid #ffffff20;border-radius:10px}.player.active{border-color:var(--gold);box-shadow:0 0 12px #ffd16655}.board-wrap{width:min(100%,min(65vh,520px));aspect-ratio:1;position:relative;margin:auto}.board{width:100%;height:100%;display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);border:9px solid #18213e;border-radius:12px;overflow:hidden}.sq{display:grid;place-items:center;position:relative;cursor:pointer;touch-action:manipulation}.sq.light{background:#e8edff}.sq.dark{background:linear-gradient(145deg,#3d4d7d,#29365e)}.sq.selected{background:#ffd166!important}.sq.target:after{content:'';width:32%;height:32%;border-radius:50%;background:#50e8ae}.sq.capture:after{content:'';width:42%;height:42%;border-radius:50%;background:#ff6b81}.piece{width:78%;height:78%;border-radius:50%;box-shadow:0 4px 8px rgba(0,0,0,0.4);display:grid;place-items:center;font-size:1.1rem}.king:after{content:'♛';font-size:clamp(12px,3vw,20px);position:absolute;bottom:2px;right:2px;color:#ffd166;text-shadow:0 1px 2px #000}.close{position:absolute;right:-9px;top:-9px;border:2px solid white;border-radius:50%;width:32px;height:32px;background:#e74c3c;color:white;z-index:3;cursor:pointer}.status{text-align:center;color:var(--gold);min-height:25px}#clockPanel{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:12px;padding:5px 10px}
 #clockRing{--progress:100;width:66px;height:66px;border-radius:50%;display:grid;place-items:center;position:relative;background:conic-gradient(var(--gold) calc(var(--progress)*1%),#ffffff18 0);box-shadow:0 0 18px #ffd16635;transition:background .18s linear,box-shadow .2s}
 #clockRing:before{content:'';position:absolute;inset:6px;border-radius:50%;background:#111a31;border:1px solid #ffffff20}
 #turnClock{position:relative;z-index:1;font-size:1.45rem;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:1px;color:var(--gold)}
@@ -23,15 +23,29 @@
 <main>
 <section class="lobby" id="lobby"><h2>දාම් ක්‍රීඩාවට සාදරයෙන් පිළිගනිමු</h2><p style="text-align:center;color:var(--dim)">ක්‍රීඩා මාදිලියක් තෝරන්න</p><div class="mode-grid"><div class="mode" id="single"><i class="fa-solid fa-robot"></i><b>Single Player</b><p>AI පරිගණකය සමඟ</p></div><div class="mode" id="multi"><i class="fa-solid fa-users"></i><b>Multiplayer</b><p>ඔන්ලයින් යහළුවන් සමඟ</p></div></div><div id="connection">● Firebase සම්බන්ධ වෙමින්...</div></section>
 <section class="arena" id="arena" style="display:none"><div class="side"><div class="player active" id="p1"><b id="p1name">ඔබ</b><br><small id="p1sub">සුදු (White)</small></div></div><div class="board-wrap"><button class="close" id="forfeit" title="තරඟයෙන් ඉවත් වන්න">×</button><div class="board" id="board"></div></div><div class="side"><div class="player" id="p2"><b id="p2name">ප්‍රතිවාදියා</b><br><small id="p2sub">රතු (Red)</small></div></div><div class="status" id="gameStatus" style="grid-column:1/-1"></div><div id="clockPanel"><div id="clockRing" role="timer" aria-live="off"><span id="turnClock">10</span></div><span id="clockCaption">ඉතිරි කාලය</span></div></section>
-</main><footer><span>ජයග්‍රහණය +10 | පරාජය / ඉවත් වීම -10</span><button class="btn" id="home">⌂ ප්‍රධාන පිටුව</button></footer></div>
+</main><footer><span>ජයග්‍රහණය / පරාජය - ඔට්ටු ලකුණු අනුව</span><button class="btn" id="home">⌂ ප්‍රධාන පිටුව</button></footer></div>
 
 <!-- Profile & Piece Customization Modal -->
 <div class="modal" id="profileModal">
 <div class="modalbox">
 <div class="row"><h3 style="flex:1">ප්‍රොෆයිලය සහ ඉත්තන් තෝරන්න</h3><button class="btn" id="closeProfile">×</button></div>
-<p style="font-size:.9rem;color:var(--dim)">ඔබට ගැලපෙන වර්ණයෙන් සහ හැඩයෙන් යුත් ඉත්තෙක් (Piece) තෝරාගන්න:</p>
+<p style="font-size:.9rem;color:var(--dim)">ඔබට ගැලපෙන වර්ණයෙන් සහ හැඩයෙන් යුත් ඉත්තෙක් තෝරාගන්න:</p>
 <div class="pieces-grid" id="piecesGrid"></div>
 <button class="btn-gold" id="saveProfile" style="margin-top:10px">සුරකින්න (Save)</button>
+</div>
+</div>
+
+<!-- Multiplayer Bet Modal -->
+<div class="modal" id="betModal">
+<div class="modalbox">
+<h3 style="color:var(--gold)">ඔට්ටු තැබීම (Bet Points)</h3>
+<p id="betTargetName" style="text-align:center;color:var(--dim)"></p>
+<label for="betAmountInput">ඔට්ටු අල්ලන Point ගණන (උපරිම ඔබේ ලකුණු: <span id="maxUserPoints">500</span>)</label>
+<input id="betAmountInput" type="number" min="10" value="50" placeholder="Points ගණන ඇතුළත් කරන්න">
+<div class="row">
+<button class="btn-gold" id="sendInviteWithBet" style="flex:1">ආරාධනාව යවන්න</button>
+<button class="btn" id="closeBetModal" style="flex:1">අවලංගු කරන්න</button>
+</div>
 </div>
 </div>
 
@@ -53,32 +67,33 @@
 const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
 const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user',RECENT='sinhala_draughts_recent_v7';
 let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0},board=[],turn=1,selected=null,moves=[],single=true,roomId=null,roomRef=null,roomCb=null,role=null,gameOver=false,aiTimer=null,processing=false,inviteRef=null,inviteCb=null,awarded={},turnClockTimer=null,turnDeadline=0,dragFrom=null,missedCapture=null;
+let pendingInviteTarget=null; // Bet modal ਲਈ target
 
 let userSide = 1; 
 let nextStartingSide = 1; 
 
-// ඉත්තන් 20ක ලැයිස්තුව (වර්ණය, පසුබිම, අයිකනය/හැඩය සහ නම)
+// දාම් බොඩ් එකට ඉතා මනාව පෙනෙන (කිසිදු කළු පාටක් නොමැති) ඉත්තන් 20ක ආකර්ෂණීය ලැයිස්තුව
 const PIECE_DESIGNS=[
- {name:'ක්ලැසික් සුදු',bg:'radial-gradient(circle at 30% 30%,#fff,#c8d6e5)',border:'#b2bec3',color:'#18213e',icon:'●'},
- {name:'රන් ඔටුන්න',bg:'linear-gradient(135deg,#ffe08a,#ffad62)',border:'#d69b16',color:'#111',icon:'★'},
- {name:'රුධිර රතු',bg:'radial-gradient(circle at 30% 30%,#ff6b81,#bd3159)',border:'#9f294b',color:'#fff',icon:'◆'},
- {name:'මරකත කොළ',bg:'radial-gradient(circle at 30% 30%,#2ecc71,#27ae60)',border:'#1e8449',color:'#fff',icon:'▲'},
- {name:'අහස් නිල්',bg:'radial-gradient(circle at 30% 30%,#3498db,#2980b9)',border:'#1b4f72',color:'#fff',icon:'■'},
- {name:'දම් රැජින',bg:'radial-gradient(circle at 30% 30%,#9b59b6,#8e44ad)',border:'#512e5f',color:'#fff',icon:'✿'},
- {name:'ගිනියම් තැඹිලි',bg:'radial-gradient(circle at 30% 30%,#e67e22,#d35400)',border:'#a04000',color:'#fff',icon:'☀'},
+ {name:'මුතු සුදු',bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●'},
+ {name:'රන් ඔටුන්න',bg:'linear-gradient(135deg,#ffeaa7,#fdcb6e)',border:'#e1b12c',color:'#2d3436',icon:'★'},
+ {name:'රුධිර රතු',bg:'radial-gradient(circle at 30% 30%,#ff7675,#d63031)',border:'#c0392b',color:'#fff',icon:'◆'},
+ {name:'මරකත කොළ',bg:'radial-gradient(circle at 30% 30%,#55efc4,#00b894)',border:'#00a8ff',color:'#fff',icon:'▲'},
+ {name:'අහස් නිල්',bg:'radial-gradient(circle at 30% 30%,#74b9ff,#0984e3)',border:'#0066cc',color:'#fff',icon:'■'},
+ {name:'දම් රැජින',bg:'radial-gradient(circle at 30% 30%,#a29bfe,#6c5ce7)',border:'#4834d4',color:'#fff',icon:'✿'},
+ {name:'ගිනියම් තැඹිලි',bg:'radial-gradient(circle at 30% 30%,#fab1a0,#e17055)',border:'#d35400',color:'#fff',icon:'☀'},
  {name:'රෝස මල්',bg:'radial-gradient(circle at 30% 30%,#ff9ff3,#f368e0)',border:'#ff5252',color:'#fff',icon:'♥'},
- {name:'මුතු මැණික්',bg:'radial-gradient(circle at 30% 30%,#00d2d3,#54a0ff)',border:'#01a3a4',color:'#fff',icon:'✦'},
- {name:'රන් හැඩය',bg:'linear-gradient(135deg,#feca57,#ff9f43)',border:'#e58e26',color:'#111',icon:'◈'},
- {name:'අඳුරු ලෝහ',bg:'radial-gradient(circle at 30% 30%,#576574,#222f3e)',border:'#101820',color:'#ffd166',icon:'⚙'},
- {name:'කොළ පැහැති තරුව',bg:'radial-gradient(circle at 30% 30%,#10ac84,#01a3a4)',border:'#006666',color:'#fff',icon:'✪'},
- {name:'චොක්ලට් බ්‍රවුන්',bg:'radial-gradient(circle at 30% 30%,#845ec2,#d65db1)',border:'#4b3869',color:'#fff',icon:'⬠'},
- {name:'දේදුනු විදුලිය',bg:'linear-gradient(135deg,#ff9ff3,#54a0ff,#55efc4)',border:'#fff',color:'#111',icon:'⚡'},
- {name:'නිල් පලිහ',bg:'radial-gradient(circle at 30% 30%,#2e86de,#0984e3)',border:'#0652dd',color:'#fff',icon:'🛡'},
- {name:'මී මැස්ස',bg:'linear-gradient(135deg,#f1c40f,#e67e22)',border:'#d35400',color:'#111',icon:'⬡'},
- {name:'මරකත මනෝ',bg:'radial-gradient(circle at 30% 30%,#00b894,#00cec9)',border:'#006655',color:'#fff',icon:'❖'},
- {name:'රෝස දියමන්ති',bg:'radial-gradient(circle at 30% 30%,#fd79a8,#e84393)',border:'#c71585',color:'#fff',icon:'💎'},
- {name:'ගිනි පුපුර',bg:'linear-gradient(135deg,#ff4757,#ff6b81)',border:'#eb2f06',color:'#fff',icon:'🔥'},
- {name:'රාජකීය රන්',bg:'linear-gradient(135deg,#ffd700,#ffa500)',border:'#b8860b',color:'#111',icon:'👑'}
+ {name:'මුතු මැණික්',bg:'radial-gradient(circle at 30% 30%,#81ecec,#00cec9)',border:'#01a3a4',color:'#2d3436',icon:'✦'},
+ {name:'රන් හැඩය',bg:'linear-gradient(135deg,#ffeaa7,#e1b12c)',border:'#c678dd',color:'#2d3436',icon:'◈'},
+ {name:'සිල්වර් ලෝහ',bg:'radial-gradient(circle at 30% 30%,#dfe6e9,#b2bec3)',border:'#636e72',color:'#2d3436',icon:'⚙'},
+ {name:'කොළ පැහැති තරුව',bg:'radial-gradient(circle at 30% 30%,#55efc4,#00b894)',border:'#009432',color:'#fff',icon:'✪'},
+ {name:'දැව පැහැය',bg:'radial-gradient(circle at 30% 30%,#e17055,#b33939)',border:'#842029',color:'#fff',icon:'⬠'},
+ {name:'දේදුනු විදුලිය',bg:'linear-gradient(135deg,#ff9ff3,#74b9ff,#55efc4)',border:'#ffeaa7',color:'#2d3436',icon:'⚡'},
+ {name:'නිල් පලිහ',bg:'radial-gradient(circle at 30% 30%,#0984e3,#74b9ff)',border:'#0048ba',color:'#fff',icon:'🛡'},
+ {name:'මී මැස්ස',bg:'linear-gradient(135deg,#ffeaa7,#fab1a0)',border:'#e17055',color:'#2d3436',icon:'⬡'},
+ {name:'මරකත මනෝ',bg:'radial-gradient(circle at 30% 30%,#00b894,#55efc4)',border:'#009432',color:'#fff',icon:'❖'},
+ {name:'රෝස දියමන්ති',bg:'radial-gradient(circle at 30% 30%,#fd79a8,#e84393)',border:'#d63031',color:'#fff',icon:'💎'},
+ {name:'ගිනි පුපුර',bg:'linear-gradient(135deg,#ff7675,#fab1a0)',border:'#d63031',color:'#fff',icon:'🔥'},
+ {name:'රාජකීය රන්',bg:'linear-gradient(135deg,#fdcb6e,#e1b12c)',border:'#f39c12',color:'#2d3436',icon:'👑'}
 ];
 
 // Sound System using Web Audio API
@@ -122,14 +137,14 @@ function playSound(type){
     o.start(now+t); o.stop(now+t+0.15);
    });
   }
- }catch(e){console.warn('Audio error:',e)}
+ }catch(e){}
 }
 
 function toast(s){$('toast').textContent=s;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2800)}
 function modal(id,on){$(id).classList.toggle('show',on);playSound('click')}
 function setStatus(s,ok=true){$('connection').textContent='● '+s;$('connection').style.color=ok?'#4ade80':'#f6c453'}
 
-try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);auth=firebase.auth();db=firebase.database();}catch(e){console.error(e);setStatus('Firebase ආරම්භ කළ නොහැක',false)}
+try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);auth=firebase.auth();db=firebase.database();}catch(e){setStatus('Firebase ආරම්භ කළ නොහැක',false)}
 
 (async()=>{
  try{
@@ -179,7 +194,7 @@ function updateHeader(){
 
 function saveUser(){
  localStorage.setItem(KEY,JSON.stringify(user));
- if(db&&fbUser)db.ref('users_v6/'+fbUser.uid).update({name:user.name,pieceIndex:user.pieceIndex||0}).catch(console.error);
+ if(db&&fbUser)db.ref('users_v6/'+fbUser.uid).update({name:user.name,points:user.points,pieceIndex:user.pieceIndex||0}).catch(console.error);
  updateHeader();
 }
 
@@ -198,7 +213,7 @@ async function loadSignedInUser(){
   const local=JSON.parse(localStorage.getItem(KEY)||'null');
   user={
    name:d.name,
-   points:local&&local.uid===fbUser.uid?Number(local.points)||500:500,
+   points:Number(d.points)!==undefined?Number(d.points):(local&&local.uid===fbUser.uid?Number(local.points)||500:500),
    wins:Number(d.wins)||0,
    losses:Number(d.losses)||0,
    uid:fbUser.uid,
@@ -231,7 +246,7 @@ async function registerAccount(){
   const idx=await db.ref('usernameIndex_v6/'+key).transaction(v=>v===null?fbUser.uid:undefined);
   if(!idx.committed){await auth.signOut();return toast('මෙම Username එක දැනටමත් භාවිතා වේ.')}
   user={name,points:500,wins:0,losses:0,uid:fbUser.uid,pieceIndex:0};
-  await db.ref('users_v6/'+fbUser.uid).set({name,pieceIndex:0,createdAt:firebase.database.ServerValue.TIMESTAMP});
+  await db.ref('users_v6/'+fbUser.uid).set({name,points:500,pieceIndex:0,createdAt:firebase.database.ServerValue.TIMESTAMP});
   window.__creatingAccount=false;
   localStorage.setItem(KEY,JSON.stringify(user));
   updateHeader();modal('authModal',false);presence();listenInvites();toast('ගිණුම සාර්ථකව සාදන ලදී.');
@@ -395,8 +410,15 @@ function render(){
      p.style.color=design.color;
      p.textContent=design.icon;
     }else{
-     // ප්‍රතිවාදියාගේ ඉත්තා (Classic Red/White)
+     // ප්‍රතිවාදියාගේ ඉත්තා (Default - කිසිදු කළු පාටක් නැතිව ආකර්ෂණීය රතු/සුදු)
      p.className='piece '+(val>0?'white':'red')+(Math.abs(val)===2?' king':'');
+     if(val < 0){
+      p.style.background = 'radial-gradient(circle at 30% 30%,#ff5252,#c0392b)';
+      p.style.border = '2px solid #e74c3c';
+     } else {
+      p.style.background = 'radial-gradient(circle at 30% 30%,#ffffff,#bdc3c7)';
+      p.style.border = '2px solid #95a5a6';
+     }
     }
     sq.appendChild(p);
    }
@@ -481,7 +503,7 @@ async function playMove(m){
     d.lastMoveAt=Date.now(); d.lastMoveBy=fbUser.uid;
     return d;
    });
-  }catch(e){console.error(e);toast('Move එක යැවීමට නොහැකි විය.');}
+  }catch(e){toast('Move එක යැවීමට නොහැකි විය.');}
   finally{processing=false;}
   return;
  }
@@ -605,16 +627,26 @@ function finish(winner,message){
  const won=single?(winner===userSide):(role==='host'?winner===1:winner===-1);
  if(won)playSound('win'); else playSound('lose');
  if(single)nextStartingSide=winner;
+ 
  const key=roomId?roomId+':'+(window.currentGameId||1):'single:'+Date.now();
  if(!awarded[key]){
   awarded[key]=true;
-  if(won){user.points+=10;user.wins++}else{user.points=Math.max(0,user.points-10);user.losses++}
+  let bet=window.currentBetPoints||10;
+  if(won){
+   user.points += bet; // දිනුවොත් ඔට්ටු මුදල මෙන් දෙගුණයක් ලැබේ (+bet)
+   user.wins++;
+   $('overPoints').textContent = '+' + bet + ' Points (Double Win!)';
+  }else{
+   user.points = Math.max(0, user.points - bet); // පැරදුනොත් ඔට්ටු මුදල අඩුවේ (-bet)
+   user.losses++;
+   $('overPoints').textContent = '-' + bet + ' Points';
+  }
   saveUser();
  }
+
  $('overTitle').textContent=won?'ඔබ ජයග්‍රහණය කළා! 🎉':'ඔබ පරාජය විය!';
  $('overTitle').style.color=won?'var(--green)':'var(--red)';
  $('overMessage').textContent=message;
- $('overPoints').textContent=won?'+10 Points':'-10 Points';
  modal('overModal',true);
 }
 
@@ -627,6 +659,7 @@ function listenRoom(){
   const d=s.val();if(!d)return;
   $('p1name').textContent=d.hostName||'Host';
   $('p2name').textContent=d.guestName||'Guest';
+  window.currentBetPoints = Number(d.betPoints) || 10;
   
   if(d.status==='waiting'){
    clearInterval(turnClockTimer);
@@ -656,11 +689,17 @@ function listenRoom(){
    const id=roomId+':'+(d.gameId||1);
    if(!awarded[id]){
     awarded[id]=true;
-    if(localWin){user.points+=10;user.wins++;playSound('win')}else{user.points=Math.max(0,user.points-10);user.losses++;playSound('lose')}
+    let bet=window.currentBetPoints||10;
+    if(localWin){
+     user.points+=bet; user.wins++; playSound('win');
+     $('overPoints').textContent='+'+bet+' Points (Double Win!)';
+    }else{
+     user.points=Math.max(0,user.points-bet); user.losses++; playSound('lose');
+     $('overPoints').textContent='-'+bet+' Points';
+    }
     saveUser();
     $('overTitle').textContent=localWin?'ඔබ ජයග්‍රහණය කළා! 🎉':'ඔබ පරාජය විය!';
     $('overMessage').textContent=d.message||'තරඟය අවසන්';
-    $('overPoints').textContent=localWin?'+10 Points':'-10 Points';
     modal('overModal',true);
    }
 
@@ -723,29 +762,47 @@ function renderRecent(){
   const d=document.createElement('div');d.className='listitem';
   const n=document.createElement('b');n.textContent=x.name;
   const b=document.createElement('button');b.className='btn-gold';b.textContent='Invite';
-  b.onclick=()=>invite({name:x.name},x.uid);
+  b.onclick=()=>promptBetAndInvite(x);
   d.append(n,b);el.append(d);
  });
 }
 
-async function invite(target,uid){
- if(!fbUser||!uid||uid===fbUser.uid)return;
+// ඔට්ටු මුදල තෝරා Invite යැවීමේ ක්‍රියාවලිය
+function promptBetAndInvite(target){
+ pendingInviteTarget=target;
+ $('maxUserPoints').textContent = user.points;
+ $('betTargetName').textContent = target.name + ' සමඟ තරඟය සඳහා ඔට්ටුව තარන්න';
+ $('betAmountInput').value = Math.min(50, user.points);
+ modal('betModal', true);
+}
+
+$('closeBetModal').onclick=()=>modal('betModal', false);
+
+$('sendInviteWithBet').onclick=async()=>{
+ const betVal = parseInt($('betAmountInput').value) || 10;
+ if(betVal < 1) return toast('කරුණාකර නිවැරදි ඔට්ටු මුදලක් ඇතුළත් කරන්න.');
+ if(betVal > user.points) return toast('ඔබ සතුව ප්‍රමාණවත් Points නොමැත!');
+ 
+ modal('betModal', false);
+ const target = pendingInviteTarget;
+ if(!fbUser || !target || target.uid === fbUser.uid) return;
+
  try{
   const ref=db.ref('rooms_v6').push(),id=ref.key;
   const initial=Array.from({length:8},()=>Array(8).fill(0));
   for(let r=0;r<8;r++)for(let c=0;c<8;c++)if((r+c)%2){if(r<3)initial[r][c]=-1;else if(r>4)initial[r][c]=1}
   
   await ref.set({
-   status:'waiting',hostUid:fbUser.uid,guestUid:uid,hostName:user.name,guestName:target.name,
-   board:initial,turn:1,gameId:1,turnStartedAt:Date.now(),createdAt:Date.now()
+   status:'waiting',hostUid:fbUser.uid,guestUid:target.uid,hostName:user.name,guestName:target.name,
+   board:initial,turn:1,gameId:1,betPoints:betVal,turnStartedAt:Date.now(),createdAt:Date.now()
   });
   
-  await db.ref('invites_v6/'+uid).push().set({roomId:id,fromUid:fbUser.uid,fromName:user.name,status:'pending',createdAt:Date.now()});
-  rememberOpponent(target.name,uid);
+  await db.ref('invites_v6/'+target.uid).push().set({roomId:id,fromUid:fbUser.uid,fromName:user.name,betPoints:betVal,status:'pending',createdAt:Date.now()});
+  rememberOpponent(target.name,target.uid);
   enterRoom(id,'host');
-  toast('ආරාධනාව යවන ලදී. ප්‍රතිවාදියා පිළිගන්නා තෙක් රැඳී සිටින්න...');
- }catch(e){toast('Invite යැවීමට නොහැකි විය.')}
-}
+  toast('ආරාධනාව (ඔට්ටුව: '+betVal+' Points) යවන ලදී!');
+ }catch(e){toast('Invite යැවීමට නොහැකි විය.');}
+};
 
 function listenInvites(){
  if(!fbUser)return;
@@ -756,7 +813,8 @@ function listenInvites(){
   if(Date.now()-(v.createdAt||Date.now())>300000){await s.ref.update({status:'expired'});return}
   if(roomId)return;
   
-  const ok=confirm((v.fromName||'යහළුවෙක්')+' ඔබට Online දාම් තරඟයකට ආරාධනා කරයි. පිළිගන්නවාද?');
+  const betVal = v.betPoints || 10;
+  const ok=confirm((v.fromName||'යහළුවෙක්')+' ඔබට Online දාම් තරඟයකට ආරාධනා කරයි!\nඔට්ටු තැබෙන Points ප්‍රමාණය: '+betVal+'\nපිළිගන්නවාද?');
   if(!ok){await s.ref.update({status:'declined',respondedAt:Date.now()});toast('ආරාධනාව ප්‍රතික්ෂේප කළා.');return}
   
   try{
@@ -768,12 +826,12 @@ function listenInvites(){
    await s.ref.update({status:'accepted',respondedAt:Date.now()});
    rememberOpponent(v.fromName,v.fromUid);
    enterRoom(v.roomId,'guest');
-   toast('තරඟය සාර්ථකව ආරම්භ විය!');
+   toast('තරඟය සාර්ථකව ආරම්භ විය! (ඔට්ටුව: '+betVal+' Points)');
   }catch(e){toast('Invite පිළිගැනීමේ දෝෂයකි.')}
  });
 }
 
-$('single').onclick=()=>{single=true;roomId=null;role=null;nextStartingSide=1;$('lobby').style.display='none';$('arena').style.display='grid';$('p1name').textContent=user.name||'ඔබ';$('p2name').textContent='AI පරිගණකය (Hard)';initBoard()};
+$('single').onclick=()=>{single=true;roomId=null;role=null;nextStartingSide=1;window.currentBetPoints=10;$('lobby').style.display='none';$('arena').style.display='grid';$('p1name').textContent=user.name||'ඔබ';$('p2name').textContent='AI පරිගණකය (Hard)';initBoard()};
 $('multi').onclick=()=>{renderRecent();modal('multiModal',true)};
 $('closeMulti').onclick=()=>modal('multiModal',false);
 
@@ -792,7 +850,7 @@ async function searchOnlinePlayers(){
    const row=document.createElement('div');row.className='listitem';
    const name=document.createElement('b');name.textContent=v.name;
    const inviteBtn=document.createElement('button');inviteBtn.className='btn-gold';inviteBtn.textContent='Invite';
-   inviteBtn.onclick=()=>invite({name:v.name},v.uid);
+   inviteBtn.onclick=()=>promptBetAndInvite({name:v.name,uid:v.uid});
    row.append(name,inviteBtn);el.append(row);
   });
  }catch(e){el.textContent='Search දෝෂයකි.';}
@@ -824,7 +882,7 @@ $('rematch').onclick=async()=>{
     room.rematchRequestedBy=role;
     return room;
    });
-   toast('Rematch ඉල්ලීම යවන ලදී. ප්‍රතිවාදියාගේ පිළිතුර බලාපොරොත්තු වන්න.');
+   toast('Rematch ඉල්ලීම යවන ලදී.');
   }else if(localWin&&d.rematchRequestedBy&&d.rematchRequestedBy!==role){
    await roomRef.transaction(room=>{
     if(!room||room.status!=='finished')return;
