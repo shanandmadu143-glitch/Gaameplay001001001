@@ -13,12 +13,19 @@ html,body{width:100%;min-height:100%;background:radial-gradient(circle at 18% 18
 header{background:var(--panel);border:1px solid #ffd16640;border-radius:15px;padding:12px 20px;display:flex;align-items:center;justify-content:space-between}
 .brand{font-size:1.25rem;color:var(--gold);font-weight:800}
 .points-box{background:rgba(0,0,0,0.4);border:1px solid var(--gold);padding:6px 14px;border-radius:20px;font-weight:700;color:var(--gold)}
-.shop-container{background:var(--panel);border:1px solid #ffd16640;border-radius:15px;padding:20px;display:grid;gap:15px}
-h2{color:var(--gold);text-align:center;font-size:1.5rem}
+.shop-container{background:var(--panel);border:1px solid #ffd16640;border-radius:15px;padding:20px;display:grid;gap:20px}
+h2,h3{color:var(--gold);text-align:center}
+
+/* Free Reward Section Style */
+.reward-banner{background:linear-gradient(135deg,rgba(255,209,102,0.1),rgba(46,204,113,0.1));border:2px solid var(--gold);border-radius:16px;padding:20px;display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
+.reward-info{display:flex;align-items:center;gap:15px}
+.reward-icon{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#ffeaa7,#fdcb6e);color:#111;display:grid;place-items:center;font-size:1.8rem;box-shadow:0 0 15px rgba(255,209,102,0.4)}
+.timer-text{font-size:1.1rem;font-weight:700;color:var(--gold);font-variant-numeric:tabular-nums}
+
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:15px}
 .item-card{background:rgba(255,255,255,0.04);border:2px solid rgba(255,255,255,0.1);border-radius:14px;padding:16px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;transition:.2s}
 .item-card:hover{border-color:var(--gold);background:rgba(255,255,255,0.07)}
-.preview-circle{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#ffeaa7,#fdcb6e);display:grid;place-items:center;font-size:1.8rem;color:#111;position:relative}
+.preview-circle{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#ffeaa7,#fdcb6e);display:grid;place-items:center;font-size:1.8rem;color:#111}
 
 /* Visual Effect Animations */
 .fx-glow{box-shadow:0 0 20px #ffd166, 0 0 40px #ffad62!important}
@@ -30,11 +37,12 @@ h2{color:var(--gold);text-align:center;font-size:1.5rem}
 @keyframes pulseFire{0%{filter:brightness(1)}100%{filter:brightness(1.4)}}
 @keyframes pulseLight{0%{opacity:0.7}100%{opacity:1}}
 
-.btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;border:0;border-radius:9px;padding:9px 16px;font-weight:700;cursor:pointer;width:100%;transition:.2s}
+.btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;border:0;border-radius:9px;padding:10px 18px;font-weight:700;cursor:pointer;transition:.2s}
 .btn-gold:hover{filter:brightness(1.1)}
 .btn-gold:disabled{opacity:0.5;cursor:not-allowed}
 .btn-back{background:rgba(255,255,255,0.1);color:white;border:1px solid rgba(255,255,255,0.2);border-radius:9px;padding:8px 14px;cursor:pointer;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:6px}
 .btn-back:hover{background:rgba(255,255,255,0.2)}
+
 #toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,100px);opacity:0;background:#1e293b;border:1px solid var(--gold);color:white;border-radius:25px;padding:10px 20px;z-index:100;transition:.3s;font-weight:600}
 #toast.show{transform:translate(-50%,0);opacity:1}
 </style>
@@ -48,6 +56,22 @@ h2{color:var(--gold);text-align:center;font-size:1.5rem}
 </header>
 
 <div class="shop-container">
+<!-- Free Reward Banner & Timer -->
+<h2>නොමිලේ ත්‍යාග (Free Rewards)</h2>
+<div class="reward-banner">
+<div class="reward-info">
+<div class="reward-icon"><i class="fa-solid fa-gift"></i></div>
+<div>
+<h3 style="text-align:left">පැය 6කට වරක් Free Points</h3>
+<p style="color:var(--dim);font-size:0.9rem">නොමිලේ ලකුණු 200ක් ලබා ගන්න!</p>
+<div id="timerDisplay" class="timer-text" style="margin-top:5px">ඉල්ලීමට සූදානම්!</div>
+</div>
+</div>
+<button class="btn-gold" id="claimRewardBtn" onclick="claimFreeReward()">ත්‍යාගය ලබාගන්න (Claim 200 pts)</button>
+</div>
+
+<hr style="border-color:rgba(255,255,255,0.1);margin:10px 0">
+
 <h2>දාම් ඉත්තන් සඳහා විශේෂ Effects (250 pts බැගින්)</h2>
 <div class="grid" id="shopGrid"></div>
 </div>
@@ -64,7 +88,7 @@ const auth = firebase.auth();
 const db = firebase.database();
 
 const KEY = 'sinhala_draughts_v7_user';
-let user = JSON.parse(localStorage.getItem(KEY) || '{"points":500, "unlockedEffects":[]}');
+let user = JSON.parse(localStorage.getItem(KEY) || '{"points":500, "unlockedEffects":[], "lastRewardTime":0}');
 if(!user.unlockedEffects) user.unlockedEffects = [];
 
 const EFFECTS = [
@@ -93,7 +117,8 @@ function syncUserWithDB(){
   db.ref('users_v6/' + currentUser.uid).update({
    points: user.points,
    unlockedEffects: user.unlockedEffects || [],
-   selectedEffect: user.selectedEffect || ''
+   selectedEffect: user.selectedEffect || '',
+   lastRewardTime: user.lastRewardTime || 0
   }).catch(console.error);
  }
  updatePointsUI();
@@ -108,6 +133,7 @@ auth.onAuthStateChanged(async u => {
     user.points = d.points !== undefined ? Number(d.points) : user.points;
     user.unlockedEffects = Array.isArray(d.unlockedEffects) ? d.unlockedEffects : (user.unlockedEffects || []);
     user.selectedEffect = d.selectedEffect || user.selectedEffect || '';
+    user.lastRewardTime = d.lastRewardTime !== undefined ? Number(d.lastRewardTime) : (user.lastRewardTime || 0);
     user.uid = u.uid;
     localStorage.setItem(KEY, JSON.stringify(user));
    }
@@ -115,7 +141,51 @@ auth.onAuthStateChanged(async u => {
  }
  updatePointsUI();
  renderShop();
+ startRewardTimer();
 });
+
+// Free Reward Countdown Logic (6 Hours = 21600000 ms)
+const COOLDOWN_TIME = 6 * 60 * 60 * 1000; 
+
+function startRewardTimer(){
+ const btn = document.getElementById('claimRewardBtn');
+ const timerText = document.getElementById('timerDisplay');
+
+ setInterval(() => {
+  const now = Date.now();
+  const lastTime = user.lastRewardTime || 0;
+  const elapsed = now - lastTime;
+
+  if(elapsed < COOLDOWN_TIME){
+   const remaining = COOLDOWN_TIME - elapsed;
+   const hours = Math.floor(remaining / (1000 * 60 * 60));
+   const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+   const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+
+   timerText.textContent = `නැවත ලබාගීමට ඉතිරි කාලය: ${hours}h ${minutes}m ${seconds}s`;
+   btn.disabled = true;
+   btn.style.opacity = '0.5';
+  } else {
+   timerText.textContent = 'ත්‍යාගය ලබා ගැනීමට සූදානම්!';
+   btn.disabled = false;
+   btn.style.opacity = '1';
+  }
+ }, 1000);
+}
+
+function claimFreeReward(){
+ const now = Date.now();
+ const lastTime = user.lastRewardTime || 0;
+ 
+ if((now - lastTime) < COOLDOWN_TIME){
+  return toast('කරුණාකර නියමිත කාලය අවසන් වන තෙක් රැඳී සිටින්න!');
+ }
+
+ user.points += 200;
+ user.lastRewardTime = now;
+ syncUserWithDB();
+ toast('සුභ පැතුම්! ඔබට Free Points 200ක් ලැබුණි! 🎉');
+}
 
 function renderShop(){
  const grid = document.getElementById('shopGrid');
@@ -152,6 +222,7 @@ function buyEffect(id){
 
 updatePointsUI();
 renderShop();
+startRewardTimer();
 </script>
 </body>
 </html>
