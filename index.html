@@ -234,6 +234,7 @@ function saveUser(){
  localStorage.setItem(KEY,JSON.stringify(user));
  if(db&&fbUser)db.ref('users_v6/'+fbUser.uid).update({name:user.name,points:user.points,pieceIndex:user.pieceIndex||0}).catch(console.error);
  updateHeader();
+ presence();
 }
 
 function usernameEmail(name){return name.toLowerCase()+'@sinhala-draughts.app'}
@@ -437,25 +438,23 @@ function render(){
    if(board[r][c]){
     const val=board[r][c];
     const p=document.createElement('div');
-    const isUserPiece = single ? (Math.sign(val) === userSide) : (Math.sign(val) === (role==='host'?1:-1));
     
-    if(isUserPiece){
-     const design=PIECE_DESIGNS[user.pieceIndex||0]||PIECE_DESIGNS[0];
-     p.className='piece'+(Math.abs(val)===2?' king':'');
-     p.style.background=design.bg;
-     p.style.border=`2px solid ${design.border}`;
-     p.style.color=design.color;
-     p.textContent=design.icon;
-    }else{
-     p.className='piece '+(val>0?'white':'red')+(Math.abs(val)===2?' king':'');
-     if(val < 0){
-      p.style.background = 'radial-gradient(circle at 30% 30%,#ff5252,#c0392b)';
-      p.style.border = '2px solid #e74c3c';
-     } else {
-      p.style.background = 'radial-gradient(circle at 30% 30%,#ffffff,#bdc3c7)';
-      p.style.border = '2px solid #95a5a6';
-     }
+    // Multiplayer සහ Single Player හිදී දෙපාර්ශවයේම තෝරාගත් ඉත්තන් (Design) නිවැරදිව පෙන්වීම
+    let pieceDesignIndex = 0;
+    if(single){
+     pieceDesignIndex = (Math.sign(val) === userSide) ? (user.pieceIndex || 0) : 0;
+    } else {
+     const isHostPiece = (Math.sign(val) === 1);
+     pieceDesignIndex = isHostPiece ? (window.hostPieceIndex || 0) : (window.guestPieceIndex || 0);
     }
+    
+    const design = PIECE_DESIGNS[pieceDesignIndex] || PIECE_DESIGNS[0];
+    p.className = 'piece' + (Math.abs(val) === 2 ? ' king' : '');
+    p.style.background = design.bg;
+    p.style.border = `2px solid ${design.border}`;
+    p.style.color = design.color;
+    p.textContent = design.icon;
+
     sq.appendChild(p);
    }
 
@@ -701,6 +700,8 @@ function listenRoom(){
   $('p1name').textContent=d.hostName||'Host';
   $('p2name').textContent=d.guestName||'Guest';
   window.currentBetPoints = Number(d.betPoints) || 10;
+  window.hostPieceIndex = Number(d.hostPieceIndex) || 0;
+  window.guestPieceIndex = Number(d.guestPieceIndex) || 0;
   
   if(d.status==='waiting'){
    clearInterval(turnClockTimer);
@@ -809,7 +810,7 @@ function renderRecent(){
  });
 }
 
-// Multiplayer Step 1: Multiplayer ක්ලික් කළ විට Bet Modal විවෘත වේ
+// Multiplayer Step 1: Bet Modal විවෘත වේ
 $('multi').onclick = () => {
  $('maxUserPoints').textContent = user.points;
  $('betAmountInput').value = Math.min(50, user.points);
@@ -818,7 +819,7 @@ $('multi').onclick = () => {
 
 $('closeBetModal').onclick = () => modal('betModal', false);
 
-// Multiplayer Step 2: Bet Point තහවුරු කර ඊළඟට යහළුවන් ලැයිස්තුව පෙන්වීම
+// Multiplayer Step 2: Bet Point තහවුරු කර යහළුවන් ලැයිස්තුව පෙන්වීම
 $('proceedToInvite').onclick = () => {
  const betVal = parseInt($('betAmountInput').value) || 10;
  if(betVal < 1) return toast('කරුණාකර නිවැරදි ඔට්ටු මුදලක් ඇතුළත් කරන්න.');
@@ -834,7 +835,7 @@ $('proceedToInvite').onclick = () => {
 
 $('closeMulti').onclick = () => modal('multiModal', false);
 
-// Multiplayer Step 3: නිශ්චිත යහළුවෙකුට Bet Point සමග Invite යැවීම
+// Multiplayer Step 3: නිශ්චිත යහළුවෙකුට Bet Point සහ තමන්ගේ Piece Index සමග Invite යැවීම
 async function sendInviteToUser(target){
  const betVal = window.currentBetPoints || 10;
  if(!fbUser || !target || target.uid === fbUser.uid) return;
@@ -847,6 +848,7 @@ async function sendInviteToUser(target){
   
   await ref.set({
    status:'waiting',hostUid:fbUser.uid,guestUid:target.uid,hostName:user.name,guestName:target.name,
+   hostPieceIndex:user.pieceIndex||0,
    board:initial,turn:1,gameId:1,betPoints:betVal,turnStartedAt:Date.now(),createdAt:Date.now()
   });
   
@@ -876,7 +878,16 @@ function listenInvites(){
    if(!roomSnap.exists()){toast('මෙම ආරාධනාව දැන් වලංගු නැත.');await s.ref.update({status:'expired'});return}
    
    window.currentBetPoints = betVal;
-   await roomRefSnap.update({status:'playing',startedAt:Date.now(),turnStartedAt:Date.now(),lastMoveAt:Date.now(),turn:1,forced:null});
+   // Guest පිළිගත් විට ඔහුගේ Piece Index එකද Room එකට Update කරයි
+   await roomRefSnap.update({
+    guestPieceIndex: user.pieceIndex || 0,
+    status:'playing',
+    startedAt:Date.now(),
+    turnStartedAt:Date.now(),
+    lastMoveAt:Date.now(),
+    turn:1,
+    forced:null
+   });
    await s.ref.update({status:'accepted',respondedAt:Date.now()});
    rememberOpponent(v.fromName,v.fromUid);
    enterRoom(v.roomId,'guest');
@@ -885,7 +896,7 @@ function listenInvites(){
  });
 }
 
-// Single Player ආරම්භ කිරීමේදී Bet එක තෝරා ගැනීම
+// Single Player ආරම්භ කිරීම
 $('single').onclick=()=>{
  $('maxSinglePoints').textContent = user.points;
  $('singleBetInput').value = Math.min(50, user.points);
@@ -999,6 +1010,6 @@ $('logout').onclick=async()=>{
   localStorage.removeItem(KEY);await auth.signOut();
   fbUser=null;user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0};
   leaveRoom();modal('authModal',true);toast('සාර්ථකව Logout විය.');
- }catch(e){toast('Logout වීමට නොහැකි විය.');}
+ }catch(e){toast('Logout වීමට නොහැකි විය.')}
 };
 </script></body></html>
