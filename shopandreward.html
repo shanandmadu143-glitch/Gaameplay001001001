@@ -53,15 +53,17 @@ header:after{content:'';position:absolute;top:0;left:0;right:0;height:2px;backgr
 
 .preview-circle{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#ffeaa7,#fdcb6e);display:grid;place-items:center;font-size:1.3rem;color:#111;position:relative}
 
-/* Visual Effect Animations */
-.fx-glow{box-shadow:0 0 15px #ffd166, 0 0 30px #ffad62!important}
-.fx-fire{box-shadow:0 0 15px #ff4757, 0 0 25px #ffa502!important;animation:pulseFire 1s infinite alternate}
-.fx-rainbow{box-shadow:0 0 15px #ff6b81, 0 0 25px #7ee7ff!important;animation:spinRainbow 3s linear infinite}
-.fx-lightning{box-shadow:0 0 15px #4facfe, 0 0 25px #00f2fe!important;animation:pulseLight .8s infinite alternate}
-.fx-matrix{box-shadow:0 0 15px #2ed573, 0 0 25px #26de81!important}
-
-@keyframes pulseFire{0%{filter:brightness(1)}100%{filter:brightness(1.3)}}
-@keyframes pulseLight{0%{opacity:0.7}100%{opacity:1}}
+/* 10 Strict In-Bounds Ring Effects */
+.fx-glow{box-shadow:inset 0 0 8px #ffd166, 0 0 10px #ffd166!important}
+.fx-fire{box-shadow:inset 0 0 8px #ff4757, 0 0 10px #ff4757!important}
+.fx-rainbow{box-shadow:inset 0 0 8px #ff6b81, 0 0 10px #7ee7ff!important}
+.fx-lightning{box-shadow:inset 0 0 8px #4facfe, 0 0 10px #00f2fe!important}
+.fx-matrix{box-shadow:inset 0 0 8px #2ed573, 0 0 10px #26de81!important}
+.fx-pink{box-shadow:inset 0 0 8px #ff9ff3, 0 0 10px #f368e0!important}
+.fx-blue{box-shadow:inset 0 0 8px #74b9ff, 0 0 10px #0984e3!important}
+.fx-purple{box-shadow:inset 0 0 8px #a29bfe, 0 0 10px #6c5ce7!important}
+.fx-orange{box-shadow:inset 0 0 8px #fab1a0, 0 0 10px #e17055!important}
+.fx-silver{box-shadow:inset 0 0 8px #dfe6e9, 0 0 10px #b2bec3!important}
 
 .item-name{color:var(--gold);font-size:0.95rem;font-weight:700}
 .item-desc{color:var(--dim);font-size:0.75rem;line-height:1.3}
@@ -87,7 +89,6 @@ header:after{content:'';position:absolute;top:0;left:0;right:0;height:2px;backgr
 </head>
 <body>
 <div class="app">
-<!-- Header with Expanded Title and Points Below -->
 <header>
 <div class="brand-wrapper">
 <div class="brand-icon"><i class="fa-solid fa-store"></i></div>
@@ -154,11 +155,16 @@ let user = JSON.parse(localStorage.getItem(KEY) || '{"points":500, "unlockedEffe
 if(!user.unlockedEffects) user.unlockedEffects = [];
 
 const EFFECTS = [
- {id: 'glow', name: 'රන් කැටයම්', desc: 'දිලිසෙන රන්වන් ආලෝකයකි.', class: 'fx-glow', icon: '★'},
- {id: 'fire', name: 'ගිනි දැල්', desc: 'උණුසුම් ගිනි පුපුරු විහිදුවයි.', class: 'fx-fire', icon: '🔥'},
- {id: 'rainbow', name: 'දේදුනු විදුලිය', desc: 'වර්ණ මාලා ආචරණයකි.', class: 'fx-rainbow', icon: '⚡'},
- {id: 'lightning', name: 'විදුලි කුණාටුව', desc: 'නිල් පැහැති විදුලි රැස්ය.', class: 'fx-lightning', icon: '🛡'},
- {id: 'matrix', name: 'මරකත මැජික්', desc: 'ශක්තිමත් කොළ මැජික් එළියකි.', class: 'fx-matrix', icon: '❖'}
+ {id: 'glow', name: 'රන් වළල්ල', desc: 'දිලිසෙන රන්වන් වළල්ලකි.', class: 'fx-glow', icon: '★'},
+ {id: 'fire', name: 'ගිනි දැල් වළල්ල', desc: 'උණුසුම් ගිනි පුපුරු මෝස්තරයකි.', class: 'fx-fire', icon: '🔥'},
+ {id: 'rainbow', name: 'දේදුනු වළල්ල', desc: 'වර්ණ මාලා වළලු ආචරණයකි.', class: 'fx-rainbow', icon: '⚡'},
+ {id: 'lightning', name: 'විදුලි වළල්ල', desc: 'නිල් පැහැති විදුලි රැස්ය.', class: 'fx-lightning', icon: '🛡'},
+ {id: 'matrix', name: 'මරකත කොළ', desc: 'ශක්තිමත් කොළ මැජික් වළල්ලකි.', class: 'fx-matrix', icon: '❖'},
+ {id: 'pink', name: 'රෝස මල් වළල්ල', desc: 'ආකර්ෂණීය රෝස පැහැති වළල්ලකි.', class: 'fx-pink', icon: '♥'},
+ {id: 'blue', name: 'අහස් නිල්', desc: 'අහස් නිල් පැහැති ලස්සන වළල්ලකි.', class: 'fx-blue', icon: '■'},
+ {id: 'purple', name: 'දම් රැජින', desc: 'රාජකීය දම් පැහැති වළල්ලකි.', class: 'fx-purple', icon: '✿'},
+ {id: 'orange', name: 'තැඹිලි සූර්යයා', desc: 'ගිනියම් තැඹිලි පාට වළල්ලකි.', class: 'fx-orange', icon: '☀'},
+ {id: 'silver', name: 'රිදී කිරණ', desc: 'දීප්තිමත් රිදී පාට වළල්ලකි.', class: 'fx-silver', icon: '✦'}
 ];
 
 function toast(msg){
