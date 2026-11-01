@@ -6,24 +6,152 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Gemunu+Libre:wght@400;600;700;800&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#080b18;--panel:rgba(18,24,43,.96);--gold:#ffd166;--dim:#a0aec0}*{box-sizing:border-box;margin:0;padding:0;font-family:'Gemunu Libre','Poppins',sans-serif;user-select:none}html,body{width:100%;min-height:100%;background:radial-gradient(circle at 18% 18%,#3b2e2530,transparent 35%),linear-gradient(145deg,#080b18,#111a31 55%,#0a1022);color:#f8f9fa;display:grid;place-items:center;min-height:100dvh}
-.container{width:min(90%,480px);background:var(--panel);border:2px solid var(--gold);border-radius:20px;padding:30px;text-align:center;display:grid;gap:20px;box-shadow:0 15px 35px rgba(0,0,0,0.6)}
-.icon-box{font-size:3.5rem;color:var(--gold);animation:bounce 1.5s infinite ease-in-out}
-@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-h2{color:var(--gold);font-size:1.8rem;font-weight:700}
-p{color:var(--dim);font-size:1rem;line-height:1.5}
-.notice-badge{background:rgba(255,209,102,0.1);border:1px dashed var(--gold);padding:15px;border-radius:12px;color:var(--gold);font-weight:600;font-size:1.1rem}
-.btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;border:0;border-radius:10px;padding:12px 20px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:.2s}
+:root{--bg:#080b18;--panel:rgba(18,24,43,.96);--gold:#ffd166;--dim:#a0aec0;--green:#2ecc71;--red:#ff6b81}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Gemunu Libre','Poppins',sans-serif;user-select:none}
+html,body{width:100%;min-height:100%;background:radial-gradient(circle at 18% 18%,#3b2e2530,transparent 35%),linear-gradient(145deg,#080b18,#111a31 55%,#0a1022);color:#f8f9fa;padding:15px}
+.app{max-width:900px;margin:auto;display:grid;gap:20px}
+header{background:var(--panel);border:1px solid #ffd16640;border-radius:15px;padding:12px 20px;display:flex;align-items:center;justify-content:space-between}
+.brand{font-size:1.25rem;color:var(--gold);font-weight:800}
+.points-box{background:rgba(0,0,0,0.4);border:1px solid var(--gold);padding:6px 14px;border-radius:20px;font-weight:700;color:var(--gold)}
+.shop-container{background:var(--panel);border:1px solid #ffd16640;border-radius:15px;padding:20px;display:grid;gap:15px}
+h2{color:var(--gold);text-align:center;font-size:1.5rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:15px}
+.item-card{background:rgba(255,255,255,0.04);border:2px solid rgba(255,255,255,0.1);border-radius:14px;padding:16px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;transition:.2s}
+.item-card:hover{border-color:var(--gold);background:rgba(255,255,255,0.07)}
+.preview-circle{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#ffeaa7,#fdcb6e);display:grid;place-items:center;font-size:1.8rem;color:#111;position:relative}
+
+/* Visual Effect Animations */
+.fx-glow{box-shadow:0 0 20px #ffd166, 0 0 40px #ffad62!important}
+.fx-fire{box-shadow:0 0 20px #ff4757, 0 0 35px #ffa502!important;animation:pulseFire 1s infinite alternate}
+.fx-rainbow{box-shadow:0 0 25px #ff6b81, 0 0 35px #7ee7ff!important;animation:spinRainbow 3s linear infinite}
+.fx-lightning{box-shadow:0 0 22px #4facfe, 0 0 40px #00f2fe!important;animation:pulseLight .8s infinite alternate}
+.fx-matrix{box-shadow:0 0 22px #2ed573, 0 0 35px #26de81!important}
+
+@keyframes pulseFire{0%{filter:brightness(1)}100%{filter:brightness(1.4)}}
+@keyframes pulseLight{0%{opacity:0.7}100%{opacity:1}}
+
+.btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;border:0;border-radius:9px;padding:9px 16px;font-weight:700;cursor:pointer;width:100%;transition:.2s}
 .btn-gold:hover{filter:brightness(1.1)}
+.btn-gold:disabled{opacity:0.5;cursor:not-allowed}
+.btn-back{background:rgba(255,255,255,0.1);color:white;border:1px solid rgba(255,255,255,0.2);border-radius:9px;padding:8px 14px;cursor:pointer;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.btn-back:hover{background:rgba(255,255,255,0.2)}
+#toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,100px);opacity:0;background:#1e293b;border:1px solid var(--gold);color:white;border-radius:25px;padding:10px 20px;z-index:100;transition:.3s;font-weight:600}
+#toast.show{transform:translate(-50%,0);opacity:1}
 </style>
 </head>
 <body>
-<div class="container">
-<div class="icon-box"><i class="fa-solid fa-store"></i></div>
-<h2>Shop & Reward</h2>
-<p>අපගේ වෙළඳසැල සහ ත්‍යාග පද්ධතිය (Rewards System) ඔබ වෙත ඉතා ඉක්මනින් ගෙන ඒමට කටයුතු කරමින් පවතී.</p>
-<div class="notice-badge"><i class="fa-solid fa-clock"></i> ලගදිම බලාපොරොත්තු වන්න!</div>
-<a href="index.html" class="btn-gold"><i class="fa-solid fa-arrow-left"></i> ප්‍රධාන පිටුවට යන්න</a>
+<div class="app">
+<header>
+<div class="brand"><i class="fa-solid fa-store"></i> Shop & Reward</div>
+<div class="points-box">🪙 <span id="userPoints">500</span> pts</div>
+<a href="index.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i> ප්‍රධාන පිටුවට</a>
+</header>
+
+<div class="shop-container">
+<h2>දාම් ඉත්තන් සඳහා විශේෂ Effects (250 pts බැගින්)</h2>
+<div class="grid" id="shopGrid"></div>
 </div>
+</div>
+<div id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script>
+const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
+if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.database();
+
+const KEY = 'sinhala_draughts_v7_user';
+let user = JSON.parse(localStorage.getItem(KEY) || '{"points":500, "unlockedEffects":[]}');
+if(!user.unlockedEffects) user.unlockedEffects = [];
+
+const EFFECTS = [
+ {id: 'glow', name: 'රන් කැටයම් (Golden Glow)', desc: 'ඉත්තා වටා දිලිසෙන රන්වන් ආලෝකයකි.', class: 'fx-glow', icon: '★'},
+ {id: 'fire', name: 'ගිනි දැල් (Fire Aura)', desc: 'උණුසුම් ගිනි පුපුරු විහිදුවන ආචරණයකි.', class: 'fx-fire', icon: '🔥'},
+ {id: 'rainbow', name: 'දේදුනු විදුලිය (Rainbow Flow)', desc: 'වර්ණ මාලාවකින් දිස්වන ආකර්ෂණීය පෙනුමකි.', class: 'fx-rainbow', icon: '⚡'},
+ {id: 'lightning', name: 'විදුලි කුණාටුව (Lightning Shield)', desc: 'නිල් පැහැති විදුලි රැස් විහිදුවයි.', class: 'fx-lightning', icon: '🛡'},
+ {id: 'matrix', name: 'මරකත මැජික් (Matrix Green)', desc: 'ශක්තිමත් කොළ පැහැති මැජික් ආලෝකයකි.', class: 'fx-matrix', icon: '❖'}
+];
+
+function toast(msg){
+ const t = document.getElementById('toast');
+ t.textContent = msg;
+ t.classList.add('show');
+ setTimeout(()=>t.classList.remove('show'), 2500);
+}
+
+function updatePointsUI(){
+ document.getElementById('userPoints').textContent = user.points !== undefined ? user.points : 500;
+}
+
+function syncUserWithDB(){
+ localStorage.setItem(KEY, JSON.stringify(user));
+ const currentUser = auth.currentUser;
+ if(currentUser){
+  db.ref('users_v6/' + currentUser.uid).update({
+   points: user.points,
+   unlockedEffects: user.unlockedEffects || [],
+   selectedEffect: user.selectedEffect || ''
+  }).catch(console.error);
+ }
+ updatePointsUI();
+}
+
+auth.onAuthStateChanged(async u => {
+ if(u){
+  try{
+   const snap = await db.ref('users_v6/' + u.uid).once('value');
+   const d = snap.val();
+   if(d){
+    user.points = d.points !== undefined ? Number(d.points) : user.points;
+    user.unlockedEffects = Array.isArray(d.unlockedEffects) ? d.unlockedEffects : (user.unlockedEffects || []);
+    user.selectedEffect = d.selectedEffect || user.selectedEffect || '';
+    user.uid = u.uid;
+    localStorage.setItem(KEY, JSON.stringify(user));
+   }
+  }catch(e){}
+ }
+ updatePointsUI();
+ renderShop();
+});
+
+function renderShop(){
+ const grid = document.getElementById('shopGrid');
+ grid.innerHTML = '';
+ 
+ EFFECTS.forEach(fx => {
+  const isUnlocked = user.unlockedEffects && user.unlockedEffects.includes(fx.id);
+  const card = document.createElement('div');
+  card.className = 'item-card';
+  card.innerHTML = `
+   <div class="preview-circle ${fx.class}">${fx.icon}</div>
+   <b style="color:var(--gold)">${fx.name}</b>
+   <p style="font-size:0.85rem;color:var(--dim)">${fx.desc}</p>
+   <button class="btn-gold" ${isUnlocked ? 'disabled style="background:#2ecc71;color:#fff;"' : ''} onclick="buyEffect('${fx.id}')">
+    ${isUnlocked ? 'මිලදී ගෙන ඇත (Unlocked)' : 'මිලදී ගන්න (250 pts)'}
+   </button>
+  `;
+  grid.appendChild(card);
+ });
+}
+
+function buyEffect(id){
+ if(user.points < 250){
+  return toast('ඔබ සතුව ප්‍රමාණවත් Points නැත (අවශ්‍යයි: 250 pts)!');
+ }
+ user.points -= 250;
+ if(!user.unlockedEffects) user.unlockedEffects = [];
+ user.unlockedEffects.push(id);
+ 
+ syncUserWithDB();
+ renderShop();
+ toast('සාර්ථකව මිලදී ගන්නා ලදී! 🎉 (Profile වෙතින් Select කරගන්න)');
+}
+
+updatePointsUI();
+renderShop();
+</script>
 </body>
 </html>
