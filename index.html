@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Gemunu+Libre:wght@400;600;700;800&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#080b18;--panel:rgba(18,24,43,.96);--gold:#ffd166;--dim:#a0aec0;--red:#ff6b81;--green:#2ecc71}*{box-sizing:border-box;margin:0;padding:0;font-family:'Gemunu Libre','Poppins',sans-serif;user-select:none}html,body{width:100%;min-height:100%;background:radial-gradient(circle at 18% 18%,#3b2e2530,transparent 35%),linear-gradient(145deg,#080b18,#111a31 55%,#0a1022);color:#f8f9fa}body{min-height:100dvh}.app{min-height:100dvh;max-width:1100px;margin:auto;padding:10px;display:flex;flex-direction:column;gap:12px}header,footer,.panel,.lobby,.side{background:var(--panel);border:1px solid #ffd16640;border-radius:15px;padding:10px 14px}header,footer{display:flex;align-items:center;justify-content:space-between;gap:10px}header{min-height:58px}.brand{font-size:1.25rem;color:var(--gold);font-weight:800}.profile{display:flex;align-items:center;gap:8px}.avatar{width:35px;height:35px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe08a,#ff8db5,#7ee7ff);color:#18213e}.btn,.btn-gold,.btn-outline{border:0;border-radius:9px;padding:9px 13px;cursor:pointer;font-weight:700}.btn,.btn-outline{background:#ffffff12;color:white;border:1px solid #ffffff30}.btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111}.btn:disabled,.btn-gold:disabled{opacity:.45;cursor:not-allowed}main{flex:1;display:grid;place-items:center;min-height:400px}.lobby{width:min(100%,550px);padding:22px;display:grid;gap:16px}.lobby h2{text-align:center;color:var(--gold)}.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.mode{padding:22px 10px;border:1px solid #ffffff25;border-radius:12px;text-align:center;background:#ffffff08;cursor:pointer}.mode i{font-size:2rem;color:var(--gold);display:block;margin-bottom:8px}.arena{width:100%;display:grid;grid-template-columns:170px minmax(0,1fr) 170px;gap:12px;align-items:center}.side{min-height:120px;display:flex;flex-direction:column;justify-content:center;gap:10px}.player{padding:10px;background:#0005;border:1px solid #ffffff20;border-radius:10px}.player.active{border-color:var(--gold);box-shadow:0 0 12px #ffd16655}.board-wrap{width:min(100%,min(65vh,520px));aspect-ratio:1;position:relative;margin:auto}.board{width:100%;height:100%;display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);border:9px solid #18213e;border-radius:12px;overflow:hidden}.sq{display:grid;place-items:center;position:relative;cursor:pointer;touch-action:manipulation}.sq.light{background:#e8edff}.sq.dark{background:linear-gradient(145deg,#3d4d7d,#29365e)}.sq.selected{background:#ffd166!important}.sq.target:after{content:'';width:32%;height:32%;border-radius:50%;background:#50e8ae}.sq.capture:after{content:'';width:42%;height:42%;border-radius:50%;background:#ff6b81}.piece{width:78%;height:78%;border-radius:50%;box-shadow:0 3px 7px #0009;display:grid;place-items:center}.white{background:radial-gradient(circle at 30% 30%,#fff,#c8d6e5);border:2px solid #b2bec3}.red{background:radial-gradient(circle at 30% 30%,#ff6b81,#bd3159);border:2px solid #9f294b}.king:after{content:'♛';font-size:clamp(12px,3vw,22px);color:#d69b16}.close{position:absolute;right:-9px;top:-9px;border:2px solid white;border-radius:50%;width:32px;height:32px;background:#e74c3c;color:white;z-index:3;cursor:pointer}.status{text-align:center;color:var(--gold);min-height:25px}#clockPanel{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:12px;padding:5px 10px}
+:root{--bg:#080b18;--panel:rgba(18,24,43,.96);--gold:#ffd166;--dim:#a0aec0;--red:#ff6b81;--green:#2ecc71}*{box-sizing:border-box;margin:0;padding:0;font-family:'Gemunu Libre','Poppins',sans-serif;user-select:none}html,body{width:100%;min-height:100%;background:radial-gradient(circle at 18% 18%,#3b2e2530,transparent 35%),linear-gradient(145deg,#080b18,#111a31 55%,#0a1022);color:#f8f9fa}body{min-height:100dvh}.app{min-height:100dvh;max-width:1100px;margin:auto;padding:10px;display:flex;flex-direction:column;gap:12px}header,footer,.panel,.lobby,.side{background:var(--panel);border:1px solid #ffd16640;border-radius:15px;padding:10px 14px}header,footer{display:flex;align-items:center;justify-content:space-between;gap:10px}header{min-height:58px}.brand{font-size:1.25rem;color:var(--gold);font-weight:800}.profile{display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 8px;border-radius:8px;border:1px dashed #ffd16655;transition:.2s}.profile:hover{background:#ffffff10}.avatar{width:35px;height:35px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe08a,#ff8db5,#7ee7ff);color:#18213e;font-size:1.1rem}.btn,.btn-gold,.btn-outline{border:0;border-radius:9px;padding:9px 13px;cursor:pointer;font-weight:700}.btn,.btn-outline{background:#ffffff12;color:white;border:1px solid #ffffff30}.btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111}.btn:disabled,.btn-gold:disabled{opacity:.45;cursor:not-allowed}main{flex:1;display:grid;place-items:center;min-height:400px}.lobby{width:min(100%,550px);padding:22px;display:grid;gap:16px}.lobby h2{text-align:center;color:var(--gold)}.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.mode{padding:22px 10px;border:1px solid #ffffff25;border-radius:12px;text-align:center;background:#ffffff08;cursor:pointer}.mode i{font-size:2rem;color:var(--gold);display:block;margin-bottom:8px}.arena{width:100%;display:grid;grid-template-columns:170px minmax(0,1fr) 170px;gap:12px;align-items:center}.side{min-height:120px;display:flex;flex-direction:column;justify-content:center;gap:10px}.player{padding:10px;background:#0005;border:1px solid #ffffff20;border-radius:10px}.player.active{border-color:var(--gold);box-shadow:0 0 12px #ffd16655}.board-wrap{width:min(100%,min(65vh,520px));aspect-ratio:1;position:relative;margin:auto}.board{width:100%;height:100%;display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);border:9px solid #18213e;border-radius:12px;overflow:hidden}.sq{display:grid;place-items:center;position:relative;cursor:pointer;touch-action:manipulation}.sq.light{background:#e8edff}.sq.dark{background:linear-gradient(145deg,#3d4d7d,#29365e)}.sq.selected{background:#ffd166!important}.sq.target:after{content:'';width:32%;height:32%;border-radius:50%;background:#50e8ae}.sq.capture:after{content:'';width:42%;height:42%;border-radius:50%;background:#ff6b81}.piece{width:78%;height:78%;border-radius:50%;box-shadow:0 3px 7px #0009;display:grid;place-items:center;font-size:1.1rem}.king:after{content:'♛';font-size:clamp(10px,2.5vw,18px);position:absolute;bottom:2px;right:2px;color:#ffd166}.close{position:absolute;right:-9px;top:-9px;border:2px solid white;border-radius:50%;width:32px;height:32px;background:#e74c3c;color:white;z-index:3;cursor:pointer}.status{text-align:center;color:var(--gold);min-height:25px}#clockPanel{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:12px;padding:5px 10px}
 #clockRing{--progress:100;width:66px;height:66px;border-radius:50%;display:grid;place-items:center;position:relative;background:conic-gradient(var(--gold) calc(var(--progress)*1%),#ffffff18 0);box-shadow:0 0 18px #ffd16635;transition:background .18s linear,box-shadow .2s}
 #clockRing:before{content:'';position:absolute;inset:6px;border-radius:50%;background:#111a31;border:1px solid #ffffff20}
 #turnClock{position:relative;z-index:1;font-size:1.45rem;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:1px;color:var(--gold)}
@@ -15,15 +15,25 @@
 #clockRing.urgent #turnClock{color:var(--red)}
 @keyframes clockPulse{50%{transform:scale(1.07);filter:brightness(1.25)}}
 @keyframes spin{to{transform:rotate(360deg)}}
-.sq{touch-action:none}.modal{position:fixed;inset:0;background:#000c;display:none;place-items:center;z-index:20;padding:15px}.modal.show{display:grid}.modalbox{width:min(100%,430px);background:#121824;border:2px solid var(--gold);border-radius:17px;padding:20px;display:grid;gap:12px}.modalbox h2,.modalbox h3{text-align:center;color:var(--gold)}input{width:100%;padding:11px;background:#0007;border:1px solid #ffd16670;border-radius:9px;color:white;font-size:1rem}.row{display:flex;gap:8px;align-items:center}.row>*{min-width:0}.list{display:grid;gap:7px;max-height:160px;overflow:auto}.listitem{display:flex;justify-content:space-between;align-items:center;background:#ffffff10;border-radius:8px;padding:8px;gap:8px}#toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,100px);opacity:0;background:#1e293b;border:1px solid var(--gold);border-radius:22px;padding:10px 18px;z-index:50;transition:.25s}#toast.show{transform:translate(-50%,0);opacity:1}#connection{font-size:.8rem;color:#4ade80}footer{font-size:.85rem;color:var(--dim)}@media(max-width:760px){.arena{grid-template-columns:1fr 1fr;grid-template-areas:'a b' 'board board';align-items:start}.side:first-child{grid-area:a;min-height:72px}.side:last-child{grid-area:b;min-height:72px}.board-wrap{grid-area:board;width:min(calc(100vw - 30px),calc(100dvh - 230px));}.side{padding:7px}.player{padding:7px;font-size:.9rem}}@media(max-height:600px) and (max-width:760px){.app{gap:5px;padding:5px}.board-wrap{width:min(calc(100vw - 24px),calc(100dvh - 165px))}.side{min-height:55px}header{min-height:45px}footer{min-height:32px}}
+.sq{touch-action:none}.modal{position:fixed;inset:0;background:#000c;display:none;place-items:center;z-index:20;padding:15px}.modal.show{display:grid}.modalbox{width:min(100%,460px);background:#121824;border:2px solid var(--gold);border-radius:17px;padding:20px;display:grid;gap:12px;max-height:85vh;overflow-y:auto}.modalbox h2,.modalbox h3{text-align:center;color:var(--gold)}input{width:100%;padding:11px;background:#0007;border:1px solid #ffd16670;border-radius:9px;color:white;font-size:1rem}.row{display:flex;gap:8px;align-items:center}.row>*{min-width:0}.list{display:grid;gap:7px;max-height:160px;overflow:auto}.listitem{display:flex;justify-content:space-between;align-items:center;background:#ffffff10;border-radius:8px;padding:8px;gap:8px}.pieces-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:5px}.piece-option{background:#ffffff08;border:2px solid #ffffff20;border-radius:10px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;transition:.2s}.piece-option:hover{border-color:var(--gold);background:#ffffff15}.piece-option.selected{border-color:var(--gold);background:#ffd16625;box-shadow:0 0 10px #ffd16644}#toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,100px);opacity:0;background:#1e293b;border:1px solid var(--gold);border-radius:22px;padding:10px 18px;z-index:50;transition:.25s}#toast.show{transform:translate(-50%,0);opacity:1}#connection{font-size:.8rem;color:#4ade80}footer{font-size:.85rem;color:var(--dim)}@media(max-width:760px){.arena{grid-template-columns:1fr 1fr;grid-template-areas:'a b' 'board board';align-items:start}.side:first-child{grid-area:a;min-height:72px}.side:last-child{grid-area:b;min-height:72px}.board-wrap{grid-area:board;width:min(calc(100vw - 30px),calc(100dvh - 230px));}.side{padding:7px}.player{padding:7px;font-size:.9rem}}@media(max-height:600px) and (max-width:760px){.app{gap:5px;padding:5px}.board-wrap{width:min(calc(100vw - 24px),calc(100dvh - 165px))}.side{min-height:55px}header{min-height:45px}footer{min-height:32px}}
 </style>
 </head>
 <body><div class="app">
-<header><div class="brand"><i class="fa-solid fa-chess-board"></i> ශ්‍රී ලංකා දාම්</div><div class="profile"><span class="avatar"><i class="fa-solid fa-user"></i></span><span><b id="headerName">ක්‍රීඩකයා</b><br><small>🪙 <span id="points">500</span></small></span></div><button class="btn" id="logout">Logout</button></header>
+<header><div class="brand"><i class="fa-solid fa-chess-board"></i> ශ්‍රී ලංකා දාම්</div><div class="profile" id="openProfile" title="പ്രොෆයිලය සහ ඉත්තන් වෙනස් කරන්න"><span class="avatar" id="headerAvatar"><i class="fa-solid fa-user"></i></span><span><b id="headerName">ක්‍රීඩකයා</b><br><small>🪙 <span id="points">500</span></small></span></div><button class="btn" id="logout">Logout</button></header>
 <main>
 <section class="lobby" id="lobby"><h2>දාම් ක්‍රීඩාවට සාදරයෙන් පිළිගනිමු</h2><p style="text-align:center;color:var(--dim)">ක්‍රීඩා මාදිලියක් තෝරන්න</p><div class="mode-grid"><div class="mode" id="single"><i class="fa-solid fa-robot"></i><b>Single Player</b><p>AI පරිගණකය සමඟ</p></div><div class="mode" id="multi"><i class="fa-solid fa-users"></i><b>Multiplayer</b><p>ඔන්ලයින් යහළුවන් සමඟ</p></div></div><div id="connection">● Firebase සම්බන්ධ වෙමින්...</div></section>
 <section class="arena" id="arena" style="display:none"><div class="side"><div class="player active" id="p1"><b id="p1name">ඔබ</b><br><small id="p1sub">සුදු (White)</small></div></div><div class="board-wrap"><button class="close" id="forfeit" title="තරඟයෙන් ඉවත් වන්න">×</button><div class="board" id="board"></div></div><div class="side"><div class="player" id="p2"><b id="p2name">ප්‍රතිවාදියා</b><br><small id="p2sub">රතු (Red)</small></div></div><div class="status" id="gameStatus" style="grid-column:1/-1"></div><div id="clockPanel"><div id="clockRing" role="timer" aria-live="off"><span id="turnClock">10</span></div><span id="clockCaption">ඉතිරි කාලය</span></div></section>
 </main><footer><span>ජයග්‍රහණය +10 | පරාජය / ඉවත් වීම -10</span><button class="btn" id="home">⌂ ප්‍රධාන පිටුව</button></footer></div>
+
+<!-- Profile & Piece Customization Modal -->
+<div class="modal" id="profileModal">
+<div class="modalbox">
+<div class="row"><h3 style="flex:1">ප්‍රොෆයිලය සහ ඉත්තන් තෝරන්න</h3><button class="btn" id="closeProfile">×</button></div>
+<p style="font-size:.9rem;color:var(--dim)">ඔබට ගැලපෙන වර්ණයෙන් සහ හැඩයෙන් යුත් ඉත්තෙක් (Piece) තෝරාගන්න:</p>
+<div class="pieces-grid" id="piecesGrid"></div>
+<button class="btn-gold" id="saveProfile" style="margin-top:10px">සුරකින්න (Save)</button>
+</div>
+</div>
 
 <!-- Loading Modal -->
 <div class="modal show" id="loadingModal">
@@ -42,13 +52,81 @@
 'use strict';
 const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
 const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user',RECENT='sinhala_draughts_recent_v7';
-let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null},board=[],turn=1,selected=null,moves=[],single=true,roomId=null,roomRef=null,roomCb=null,role=null,gameOver=false,aiTimer=null,processing=false,inviteRef=null,inviteCb=null,awarded={},turnClockTimer=null,turnDeadline=0,dragFrom=null,missedCapture=null;
+let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0},board=[],turn=1,selected=null,moves=[],single=true,roomId=null,roomRef=null,roomCb=null,role=null,gameOver=false,aiTimer=null,processing=false,inviteRef=null,inviteCb=null,awarded={},turnClockTimer=null,turnDeadline=0,dragFrom=null,missedCapture=null;
 
 let userSide = 1; 
 let nextStartingSide = 1; 
 
+// ඉත්තන් 20ක ලැයිස්තුව (වර්ණය, පසුබිම, අයිකනය/හැඩය සහ නම)
+const PIECE_DESIGNS=[
+ {name:'ක්ලැසික් සුදු',bg:'radial-gradient(circle at 30% 30%,#fff,#c8d6e5)',border:'#b2bec3',color:'#18213e',icon:'●'},
+ {name:'රන් ඔටුන්න',bg:'linear-gradient(135deg,#ffe08a,#ffad62)',border:'#d69b16',color:'#111',icon:'★'},
+ {name:'රුධිර රතු',bg:'radial-gradient(circle at 30% 30%,#ff6b81,#bd3159)',border:'#9f294b',color:'#fff',icon:'◆'},
+ {name:'මරකත කොළ',bg:'radial-gradient(circle at 30% 30%,#2ecc71,#27ae60)',border:'#1e8449',color:'#fff',icon:'▲'},
+ {name:'අහස් නිල්',bg:'radial-gradient(circle at 30% 30%,#3498db,#2980b9)',border:'#1b4f72',color:'#fff',icon:'■'},
+ {name:'දම් රැජින',bg:'radial-gradient(circle at 30% 30%,#9b59b6,#8e44ad)',border:'#512e5f',color:'#fff',icon:'✿'},
+ {name:'ගිනියම් තැඹිලි',bg:'radial-gradient(circle at 30% 30%,#e67e22,#d35400)',border:'#a04000',color:'#fff',icon:'☀'},
+ {name:'රෝස මල්',bg:'radial-gradient(circle at 30% 30%,#ff9ff3,#f368e0)',border:'#ff5252',color:'#fff',icon:'♥'},
+ {name:'මුතු මැණික්',bg:'radial-gradient(circle at 30% 30%,#00d2d3,#54a0ff)',border:'#01a3a4',color:'#fff',icon:'✦'},
+ {name:'රන් හැඩය',bg:'linear-gradient(135deg,#feca57,#ff9f43)',border:'#e58e26',color:'#111',icon:'◈'},
+ {name:'අඳුරු ලෝහ',bg:'radial-gradient(circle at 30% 30%,#576574,#222f3e)',border:'#101820',color:'#ffd166',icon:'⚙'},
+ {name:'කොළ පැහැති තරුව',bg:'radial-gradient(circle at 30% 30%,#10ac84,#01a3a4)',border:'#006666',color:'#fff',icon:'✪'},
+ {name:'චොක්ලට් බ්‍රවුන්',bg:'radial-gradient(circle at 30% 30%,#845ec2,#d65db1)',border:'#4b3869',color:'#fff',icon:'⬠'},
+ {name:'දේදුනු විදුලිය',bg:'linear-gradient(135deg,#ff9ff3,#54a0ff,#55efc4)',border:'#fff',color:'#111',icon:'⚡'},
+ {name:'නිල් පලිහ',bg:'radial-gradient(circle at 30% 30%,#2e86de,#0984e3)',border:'#0652dd',color:'#fff',icon:'🛡'},
+ {name:'මී මැස්ස',bg:'linear-gradient(135deg,#f1c40f,#e67e22)',border:'#d35400',color:'#111',icon:'⬡'},
+ {name:'මරකත මනෝ',bg:'radial-gradient(circle at 30% 30%,#00b894,#00cec9)',border:'#006655',color:'#fff',icon:'❖'},
+ {name:'රෝස දියමන්ති',bg:'radial-gradient(circle at 30% 30%,#fd79a8,#e84393)',border:'#c71585',color:'#fff',icon:'💎'},
+ {name:'ගිනි පුපුර',bg:'linear-gradient(135deg,#ff4757,#ff6b81)',border:'#eb2f06',color:'#fff',icon:'🔥'},
+ {name:'රාජකීය රන්',bg:'linear-gradient(135deg,#ffd700,#ffa500)',border:'#b8860b',color:'#111',icon:'👑'}
+];
+
+// Sound System using Web Audio API
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playSound(type){
+ try{
+  if(audioCtx.state === 'suspended') audioCtx.resume();
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  const now = audioCtx.currentTime;
+  
+  if(type === 'click'){
+   osc.type='sine'; osc.frequency.setValueAtTime(400,now); osc.frequency.exponentialRampToValueAtTime(200,now+0.05);
+   gain.gain.setValueAtTime(0.1,now); gain.gain.linearRampToValueAtTime(0.01,now+0.05);
+   osc.start(now); osc.stop(now+0.05);
+  }else if(type === 'move'){
+   osc.type='triangle'; osc.frequency.setValueAtTime(250,now); osc.frequency.exponentialRampToValueAtTime(350,now+0.08);
+   gain.gain.setValueAtTime(0.15,now); gain.gain.linearRampToValueAtTime(0.01,now+0.08);
+   osc.start(now); osc.stop(now+0.08);
+  }else if(type === 'capture'){
+   osc.type='sawtooth'; osc.frequency.setValueAtTime(150,now); osc.frequency.exponentialRampToValueAtTime(80,now+0.15);
+   gain.gain.setValueAtTime(0.2,now); gain.gain.linearRampToValueAtTime(0.01,now+0.15);
+   osc.start(now); osc.stop(now+0.15);
+  }else if(type === 'win'){
+   osc.type='sine';
+   [0,0.1,0.2,0.3].forEach((t,i)=>{
+    const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+    o.connect(g); g.connect(audioCtx.destination);
+    o.frequency.setValueAtTime([300,400,500,650][i],now+t);
+    g.gain.setValueAtTime(0.15,now+t); g.gain.linearRampToValueAtTime(0.01,now+t+0.12);
+    o.start(now+t); o.stop(now+t+0.12);
+   });
+  }else if(type === 'lose'){
+   osc.type='sawtooth';
+   [0,0.15,0.3].forEach((t,i)=>{
+    const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+    o.connect(g); g.connect(audioCtx.destination);
+    o.frequency.setValueAtTime([300,220,150][i],now+t);
+    g.gain.setValueAtTime(0.15,now+t); g.gain.linearRampToValueAtTime(0.01,now+t+0.15);
+    o.start(now+t); o.stop(now+t+0.15);
+   });
+  }
+ }catch(e){console.warn('Audio error:',e)}
+}
+
 function toast(s){$('toast').textContent=s;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2800)}
-function modal(id,on){$(id).classList.toggle('show',on)}
+function modal(id,on){$(id).classList.toggle('show',on);playSound('click')}
 function setStatus(s,ok=true){$('connection').textContent='● '+s;$('connection').style.color=ok?'#4ade80':'#f6c453'}
 
 try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);auth=firebase.auth();db=firebase.database();}catch(e){console.error(e);setStatus('Firebase ආරම්භ කළ නොහැක',false)}
@@ -71,27 +149,40 @@ try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);auth=firebas
    if(u){
     if(window.__creatingAccount)return;
     try{await loadSignedInUser()}catch(e){
-     console.error(e);
      modal('loadingModal', false);
      modal('authModal', true);
     }
    }else{
-    user={name:'',points:500,wins:0,losses:0,uid:null};
+    user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0};
     modal('loadingModal', false);
     modal('authModal', true);
    }
   });
  }catch(e){
-  console.error(e);
   modal('loadingModal', false);
   modal('authModal', true);
   setStatus('Firebase දෝෂයකි',false);
  }
 })();
 
-function presence(){if(!fbUser||!user.name)return;const r=db.ref('publicProfiles_v6/'+fbUser.uid);r.child('online').onDisconnect().set(false).catch(e=>{});r.update({name:user.name,online:true,lastSeen:firebase.database.ServerValue.TIMESTAMP}).catch(e=>{})}
-function updateHeader(){$('headerName').textContent=user.name||'ක්‍රීඩකයා';$('points').textContent=user.points}
-function saveUser(){localStorage.setItem(KEY,JSON.stringify(user));if(db&&fbUser)db.ref('users_v6/'+fbUser.uid).update({name:user.name}).catch(console.error);updateHeader()}
+function presence(){if(!fbUser||!user.name)return;const r=db.ref('publicProfiles_v6/'+fbUser.uid);r.child('online').onDisconnect().set(false).catch(e=>{});r.update({name:user.name,online:true,pieceIndex:user.pieceIndex||0,lastSeen:firebase.database.ServerValue.TIMESTAMP}).catch(e=>{})}
+function updateHeader(){
+ $('headerName').textContent=user.name||'ක්‍රීඩකයා';
+ $('points').textContent=user.points;
+ const design=PIECE_DESIGNS[user.pieceIndex||0]||PIECE_DESIGNS[0];
+ const av=$('headerAvatar');
+ av.style.background=design.bg;
+ av.style.borderColor=design.border;
+ av.style.color=design.color;
+ av.innerHTML=design.icon;
+}
+
+function saveUser(){
+ localStorage.setItem(KEY,JSON.stringify(user));
+ if(db&&fbUser)db.ref('users_v6/'+fbUser.uid).update({name:user.name,pieceIndex:user.pieceIndex||0}).catch(console.error);
+ updateHeader();
+}
+
 function usernameEmail(name){return name.toLowerCase()+'@sinhala-draughts.app'}
 
 async function loadSignedInUser(){
@@ -105,17 +196,21 @@ async function loadSignedInUser(){
    return;
   }
   const local=JSON.parse(localStorage.getItem(KEY)||'null');
-  user={name:d.name,points:local&&local.uid===fbUser.uid?Number(local.points)||500:500,wins:Number(d.wins)||0,losses:Number(d.losses)||0,uid:fbUser.uid};
+  user={
+   name:d.name,
+   points:local&&local.uid===fbUser.uid?Number(local.points)||500:500,
+   wins:Number(d.wins)||0,
+   losses:Number(d.losses)||0,
+   uid:fbUser.uid,
+   pieceIndex:Number(d.pieceIndex)!==undefined?Number(d.pieceIndex):(local?Number(local.pieceIndex)||0:0)
+  };
   $('username').value=user.name;
   updateHeader();
   presence();
   listenInvites();
-  
-  // Load complete - hide loading animation and open the main lobby page
   modal('loadingModal', false);
   modal('authModal', false);
  } catch(e) {
-  console.error(e);
   modal('loadingModal', false);
   modal('authModal', true);
   toast('ගිණුම් දත්ත ලබාගත නොහැක.');
@@ -135,13 +230,13 @@ async function registerAccount(){
   const key=name.toLowerCase();
   const idx=await db.ref('usernameIndex_v6/'+key).transaction(v=>v===null?fbUser.uid:undefined);
   if(!idx.committed){await auth.signOut();return toast('මෙම Username එක දැනටමත් භාවිතා වේ.')}
-  user={name,points:500,wins:0,losses:0,uid:fbUser.uid};
-  await db.ref('users_v6/'+fbUser.uid).set({name,createdAt:firebase.database.ServerValue.TIMESTAMP});
+  user={name,points:500,wins:0,losses:0,uid:fbUser.uid,pieceIndex:0};
+  await db.ref('users_v6/'+fbUser.uid).set({name,pieceIndex:0,createdAt:firebase.database.ServerValue.TIMESTAMP});
   window.__creatingAccount=false;
   localStorage.setItem(KEY,JSON.stringify(user));
   updateHeader();modal('authModal',false);presence();listenInvites();toast('ගිණුම සාර්ථකව සාදන ලදී.');
  }catch(e){
-  window.__creatingAccount=false;console.error(e);
+  window.__creatingAccount=false;
   toast(e.code==='auth/email-already-in-use'?'මෙම Username එක දැනටමත් පවතී.':'ගිණුම සෑදීමට නොහැකි විය.')
  }
 }
@@ -159,6 +254,38 @@ async function loginAccount(){
 
 $('login').onclick=loginAccount;
 $('register').onclick=registerAccount;
+
+// Profile Piece Selection Modal Render
+let tempSelectedPiece = 0;
+function renderPiecesGrid(){
+ const grid=$('piecesGrid');
+ grid.innerHTML='';
+ PIECE_DESIGNS.forEach((p,idx)=>{
+  const div=document.createElement('div');
+  div.className='piece-option'+(idx===(tempSelectedPiece!==undefined?tempSelectedPiece:(user.pieceIndex||0))?' selected':'');
+  div.innerHTML=`<div style="width:36px;height:36px;border-radius:50%;background:${p.bg};border:2px solid ${p.border};color:${p.color};display:grid;place-items:center;font-size:1rem;box-shadow:0 2px 5px #0006">${p.icon}</div><span style="font-size:0.75rem;text-align:center;color:var(--dim)">${p.name}</span>`;
+  div.onclick=()=>{
+   playSound('click');
+   tempSelectedPiece=idx;
+   document.querySelectorAll('.piece-option').forEach(el=>el.classList.remove('selected'));
+   div.classList.add('selected');
+  };
+  grid.appendChild(div);
+ });
+}
+
+$('openProfile').onclick=()=>{
+ tempSelectedPiece=user.pieceIndex||0;
+ renderPiecesGrid();
+ modal('profileModal',true);
+};
+$('closeProfile').onclick=()=>modal('profileModal',false);
+$('saveProfile').onclick=()=>{
+ user.pieceIndex=tempSelectedPiece;
+ saveUser();
+ modal('profileModal',false);
+ toast('ඉත්තා සාර්ථකව වෙනස් කරන ලදී!');
+};
 
 function initBoard(){
  clearInterval(turnClockTimer);
@@ -256,8 +383,21 @@ function render(){
    if(m)sq.classList.add(m.capture?'capture':'target');
    
    if(board[r][c]){
+    const val=board[r][c];
     const p=document.createElement('div');
-    p.className='piece '+(board[r][c]>0?'white':'red')+(Math.abs(board[r][c])===2?' king':'');
+    const isUserPiece = single ? (Math.sign(val) === userSide) : (Math.sign(val) === (role==='host'?1:-1));
+    
+    if(isUserPiece){
+     const design=PIECE_DESIGNS[user.pieceIndex||0]||PIECE_DESIGNS[0];
+     p.className='piece'+(Math.abs(val)===2?' king':'');
+     p.style.background=design.bg;
+     p.style.border=`2px solid ${design.border}`;
+     p.style.color=design.color;
+     p.textContent=design.icon;
+    }else{
+     // ප්‍රතිවාදියාගේ ඉත්තා (Classic Red/White)
+     p.className='piece '+(val>0?'white':'red')+(Math.abs(val)===2?' king':'');
+    }
     sq.appendChild(p);
    }
 
@@ -290,6 +430,7 @@ function clickSquare(r,c){
  }
  const p=board[r][c];
  if(p&&Math.sign(p)===turn){
+  playSound('click');
   const captures=allMoves(turn).filter(m=>m.capture);
   const pieceMovesHere=pieceMoves(r,c);
   let pieceLegal=pieceMovesHere;
@@ -307,7 +448,12 @@ function applyMove(b,m){
  const p=b[m.fromR][m.fromC];
  b[m.fromR][m.fromC]=0;
  b[m.toR][m.toC]=p;
- if(m.capture)b[m.capR][m.capC]=0;
+ if(m.capture){
+  b[m.capR][m.capC]=0;
+  playSound('capture');
+ }else{
+  playSound('move');
+ }
  if(p===1&&m.toR===0)b[m.toR][m.toC]=2;
  if(p===-1&&m.toR===7)b[m.toR][m.toC]=-2;
  return p;
@@ -457,6 +603,7 @@ function finish(winner,message){
  if(gameOver)return;
  gameOver=true;clearInterval(aiTimer);clearInterval(turnClockTimer);
  const won=single?(winner===userSide):(role==='host'?winner===1:winner===-1);
+ if(won)playSound('win'); else playSound('lose');
  if(single)nextStartingSide=winner;
  const key=roomId?roomId+':'+(window.currentGameId||1):'single:'+Date.now();
  if(!awarded[key]){
@@ -509,7 +656,7 @@ function listenRoom(){
    const id=roomId+':'+(d.gameId||1);
    if(!awarded[id]){
     awarded[id]=true;
-    if(localWin){user.points+=10;user.wins++}else{user.points=Math.max(0,user.points-10);user.losses++}
+    if(localWin){user.points+=10;user.wins++;playSound('win')}else{user.points=Math.max(0,user.points-10);user.losses++;playSound('lose')}
     saveUser();
     $('overTitle').textContent=localWin?'ඔබ ජයග්‍රහණය කළා! 🎉':'ඔබ පරාජය විය!';
     $('overMessage').textContent=d.message||'තරඟය අවසන්';
@@ -703,7 +850,7 @@ $('rematch').onclick=async()=>{
 $('exit').onclick=()=>{modal('overModal',false);leaveRoom()};
 function leaveRoom(){
  clearInterval(turnClockTimer);window._clockKey=null;
- if(roomRef&&roomCb)roomRef.off('value',roomCb);
+ if(roomRef&&roomCb)roomRef.off('value',roomRef);
  roomRef=null;roomCb=null;roomId=null;role=null;single=true;gameOver=false;clearTimeout(aiTimer);
  $('arena').style.display='none';$('lobby').style.display='grid';
 }
@@ -716,7 +863,7 @@ $('logout').onclick=async()=>{
   if(inviteRef&&inviteCb)inviteRef.off('child_added',inviteCb);
   if(roomRef&&roomCb)roomRef.off('value',roomRef);
   localStorage.removeItem(KEY);await auth.signOut();
-  fbUser=null;user={name:'',points:500,wins:0,losses:0,uid:null};
+  fbUser=null;user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0};
   leaveRoom();modal('authModal',true);toast('සාර්ථකව Logout විය.');
  }catch(e){toast('Logout වීමට නොහැකි විය.');}
 };
