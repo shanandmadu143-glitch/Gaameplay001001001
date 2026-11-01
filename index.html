@@ -24,7 +24,7 @@
 <section class="lobby" id="lobby"><h2>දාම් ක්‍රීඩාවට සාදරයෙන් පිළිගනිමු</h2><p style="text-align:center;color:var(--dim)">ක්‍රීඩා මාදිලියක් තෝරන්න</p><div class="mode-grid"><div class="mode" id="single"><i class="fa-solid fa-robot"></i><b>Single Player</b><p>AI පරිගණකය සමඟ</p></div><div class="mode" id="multi"><i class="fa-solid fa-users"></i><b>Multiplayer</b><p>ඔන්ලයින් යහළුවන් සමඟ</p></div></div><div id="connection">● Firebase සම්බන්ධ වෙමින්...</div></section>
 <section class="arena" id="arena" style="display:none"><div class="side"><div class="player active" id="p1"><b id="p1name">ඔබ</b><br><small id="p1sub">සුදු (White)</small></div></div><div class="board-wrap"><button class="close" id="forfeit" title="තරඟයෙන් ඉවත් වන්න">×</button><div class="board" id="board"></div></div><div class="side"><div class="player" id="p2"><b id="p2name">ප්‍රතිවාදියා</b><br><small id="p2sub">රතු (Red)</small></div></div><div class="status" id="gameStatus" style="grid-column:1/-1"></div><div id="clockPanel"><div id="clockRing" role="timer" aria-live="off"><span id="turnClock">10</span></div><span id="clockCaption">ඉතිරි කාලය</span></div></section>
 </main><footer><span>ජයග්‍රහණය +10 | පරාජය / ඉවත් වීම -10</span><button class="btn" id="home">⌂ ප්‍රධාන පිටුව</button></footer></div>
-<div class="modal show" id="authModal"><div class="modalbox"><h2>ඇතුළු වන්න / ගිණුම සාදන්න</h2><label for="username">ක්‍රීඩක නම</label><input id="username" autocomplete="username" minlength="3" placeholder="Username"><label for="password">මුරපදය</label><input id="password" type="password" autocomplete="current-password" minlength="6" placeholder="Password"><div class="row"><button class="btn-gold" id="login" style="flex:1">ඇතුළු වන්න</button><button class="btn" id="register" style="flex:1">ගිණුම සාදන්න</button></div><small style="color:var(--dim)">නව ආරක්ෂිත Firebase Authentication භාවිතා වේ. පැරණි users_v6 දත්ත මකා නොදමයි.</small></div></div>
+<div class="modal show" id="authModal"><div class="modalbox"><h2>ඇතුළු වන්න / ගිණුම සාදන්න</h2><label for="username">ක්‍රීඩක නම</label><input id="username" autocomplete="username" minlength="3" placeholder="Username"><label for="password">මුරපදය</label><input id="password" type="password" autocomplete="current-password" minlength="6" placeholder="Password"><div class="row"><button class="btn-gold" id="login" style="flex:1">ඇතුළු වන්න</button><button class="btn" id="register" style="flex:1">ගිණුම සාදන්න</button></div><small style="color:var(--dim)">ආරක්ෂිත Firebase Authentication භාවිතා වේ.</small></div></div>
 <div class="modal" id="multiModal"><div class="modalbox"><div class="row"><h3 style="flex:1">ඔන්ලයින් යහළුවන්</h3><button class="btn" id="closeMulti">×</button></div><div class="row"><input id="search" placeholder="නම සොයන්න"><button class="btn-gold" id="searchBtn">Search</button></div><b style="color:var(--gold)">මෑතකදී තරඟ කළ යහළුවන්</b><div class="list" id="recentList">මෑතකදී තරඟ කළ අය නොමැත.</div><div class="list" id="results">Online සිටින යහළුවෙකු සොයන්න.</div></div></div>
 <div class="modal" id="overModal"><div class="modalbox"><h2 id="overTitle">තරඟය අවසන්</h2><p id="overMessage" style="text-align:center"></p><b id="overPoints" style="text-align:center"></b><p id="rematchStatus" style="text-align:center;color:var(--gold)"></p><div class="row"><button class="btn-gold" id="rematch">නැවත ක්‍රීඩා කරන්න</button><button class="btn" id="exit">ඉවත් වෙන්න</button></div></div></div><div id="toast"></div>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
@@ -43,9 +43,9 @@ function setStatus(s,ok=true){$('connection').textContent='● '+s;$('connection
 
 try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);auth=firebase.auth();db=firebase.database();}catch(e){console.error(e);setStatus('Firebase ආරම්භ කළ නොහැක',false)}
 
-(async()=>{try{await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);fbUser=auth.currentUser;if(fbUser){await loadSignedInUser()}setStatus('Firebase සූදානම්');auth.onAuthStateChanged(async u=>{fbUser=u;if(u){if(window.__creatingAccount)return;try{await loadSignedInUser()}catch(e){console.error(e);toast('ගිණුම් දත්ත ලබාගත නොහැක.')}}else{user={name:'',points:500,wins:0,losses:0,uid:null};modal('authModal',true)}})}catch(e){console.error(e);setStatus('Firebase ආරම්භ කිරීම අසාර්ථකයි',false);toast('Firebase සම්බන්ධතාවය අසාර්ථකයි')}})();
+(async()=>{try{await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);fbUser=auth.currentUser;if(fbUser){await loadSignedInUser()}setStatus('Firebase සූදානම්');auth.onAuthStateChanged(async u=>{fbUser=u;if(u){if(window.__creatingAccount)return;try{await loadSignedInUser()}catch(e){console.error(e)}}else{user={name:'',points:500,wins:0,losses:0,uid:null};modal('authModal',true)}})}catch(e){console.error(e);setStatus('Firebase දෝෂයකි',false)}})();
 
-function presence(){if(!fbUser||!user.name)return;const r=db.ref('publicProfiles_v6/'+fbUser.uid);r.child('online').onDisconnect().set(false).catch(e=>console.warn('Presence onDisconnect:',e));r.update({name:user.name,online:true,lastSeen:firebase.database.ServerValue.TIMESTAMP}).catch(e=>console.error('Could not publish online profile:',e))}
+function presence(){if(!fbUser||!user.name)return;const r=db.ref('publicProfiles_v6/'+fbUser.uid);r.child('online').onDisconnect().set(false).catch(e=>{});r.update({name:user.name,online:true,lastSeen:firebase.database.ServerValue.TIMESTAMP}).catch(e=>{})}
 function updateHeader(){$('headerName').textContent=user.name||'ක්‍රීඩකයා';$('points').textContent=user.points}
 function saveUser(){localStorage.setItem(KEY,JSON.stringify(user));if(db&&fbUser)db.ref('users_v6/'+fbUser.uid).update({name:user.name}).catch(console.error);updateHeader()}
 function usernameEmail(name){return name.toLowerCase()+'@sinhala-draughts.app'}
@@ -78,7 +78,7 @@ async function registerAccount(){
   updateHeader();modal('authModal',false);presence();listenInvites();toast('ගිණුම සාර්ථකව සාදන ලදී.');
  }catch(e){
   window.__creatingAccount=false;console.error(e);
-  toast(e.code==='auth/email-already-in-use'?'මෙම Username එක දැනටමත් පවතී.':'ගිණුම සෑදීමට නොහැකි විය: '+(e.message||e.code))
+  toast(e.code==='auth/email-already-in-use'?'මෙම Username එක දැනටමත් පවතී.':'ගිණුම සෑදීමට නොහැකි විය.')
  }
 }
 
@@ -89,7 +89,7 @@ async function loginAccount(){
   await auth.signInWithEmailAndPassword(usernameEmail(name),pass);
   fbUser=auth.currentUser;await loadSignedInUser();toast('සාර්ථකව ඇතුළු විය!');
  }catch(e){
-  console.error(e);toast('Username හෝ මුරපදය වැරදියි.');
+  toast('Username හෝ මුරපදය වැරදියි.');
  }
 }
 
@@ -177,7 +177,6 @@ function render(){
  const el=$('board');
  el.innerHTML='';
 
- // Multiplayer සඳහා Guest නම් board එක හරවනවා (රතු පාට පතුලේ පෙන්වීමට)
  const flip = single ? (userSide === -1) : (role === 'guest');
 
  for(let vr=0; vr<8; vr++){
@@ -258,7 +257,7 @@ async function playMove(m){
 
  if(!single&&roomRef){
   try{
-   const result=await roomRef.transaction(d=>{
+   await roomRef.transaction(d=>{
     if(!d||d.status!=='playing'||d.turn!==turn||d.turn!==(role==='host'?1:-1)||!Array.isArray(d.board))return;
     const next=d.board.map(row=>row.slice());
     if(miss&&next[miss.r]?.[miss.c]&&Math.sign(next[miss.r][miss.c])===d.turn)next[miss.r][miss.c]=0;
@@ -272,8 +271,7 @@ async function playMove(m){
     d.lastMoveAt=Date.now(); d.lastMoveBy=fbUser.uid;
     return d;
    });
-   if(!result.committed){toast('මෙම Move එක වලංගු නොවේ.');}
-  }catch(e){console.error('Multiplayer move failed:',e);toast('Move එක යැවීමට නොහැකි විය.');}
+  }catch(e){console.error(e);toast('Move එක යැවීමට නොහැකි විය.');}
   finally{processing=false;}
   return;
  }
@@ -410,7 +408,7 @@ function finish(winner,message){
  modal('overModal',true);
 }
 
-async function publishFinish(winner,message){if(!roomRef)return;try{await roomRef.transaction(d=>{if(!d||d.status!=='playing')return;d.status='finished';d.winner=winner;d.message=message;d.finishedAt=Date.now();d.rematchVotes={};return d})}catch(e){console.error(e)}}
+async function publishFinish(winner,message){if(!roomRef)return;try{await roomRef.transaction(d=>{if(!d||d.status!=='playing')return;d.status='finished';d.winner=winner;d.message=message;d.finishedAt=Date.now();d.rematchVotes={};return d})}catch(e){}}
 
 function listenRoom(){
  if(roomRef&&roomCb)roomRef.off('value',roomCb);
@@ -508,7 +506,7 @@ async function invite(target,uid){
   rememberOpponent(target.name,uid);
   enterRoom(id,'host');
   toast('ආරාධනාව යවන ලදී. ප්‍රතිවාදියා පිළිගන්නා තෙක් රැඳී සිටින්න...');
- }catch(e){console.error(e);toast('Invite යැවීමට නොහැකි විය.')}
+ }catch(e){toast('Invite යැවීමට නොහැකි විය.')}
 }
 
 function listenInvites(){
@@ -517,25 +515,48 @@ function listenInvites(){
  inviteRef=db.ref('invites_v6/'+fbUser.uid);
  inviteCb=inviteRef.on('child_added',async s=>{
   const v=s.val();if(!v||v.status!=='pending'||!v.roomId)return;
-  if(Date.now()-(v.createdAt||Date.now())>120000){await s.ref.update({status:'expired'});return}
+  
+  // ආරාධනාව කල් ඉකුත් වීමේ කාලය මිනිත්තු 5ක් දක්වා වැඩි කරන ලදී (300000 ms)
+  if(Date.now()-(v.createdAt||Date.now())>300000){
+   await s.ref.update({status:'expired'});
+   return;
+  }
   if(roomId)return;
   
   const ok=confirm((v.fromName||'යහළුවෙක්')+' ඔබට Online දාම් තරඟයකට ආරාධනා කරයි. පිළිගන්නවාද?');
-  if(!ok){await s.ref.update({status:'declined',respondedAt:Date.now()});toast('ආරාධනාව ප්‍රතික්ෂේප කළා.');return}
+  if(!ok){
+   await s.ref.update({status:'declined',respondedAt:Date.now()});
+   toast('ආරාධනාව ප්‍රතික්ෂේප කළා.');
+   return;
+  }
   
   try{
-   const room=db.ref('rooms_v6/'+v.roomId);
-   const accepted=await room.transaction(d=>{
-    if(!d||d.status!=='waiting'||d.guestUid!==fbUser.uid)return;
-    d.status='playing';d.startedAt=Date.now();d.turnStartedAt=Date.now();d.lastMoveAt=Date.now();d.turn=1;d.forced=null;return d;
+   const roomRefSnap=db.ref('rooms_v6/'+v.roomId);
+   const roomSnap=await roomRefSnap.once('value');
+   if(!roomSnap.exists()){
+    toast('මෙම ආරාධනාව දැන් වලංගු නැත.');
+    await s.ref.update({status:'expired'});
+    return;
+   }
+   
+   // Room එක එකවර status='playing' බවට පත් කිරීම
+   await roomRefSnap.update({
+    status:'playing',
+    startedAt:Date.now(),
+    turnStartedAt:Date.now(),
+    lastMoveAt:Date.now(),
+    turn:1,
+    forced:null
    });
-   if(!accepted.committed){await s.ref.update({status:'expired',respondedAt:Date.now()});toast('මෙම ආරාධනාව වලංගු නැත.');return}
    
    await s.ref.update({status:'accepted',respondedAt:Date.now()});
    rememberOpponent(v.fromName,v.fromUid);
    enterRoom(v.roomId,'guest');
-   toast('තරඟය ආරම්භ විය!');
-  }catch(e){console.error('Invite acceptance failed:',e);toast('Invite පිළිගැනීමට නොහැකි විය.');}
+   toast('තරඟය සාර්ථකව ආරම්භ විය!');
+  }catch(e){
+   console.error(e);
+   toast('Invite පිළිගැනීමේ දෝෂයකි. නැවත උත්සාහ කරන්න.');
+  }
  });
 }
 
@@ -561,7 +582,7 @@ async function searchOnlinePlayers(){
    inviteBtn.onclick=()=>invite({name:v.name},v.uid);
    row.append(name,inviteBtn);el.append(row);
   });
- }catch(e){console.error(e);el.textContent='Search දෝෂයකි.';}
+ }catch(e){el.textContent='Search දෝෂයකි.';}
  finally{btn.disabled=false;btn.textContent='Search'}
 }
 
