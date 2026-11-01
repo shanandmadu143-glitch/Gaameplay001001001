@@ -6,14 +6,20 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Gemunu+Libre:wght@400;600;700;800&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#080b18;--panel:rgba(18,24,43,.96);--gold:#ffd166;--dim:#a0aec0;--red:#ff6b81;--green:#2ecc71}*{box-sizing:border-box;margin:0;padding:0;font-family:'Gemunu Libre','Poppins',sans-serif;user-select:none}html,body{width:100%;min-height:100%;background:radial-gradient(circle at 18% 18%,#3b2e2530,transparent 35%),linear-gradient(145deg,#080b18,#111a31 55%,#0a1022);color:#f8f9fa}body{min-height:100dvh}.app{min-height:100dvh;max-width:1100px;margin:auto;padding:10px;display:flex;flex-direction:column;gap:12px;position:relative}header,footer,.panel,.lobby,.side{background:var(--panel);border:1px solid #ffd16640;border-radius:15px;padding:10px 14px}header,footer{display:flex;align-items:center;justify-content:space-between;gap:10px}header{min-height:58px}.brand{font-size:1.25rem;color:var(--gold);font-weight:800}
+:root{--bg:#080b18;--panel:rgba(18,24,43,.96);--gold:#ffd166;--dim:#a0aec0;--red:#ff6b81;--green:#2ecc71;--blue:#4facfe}*{box-sizing:border-box;margin:0;padding:0;font-family:'Gemunu Libre','Poppins',sans-serif;user-select:none}html,body{width:100%;min-height:100%;background:radial-gradient(circle at 18% 18%,#3b2e2530,transparent 35%),linear-gradient(145deg,#080b18,#111a31 55%,#0a1022);color:#f8f9fa}body{min-height:100dvh}.app{min-height:100dvh;max-width:1100px;margin:auto;padding:10px;display:flex;flex-direction:column;gap:12px;position:relative}header,footer,.panel,.lobby,.side{background:var(--panel);border:1px solid #ffd16640;border-radius:15px;padding:10px 14px}header,footer{display:flex;align-items:center;justify-content:space-between;gap:10px}header{min-height:58px}.brand{font-size:1.25rem;color:var(--gold);font-weight:800}
 
-/* Floating Bottom-Right Profile Card */
+/* Floating Profile Card */
 .profile-float{position:fixed;bottom:20px;right:20px;z-index:15;background:var(--panel);border:2px solid var(--gold);border-radius:14px;padding:8px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:0 4px 15px rgba(0,0,0,0.5);transition:.2s}
 .profile-float:hover{transform:scale(1.03);background:rgba(28,36,60,.98)}
 .avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe08a,#ff8db5,#7ee7ff);color:#18213e;font-size:1.1rem}
 
-.btn,.btn-gold,.btn-outline{border:0;border-radius:9px;padding:9px 13px;cursor:pointer;font-weight:700}.btn,.btn-outline{background:#ffffff12;color:white;border:1px solid #ffffff30}.btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111}.btn:disabled,.btn-gold:disabled{opacity:.45;cursor:not-allowed}main{flex:1;display:grid;place-items:center;min-height:400px}.lobby{width:min(100%,550px);padding:22px;display:grid;gap:16px}.lobby h2{text-align:center;color:var(--gold)}.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.mode{padding:22px 10px;border:1px solid #ffffff25;border-radius:12px;text-align:center;background:#ffffff08;cursor:pointer}.mode i{font-size:2rem;color:var(--gold);display:block;margin-bottom:8px}.arena{width:100%;display:grid;grid-template-columns:170px minmax(0,1fr) 170px;gap:12px;align-items:center}.side{min-height:120px;display:flex;flex-direction:column;justify-content:center;gap:10px}.player{padding:10px;background:#0005;border:1px solid #ffffff20;border-radius:10px}.player.active{border-color:var(--gold);box-shadow:0 0 12px #ffd16655}.board-wrap{width:min(100%,min(65vh,520px));aspect-ratio:1;position:relative;margin:auto}.board{width:100%;height:100%;display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);border:9px solid #18213e;border-radius:12px;overflow:hidden}.sq{display:grid;place-items:center;position:relative;cursor:pointer;touch-action:manipulation}.sq.light{background:#e8edff}.sq.dark{background:linear-gradient(145deg,#3d4d7d,#29365e)}.sq.selected{background:#ffd166!important}.sq.target:after{content:'';width:32%;height:32%;border-radius:50%;background:#50e8ae}.sq.capture:after{content:'';width:42%;height:42%;border-radius:50%;background:#ff6b81}.piece{width:78%;height:78%;border-radius:50%;box-shadow:0 4px 8px rgba(0,0,0,0.4);display:grid;place-items:center;font-size:1.1rem}.king:after{content:'♛';font-size:clamp(12px,3vw,20px);position:absolute;bottom:2px;right:2px;color:#ffd166;text-shadow:0 1px 2px #000}.close{position:absolute;right:-9px;top:-9px;border:2px solid white;border-radius:50%;width:32px;height:32px;background:#e74c3c;color:white;z-index:3;cursor:pointer}.status{text-align:center;color:var(--gold);min-height:25px}#clockPanel{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:12px;padding:5px 10px}
+.btn,.btn-gold,.btn-outline{border:0;border-radius:9px;padding:9px 13px;cursor:pointer;font-weight:700;transition:.2s}.btn,.btn-outline{background:#ffffff12;color:white;border:1px solid #ffffff30}.btn:hover{background:#ffffff20}.btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111}.btn-gold:hover{filter:brightness(1.1)}.btn:disabled,.btn-gold:disabled{opacity:.45;cursor:not-allowed}
+
+main{flex:1;display:grid;place-items:center;min-height:400px}.lobby{width:min(100%,550px);padding:22px;display:grid;gap:16px}.lobby h2{text-align:center;color:var(--gold)}.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.mode{padding:22px 10px;border:1px solid #ffffff25;border-radius:12px;text-align:center;background:#ffffff08;cursor:pointer;transition:.2s}.mode:hover{border-color:var(--gold);background:#ffffff12}.mode i{font-size:2rem;color:var(--gold);display:block;margin-bottom:8px}
+
+.arena{width:100%;display:grid;grid-template-columns:170px minmax(0,1fr) 170px;gap:12px;align-items:center}.side{min-height:120px;display:flex;flex-direction:column;justify-content:center;gap:10px}.player{padding:10px;background:#0005;border:1px solid #ffffff20;border-radius:10px}.player.active{border-color:var(--gold);box-shadow:0 0 12px #ffd16655}.board-wrap{width:min(100%,min(65vh,520px));aspect-ratio:1;position:relative;margin:auto}.board{width:100%;height:100%;display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);border:9px solid #18213e;border-radius:12px;overflow:hidden}.sq{display:grid;place-items:center;position:relative;cursor:pointer;touch-action:manipulation}.sq.light{background:#e8edff}.sq.dark{background:linear-gradient(145deg,#3d4d7d,#29365e)}.sq.selected{background:#ffd166!important}.sq.target:after{content:'';width:32%;height:32%;border-radius:50%;background:#50e8ae}.sq.capture:after{content:'';width:42%;height:42%;border-radius:50%;background:#ff6b81}.piece{width:78%;height:78%;border-radius:50%;box-shadow:0 4px 8px rgba(0,0,0,0.4);display:grid;place-items:center;font-size:1.1rem}.king:after{content:'♛';font-size:clamp(12px,3vw,20px);position:absolute;bottom:2px;right:2px;color:#ffd166;text-shadow:0 1px 2px #000}.close{position:absolute;right:-9px;top:-9px;border:2px solid white;border-radius:50%;width:32px;height:32px;background:#e74c3c;color:white;z-index:3;cursor:pointer;display:grid;place-items:center}.close:hover{transform:scale(1.1)}.status{text-align:center;color:var(--gold);min-height:25px}
+
+#clockPanel{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:12px;padding:5px 10px}
 #clockRing{--progress:100;width:66px;height:66px;border-radius:50%;display:grid;place-items:center;position:relative;background:conic-gradient(var(--gold) calc(var(--progress)*1%),#ffffff18 0);box-shadow:0 0 18px #ffd16635;transition:background .18s linear,box-shadow .2s}
 #clockRing:before{content:'';position:absolute;inset:6px;border-radius:50%;background:#111a31;border:1px solid #ffffff20}
 #turnClock{position:relative;z-index:1;font-size:1.45rem;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:1px;color:var(--gold)}
@@ -22,13 +28,50 @@
 #clockRing.urgent #turnClock{color:var(--red)}
 @keyframes clockPulse{50%{transform:scale(1.07);filter:brightness(1.25)}}
 @keyframes spin{to{transform:rotate(360deg)}}
-.sq{touch-action:none}.modal{position:fixed;inset:0;background:#000c;display:none;place-items:center;z-index:20;padding:15px}.modal.show{display:grid}.modalbox{width:min(100%,460px);background:#121824;border:2px solid var(--gold);border-radius:17px;padding:20px;display:grid;gap:12px;max-height:85vh;overflow-y:auto}.modalbox h2,.modalbox h3{text-align:center;color:var(--gold)}input{width:100%;padding:11px;background:#0007;border:1px solid #ffd16670;border-radius:9px;color:white;font-size:1rem}.row{display:flex;gap:8px;align-items:center}.row>*{min-width:0}.list{display:grid;gap:7px;max-height:160px;overflow:auto}.listitem{display:flex;justify-content:space-between;align-items:center;background:#ffffff10;border-radius:8px;padding:8px;gap:8px}.pieces-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:5px}.piece-option{background:#ffffff08;border:2px solid #ffffff20;border-radius:10px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;transition:.2s}.piece-option:hover{border-color:var(--gold);background:#ffffff15}.piece-option.selected{border-color:var(--gold);background:#ffd16625;box-shadow:0 0 10px #ffd16644}#toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,100px);opacity:0;background:#1e293b;border:1px solid var(--gold);border-radius:22px;padding:10px 18px;z-index:50;transition:.25s}#toast.show{transform:translate(-50%,0);opacity:1}#connection{font-size:.8rem;color:#4ade80}footer{font-size:.85rem;color:var(--dim)}@media(max-width:760px){.arena{grid-template-columns:1fr 1fr;grid-template-areas:'a b' 'board board';align-items:start}.side:first-child{grid-area:a;min-height:72px}.side:last-child{grid-area:b;min-height:72px}.board-wrap{grid-area:board;width:min(calc(100vw - 30px),calc(100dvh - 230px));}.side{padding:7px}.player{padding:7px;font-size:.9rem}}@media(max-height:600px) and (max-width:760px){.app{gap:5px;padding:5px}.board-wrap{width:min(calc(100vw - 24px),calc(100dvh - 165px))}.side{min-height:55px}header{min-height:45px}footer{min-height:32px}}
+
+/* Modern UI Modal & Alert System */
+.modal{position:fixed;inset:0;background:rgba(5,8,20,0.8);backdrop-filter:blur(6px);display:none;place-items:center;z-index:100;padding:15px;animation:fadeIn .25s ease}
+.modal.show{display:grid}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes scaleUp{from{transform:scale(0.85);opacity:0}to{transform:scale(1);opacity:1}}
+
+.modalbox{width:min(100%,440px);background:linear-gradient(145deg,#121824,#1a233a);border:2px solid var(--gold);border-radius:20px;padding:24px;display:grid;gap:16px;max-height:85vh;overflow-y:auto;box-shadow:0 15px 35px rgba(0,0,0,0.6);animation:scaleUp .25s cubic-bezier(0.175,0.885,0.32,1.275)}
+.modalbox h2,.modalbox h3{text-align:center;color:var(--gold);font-weight:700}
+input{width:100%;padding:12px 14px;background:rgba(0,0,0,0.4);border:1px solid rgba(255,209,102,0.4);border-radius:11px;color:white;font-size:1rem;outline:none;transition:.2s}
+input:focus{border-color:var(--gold);box-shadow:0 0 10px rgba(255,209,102,0.3)}
+
+.row{display:flex;gap:10px;align-items:center}.row>*{min-width:0}
+.list{display:grid;gap:8px;max-height:180px;overflow:auto;padding-right:4px}
+.listitem{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px 12px;gap:8px;transition:.2s}
+.listitem:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,209,102,0.3)}
+
+.pieces-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:5px}
+.piece-option{background:rgba(255,255,255,0.04);border:2px solid rgba(255,255,255,0.1);border-radius:12px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;transition:.2s}
+.piece-option:hover{border-color:var(--gold);background:rgba(255,255,255,0.08)}
+.piece-option.selected{border-color:var(--gold);background:rgba(255,209,102,0.2);box-shadow:0 0 12px rgba(255,209,102,0.3)}
+
+/* Custom Notice / Message Alert Box */
+.alert-box-content{text-align:center;display:grid;gap:14px;place-items:center}
+.alert-icon{font-size:3rem;margin-bottom:-4px}
+.alert-icon.info{color:var(--blue)}
+.alert-icon.success{color:var(--green)}
+.alert-icon.warning{color:var(--gold)}
+.alert-icon.error{color:var(--red)}
+
+/* Enhanced Toast Notification */
+#toast{position:fixed;bottom:25px;left:50%;transform:translate(-50%,120px);opacity:0;background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--gold);color:#f8f9fa;border-radius:30px;padding:12px 22px;z-index:150;box-shadow:0 8px 25px rgba(0,0,0,0.5);transition:.3s cubic-bezier(0.175,0.885,0.32,1.275);font-weight:600;display:flex;align-items:center;gap:10px}
+#toast.show{transform:translate(-50%,0);opacity:1}
+
+#connection{font-size:.8rem;color:#4ade80}
+footer{font-size:.85rem;color:var(--dim)}
+@media(max-width:760px){.arena{grid-template-columns:1fr 1fr;grid-template-areas:'a b' 'board board';align-items:start}.side:first-child{grid-area:a;min-height:72px}.side:last-child{grid-area:b;min-height:72px}.board-wrap{grid-area:board;width:min(calc(100vw - 30px),calc(100dvh - 230px))}.side{padding:7px}.player{padding:7px;font-size:.9rem}}
 </style>
 </head>
-<body><div class="app">
+<body>
+<div class="app">
 
-<!-- Floating Bottom-Right Profile Card -->
-<div class="profile-float" id="openProfile" title="প্রොෆයිලය සහ ඉත්තන් වෙනස් කරන්න">
+<!-- Floating Profile Card -->
+<div class="profile-float" id="openProfile" title="ප්‍රොෆයිලය සහ ඉත්තන් වෙනස් කරන්න">
 <span class="avatar" id="headerAvatar"><i class="fa-solid fa-user"></i></span>
 <div><b id="headerName" style="font-size:0.9rem">ක්‍රීඩකයා</b><br><small style="color:var(--gold);font-weight:700">🪙 <span id="points">500</span> pts</small></div>
 </div>
@@ -38,9 +81,26 @@
 <button class="btn" id="logout">Logout</button>
 </header>
 <main>
-<section class="lobby" id="lobby"><h2>දාම් ක්‍රීඩාවට සාදරයෙන් පිළිගනිමු</h2><p style="text-align:center;color:var(--dim)">ක්‍රීඩා මාදිලියක් තෝරන්න</p><div class="mode-grid"><div class="mode" id="single"><i class="fa-solid fa-robot"></i><b>Single Player</b><p>AI පරිගණකය සමඟ</p></div><div class="mode" id="multi"><i class="fa-solid fa-users"></i><b>Multiplayer</b><p>ඔන්ලයින් යහළුවන් සමඟ</p></div></div><div id="connection">● Firebase සම්බන්ධ වෙමින්...</div></section>
-<section class="arena" id="arena" style="display:none"><div class="side"><div class="player active" id="p1"><b id="p1name">ඔබ</b><br><small id="p1sub">සුදු (White)</small></div></div><div class="board-wrap"><button class="close" id="forfeit" title="තරඟයෙන් ඉවත් වන්න">×</button><div class="board" id="board"></div></div><div class="side"><div class="player" id="p2"><b id="p2name">ප්‍රතිවාදියා</b><br><small id="p2sub">රතු (Red)</small></div></div><div class="status" id="gameStatus" style="grid-column:1/-1"></div><div id="clockPanel"><div id="clockRing" role="timer" aria-live="off"><span id="turnClock">10</span></div><span id="clockCaption">ඉතිරි කාලය</span></div></section>
-</main><footer><span>ජයග්‍රහණය (+Bet × 2) | පරාජය (-Bet)</span><button class="btn" id="home">⌂ ප්‍රධාන පිටුව</button></footer></div>
+<section class="lobby" id="lobby">
+<h2>දාම් ක්‍රීඩාවට සාදරයෙන් පිළිගනිමු</h2>
+<p style="text-align:center;color:var(--dim)">ක්‍රීඩා මාදිලියක් තෝරන්න</p>
+<div class="mode-grid">
+<div class="mode" id="single"><i class="fa-solid fa-robot"></i><b>Single Player</b><p>AI පරිගණකය සමඟ</p></div>
+<div class="mode" id="multi"><i class="fa-solid fa-users"></i><b>Multiplayer</b><p>ඔන්ලයින් යහළුවන් සමඟ</p></div>
+</div>
+<div id="connection">● Firebase සම්බන්ධ වෙමින්...</div>
+</section>
+
+<section class="arena" id="arena" style="display:none">
+<div class="side"><div class="player active" id="p1"><b id="p1name">ඔබ</b><br><small id="p1sub">සුදු (White)</small></div></div>
+<div class="board-wrap"><button class="close" id="forfeit" title="තරඟයෙන් ඉවත් වන්න">×</button><div class="board" id="board"></div></div>
+<div class="side"><div class="player" id="p2"><b id="p2name">ප්‍රතිවාදියා</b><br><small id="p2sub">රතු (Red)</small></div></div>
+<div class="status" id="gameStatus" style="grid-column:1/-1"></div>
+<div id="clockPanel"><div id="clockRing" role="timer" aria-live="off"><span id="turnClock">10</span></div><span id="clockCaption">ඉතිරි කාලය</span></div>
+</section>
+</main>
+<footer><span>ජයග්‍රහණය (+Bet × 2) | පරාජය (-Bet)</span><button class="btn" id="home">⌂ ප්‍රධාන පිටුව</button></footer>
+</div>
 
 <!-- Single Player Bet Select Modal -->
 <div class="modal" id="singleBetModal">
@@ -90,6 +150,18 @@
 </div>
 </div>
 
+<!-- Universal Custom Notice / Message Alert Modal -->
+<div class="modal" id="customAlertModal">
+<div class="modalbox alert-box-content">
+<div id="customAlertIcon" class="alert-icon info"><i class="fa-solid fa-circle-info"></i></div>
+<h3 id="customAlertTitle">පණිවිඩය</h3>
+<p id="customAlertMessage" style="color:var(--dim);text-align:center;font-size:0.95rem"></p>
+<div class="row" id="customAlertButtons" style="width:100%;margin-top:5px">
+<button class="btn-gold" id="customAlertOkBtn" style="flex:1">හරි (OK)</button>
+</div>
+</div>
+</div>
+
 <!-- Loading Modal -->
 <div class="modal show" id="loadingModal">
 <div class="modalbox" style="text-align:center; display:grid; place-items:center; gap:14px; padding:30px;">
@@ -99,10 +171,37 @@
 </div>
 </div>
 
-<div class="modal" id="authModal"><div class="modalbox"><h2>ඇතුළු වන්න / ගිණුම සාදන්න</h2><label for="username">ක්‍රීඩක නම</label><input id="username" autocomplete="username" minlength="3" placeholder="Username"><label for="password">මුරපදය</label><input id="password" type="password" autocomplete="current-password" minlength="6" placeholder="Password"><div class="row"><button class="btn-gold" id="login" style="flex:1">ඇතුළු වන්න</button><button class="btn" id="register" style="flex:1">ගිණුම සාදන්න</button></div><small style="color:var(--dim)">ආරක්ෂිත Firebase Authentication භාවිතා වේ.</small></div></div>
-<div class="modal" id="overModal"><div class="modalbox"><h2 id="overTitle">තරඟය අවසන්</h2><p id="overMessage" style="text-align:center"></p><b id="overPoints" style="text-align:center"></b><p id="rematchStatus" style="text-align:center;color:var(--gold)"></p><div class="row"><button class="btn-gold" id="rematch">නැවත ක්‍රීඩා කරන්න</button><button class="btn" id="exit">ඉවත් වෙන්න</button></div></div></div><div id="toast"></div>
+<div class="modal" id="authModal">
+<div class="modalbox">
+<h2>ඇතුළු වන්න / ගිණුම සාදන්න</h2>
+<label for="username">ක්‍රීඩක නම</label><input id="username" autocomplete="username" minlength="3" placeholder="Username">
+<label for="password">මුරපදය</label><input id="password" type="password" autocomplete="current-password" minlength="6" placeholder="Password">
+<div class="row">
+<button class="btn-gold" id="login" style="flex:1">ඇතුළු වන්න</button>
+<button class="btn" id="register" style="flex:1">ගිණුම සාදන්න</button>
+</div>
+<small style="color:var(--dim)">ආරක්ෂිත Firebase Authentication භාවිතා වේ.</small>
+</div>
+</div>
 
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<div class="modal" id="overModal">
+<div class="modalbox">
+<h2 id="overTitle">තරඟය අවසන්</h2>
+<p id="overMessage" style="text-align:center"></p>
+<b id="overPoints" style="text-align:center"></b>
+<p id="rematchStatus" style="text-align:center;color:var(--gold)"></p>
+<div class="row">
+<button class="btn-gold" id="rematch">නැවත ක්‍රීඩා කරන්න</button>
+<button class="btn" id="exit">ඉවත් වෙන්න</button>
+</div>
+</div>
+</div>
+
+<div id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 <script>
 'use strict';
 const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
@@ -178,7 +277,51 @@ function playSound(type){
  }catch(e){}
 }
 
-function toast(s){$('toast').textContent=s;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2800)}
+/* Custom UI Alert Function (Replaces standard alert & confirm) */
+function showCustomAlert(title, message, type='info', onConfirm=null, showCancel=false, cancelText='අවලංගු කරන්න', okText='හරි (OK)'){
+ $('customAlertTitle').textContent = title;
+ $('customAlertMessage').textContent = message;
+ 
+ const iconEl = $('customAlertIcon');
+ iconEl.className = 'alert-icon ' + type;
+ if(type === 'success') iconEl.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
+ else if(type === 'warning') iconEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+ else if(type === 'error') iconEl.innerHTML = '<i class="fa-solid fa-circle-xmark"></i>';
+ else iconEl.innerHTML = '<i class="fa-solid fa-circle-info"></i>';
+
+ const btnRow = $('customAlertButtons');
+ btnRow.innerHTML = '';
+
+ if(showCancel){
+  const cancelBtn = document.createElement('button');
+  cancelBtn.className = 'btn';
+  cancelBtn.style.flex = '1';
+  cancelBtn.textContent = cancelText;
+  cancelBtn.onclick = () => { modal('customAlertModal', false); playSound('click'); };
+  btnRow.appendChild(cancelBtn);
+ }
+
+ const okBtn = document.createElement('button');
+ okBtn.className = 'btn-gold';
+ okBtn.style.flex = '1';
+ okBtn.textContent = okText;
+ okBtn.onclick = () => {
+  modal('customAlertModal', false);
+  playSound('click');
+  if(onConfirm) onConfirm();
+ };
+ btnRow.appendChild(okBtn);
+
+ modal('customAlertModal', true);
+}
+
+function toast(s, icon='fa-circle-info'){
+ const t = $('toast');
+ t.innerHTML = `<i class="fa-solid ${icon}" style="color:var(--gold)"></i> <span>${s}</span>`;
+ t.classList.add('show');
+ setTimeout(()=>t.classList.remove('show'),3000);
+}
+
 function modal(id,on){$(id).classList.toggle('show',on);playSound('click')}
 function setStatus(s,ok=true){$('connection').textContent='● '+s;$('connection').style.color=ok?'#4ade80':'#f6c453'}
 
@@ -268,7 +411,7 @@ async function loadSignedInUser(){
  } catch(e) {
   modal('loadingModal', false);
   modal('authModal', true);
-  toast('ගිණුම් දත්ත ලබාගත නොහැක.');
+  toast('ගිණුම් දත්ත ලබාගත නොහැක.', 'fa-circle-exclamation');
  }
 }
 
@@ -276,7 +419,7 @@ function validUsername(n){return /^[a-zA-Z0-9_]{3,20}$/.test(n)}
 
 async function registerAccount(){
  const name=$('username').value.trim(),pass=$('password').value;
- if(!validUsername(name)||pass.length<6)return toast('Username අකුරු/ඉලක්කම්/_ 3-20 අතර විය යුතු අතර මුරපදය අකුරු 6ක්වත් විය යුතුයි.');
+ if(!validUsername(name)||pass.length<6)return showCustomAlert('වැරදි ආකෘතියක්', 'Username අකුරු/ඉලක්කම්/_ 3-20 අතර විය යුතු අතර මුරපදය අකුරු 6ක්වත් විය යුතුයි.', 'warning');
  try{
   window.__creatingAccount=true;
   const email=usernameEmail(name);
@@ -284,26 +427,28 @@ async function registerAccount(){
   fbUser=cred.user;
   const key=name.toLowerCase();
   const idx=await db.ref('usernameIndex_v6/'+key).transaction(v=>v===null?fbUser.uid:undefined);
-  if(!idx.committed){await auth.signOut();return toast('මෙම Username එක දැනටමත් භාවිතා වේ.')}
+  if(!idx.committed){await auth.signOut();return showCustomAlert('අසාර්ථකයි', 'මෙම Username එක දැනටමත් භාවිතා වේ.', 'error')}
   user={name,points:500,wins:0,losses:0,uid:fbUser.uid,pieceIndex:0};
   await db.ref('users_v6/'+fbUser.uid).set({name,points:500,pieceIndex:0,createdAt:firebase.database.ServerValue.TIMESTAMP});
   window.__creatingAccount=false;
   localStorage.setItem(KEY,JSON.stringify(user));
-  updateHeader();modal('authModal',false);presence();listenInvites();toast('ගිණුම සාර්ථකව සාදන ලදී.');
+  updateHeader();modal('authModal',false);presence();listenInvites();
+  showCustomAlert('සාර්ථකයි!', 'ගිණුම සාර්ථකව සාදන ලදී.', 'success');
  }catch(e){
   window.__creatingAccount=false;
-  toast(e.code==='auth/email-already-in-use'?'මෙම Username එක දැනටමත් පවතී.':'ගිණුම සෑදීමට නොහැකි විය.')
+  showCustomAlert('දෝෂයකි', e.code==='auth/email-already-in-use'?'මෙම Username එක දැනටමත් පවතී.':'ගිණුම සෑදීමට නොහැකි විය.', 'error');
  }
 }
 
 async function loginAccount(){
  const name=$('username').value.trim(),pass=$('password').value;
- if(!validUsername(name)||pass.length<1)return toast('නිවැරදි Username සහ මුරපදය ඇතුළත් කරන්න.');
+ if(!validUsername(name)||pass.length<1)return showCustomAlert('අසම්පූර්ණයි', 'නිවැරදි Username සහ මුරපදය ඇතුළත් කරන්න.', 'warning');
  try{
   await auth.signInWithEmailAndPassword(usernameEmail(name),pass);
-  fbUser=auth.currentUser;await loadSignedInUser();toast('සාර්ථකව ඇතුළු විය!');
+  fbUser=auth.currentUser;await loadSignedInUser();
+  toast('සාර්ථකව ඇතුළු විය!', 'fa-circle-check');
  }catch(e){
-  toast('Username හෝ මුරපදය වැරදියි.');
+  showCustomAlert('ඇතුල්වීම අසාර්ථකයි', 'Username හෝ මුරපදය වැරදියි.', 'error');
  }
 }
 
@@ -338,7 +483,7 @@ $('saveProfile').onclick=()=>{
  user.pieceIndex=tempSelectedPiece;
  saveUser();
  modal('profileModal',false);
- toast('ඉත්තා සාර්ථකව වෙනස් කරන ලදී!');
+ toast('ඉත්තා සාර්ථකව වෙනස් කරන ලදී!', 'fa-circle-check');
 };
 
 function initBoard(){
@@ -483,7 +628,7 @@ function clickSquare(r,c){
  if(selected){
   const target=moves.find(x=>x.toR===r&&x.toC===c);
   if(target){playMove(target);return}
-  if(moves.some(x=>x.capture))return toast('එක දිගට Capture කිරීම අවසන් කරන්න.');
+  if(moves.some(x=>x.capture))return toast('එක දිගට Capture කිරීම අවසන් කරන්න.', 'fa-triangle-exclamation');
  }
  const p=board[r][c];
  if(p&&Math.sign(p)===turn){
@@ -494,9 +639,9 @@ function clickSquare(r,c){
   if(captures.length){
    const canCapture=pieceMovesHere.some(m=>m.capture);
    if(canCapture){missedCapture=null;pieceLegal=pieceMovesHere.filter(m=>m.capture);}
-   else{const missed=captures[0];missedCapture={r:missed.fromR,c:missed.fromC};toast('කැපීමේ අවස්ථාව මඟහැරුණි.');}
+   else{const missed=captures[0];missedCapture={r:missed.fromR,c:missed.fromC};toast('කැපීමේ අවස්ථාව මඟහැරුණි.', 'fa-triangle-exclamation');}
   }else missedCapture=null;
-  if(!pieceLegal.length)return toast('මෙම පෙත්තට දැන් නීත්‍යානුකූල Move එකක් නැත.');
+  if(!pieceLegal.length)return toast('මෙම පෙත්තට දැන් නීත්‍යානුකූල Move එකක් නැත.', 'fa-circle-info');
   selected={r,c};moves=pieceLegal;render();
  }
 }
@@ -538,7 +683,7 @@ async function playMove(m){
     d.lastMoveAt=Date.now(); d.lastMoveBy=fbUser.uid;
     return d;
    });
-  }catch(e){toast('Move එක යැවීමට නොහැකි විය.');}
+  }catch(e){toast('Move එක යැවීමට නොහැකි විය.', 'fa-circle-xmark');}
   finally{processing=false;}
   return;
  }
@@ -833,8 +978,8 @@ $('closeBetModal').onclick = () => modal('betModal', false);
 
 $('proceedToInvite').onclick = () => {
  const betVal = parseInt($('betAmountInput').value) || 10;
- if(betVal < 1) return toast('කරුණාකර නිවැරදි ඔට්ටු මුදලක් ඇතුළත් කරන්න.');
- if(betVal > user.points) return toast('ඔබ සතුව ප්‍රමාණවත් Points නොමැත!');
+ if(betVal < 1) return showCustomAlert('වැරදි අගයක්', 'කරුණාකර නිවැරදි ඔට්ටු මුදලක් ඇතුළත් කරන්න.', 'warning');
+ if(betVal > user.points) return showCustomAlert('ප්‍රමාණවත් නොවේ', 'ඔබ සතුව ප්‍රමාණවත් Points නොමැත!', 'warning');
 
  window.currentBetPoints = betVal;
  $('activeBetDisplay').textContent = betVal;
@@ -865,8 +1010,8 @@ async function sendInviteToUser(target){
   await db.ref('invites_v6/'+target.uid).push().set({roomId:id,fromUid:fbUser.uid,fromName:user.name,betPoints:betVal,status:'pending',createdAt:Date.now()});
   rememberOpponent(target.name,target.uid);
   enterRoom(id,'host');
-  toast('ආරාධනාව (ඔට්ටුව: '+betVal+' Points) සාර්ථකව යවන ලදී!');
- }catch(e){toast('Invite යැවීමට නොහැකි විය.');}
+  toast('ආරාධනාව සාර්ථකව යවන ලදී! ('+betVal+' pts)', 'fa-paper-plane');
+ }catch(e){showCustomAlert('දෝෂයකි', 'Invite යැවීමට නොහැකි විය.', 'error');}
 }
 
 function listenInvites(){
@@ -879,29 +1024,45 @@ function listenInvites(){
   if(roomId)return;
   
   const betVal = v.betPoints || 10;
-  const ok=confirm((v.fromName||'යහළුවෙක්')+' ඔබට Online දාම් තරඟයකට ආරාධනා කරයි!\nඔට්ටු තැබෙන Points ප්‍රමාණය: '+betVal+'\nපිළිගන්නවාද?');
-  if(!ok){await s.ref.update({status:'declined',respondedAt:Date.now()});toast('ආරාධනාව ප්‍රතික්ෂේප කළා.');return}
   
-  try{
-   const roomRefSnap=db.ref('rooms_v6/'+v.roomId);
-   const roomSnap=await roomRefSnap.once('value');
-   if(!roomSnap.exists()){toast('මෙම ආරාධනාව දැන් වලංගු නැත.');await s.ref.update({status:'expired'});return}
-   
-   window.currentBetPoints = betVal;
-   await roomRefSnap.update({
-    guestPieceIndex: user.pieceIndex || 0,
-    status:'playing',
-    startedAt:Date.now(),
-    turnStartedAt:Date.now(),
-    lastMoveAt:Date.now(),
-    turn:1,
-    forced:null
-   });
-   await s.ref.update({status:'accepted',respondedAt:Date.now()});
-   rememberOpponent(v.fromName,v.fromUid);
-   enterRoom(v.roomId,'guest');
-   toast('තරඟය සාර්ථකව ආරම්භ විය! (ඔට්ටුව: '+betVal+' Points)');
-  }catch(e){toast('Invite පිළිගැනීමේ දෝෂයකි.')}
+  // Custom Alert Confirmation for Invitation
+  showCustomAlert(
+   'ක්‍රීඩා ආරාධනාවක්! 🎮',
+   (v.fromName||'යහළුවෙක්')+' ඔබට Online දාම් තරඟයකට ආරාධනා කරයි!\nඔට්ටු තැබෙන Points ප්‍රමාණය: '+betVal+' pts',
+   'warning',
+   async ()=>{
+    try{
+     const roomRefSnap=db.ref('rooms_v6/'+v.roomId);
+     const roomSnap=await roomRefSnap.once('value');
+     if(!roomSnap.exists()){return showCustomAlert('වලංගු නැත', 'මෙම ආරාධනාව දැන් වලංගු නැත.', 'error');await s.ref.update({status:'expired'});}
+     
+     window.currentBetPoints = betVal;
+     await roomRefSnap.update({
+      guestPieceIndex: user.pieceIndex || 0,
+      status:'playing',
+      startedAt:Date.now(),
+      turnStartedAt:Date.now(),
+      lastMoveAt:Date.now(),
+      turn:1,
+      forced:null
+     });
+     await s.ref.update({status:'accepted',respondedAt:Date.now()});
+     rememberOpponent(v.fromName,v.fromUid);
+     enterRoom(v.roomId,'guest');
+     toast('තරඟය සාර්ථකව ආරම්භ විය!', 'fa-circle-check');
+    }catch(e){showCustomAlert('දෝෂයකි', 'Invite පිළිගැනීමේ දෝෂයකි.', 'error')}
+   },
+   true,
+   'ප්‍රතික්ෂේප කරන්න',
+   'පිළිගන්න (Accept)'
+  );
+  
+  // If user clicks cancel on custom alert modal
+  document.querySelector('#customAlertModal .btn:not(.btn-gold)').onclick = async () => {
+   modal('customAlertModal', false);
+   await s.ref.update({status:'declined',respondedAt:Date.now()});
+   toast('ආරාධනාව ප්‍රතික්ෂේප කළා.', 'fa-circle-info');
+  };
  });
 }
 
@@ -915,8 +1076,8 @@ $('closeSingleBet').onclick=()=>modal('singleBetModal', false);
 
 $('startSingleGame').onclick=()=>{
  const betVal = parseInt($('singleBetInput').value) || 10;
- if(betVal < 1) return toast('කරුණාකර නිවැරදි ඔට්ටු මුදලක් ඇතුළත් කරන්න.');
- if(betVal > user.points) return toast('ඔබ සතුව ප්‍රමාණවත් Points නොමැත!');
+ if(betVal < 1) return showCustomAlert('වැරදි අගයක්', 'කරුණාකර නිවැරදි ඔට්ටු මුදලක් ඇතුළත් කරන්න.', 'warning');
+ if(betVal > user.points) return showCustomAlert('ප්‍රමාණවත් නොවේ', 'ඔබ සතුව ප්‍රමාණවත් Points නොමැත!', 'warning');
 
  modal('singleBetModal', false);
  window.currentBetPoints = betVal;
@@ -931,8 +1092,8 @@ $('startSingleGame').onclick=()=>{
 
 async function searchOnlinePlayers(){
  const q=$('search').value.trim().toLowerCase(),el=$('results'),btn=$('searchBtn');
- if(!q){el.textContent='සෙවීමට Username එකක් ඇතුළත් කරන්න.';return}
- if(!fbUser){el.textContent='පළමුව Login වන්න.';return}
+ if(!q){return showCustomAlert('අවශ්‍යයි', 'සෙවීමට Username එකක් ඇතුළත් කරන්න.', 'warning');}
+ if(!fbUser){return showCustomAlert('ඇතුළු වී නැත', 'පළමුව Login වන්න.', 'warning');}
  btn.disabled=true;btn.textContent='සොයමින්...';el.textContent='Online ක්‍රීඩකයන් සොයමින්...';
  try{
   const snap=await db.ref('publicProfiles_v6').once('value');
@@ -954,7 +1115,6 @@ async function searchOnlinePlayers(){
 $('searchBtn').onclick=searchOnlinePlayers;
 $('search').addEventListener('keydown',e=>{if(e.key==='Enter')searchOnlinePlayers()});
 
-// මුල් පිටුවට / Lobby වෙත යොමු කිරීමේ ස්ථාවර ශ්‍රිතය (leaveRoom)
 function leaveRoom(){
  clearInterval(turnClockTimer);
  window._clockKey=null;
@@ -969,27 +1129,33 @@ function leaveRoom(){
  gameOver=false;
  clearTimeout(aiTimer);
 
- // Modal එක වැසීම සහ මුල් පිටුව පෙන්වීම
  modal('overModal', false);
  $('arena').style.display='none';
  $('lobby').style.display='grid';
  $('openProfile').style.display='flex';
 }
 
-// සෙල්ලමෙන් ඉවත් වීමේ '×' (Forfeit) Button එක
-$('forfeit').onclick=async()=>{
+$('forfeit').onclick=()=>{
  if(gameOver) {
   leaveRoom();
   return;
  }
- if(!confirm('තරඟයෙන් ඉවත් වීමට අවශ්‍යද?')) return;
-
- if(single){
-  finish(-userSide,'ඔබ තරඟයෙන් ඉවත් විය.');
- } else {
-  const winner = (role === 'host') ? -1 : 1;
-  await publishFinish(winner, 'ප්‍රතිවාදියා තරඟයෙන් ඉවත් විය.');
- }
+ showCustomAlert(
+  'තරඟයෙන් ඉවත් වීම',
+  'ඔබට සැබවින්ම තරඟයෙන් ඉවත් වීමට අවශ්‍යද? (මෙය පැරදීමක් ලෙස සටහන් වේ)',
+  'warning',
+  async ()=>{
+   if(single){
+    finish(-userSide,'ඔබ තරඟයෙන් ඉවත් විය.');
+   } else {
+    const winner = (role === 'host') ? -1 : 1;
+    await publishFinish(winner, 'ප්‍රතිවාදියා තරඟයෙන් ඉවත් විය.');
+   }
+  },
+  true,
+  'නැත (Cancel)',
+  'ඔව් (Yes)'
+ );
 };
 
 $('rematch').onclick=async()=>{
@@ -1007,7 +1173,7 @@ $('rematch').onclick=async()=>{
     room.rematchRequestedBy=role;
     return room;
    });
-   toast('Rematch ඉල්ලීම යවන ලදී.');
+   toast('Rematch ඉල්ලීම යවන ලදී.', 'fa-paper-plane');
   }else if(localWin&&d.rematchRequestedBy&&d.rematchRequestedBy!==role){
    await roomRef.transaction(room=>{
     if(!room||room.status!=='finished')return;
@@ -1025,35 +1191,51 @@ $('rematch').onclick=async()=>{
     return room;
    });
    modal('overModal',false);
-   toast('තරඟය නැවත ආරම්භ විය!');
+   toast('තරඟය නැවත ආරම්භ විය!', 'fa-circle-check');
   }
- }catch(e){toast('Rematch ක්‍රියාවලිය අසාර්ථක විය.')}
+ }catch(e){toast('Rematch ක්‍රියාවලිය අසාර්ථක විය.', 'fa-circle-xmark');}
 };
 
-// තරඟය අවසානයේ "ඉවත් වෙන්න" (Exit) ක්ලික් කළ විට කෙළින්ම මුල් පිටුවට යයි
 $('exit').onclick=()=>{
  leaveRoom();
 };
 
-// පහළ තීරුවේ ඇති "⌂ ප්‍රධාන පිටුව" (Home) ක්ලික් කළ විට
 $('home').onclick=()=>{
  if(roomId && !gameOver){
-  if(confirm('තරඟයෙන් ඉවත් වීමට අවශ්‍යද?')) {
-   $('forfeit').click();
-  }
+  showCustomAlert(
+   'ප්‍රධාන පිටුවට යාම',
+   'තරඟය අතරතුර ඉවත් වුවහොත් එය පරාජයක් ලෙස සටහන් වේ. ඔබට පිටුවට යාමට අවශ්‍යද?',
+   'warning',
+   ()=>{$('forfeit').click();},
+   true,
+   'නැත',
+   'ඔව්'
+  );
   return;
  }
  leaveRoom();
 };
 
 $('logout').onclick=async()=>{
- try{
-  if(fbUser)await db.ref('publicProfiles_v6/'+fbUser.uid).update({online:false});
-  if(inviteRef&&inviteCb)inviteRef.off('child_added',inviteCb);
-  if(roomRef&&roomCb)roomRef.off('value',roomCb);
-  localStorage.removeItem(KEY);await auth.signOut();
-  fbUser=null;user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0};
-  leaveRoom();modal('authModal',true);toast('සාර්ථකව Logout විය.');
- }catch(e){toast('Logout වීමට නොහැකි විය.')}
+ showCustomAlert(
+  'Logout වීම',
+  'ඔබට සැබවින්ම ගිණුමෙන් ඉවත් වීමට (Logout) අවශ්‍යද?',
+  'warning',
+  async ()=>{
+   try{
+    if(fbUser)await db.ref('publicProfiles_v6/'+fbUser.uid).update({online:false});
+    if(inviteRef&&inviteCb)inviteRef.off('child_added',inviteCb);
+    if(roomRef&&roomCb)roomRef.off('value',roomRef);
+    localStorage.removeItem(KEY);await auth.signOut();
+    fbUser=null;user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0};
+    leaveRoom();modal('authModal',true);toast('සාර්ථකව Logout විය.', 'fa-circle-check');
+   }catch(e){toast('Logout වීමට නොහැකි විය.', 'fa-circle-xmark')}
+  },
+  true,
+  'නැත',
+  'ඔව්'
+ );
 };
-</script></body></html>
+</script>
+</body>
+</html>
