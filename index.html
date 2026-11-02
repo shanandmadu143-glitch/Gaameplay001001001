@@ -8,124 +8,114 @@
 <link href="https://fonts.googleapis.com/css2?family=Gemunu+Libre:wght@400;600;700;800&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg-gradient: linear-gradient(180deg, #091a3e 0%, #061026 60%, #030814 100%);
-  --panel-bg: linear-gradient(145deg, #182848, #0b162c);
-  --gold-grad: linear-gradient(180deg, #ffe08a 0%, #d4941d 100%);
-  --gold-border: #f5af19;
-  --gold-text: #ffd166;
-  --blue-btn: linear-gradient(180deg, #1e69de 0%, #0d3b8e 100%);
-  --green-btn: linear-gradient(180deg, #2ecc71 0%, #15803d 100%);
-  --orange-btn: linear-gradient(180deg, #f39c12 0%, #b76e00 100%);
-  --dim: #a0aec0;
+--bg-gradient: linear-gradient(180deg, #091a3e 0%, #061026 60%, #030814 100%);
+--panel-bg: linear-gradient(145deg, #182848, #0b162c);
+--gold-grad: linear-gradient(180deg, #ffe08a 0%, #d4941d 100%);
+--gold-border: #f5af19;
+--gold-text: #ffd166;
+--blue-btn: linear-gradient(180deg, #1e69de 0%, #0d3b8e 100%);
+--green-btn: linear-gradient(180deg, #2ecc71 0%, #15803d 100%);
+--orange-btn: linear-gradient(180deg, #f39c12 0%, #b76e00 100%);
+--dim: #a0aec0;
 }
-
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Gemunu Libre', 'Poppins', sans-serif; user-select: none; }
+​{ box-sizing: border-box; margin: 0; padding: 0; font-family: 'Gemunu Libre', 'Poppins', sans-serif; user-select: none; }
 html, body { width: 100%; min-height: 100dvh; background: var(--bg-gradient); color: #fff; overflow-x: hidden; }
-
-.app-container {
-  max-width: 500px;
-  margin: auto;
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 10px;
-  position: relative;
-  background: url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1000&auto=format&fit=crop') center/cover no-repeat;
-  box-shadow: 0 0 30px rgba(0,0,0,0.8);
+​.app-container {
+max-width: 500px;
+margin: auto;
+min-height: 100dvh;
+display: flex;
+flex-direction: column;
+justify-content: space-between;
+padding: 10px;
+position: relative;
+background: url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1000&auto=format&fit=crop') center/cover no-repeat;
+box-shadow: 0 0 30px rgba(0,0,0,0.8);
 }
 .app-container::before {
-  content: ''; position: absolute; inset: 0; background: rgba(8, 15, 35, 0.85); backdrop-filter: blur(4px); z-index: 0;
+content: ''; position: absolute; inset: 0; background: rgba(8, 15, 35, 0.88); backdrop-filter: blur(4px); z-index: 0;
 }
 .app-content { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 12px; flex: 1; }
-
-/* 1. TOP HEADER */
+​/* 1. TOP HEADER */
 .top-header { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; }
-.user-profile { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.user-profile { display: flex; align-items: center; gap: 10px; cursor: pointer; }
 .profile-avatar {
-  width: 46px; height: 46px; border-radius: 50%; border: 2px solid var(--gold-border);
-  background: radial-gradient(circle, #ffeaa7, #fdcb6e); display: grid; place-items: center; color: #111; font-size: 1.3rem;
-  box-shadow: 0 0 10px rgba(255, 209, 102, 0.4);
+width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--gold-border);
+background: radial-gradient(circle, #ffeaa7, #fdcb6e); display: grid; place-items: center; color: #111; font-size: 1.3rem;
+box-shadow: 0 0 10px rgba(255, 209, 102, 0.4);
 }
 .level-badge {
-  position: absolute; bottom: -4px; right: -4px; background: #e74c3c; border: 1px solid #fff;
-  border-radius: 50%; width: 18px; height: 18px; font-size: 0.65rem; display: grid; place-items: center; font-weight: 800;
+position: absolute; bottom: -4px; right: -4px; background: #e74c3c; border: 1px solid #fff;
+border-radius: 50%; width: 18px; height: 18px; font-size: 0.65rem; display: grid; place-items: center; font-weight: 800;
 }
 .currency-container { display: flex; gap: 10px; }
 .currency-box {
-  background: rgba(0, 0, 0, 0.6); border: 1.5px solid rgba(255, 209, 102, 0.5); border-radius: 20px;
-  padding: 4px 10px 4px 6px; display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 0.9rem;
+background: rgba(0, 0, 0, 0.6); border: 1.5px solid rgba(255, 209, 102, 0.5); border-radius: 20px;
+padding: 4px 12px 4px 8px; display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 1rem;
 }
-.currency-box i { color: var(--gold-text); font-size: 1.1rem; }
-.add-btn { background: #2ecc71; color: white; width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font-size: 0.75rem; border: none; cursor: pointer; }
-
-/* 2. TOP BADGES */
+.currency-box i { color: var(--gold-text); font-size: 1.2rem; }
+​/* 2. TOP BADGES */
 .top-badges { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 6px; }
 .badge-card {
-  background: linear-gradient(180deg, #8e44ad, #5b2c6f); border: 1px solid rgba(255,255,255,0.3);
-  border-radius: 10px; padding: 6px; text-align: center; position: relative; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+background: linear-gradient(180deg, #8e44ad, #5b2c6f); border: 1px solid rgba(255,255,255,0.3);
+border-radius: 10px; padding: 6px; text-align: center; position: relative; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.3);
 }
 .badge-card.gold { background: linear-gradient(180deg, #d35400, #a04000); }
 .badge-title { font-size: 0.75rem; font-weight: 800; color: #fff; text-shadow: 0 1px 2px #000; }
 .badge-sub { font-size: 0.65rem; color: #ffe08a; }
-
-/* 3. REWARD BANNER */
+​/* 3. REWARD BANNER */
 .reward-banner {
-  background: linear-gradient(90deg, #f39c12, #f1c40f, #f39c12); border: 2px solid #fff;
-  border-radius: 14px; padding: 12px; text-align: center; color: #111; font-weight: 800; font-size: 1.2rem;
-  letter-spacing: 1px; box-shadow: 0 0 15px rgba(241, 196, 15, 0.5); text-shadow: 0 1px 0 rgba(255,255,255,0.6);
-  display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer;
+background: linear-gradient(90deg, #f39c12, #f1c40f, #f39c12); border: 2px solid #fff;
+border-radius: 14px; padding: 12px; text-align: center; color: #111; font-weight: 800; font-size: 1.2rem;
+letter-spacing: 1px; box-shadow: 0 0 15px rgba(241, 196, 15, 0.5); text-shadow: 0 1px 0 rgba(255,255,255,0.6);
+display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer;
 }
-
-/* 4. MAIN PLAY BUTTONS */
+​/* 4. MAIN PLAY BUTTONS */
 .play-modes { display: flex; flex-direction: column; gap: 10px; }
 .play-btn {
-  border: 2px solid rgba(255, 255, 255, 0.4); border-radius: 16px; padding: 14px 20px;
-  display: flex; align-items: center; justify-content: space-between; cursor: pointer;
-  box-shadow: 0 6px 15px rgba(0,0,0,0.4); transition: transform 0.1s;
+border: 2px solid rgba(255, 255, 255, 0.4); border-radius: 16px; padding: 14px 20px;
+display: flex; align-items: center; justify-content: space-between; cursor: pointer;
+box-shadow: 0 6px 15px rgba(0,0,0,0.4); transition: transform 0.1s;
 }
 .play-btn:active { transform: scale(0.98); }
 .play-btn.blue { background: var(--blue-btn); }
 .play-btn.green { background: var(--green-btn); }
 .play-btn.orange { background: var(--orange-btn); }
-
-.play-title { font-size: 1.4rem; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.6); text-transform: uppercase; }
+​.play-title { font-size: 1.4rem; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.6); text-transform: uppercase; }
 .play-img-icon { font-size: 2.2rem; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)); }
-
-/* 5. CHEST SLOTS */
+​/* 5. CHEST SLOTS */
 .chest-section { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
 .chest-card {
-  background: linear-gradient(180deg, #1f2c4c, #121a2e); border: 1.5px solid rgba(255,209,102,0.3);
-  border-radius: 10px; padding: 8px 4px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px;
+background: linear-gradient(180deg, #1f2c4c, #121a2e); border: 1.5px solid rgba(255,209,102,0.3);
+border-radius: 10px; padding: 8px 4px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px;
 }
 .chest-tag { background: #1e69de; color: white; font-size: 0.6rem; font-weight: 700; padding: 2px 6px; border-radius: 6px; width: 100%; }
 .chest-icon { font-size: 1.6rem; color: var(--gold-text); margin: 2px 0; }
 .chest-time { font-size: 0.65rem; color: var(--dim); }
-
-/* 6. BOTTOM NAVIGATION BAR */
+​/* 6. BOTTOM NAVIGATION BAR */
 .bottom-nav {
-  position: relative; z-index: 1; background: linear-gradient(180deg, #18243c, #0c1322);
-  border: 1px solid rgba(255,209,102,0.3); border-radius: 14px; display: grid; grid-template-columns: repeat(5, 1fr);
-  padding: 6px 2px; margin-top: 10px;
+position: relative; z-index: 1; background: linear-gradient(180deg, #18243c, #0c1322);
+border: 1px solid rgba(255,209,102,0.3); border-radius: 14px; display: grid; grid-template-columns: repeat(5, 1fr);
+padding: 6px 2px; margin-top: 10px;
 }
 .nav-item {
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  color: var(--dim); text-decoration: none; font-size: 0.75rem; font-weight: 700; gap: 2px; padding: 4px 0; cursor: pointer;
+display: flex; flex-direction: column; align-items: center; justify-content: center;
+color: var(--dim); text-decoration: none; font-size: 0.75rem; font-weight: 700; gap: 2px; padding: 4px 0; cursor: pointer;
 }
 .nav-item i { font-size: 1.2rem; }
 .nav-item.active { color: var(--gold-text); }
-
-/* GAME ARENA & MODALS */
+​/* GAME ARENA & MODALS */
 .modal { position: fixed; inset: 0; background: rgba(5,8,20,0.85); backdrop-filter: blur(6px); display: none; place-items: center; z-index: 100; padding: 15px; }
 .modal.show { display: grid; }
 .modalbox { width: min(100%, 480px); background: linear-gradient(145deg, #121824, #1a233a); border: 2px solid var(--gold-text); border-radius: 20px; padding: 22px; display: grid; gap: 14px; max-height: 88vh; overflow-y: auto; box-shadow: 0 15px 35px rgba(0,0,0,0.6); }
 .modalbox h2, .modalbox h3 { text-align: center; color: var(--gold-text); font-weight: 700; }
 input { width: 100%; padding: 12px 14px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,209,102,0.4); border-radius: 11px; color: white; font-size: 1rem; outline: none; }
 .row { display: flex; gap: 10px; align-items: center; }
-.btn-gold { background: linear-gradient(135deg,#ffe08a,#ffad62); color: #111; border: 0; border-radius: 9px; padding: 9px 13px; font-weight: 700; cursor: pointer; width: 100%; }
-.btn { background: #ffffff12; color: white; border: 1px solid #ffffff30; border-radius: 9px; padding: 9px 13px; font-weight: 700; cursor: pointer; width: 100%; }
-
-/* Game Arena Details */
+.btn-gold { background: linear-gradient(135deg,#ffe08a,#ffad62); color: #111; border: 0; border-radius: 9px; padding: 9px 13px; font-weight: 700; cursor: pointer; width: 100%; text-align: center; }
+.btn { background: #ffffff12; color: white; border: 1px solid #ffffff30; border-radius: 9px; padding: 9px 13px; font-weight: 700; cursor: pointer; width: 100%; text-align: center; }
+​.list { display: grid; gap: 8px; max-height: 200px; overflow-y: auto; }
+.listitem { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 8px 12px; }
+​/* Game Arena Details */
 .arena { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: center; }
 .board-wrap { grid-column: 1 / -1; width: min(100%, min(65vh, 420px)); aspect-ratio: 1; position: relative; margin: auto; }
 .board { width: 100%; height: 100%; display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr); border: 6px solid #18213e; border-radius: 12px; overflow: hidden; }
@@ -134,312 +124,452 @@ input { width: 100%; padding: 12px 14px; background: rgba(0,0,0,0.4); border: 1p
 .sq.selected { background: #ffd166 !important; }
 .sq.target:after { content: ''; width: 30%; height: 30%; border-radius: 50%; background: #50e8ae; }
 .sq.capture:after { content: ''; width: 40%; height: 40%; border-radius: 50%; background: #ff6b81; }
-.piece { width: 80%; height: 80%; border-radius: 50%; display: grid; place-items: center; font-size: 1.1rem; box-shadow: 0 4px 8px rgba(0,0,0,0.5); }
+.piece { width: 80%; height: 80%; border-radius: 50%; display: grid; place-items: center; font-size: 1.1rem; box-shadow: 0 4px 8px rgba(0,0,0,0.5); position: relative; }
 .king:after { content: '♛'; position: absolute; color: #ffd166; font-size: 14px; bottom: 2px; right: 2px; }
 .player { padding: 8px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; text-align: center; }
 .player.active { border-color: var(--gold-text); box-shadow: 0 0 10px rgba(255,209,102,0.4); }
-
-#toast { position: fixed; bottom: 70px; left: 50%; transform: translate(-50%, 100px); opacity: 0; background: #1e293b; border: 1px solid var(--gold-text); color: white; border-radius: 20px; padding: 10px 20px; z-index: 200; transition: .3s; }
+​.pieces-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+.piece-option { background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 8px; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
+.piece-option.selected { border-color: var(--gold-text); background: rgba(255,209,102,0.2); }
+​#toast { position: fixed; bottom: 70px; left: 50%; transform: translate(-50%, 100px); opacity: 0; background: #1e293b; border: 1px solid var(--gold-text); color: white; border-radius: 20px; padding: 10px 20px; z-index: 200; transition: .3s; }
 #toast.show { transform: translate(-50%, 0); opacity: 1; }
 </style>
 </head>
 <body>
-
-<div class="app-container">
-  <div class="app-content">
-    
-    <!-- TOP HEADER -->
-    <header class="top-header">
-      <div class="user-profile" id="openProfile">
-        <div style="position:relative;">
-          <div class="profile-avatar" id="headerAvatar"><i class="fa-solid fa-user"></i></div>
-          <div class="level-badge">21</div>
-        </div>
-        <div>
-          <b id="headerName" style="font-size:0.95rem; display:block;">ක්‍රීඩකයා</b>
-          <small style="color:var(--gold-text); font-weight:700;">PRO PLAYER</small>
-        </div>
-      </div>
-
-      <div class="currency-container">
-        <div class="currency-box">
-          <i class="fa-solid fa-gem" style="color:#4facfe;"></i>
-          <span>2,158</span>
-          <button class="add-btn">+</button>
-        </div>
-        <div class="currency-box">
-          <i class="fa-solid fa-coins"></i>
-          <span id="points">500</span>
-          <button class="add-btn">+</button>
-        </div>
-      </div>
-    </header>
-
-    <!-- HOME MENU CONTENT -->
-    <div id="homeView" style="display: flex; flex-direction: column; gap: 12px;">
-      
-      <!-- TOP BADGES / REWARDS -->
-      <section class="top-badges">
-        <div class="badge-card">
-          <div class="badge-title">Free Rewards</div>
-          <div class="badge-sub">Collect Now!</div>
-        </div>
-        <div class="badge-card gold">
-          <div class="badge-title">Lucky Shot</div>
-          <div class="badge-sub">in 11h 29m</div>
-        </div>
-        <div class="badge-card">
-          <div class="badge-title">Leaderboard</div>
-          <div class="badge-sub">Ends: 03h 40m</div>
-        </div>
-      </section>
-
-      <!-- REWARD BANNER -->
-      <div class="reward-banner" onclick="location.href='shopandreward.html'">
-        <i class="fa-solid fa-shield-halved"></i> Collect Rewards
-      </div>
-
-      <!-- MAIN PLAY MODES -->
-      <section class="play-modes">
-        <div class="play-btn blue" id="single">
-          <div>
-            <div class="play-title">Single Player</div>
-            <small style="opacity: 0.8;">AI පරිගණකය සමඟ ක්‍රීඩා කරන්න</small>
-          </div>
-          <div class="play-img-icon">🤖</div>
-        </div>
-
-        <div class="play-btn green" id="multi">
-          <div>
-            <div class="play-title">Multiplayer</div>
-            <small style="opacity: 0.8;">ඔන්ලයින් යහළුවන් සමඟ</small>
-          </div>
-          <div class="play-img-icon">⚔️</div>
-        </div>
-
-        <div class="play-btn orange" id="freestyle">
-          <div>
-            <div class="play-title">Play Freestyle</div>
-            <small style="opacity: 0.8;">පුහුණු තරඟ මාදිලිය</small>
-          </div>
-          <div class="play-img-icon">🎯</div>
-        </div>
-      </section>
-
-      <!-- CHEST SLOTS -->
-      <section class="chest-section">
-        <div class="chest-card">
-          <div class="chest-tag">Tap to Unlock</div>
-          <div class="chest-icon"><i class="fa-solid fa-box-archive"></i></div>
-          <div class="chest-time">01h 30m</div>
-        </div>
-        <div class="chest-card">
-          <div class="chest-tag" style="background:#8e44ad;">Tap to Unlock</div>
-          <div class="chest-icon"><i class="fa-solid fa-box-open"></i></div>
-          <div class="chest-time">08h 00m</div>
-        </div>
-        <div class="chest-card">
-          <div class="chest-tag">Tap to Unlock</div>
-          <div class="chest-icon"><i class="fa-solid fa-box-archive"></i></div>
-          <div class="chest-time">01h 30m</div>
-        </div>
-        <div class="chest-card">
-          <div class="chest-tag">Tap to Unlock</div>
-          <div class="chest-icon"><i class="fa-solid fa-box-archive"></i></div>
-          <div class="chest-time">01h 30m</div>
-        </div>
-      </section>
-
-    </div>
-
-    <!-- ARENA (DRAUGHTS BOARD) -->
-    <div id="arena" class="arena" style="display:none;">
-      <div class="player active" id="p1"><b id="p1name">ඔබ</b><br><small id="p1sub">සුදු (White)</small></div>
-      <div class="player" id="p2"><b id="p2name">ප්‍රතිවාදියා</b><br><small id="p2sub">රතු (Red)</small></div>
-      
-      <div class="board-wrap">
-        <button id="forfeit" class="btn" style="position:absolute; top:-35px; right:0; width:auto; padding:4px 10px; background:#e74c3c;">✕ Leave</button>
-        <div class="board" id="board"></div>
-      </div>
-      
-      <div id="gameStatus" style="grid-column:1/-1; text-align:center; color:var(--gold-text); font-weight:700;"></div>
-    </div>
-
-  </div>
-
-  <!-- BOTTOM NAVIGATION BAR -->
-  <nav class="bottom-nav">
-    <div class="nav-item active" onclick="showHome()"><i class="fa-solid fa-house"></i>Home</div>
-    <div class="nav-item" onclick="toast('Friends ලැයිස්තුව ළඟදීම..')"><i class="fa-solid fa-user-group"></i>Friends</div>
-    <div class="nav-item" id="navProfile"><i class="fa-solid fa-circle-user"></i>Profile</div>
-    <div class="nav-item" onclick="toast('Events ළඟදීම..')"><i class="fa-solid fa-trophy"></i>Events</div>
-    <a href="shopandreward.html" class="nav-item"><i class="fa-solid fa-cart-shopping"></i>Shop</a>
-  </nav>
+​<div class="app-container">
+<div class="app-content">
+​<!-- TOP HEADER -->
+<header class="top-header">
+<div class="user-profile" id="openProfile">
+<div style="position:relative;">
+<div class="profile-avatar" id="headerAvatar"><i class="fa-solid fa-user"></i></div>
+<div class="level-badge">21</div>
 </div>
-
-<!-- MODALS -->
+<div>
+<b id="headerName" style="font-size:0.95rem; display:block;">ක්‍රීඩකයා</b>
+<small style="color:var(--gold-text); font-weight:700;">PRO PLAYER</small>
+</div>
+</div>
+​<div class="currency-container">
+<div class="currency-box">
+<i class="fa-solid fa-coins"></i>
+<span id="points">500</span>
+</div>
+</div>
+</header>
+​<!-- HOME MENU CONTENT -->
+<div id="homeView" style="display: flex; flex-direction: column; gap: 12px;">
+​<!-- TOP BADGES / REWARDS -->
+<section class="top-badges">
+<div class="badge-card">
+<div class="badge-title">Free Rewards</div>
+<div class="badge-sub">Collect Now!</div>
+</div>
+<div class="badge-card gold">
+<div class="badge-title">Lucky Shot</div>
+<div class="badge-sub">in 11h 29m</div>
+</div>
+<div class="badge-card">
+<div class="badge-title">Leaderboard</div>
+<div class="badge-sub">Ends: 03h 40m</div>
+</div>
+</section>
+​<!-- REWARD BANNER -->
+<div class="reward-banner" onclick="location.href='shopandreward.html'">
+<i class="fa-solid fa-shield-halved"></i> Collect Rewards
+</div>
+​<!-- MAIN PLAY MODES -->
+<section class="play-modes">
+<div class="play-btn blue" id="single">
+<div>
+<div class="play-title">Single Player</div>
+<small style="opacity: 0.8;">AI පරිගණකය සමඟ ක්‍රීඩා කරන්න</small>
+</div>
+<div class="play-img-icon">🤖</div>
+</div>
+​<div class="play-btn green" id="multi">
+<div>
+<div class="play-title">Multiplayer</div>
+<small style="opacity: 0.8;">ඔන්ලයින් යහළුවන් සමඟ</small>
+</div>
+<div class="play-img-icon">⚔️</div>
+</div>
+​<div class="play-btn orange" id="freestyle">
+<div>
+<div class="play-title">Play Freestyle</div>
+<small style="opacity: 0.8;">පුහුණු තරඟ මාදිලිය</small>
+</div>
+<div class="play-img-icon">🎯</div>
+</div>
+</section>
+​<!-- CHEST SLOTS -->
+<section class="chest-section">
+<div class="chest-card">
+<div class="chest-tag">Tap to Unlock</div>
+<div class="chest-icon"><i class="fa-solid fa-box-archive"></i></div>
+<div class="chest-time">01h 30m</div>
+</div>
+<div class="chest-card">
+<div class="chest-tag" style="background:#8e44ad;">Tap to Unlock</div>
+<div class="chest-icon"><i class="fa-solid fa-box-open"></i></div>
+<div class="chest-time">08h 00m</div>
+</div>
+<div class="chest-card">
+<div class="chest-tag">Tap to Unlock</div>
+<div class="chest-icon"><i class="fa-solid fa-box-archive"></i></div>
+<div class="chest-time">01h 30m</div>
+</div>
+<div class="chest-card">
+<div class="chest-tag">Tap to Unlock</div>
+<div class="chest-icon"><i class="fa-solid fa-box-archive"></i></div>
+<div class="chest-time">01h 30m</div>
+</div>
+</section>
+​</div>
+​<!-- ARENA (DRAUGHTS BOARD) -->
+<div id="arena" class="arena" style="display:none;">
+<div class="player active" id="p1"><b id="p1name">ඔබ</b>
+<small id="p1sub">සුදු (White)</small></div>
+<div class="player" id="p2"><b id="p2name">ප්‍රතිවාදියා</b>
+<small id="p2sub">රතු (Red)</small></div>
+​<div class="board-wrap">
+<button id="forfeit" class="btn" style="position:absolute; top:-35px; right:0; width:auto; padding:4px 10px; background:#e74c3c;">✕ Leave</button>
+<div class="board" id="board"></div>
+</div>
+​<div id="gameStatus" style="grid-column:1/-1; text-align:center; color:var(--gold-text); font-weight:700;"></div>
+</div>
+​</div>
+​<!-- BOTTOM NAVIGATION BAR -->
+<nav class="bottom-nav">
+<div class="nav-item active" id="navHome"><i class="fa-solid fa-house"></i>Home</div>
+<div class="nav-item" id="navFriends"><i class="fa-solid fa-user-group"></i>Friends</div>
+<div class="nav-item" id="navProfile"><i class="fa-solid fa-circle-user"></i>Profile</div>
+<div class="nav-item" onclick="toast('Events ළඟදීම..')"><i class="fa-solid fa-trophy"></i>Events</div>
+<a href="shopandreward.html" class="nav-item"><i class="fa-solid fa-cart-shopping"></i>Shop</a>
+</nav>
+</div>
+​<!-- MODALS -->
 <div class="modal" id="singleBetModal">
-  <div class="modalbox">
-    <h3>Single Player - ඔට්ටු තැබීම</h3>
-    <label>ඔට්ටු අල්ලන Points ගණන</label>
-    <input id="singleBetInput" type="number" min="10" value="50">
-    <div class="row">
-      <button class="btn-gold" id="startSingleGame">ආරම්භ කරන්න</button>
-      <button class="btn" onclick="modal('singleBetModal',false)">අවලංගු කරන්න</button>
-    </div>
-  </div>
+<div class="modalbox">
+<h3>Single Player - ඔට්ටු තැබීම</h3>
+<label>ඔට්ටු අල්ලන Points ගණන</label>
+<input id="singleBetInput" type="number" min="10" value="50">
+<div class="row">
+<button class="btn-gold" id="startSingleGame">ආරම්භ කරන්න</button>
+<button class="btn" onclick="modal('singleBetModal',false)">අවලංගු කරන්න</button>
 </div>
-
-<div class="modal" id="authModal">
-  <div class="modalbox">
-    <h2>ඇතුළු වන්න / ගිණුම සාදන්න</h2>
-    <input id="username" placeholder="Username">
-    <input id="password" type="password" placeholder="Password">
-    <div class="row">
-      <button class="btn-gold" id="login">ඇතුළු වන්න</button>
-      <button class="btn" id="register">ගිණුම සාදන්න</button>
-    </div>
-  </div>
 </div>
-
-<div id="toast"></div>
-
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+</div>
+​<div class="modal" id="betModal">
+<div class="modalbox">
+<h3>Multiplayer - ඔට්ටු තැබීම</h3>
+<label>ඔට්ටු අල්ලන Point ගණන (ඔබේ ලකුණු: <span id="maxUserPoints">500</span>)</label>
+<input id="betAmountInput" type="number" min="10" value="50">
+<div class="row">
+<button class="btn-gold" id="proceedToInvite">ඊළඟට (Next) - යහළුවන් සොයන්න</button>
+<button class="btn" onclick="modal('betModal',false)">අවලංගු කරන්න</button>
+</div>
+</div>
+</div>
+​<div class="modal" id="multiModal">
+<div class="modalbox">
+<div class="row"><h3 style="flex:1">ඔන්ලයින් යහළුවන් (Step 2)</h3><button class="btn" style="width:auto" onclick="modal('multiModal',false)">✕</button></div>
+<p style="font-size:0.85rem;color:var(--gold-text)">තෝරාගත් ඔට්ටු ලකුණු (Bet): <b id="activeBetDisplay">50</b> pts</p>
+<div class="row"><input id="search" placeholder="නම සොයන්න"><button class="btn-gold" id="searchBtn" style="width:auto">Search</button></div>
+<b style="color:var(--gold-text)">මෑතකදී තරඟ කළ / Invite කළ යහළුවන්</b>
+<div class="list" id="recentList">මෑතකදී තරඟ කළ අය නොමැත.</div>
+<div class="list" id="results">Online සිටින යහළුවෙකු සොයන්න.</div>
+</div>
+</div>
+​<div class="modal" id="friendsModal">
+<div class="modalbox">
+<div class="row"><h3 style="flex:1">මගේ යහළුවන් (Friends)</h3><button class="btn" style="width:auto" onclick="modal('friendsModal',false)">✕</button></div>
+<p style="font-size:0.85rem;color:var(--dim)">මෑතකදී තරඟ කළ සහ Invite කළ යහළුවන්:</p>
+<div class="list" id="friendsTabList">යහළුවන් නොමැත.</div>
+</div>
+</div>
+​<div class="modal" id="profileModal">
+<div class="modalbox">
+<div class="row"><h3 style="flex:1">ප්‍රොෆයිලය (Profile Customization)</h3><button class="btn" style="width:auto" onclick="modal('profileModal',false)">✕</button></div>
+<p style="font-size:.9rem;color:var(--dim)">දාම් ඉත්තන්ගේ මෝස්තර තෝරන්න:</p>
+<div class="pieces-grid" id="piecesGrid"></div>
+<button class="btn-gold" id="saveProfile" style="margin-top:10px">සුරකින්න (Save)</button>
+</div>
+</div>
+​<div class="modal" id="authModal">
+<div class="modalbox">
+<h2>ඇතුළු වන්න / ගිණුම සාදන්න</h2>
+<input id="username" placeholder="Username">
+<input id="password" type="password" placeholder="Password">
+<div class="row">
+<button class="btn-gold" id="login">ඇතුළු වන්න</button>
+<button class="btn" id="register">ගිණුම සාදන්න</button>
+</div>
+</div>
+</div>
+​<div id="toast"></div>
+​<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-
-<script>
+​<script>
 'use strict';
 const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
-const $=id=>document.getElementById(id), KEY='sinhala_draughts_v7_user';
-let auth, db, fbUser, user={name:'',points:500,wins:0,losses:0,uid:null}, board=[], turn=1, selected=null, moves=[], gameOver=false;
-
-function toast(s){
-  const t=$('toast'); t.textContent=s; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2500);
+const $=id=>document.getElementById(id), KEY='sinhala_draughts_v7_user', RECENT='sinhala_draughts_recent_v7';
+let auth, db, fbUser, user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0}, board=[], turn=1, selected=null, moves=[], gameOver=false, single=true, roomId=null, roomRef=null, roomCb=null, role=null, inviteRef=null, inviteCb=null;
+​const PIECE_DESIGNS=[
+{name:'මුතු සුදු',bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●'},
+{name:'රන් ඔටුන්න',bg:'linear-gradient(135deg,#ffeaa7,#fdcb6e)',border:'#e1b12c',color:'#2d3436',icon:'★'},
+{name:'රුධිර රතු',bg:'radial-gradient(circle at 30% 30%,#ff7675,#d63031)',border:'#c0392b',color:'#fff',icon:'◆'},
+{name:'මරකත කොළ',bg:'radial-gradient(circle at 30% 30%,#55efc4,#00b894)',border:'#00a8ff',color:'#fff',icon:'▲'}
+];
+​function toast(s){
+const t=$('toast'); t.textContent=s; t.classList.add('show');
+setTimeout(()=>t.classList.remove('show'),2500);
 }
 function modal(id,on){ $(id).classList.toggle('show',on); }
-
-try{ if(!firebase.apps.length) firebase.initializeApp(firebaseConfig); auth=firebase.auth(); db=firebase.database(); }catch(e){}
-
-(async()=>{
-  fbUser = auth.currentUser;
-  if(!fbUser){ modal('authModal', true); }
-  auth.onAuthStateChanged(u=>{
-    fbUser=u;
-    if(u){ loadUser(); modal('authModal', false); }
-    else{ modal('authModal', true); }
-  });
+​try{ if(!firebase.apps.length) firebase.initializeApp(firebaseConfig); auth=firebase.auth(); db=firebase.database(); }catch(e){}
+​(async()=>{
+fbUser = auth.currentUser;
+if(!fbUser){ modal('authModal', true); }
+auth.onAuthStateChanged(u=>{
+fbUser=u;
+if(u){ loadUser(); modal('authModal', false); listenInvites(); }
+else{ modal('authModal', true); }
+});
 })();
-
-async function loadUser(){
-  const s = await db.ref('users_v6/'+fbUser.uid).once('value');
-  const d = s.val() || {};
-  user = { name: d.name||'Player', points: d.points!==undefined?Number(d.points):500, uid: fbUser.uid };
-  $('headerName').textContent = user.name;
-  $('points').textContent = user.points;
+​async function loadUser(){
+const s = await db.ref('users_v6/'+fbUser.uid).once('value');
+const d = s.val() || {};
+user = { name: d.name||'Player', points: d.points!==undefined?Number(d.points):500, uid: fbUser.uid, pieceIndex: d.pieceIndex||0 };
+$('headerName').textContent = user.name;
+$('points').textContent = user.points;
+presence();
 }
-
-$('login').onclick = async () => {
-  const name=$('username').value.trim(), pass=$('password').value;
-  if(!name || !pass) return toast('Username සහ Password ඇතුළත් කරන්න');
-  try {
-    await auth.signInWithEmailAndPassword(name+'@sinhala-draughts.app', pass);
-  } catch(e) { toast('ඇතුළත් වීම අසාර්ථකයි'); }
+​function presence(){
+if(!fbUser||!user.name)return;
+const r=db.ref('publicProfiles_v6/'+fbUser.uid);
+r.child('online').onDisconnect().set(false);
+r.update({name:user.name,online:true,points:user.points,lastSeen:firebase.database.ServerValue.TIMESTAMP});
+}
+​('login').onclick = async () => {
+const name=('username').value.trim(), pass=$('password').value;
+if(!name || !pass) return toast('Username සහ Password ඇතුළත් කරන්න');
+try {
+await auth.signInWithEmailAndPassword(name+'@sinhala-draughts.app', pass);
+} catch(e) { toast('ඇතුළත් වීම අසාර්ථකයි'); }
 };
-
-$('register').onclick = async () => {
-  const name=$('username').value.trim(), pass=$('password').value;
-  if(!name || pass.length < 6) return toast('මුරපදය අකුරු 6ක්වත් විය යුතුයි');
-  try {
-    const cred = await auth.createUserWithEmailAndPassword(name+'@sinhala-draughts.app', pass);
-    await db.ref('users_v6/'+cred.user.uid).set({ name, points:500 });
-  } catch(e) { toast('ගිණුම සෑදීමට නොහැකි විය'); }
+​('register').onclick = async () => {
+const name=('username').value.trim(), pass=$('password').value;
+if(!name || pass.length < 6) return toast('මුරපදය අකුරු 6ක්වත් විය යුතුයි');
+try {
+const cred = await auth.createUserWithEmailAndPassword(name+'@sinhala-draughts.app', pass);
+await db.ref('users_v6/'+cred.user.uid).set({ name, points:500, pieceIndex:0 });
+} catch(e) { toast('ගිණුම සෑදීමට නොහැකි විය'); }
 };
-
+​/* MULTIPLAYER LOGIC */
+('multi').onclick = () => {('maxUserPoints').textContent = user.points;
+modal('betModal', true);
+};
+​('proceedToInvite').onclick = () => {
+const betVal = parseInt(('betAmountInput').value) || 10;
+if(betVal > user.points) return toast('ප්‍රමාණවත් නොවේ');
+window.currentBetPoints = betVal;
+$('activeBetDisplay').textContent = betVal;
+modal('betModal', false);
+renderRecent();
+modal('multiModal', true);
+};
+​function rememberOpponent(name,uid){
+let a=JSON.parse(localStorage.getItem(RECENT)||'[]');
+a=a.filter(x=>x.uid!==uid);a.unshift({name,uid});
+localStorage.setItem(RECENT,JSON.stringify(a.slice(0,15)));
+}
+​function renderRecent(){
+const el=$('recentList'), a=JSON.parse(localStorage.getItem(RECENT)||'[]');
+el.innerHTML='';
+if(!a.length){el.textContent='මෑතකදී තරඟ කළ අය නොමැත.';return}
+a.forEach(x=>{
+const d=document.createElement('div');d.className='listitem';
+const n=document.createElement('b');n.textContent=x.name;
+const b=document.createElement('button');b.className='btn-gold';b.textContent='Invite';
+b.onclick=()=>sendInviteToUser(x);
+d.append(n,b);el.append(d);
+});
+}
+​async function sendInviteToUser(target){
+const betVal = window.currentBetPoints || 10;
+if(!fbUser || !target) return;
+modal('multiModal', false);
+try{
+const ref=db.ref('rooms_v6').push(), id=ref.key;
+const initial=Array.from({length:8},()=>Array(8).fill(0));
+for(let r=0;r<8;r++)for(let c=0;c<8;c++)if((r+c)%2){if(r<3)initial[r][c]=-1;else if(r>4)initial[r][c]=1}
+await ref.set({
+status:'waiting',hostUid:fbUser.uid,guestUid:target.uid,hostName:user.name,guestName:target.name,
+board:initial,turn:1,betPoints:betVal
+});
+await db.ref('invites_v6/'+target.uid).push().set({roomId:id,fromUid:fbUser.uid,fromName:user.name,betPoints:betVal,status:'pending'});
+rememberOpponent(target.name,target.uid);
+enterRoom(id,'host');
+toast('Invite යවන ලදී!');
+}catch(e){ toast('Invite යැවීමට නොහැකි විය'); }
+}
+​function listenInvites(){
+if(!fbUser)return;
+db.ref('invites_v6/'+fbUser.uid).on('child_added', async s=>{
+const v=s.val(); if(!v||v.status!=='pending')return;
+if(confirm(${v.fromName} ඔබට දාම් තරඟයකට ආරාධනා කරයි! පිළිගන්නද?)){
+await db.ref('rooms_v6/'+v.roomId).update({status:'playing'});
+await s.ref.update({status:'accepted'});
+rememberOpponent(v.fromName, v.fromUid);
+enterRoom(v.roomId, 'guest');
+}
+});
+}
+​function enterRoom(id, r){
+roomId=id; role=r; single=false;
+('homeView').style.display='none';('arena').style.display='grid';
+listenRoom();
+}
+​function listenRoom(){
+roomRef=db.ref('rooms_v6/'+roomId);
+roomCb=roomRef.on('value', s=>{
+const d=s.val(); if(!d)return;
+$('p1name').textContent=d.hostName;
+$('p2name').textContent=d.guestName;
+if(d.status==='playing'){
+board=d.board; turn=d.turn; render();
+$('gameStatus').textContent = (turn===(role==='host'?1:-1)) ? 'ඔබගේ වාරය' : 'ප්‍රතිවාදියාගේ වාරය';
+}
+});
+}
+​('searchBtn').onclick = async () => {
+const q=('search').value.trim().toLowerCase(), el=$('results');
+if(!q) return;
+const snap=await db.ref('publicProfiles_v6').once('value');
+el.innerHTML='';
+snap.forEach(ch=>{
+const v=ch.val();
+if(ch.key!==fbUser.uid && v.name && v.name.toLowerCase().includes(q)){
+const row=document.createElement('div');row.className='listitem';
+const name=document.createElement('b');name.textContent=v.name;
+const b=document.createElement('button');b.className='btn-gold';b.textContent='Invite';
+b.onclick=()=>sendInviteToUser({name:v.name,uid:ch.key});
+row.append(name,b);el.append(row);
+}
+});
+};
+​/* BOTTOM NAVIGATION EVENTS */
+$('navHome').onclick = showHome;
+('navFriends').onclick = () => {
+const el=('friendsTabList'), a=JSON.parse(localStorage.getItem(RECENT)||'[]');
+el.innerHTML='';
+if(!a.length){ el.textContent='යහළුවන් නොමැත.'; }
+else {
+a.forEach(x=>{
+const d=document.createElement('div');d.className='listitem';
+d.innerHTML = <b>${x.name}</b> <button class="btn-gold" style="width:auto" onclick="sendInviteToUser({name:'${x.name}',uid:'${x.uid}'})">Invite</button>;
+el.append(d);
+});
+}
+modal('friendsModal', true);
+};
+​$('navProfile').onclick = openProfileModal;
+$('openProfile').onclick = openProfileModal;
+​function openProfileModal(){
+const grid=$('piecesGrid'); grid.innerHTML='';
+PIECE_DESIGNS.forEach((p,idx)=>{
+const div=document.createElement('div');
+div.className='piece-option'+(idx===(user.pieceIndex||0)?' selected':'');
+div.innerHTML=<div style="width:30px;height:30px;border-radius:50%;background:${p.bg};border:1px solid ${p.border}"></div><span style="font-size:0.7rem">${p.name}</span>;
+div.onclick=()=>{
+user.pieceIndex=idx;
+document.querySelectorAll('.piece-option').forEach(e=>e.classList.remove('selected'));
+div.classList.add('selected');
+};
+grid.appendChild(div);
+});
+modal('profileModal', true);
+}
+​$('saveProfile').onclick=()=>{
+db.ref('users_v6/'+fbUser.uid).update({pieceIndex:user.pieceIndex});
+modal('profileModal', false);
+toast('Profile සුරකින ලදී!');
+};
+​/* BOARD GAME LOGIC */
 $('single').onclick=()=> modal('singleBetModal', true);
-$('freestyle').onclick=()=> startSingleGame();
-
-$('startSingleGame').onclick=()=>{
-  modal('singleBetModal', false);
-  startSingleGame();
-};
-
-function startSingleGame(){
-  $('homeView').style.display = 'none';
-  $('arena').style.display = 'grid';
-  initBoard();
+('freestyle').onclick=()=> startSingleGame();('startSingleGame').onclick=()=>{ modal('singleBetModal', false); startSingleGame(); };
+​function startSingleGame(){
+single=true;
+('homeView').style.display = 'none';('arena').style.display = 'grid';
+initBoard();
 }
-
-function showHome(){
-  $('arena').style.display = 'none';
-  $('homeView').style.display = 'flex';
+​function showHome(){
+('arena').style.display = 'none';('homeView').style.display = 'flex';
 }
-
-$('forfeit').onclick = showHome;
-$('navProfile').onclick = ()=> toast('Profile Page එක පිළියෙල වෙමින් පවතී..');
-
-/* BOARD GAME LOGIC */
-function initBoard(){
-  board = Array.from({length:8}, ()=> Array(8).fill(0));
-  for(let r=0;r<8;r++) for(let c=0;c<8;c++) if((r+c)%2){ if(r<3)board[r][c]=-1; else if(r>4)board[r][c]=1; }
-  turn=1; selected=null; moves=[]; gameOver=false;
-  render();
+​$('forfeit').onclick = showHome;
+​function initBoard(){
+board = Array.from({length:8}, ()=> Array(8).fill(0));
+for(let r=0;r<8;r++) for(let c=0;c<8;c++) if((r+c)%2){ if(r<3)board[r][c]=-1; else if(r>4)board[r][c]=1; }
+turn=1; selected=null; moves=[]; gameOver=false;
+render();
 }
-
-function render(){
-  const el=$('board'); el.innerHTML='';
-  for(let r=0; r<8; r++){
-    for(let c=0; c<8; c++){
-      const sq=document.createElement('div');
-      sq.className = 'sq ' + ((r+c)%2 ? 'dark' : 'light');
-      if(selected && selected.r===r && selected.c===c) sq.classList.add('selected');
-      
-      if(board[r][c]){
-        const p=document.createElement('div');
-        p.className = 'piece' + (Math.abs(board[r][c])===2 ? ' king' : '');
-        p.style.background = board[r][c] > 0 ? 'radial-gradient(circle, #ffffff, #dfe6e9)' : 'radial-gradient(circle, #ff7675, #d63031)';
-        sq.appendChild(p);
-      }
-      sq.onclick = () => clickSquare(r,c);
-      el.appendChild(sq);
-    }
-  }
+​function render(){
+const el=$('board'); el.innerHTML='';
+for(let r=0; r<8; r++){
+for(let c=0; c<8; c++){
+const sq=document.createElement('div');
+sq.className = 'sq ' + ((r+c)%2 ? 'dark' : 'light');
+if(selected && selected.r=r && selected.c=c) sq.classList.add('selected');
+​if(board[r][c]){
+const p=document.createElement('div');
+p.className = 'piece' + (Math.abs(board[r][c])===2 ? ' king' : '');
+const design = PIECE_DESIGNS[user.pieceIndex||0];
+p.style.background = board[r][c] > 0 ? design.bg : 'radial-gradient(circle, #ff7675, #d63031)';
+p.style.border = 1px solid ${design.border};
+sq.appendChild(p);
 }
-
-function clickSquare(r,c){
-  if(gameOver) return;
-  if(selected){
-    if(board[r][c] === 0){
-      board[r][c] = board[selected.r][selected.c];
-      board[selected.r][selected.c] = 0;
-      selected = null; turn = -turn; render();
-      if(turn === -1) setTimeout(aiMove, 600);
-      return;
-    }
-  }
-  if(board[r][c] && Math.sign(board[r][c]) === turn){
-    selected = {r, c}; render();
-  }
+sq.onclick = () => clickSquare(r,c);
+el.appendChild(sq);
 }
-
-function aiMove(){
-  if(gameOver) return;
-  let validMoves = [];
-  for(let r=0; r<8; r++){
-    for(let c=0; c<8; c++){
-      if(board[r][c] === -1){
-        if(r+1 < 8 && c-1 >= 0 && board[r+1][c-1] === 0) validMoves.push({from:{r,c}, to:{r:r+1, c:c-1}});
-        if(r+1 < 8 && c+1 < 8 && board[r+1][c+1] === 0) validMoves.push({from:{r,c}, to:{r:r+1, c:c+1}});
-      }
-    }
-  }
-  if(validMoves.length > 0){
-    const m = validMoves[Math.floor(Math.random() * validMoves.length)];
-    board[m.to.r][m.to.c] = board[m.from.r][m.from.c];
-    board[m.from.r][m.from.c] = 0;
-  }
-  turn = 1; render();
+}
+}
+​function clickSquare(r,c){
+if(gameOver) return;
+if(selected){
+if(board[r][c] === 0){
+board[r][c] = board[selected.r][selected.c];
+board[selected.r][selected.c] = 0;
+selected = null; turn = -turn; render();
+if(!single && roomRef){
+roomRef.update({board:board, turn:turn});
+} else if(single && turn === -1) {
+setTimeout(aiMove, 600);
+}
+return;
+}
+}
+if(board[r][c] && Math.sign(board[r][c]) === turn){
+selected = {r, c}; render();
+}
+}
+​function aiMove(){
+if(gameOver) return;
+let validMoves = [];
+for(let r=0; r<8; r++){
+for(let c=0; c<8; c++){
+if(board[r][c] === -1){
+if(r+1 < 8 && c-1 >= 0 && board[r+1][c-1] === 0) validMoves.push({from:{r,c}, to:{r:r+1, c:c-1}});
+if(r+1 < 8 && c+1 < 8 && board[r+1][c+1] === 0) validMoves.push({from:{r,c}, to:{r:r+1, c:c+1}});
+}
+}
+}
+if(validMoves.length > 0){
+const m = validMoves[Math.floor(Math.random() * validMoves.length)];
+board[m.to.r][m.to.c] = board[m.from.r][m.from.c];
+board[m.from.r][m.from.c] = 0;
+}
+turn = 1; render();
 }
 </script>
 </body>
