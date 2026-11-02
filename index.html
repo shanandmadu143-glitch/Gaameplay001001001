@@ -59,17 +59,7 @@ html, body { width: 100%; min-height: 100dvh; background: var(--bg-gradient); co
 .currency-box i { color: var(--gold-text); font-size: 1.2rem; }
 .add-btn { background: #2ecc71; color: white; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-size: 0.8rem; border: none; cursor: pointer; }
 
-/* 2. TOP BADGES */
-.top-badges { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 6px; }
-.badge-card {
-  background: linear-gradient(180deg, #8e44ad, #5b2c6f); border: 1px solid rgba(255,255,255,0.3);
-  border-radius: 10px; padding: 6px; text-align: center; position: relative; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-}
-.badge-card.gold { background: linear-gradient(180deg, #d35400, #a04000); }
-.badge-title { font-size: 0.75rem; font-weight: 800; color: #fff; text-shadow: 0 1px 2px #000; }
-.badge-sub { font-size: 0.65rem; color: #ffe08a; }
-
-/* 3. REWARD BANNER */
+/* 2. REWARD BANNER */
 .reward-banner {
   background: linear-gradient(90deg, #f39c12, #f1c40f, #f39c12); border: 2px solid #fff;
   border-radius: 14px; padding: 12px; text-align: center; color: #111; font-weight: 800; font-size: 1.2rem;
@@ -77,7 +67,7 @@ html, body { width: 100%; min-height: 100dvh; background: var(--bg-gradient); co
   display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer;
 }
 
-/* 4. MAIN PLAY BUTTONS */
+/* 3. MAIN PLAY BUTTONS */
 .play-modes { display: flex; flex-direction: column; gap: 10px; }
 .play-btn {
   border: 2px solid rgba(255, 255, 255, 0.4); border-radius: 16px; padding: 14px 20px;
@@ -92,17 +82,7 @@ html, body { width: 100%; min-height: 100dvh; background: var(--bg-gradient); co
 .play-title { font-size: 1.4rem; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.6); text-transform: uppercase; }
 .play-img-icon { font-size: 2.2rem; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)); }
 
-/* 5. CHEST SLOTS */
-.chest-section { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-.chest-card {
-  background: linear-gradient(180deg, #1f2c4c, #121a2e); border: 1.5px solid rgba(255,209,102,0.3);
-  border-radius: 10px; padding: 8px 4px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px;
-}
-.chest-tag { background: #1e69de; color: white; font-size: 0.6rem; font-weight: 700; padding: 2px 6px; border-radius: 6px; width: 100%; }
-.chest-icon { font-size: 1.6rem; color: var(--gold-text); margin: 2px 0; }
-.chest-time { font-size: 0.65rem; color: var(--dim); }
-
-/* 6. BOTTOM NAVIGATION BAR */
+/* 4. BOTTOM NAVIGATION BAR */
 .bottom-nav {
   position: relative; z-index: 1; background: linear-gradient(180deg, #18243c, #0c1322);
   border: 1px solid rgba(255,209,102,0.3); border-radius: 14px; display: grid; grid-template-columns: repeat(5, 1fr);
@@ -132,8 +112,6 @@ input { width: 100%; padding: 12px 14px; background: rgba(0,0,0,0.4); border: 1p
 .sq { display: grid; place-items: center; position: relative; cursor: pointer; }
 .sq.light { background: #e8edff; } .sq.dark { background: linear-gradient(145deg, #3d4d7d, #29365e); }
 .sq.selected { background: #ffd166 !important; }
-.sq.target:after { content: ''; width: 30%; height: 30%; border-radius: 50%; background: #50e8ae; }
-.sq.capture:after { content: ''; width: 40%; height: 40%; border-radius: 50%; background: #ff6b81; }
 .piece { width: 80%; height: 80%; border-radius: 50%; display: grid; place-items: center; font-size: 1.1rem; box-shadow: 0 4px 8px rgba(0,0,0,0.5); }
 .king:after { content: '♛'; position: absolute; color: #ffd166; font-size: 14px; bottom: 2px; right: 2px; }
 .player { padding: 8px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; text-align: center; }
@@ -175,22 +153,6 @@ input { width: 100%; padding: 12px 14px; background: rgba(0,0,0,0.4); border: 1p
     <!-- HOME MENU CONTENT -->
     <div id="homeView" style="display: flex; flex-direction: column; gap: 12px;">
       
-      <!-- TOP BADGES / REWARDS -->
-      <section class="top-badges">
-        <div class="badge-card">
-          <div class="badge-title">Free Rewards</div>
-          <div class="badge-sub">Collect Now!</div>
-        </div>
-        <div class="badge-card gold">
-          <div class="badge-title">Lucky Shot</div>
-          <div class="badge-sub">in 11h 29m</div>
-        </div>
-        <div class="badge-card">
-          <div class="badge-title">Leaderboard</div>
-          <div class="badge-sub">Ends: 03h 40m</div>
-        </div>
-      </section>
-
       <!-- REWARD BANNER -->
       <div class="reward-banner" onclick="location.href='shopandreward.html'">
         <i class="fa-solid fa-shield-halved"></i> Collect Rewards
@@ -220,30 +182,6 @@ input { width: 100%; padding: 12px 14px; background: rgba(0,0,0,0.4); border: 1p
             <small style="opacity: 0.8;">පුහුණු තරඟ මාදිලිය</small>
           </div>
           <div class="play-img-icon">🎯</div>
-        </div>
-      </section>
-
-      <!-- CHEST SLOTS -->
-      <section class="chest-section">
-        <div class="chest-card">
-          <div class="chest-tag">Tap to Unlock</div>
-          <div class="chest-icon"><i class="fa-solid fa-box-archive"></i></div>
-          <div class="chest-time">01h 30m</div>
-        </div>
-        <div class="chest-card">
-          <div class="chest-tag" style="background:#8e44ad;">Tap to Unlock</div>
-          <div class="chest-icon"><i class="fa-solid fa-box-open"></i></div>
-          <div class="chest-time">08h 00m</div>
-        </div>
-        <div class="chest-card">
-          <div class="chest-tag">Tap to Unlock</div>
-          <div class="chest-icon"><i class="fa-solid fa-box-archive"></i></div>
-          <div class="chest-time">01h 30m</div>
-        </div>
-        <div class="chest-card">
-          <div class="chest-tag">Tap to Unlock</div>
-          <div class="chest-icon"><i class="fa-solid fa-box-archive"></i></div>
-          <div class="chest-time">01h 30m</div>
         </div>
       </section>
 
