@@ -10,10 +10,10 @@
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Gemunu Libre','Poppins',sans-serif;user-select:none}
 html,body{width:100%;min-height:100%;background:radial-gradient(circle at 18% 18%,#3b2e2530,transparent 35%),linear-gradient(145deg,#080b18,#111a31 55%,#0a1022);color:#f8f9fa}
 body{min-height:100dvh}.app{min-height:100dvh;max-width:1100px;margin:auto;padding:10px;display:flex;flex-direction:column;gap:12px;position:relative}
-header,footer,.panel,.lobby,.side{background:var(--panel);border:1px solid #ffd16640;border-radius:15px;padding:10px 14px}
+header,footer,.panel,.lobby{background:var(--panel);border:1px solid #ffd16640;border-radius:15px;padding:10px 14px}
 header,footer{display:flex;align-items:center;justify-content:space-between;gap:10px}header{min-height:58px}.brand{font-size:1.25rem;color:var(--gold);font-weight:800}
 
-/* Profile Card */
+/* Floating Profile Card */
 .profile-float{position:fixed;bottom:20px;right:20px;z-index:15;background:var(--panel);border:2px solid var(--gold);border-radius:14px;padding:8px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:0 4px 15px rgba(0,0,0,0.5);transition:.2s}
 .profile-float:hover{transform:scale(1.03);background:rgba(28,36,60,.98)}
 .avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe08a,#ff8db5,#7ee7ff);color:#18213e;font-size:1.1rem}
@@ -25,181 +25,190 @@ header,footer{display:flex;align-items:center;justify-content:space-between;gap:
 
 main{flex:1;display:grid;place-items:center;min-height:400px}.lobby{width:min(100%,550px);padding:22px;display:grid;gap:16px}.lobby h2{text-align:center;color:var(--gold)}.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.mode{padding:22px 10px;border:1px solid #ffffff25;border-radius:12px;text-align:center;background:#ffffff08;cursor:pointer;transition:.2s}.mode:hover{border-color:var(--gold);background:#ffffff12}.mode i{font-size:2rem;color:var(--gold);display:block;margin-bottom:8px}
 
-/* --- ඡායාරූපය පරිදි නව Arena / Gameplay UI --- */
+/* =========================================================
+   NEW ARENA / PLAYING UI (MATCHING THE ATTACHED SCREENSHOT)
+   ========================================================= */
 .arena {
-  width: 100%;
-  max-width: 500px;
-  margin: 0 auto;
-  display: flex !important;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 85vh;
-  background: radial-gradient(circle at center, #521115 0%, #200406 100%);
-  padding: 15px 12px;
-  border-radius: 20px;
-  box-shadow: inset 0 0 40px rgba(0,0,0,0.8), 0 10px 25px rgba(0,0,0,0.6);
-  position: relative;
-  border: 1px solid #731e24;
-}
-
-.top-match-header {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  position: relative;
-  margin-bottom: 5px;
-}
-
-.match-player {
+  width: min(100%, 460px);
+  margin: auto;
+  background: linear-gradient(180deg, #2b0b0d 0%, #170406 100%);
+  border: 2px solid #5a231d;
+  border-radius: 28px;
+  padding: 16px 14px 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 0 15px rgba(255,154,60,0.1);
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 90px;
-  padding: 0;
-  background: transparent;
-  border: 0;
+  gap: 12px;
+  position: relative;
 }
 
-.match-player .avatar-box {
+/* Top Player Section */
+.arena-top-bar {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  margin-bottom: 2px;
+}
+.player-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.player-avatar-sq {
   width: 58px;
   height: 58px;
-  border-radius: 12px;
-  border: 2px solid #ffd166;
-  background: #111;
+  background: #110506;
+  border: 2px solid #ffca45;
+  border-radius: 14px;
   display: grid;
   place-items: center;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  font-size: 1.8rem;
+  box-shadow: 0 0 10px rgba(255,202,69,0.3);
   position: relative;
-  overflow: hidden;
 }
-
-.match-player .player-name {
+.player-box.p-pink .player-avatar-sq {
+  border-color: #ff477e;
+  box-shadow: 0 0 10px rgba(255,71,126,0.3);
+}
+.player-name-txt {
   font-size: 0.95rem;
-  font-weight: bold;
-  color: #fff;
-  margin-top: 4px;
+  font-weight: 700;
+  color: #ffffff;
   text-align: center;
+  max-width: 110px;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.player-score-txt {
+  font-size: 0.85rem;
+  color: #d1d5db;
+  font-weight: 600;
 }
 
-.match-player .player-score {
-  font-size: 0.9rem;
-  color: #e2e8f0;
-  margin-top: 2px;
-}
-
-.match-player.active .avatar-box {
-  border-color: #ffd166;
-  box-shadow: 0 0 15px #ffd166aa;
-}
-
-.match-pot {
+.center-coin-box {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  position: absolute;
-  left: 50%;
-  top: 0px;
-  transform: translateX(-50%);
 }
-
-.match-pot i {
-  font-size: 2.2rem;
-  color: #f59e0b;
-  filter: drop-shadow(0 2px 5px rgba(0,0,0,0.6));
+.center-coin-icon {
+  width: 44px;
+  height: 34px;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
 }
-
-.match-pot .pot-amount {
+.center-coin-val {
   font-size: 1.5rem;
   font-weight: 800;
   color: #ffffff;
+  letter-spacing: 0.5px;
   text-shadow: 0 2px 4px rgba(0,0,0,0.8);
 }
 
-.game-title-text {
-  color: #eec88b;
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin: 6px 0 10px;
-  text-shadow: 0 2px 4px #000;
+.game-title-header {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #f7a838;
   letter-spacing: 0.5px;
+  text-transform: capitalize;
+  text-shadow: 0 2px 5px rgba(0,0,0,0.7);
+  margin-top: -4px;
 }
 
+/* Board Styling (Wooden Frame & Warm Tiles) */
 .board-wrap {
   width: 100%;
   aspect-ratio: 1;
   position: relative;
-  margin: 0 auto;
-  border: 12px solid #8d5631;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 0 10px rgba(0,0,0,0.5);
-  background: #8d5631;
+  background: #6a4023;
+  padding: 10px;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.6), inset 0 0 8px rgba(0,0,0,0.5);
+  border: 2px solid #8c532b;
 }
-
 .board {
   width: 100%;
   height: 100%;
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   grid-template-rows: repeat(8, 1fr);
-  border: 2px solid #542d13;
-  border-radius: 4px;
+  border-radius: 6px;
   overflow: hidden;
+  border: 1px solid #4a2a14;
 }
-
-.sq { display: grid; place-items: center; position: relative; cursor: pointer; touch-action: manipulation; }
-.sq.light { background: #e3c08d; }
-.sq.dark { background: #472712; }
-.sq.selected { background: #ffd166 !important; }
-.sq.target:after { content: ''; width: 32%; height: 32%; border-radius: 50%; background: #2ecc71; }
-.sq.capture:after { content: ''; width: 42%; height: 42%; border-radius: 50%; background: #ff6b81; }
+.sq {
+  display: grid;
+  place-items: center;
+  position: relative;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.sq.light { background: #e5c396; }
+.sq.dark { background: #573319; }
+.sq.selected { background: #e1b12c !important; }
+.sq.target:after {
+  content: '';
+  width: 32%;
+  height: 32%;
+  border-radius: 50%;
+  background: #2ecc71;
+  box-shadow: 0 0 8px #2ecc71;
+}
+.sq.capture:after {
+  content: '';
+  width: 42%;
+  height: 42%;
+  border-radius: 50%;
+  background: #ff4757;
+  box-shadow: 0 0 8px #ff4757;
+}
 
 .piece {
   width: 82%;
   height: 82%;
   border-radius: 50%;
-  box-shadow: inset 0 3px 6px rgba(255,255,255,0.4), 0 4px 6px rgba(0,0,0,0.6);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.5), inset 0 -3px 4px rgba(0,0,0,0.3);
   display: grid;
   place-items: center;
   font-size: 1.1rem;
   position: relative;
 }
-
 .king:after {
   content: '♛';
   font-size: clamp(12px, 3vw, 20px);
   position: absolute;
+  bottom: 2px;
+  right: 2px;
   color: #ffd166;
-  text-shadow: 0 1px 3px #000;
+  text-shadow: 0 1px 2px #000;
 }
 
-.bottom-game-bar {
+/* Bottom Controls in Arena */
+.arena-bottom-controls {
   width: 100%;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 8px 5px 2px;
+  justify-content: space-between;
+  padding: 0 8px;
+  margin-top: 4px;
 }
-
-.action-circle-btn {
-  width: 44px;
-  height: 44px;
+.round-control-btn {
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  border: 2px solid #fef08a;
+  background: linear-gradient(135deg, #f7a838, #e08b1a);
+  border: 2px solid #ffca45;
   color: #111;
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   display: grid;
   place-items: center;
   cursor: pointer;
   box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-  transition: transform 0.2s;
+  transition: transform 0.15s;
 }
-
-.action-circle-btn:hover { transform: scale(1.05); }
+.round-control-btn:active { transform: scale(0.92); }
 
 /* In-game Visual Effects */
 .fx-pink{box-shadow:0 0 15px #ff9ff3,0 0 28px #f368e0!important}
@@ -216,13 +225,13 @@ main{flex:1;display:grid;place-items:center;min-height:400px}.lobby{width:min(10
 @keyframes pulseFire{0%{filter:brightness(1)}100%{filter:brightness(1.4)}}
 @keyframes pulseLight{0%{opacity:0.7}100%{opacity:1}}
 
-.status{text-align:center;color:var(--gold);min-height:22px;font-size:1.05rem;font-weight:600;}
+.status{text-align:center;color:var(--gold);font-size:1rem;font-weight:700}
 
-#clockPanel{display:flex;align-items:center;justify-content:center;gap:10px;padding:2px 10px}
-#clockRing{--progress:100;width:52px;height:52px;border-radius:50%;display:grid;place-items:center;position:relative;background:conic-gradient(var(--gold) calc(var(--progress)*1%),#ffffff18 0);box-shadow:0 0 15px #ffd16635;transition:background .18s linear,box-shadow .2s}
-#clockRing:before{content:'';position:absolute;inset:5px;border-radius:50%;background:#111a31;border:1px solid #ffffff20}
-#turnClock{position:relative;z-index:1;font-size:1.2rem;font-weight:800;font-variant-numeric:tabular-nums;color:var(--gold)}
-#clockCaption{font-size:.85rem;color:var(--dim)}
+#clockPanel{display:flex;flex-direction:column;align-items:center;gap:4px}
+#clockRing{--progress:100;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;position:relative;background:conic-gradient(var(--gold) calc(var(--progress)*1%),#ffffff18 0);box-shadow:0 0 14px #ffd16635;transition:background .18s linear,box-shadow .2s}
+#clockRing:before{content:'';position:absolute;inset:5px;border-radius:50%;background:#170406;border:1px solid #ffffff20}
+#turnClock{position:relative;z-index:1;font-size:1.3rem;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:1px;color:var(--gold)}
+#clockCaption{font-size:.8rem;color:var(--dim)}
 #clockRing.urgent{animation:clockPulse .65s ease-in-out infinite;box-shadow:0 0 22px #ff6b8180}
 #clockRing.urgent #turnClock{color:var(--red)}
 @keyframes clockPulse{50%{transform:scale(1.07);filter:brightness(1.25)}}
@@ -261,8 +270,9 @@ input:focus{border-color:var(--gold);box-shadow:0 0 10px rgba(255,209,102,0.3)}
 #connection{font-size:.8rem;color:#4ade80}
 footer{font-size:.85rem;color:var(--dim)}
 
-/* Responsive game lobby */
-.app{min-height:100dvh;max-width:760px;padding:16px 22px 112px;gap:14px}
+/* Reference-inspired responsive game lobby */
+html,body{min-height:100%;background:radial-gradient(ellipse at 50% 15%,#32384b 0,#1a2032 46%,#080d1b 100%);color:#fff}
+body{padding:0}.app{min-height:100dvh;max-width:760px;padding:16px 22px 112px;gap:14px}
 .home-top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:2px 0 18px}
 .profile-float{position:static;z-index:1;background:transparent;border:0;border-radius:0;padding:0;display:flex;align-items:center;gap:12px;cursor:pointer;box-shadow:none}
 .profile-float:hover{transform:none;background:transparent}
@@ -284,28 +294,17 @@ footer{font-size:.85rem;color:var(--dim)}
 .bottom-nav{position:fixed;z-index:50;left:50%;bottom:12px;transform:translateX(-50%);width:min(calc(100% - 28px),720px);min-height:86px;border:2px solid #665d49;border-radius:28px;background:rgba(14,21,39,.96);display:flex;align-items:center;justify-content:space-around;padding:8px 5px;box-shadow:0 8px 24px #0009;backdrop-filter:blur(12px)}
 .nav-item{background:none;border:0;color:#aab4c7;text-decoration:none;display:flex;flex:1;min-width:0;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:.95rem;font-weight:700;cursor:pointer}
 .nav-item i{font-size:2rem}.nav-item.active{color:#ffd166}.nav-item span{line-height:1.1}
-.modalbox{max-height:86dvh}.profile-summary{text-align:center;padding:12px 10px 16px;border:1px solid #ffffff20;border-radius:16px;background:#ffffff08}
-.profile-avatar-large{width:74px;height:74px;margin:0 auto 8px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe08a,#ffad62);color:#18213e;border:3px solid #ffd166;font-size:2rem}
-.profile-summary h2{font-size:1.5rem;color:#fff}.profile-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
-.profile-stats>div{display:grid;gap:2px;background:#0003;border-radius:10px;padding:8px}
-.profile-stats b{font-size:1.3rem;color:#ffd166}.profile-stats small{font-size:.75rem;color:#aab4c7}
-#profileModal .modalbox,#friendsModal .modalbox{width:min(100%,520px)}.list{max-height:45vh}
 
+/* Mobile Adjustments */
+html{width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%;}
+body{width:100%;overflow-x:hidden;overscroll-behavior-x:none;}
+button,a,input{touch-action:manipulation;}
 @media (max-width:600px){
  .app{padding:12px 14px calc(98px + env(safe-area-inset-bottom));gap:12px;}
- .home-top{gap:8px;padding:2px 0 8px;}
- .avatar{width:58px;height:58px;font-size:1.55rem;border-width:3px;flex:0 0 auto;}
- #headerName{font-size:clamp(.95rem,4vw,1.15rem);overflow-wrap:anywhere;}
- .pro-label{font-size:.78rem;}
- .coin-pill{min-width:0;gap:7px;padding:5px 7px 5px 10px;}
- .coin-pill>i{font-size:1.25rem;}
- .coin-pill b{font-size:1.15rem;}
- .coin-pill button{width:34px;height:34px;font-size:1.35rem;flex:0 0 auto;}
- .lobby{gap:12px;}
- .reward-banner{min-height:76px;padding:12px 10px;border-radius:20px;font-size:clamp(1.2rem,5.5vw,1.55rem);gap:10px;}
- .mode{min-height:120px;border-radius:22px;padding:16px 18px;}
- .bottom-nav{width:calc(100% - 18px);min-height:68px;padding:5px 2px;border-radius:20px;}
- .arena{max-width:100%; min-height: auto;}
+ .arena{width:100%;padding:12px 10px 16px;border-radius:22px;}
+ .player-avatar-sq{width:50px;height:50px;font-size:1.5rem;}
+ .center-coin-val{font-size:1.25rem;}
+ .game-title-header{font-size:1.15rem;}
 }
 </style>
 </head>
@@ -320,10 +319,12 @@ footer{font-size:.85rem;color:var(--dim)}
  </div>
  <div class="coin-pill"><i class="fa-solid fa-coins"></i><b><span id="points">500</span></b><button id="coinShop" aria-label="Shop">+</button></div>
 </div>
+
 <header class="legacy-header">
 <div class="brand"><i class="fa-solid fa-chess-board"></i> ශ්‍රී ලංකා දාම්</div>
 <button class="btn" id="logout">Logout</button>
 </header>
+
 <main>
 <section class="lobby" id="lobby">
 <button class="reward-banner" id="collectRewards"><i class="fa-solid fa-shield-halved"></i> Collect Rewards</button>
@@ -335,52 +336,46 @@ footer{font-size:.85rem;color:var(--dim)}
 <div id="connection">● Firebase සම්බන්ධ වෙමින්...</div>
 </section>
 
-<!-- ඡායාරූපය පරිදි නව Gameplay / Arena UI -->
+<!-- NEW ARENA SECTION DESIGNED ACCORDING TO THE SCREENSHOT -->
 <section class="arena" id="arena" style="display:none">
-  <div class="top-match-header">
-    <div class="match-player player" id="p1">
-      <div class="avatar-box">
-        <i class="fa-solid fa-user" style="font-size: 1.5rem; color: #f59e0b;"></i>
-      </div>
-      <span class="player-name" id="p1name">ඔබ</span>
-      <span class="player-score" id="p1sub">0/115</span>
-    </div>
-
-    <div class="match-pot">
-      <i class="fa-solid fa-coins"></i>
-      <span class="pot-amount" id="matchBetDisplay">400</span>
-    </div>
-
-    <div class="match-player player" id="p2">
-      <div class="avatar-box">
-        <i class="fa-solid fa-user-ninja" style="font-size: 1.5rem; color: #ec4899;"></i>
-      </div>
-      <span class="player-name" id="p2name">ප්‍රතිවාදියා</span>
-      <span class="player-score" id="p2sub">0/115</span>
-    </div>
+ <div class="arena-top-bar">
+  <div class="player-box" id="p1">
+   <div class="player-avatar-sq" id="p1Avatar"><i class="fa-solid fa-user"></i></div>
+   <div class="player-name-txt" id="p1name">ඔබ</div>
+   <div class="player-score-txt" id="p1sub">0/115</div>
+  </div>
+  
+  <div class="center-coin-box">
+   <div style="display:flex;align-items:center;gap:4px">
+    <i class="fa-solid fa-coins" style="color:#ffd166;font-size:1.5rem"></i>
+   </div>
+   <div class="center-coin-val" id="arenaBetPoints">100</div>
   </div>
 
-  <div class="game-title-text">Checkers Game</div>
-
-  <div class="board-wrap">
-    <div class="board" id="board"></div>
+  <div class="player-box p-pink" id="p2">
+   <div class="player-avatar-sq" id="p2Avatar"><i class="fa-solid fa-user-ninja"></i></div>
+   <div class="player-name-txt" id="p2name">ප්‍රතිවාදියා</div>
+   <div class="player-score-txt" id="p2sub">0/115</div>
   </div>
+ </div>
 
-  <div class="status" id="gameStatus" style="margin-top: 6px;"></div>
+ <div class="game-title-header">Checkers Game</div>
 
-  <div id="clockPanel">
-    <div id="clockRing" role="timer"><span id="turnClock">10</span></div>
-    <span id="clockCaption">ඉතිරි කාලය</span>
-  </div>
+ <div class="board-wrap">
+  <div class="board" id="board"></div>
+ </div>
 
-  <div class="bottom-game-bar">
-    <button class="action-circle-btn" id="chatBtn" title="පණිවිඩ යවන්න">
-      <i class="fa-solid fa-comment-dots"></i>
-    </button>
-    <button class="action-circle-btn" id="forfeit" title="තරඟයෙන් ඉවත් වන්න">
-      <i class="fa-solid fa-bars"></i>
-    </button>
-  </div>
+ <div class="status" id="gameStatus">ඔබගේ වාරය</div>
+
+ <div id="clockPanel">
+  <div id="clockRing" role="timer" aria-live="off"><span id="turnClock">10</span></div>
+  <span id="clockCaption">ඉතිරි කාලය</span>
+ </div>
+
+ <div class="arena-bottom-controls">
+  <button class="round-control-btn" id="chatBtn" title="Chat"><i class="fa-solid fa-comment-dots"></i></button>
+  <button class="round-control-btn" id="forfeit" title="Menu / Exit"><i class="fa-solid fa-bars"></i></button>
+ </div>
 </section>
 </main>
 
@@ -394,7 +389,7 @@ footer{font-size:.85rem;color:var(--dim)}
 <button id="home" hidden>Home</button>
 </div>
 
-<!-- Modals -->
+<!-- Single Player Bet Select Modal -->
 <div class="modal" id="singleBetModal">
 <div class="modalbox">
 <h3 style="color:var(--gold)">Single Player - ඔට්ටු තැබීම</h3>
@@ -407,6 +402,7 @@ footer{font-size:.85rem;color:var(--dim)}
 </div>
 </div>
 
+<!-- Profile Modal -->
 <div class="modal" id="profileModal">
 <div class="modalbox">
 <div class="row"><h3 style="flex:1">PLAYER PROFILE</h3><button class="btn" id="closeProfile">×</button></div>
@@ -429,6 +425,7 @@ footer{font-size:.85rem;color:var(--dim)}
 </div>
 </div>
 
+<!-- Multiplayer Bet Modal -->
 <div class="modal" id="betModal">
 <div class="modalbox">
 <h3 style="color:var(--gold)">Multiplayer - ඔට්ටු තැබීම (Step 1)</h3>
@@ -441,6 +438,7 @@ footer{font-size:.85rem;color:var(--dim)}
 </div>
 </div>
 
+<!-- Multiplayer Friends Modal -->
 <div class="modal" id="multiModal">
 <div class="modalbox">
 <div class="row"><h3 style="flex:1">ඔන්ලයින් යහළුවන් (Step 2)</h3><button class="btn" id="closeMulti">×</button></div>
@@ -452,6 +450,7 @@ footer{font-size:.85rem;color:var(--dim)}
 </div>
 </div>
 
+<!-- Friends / invited opponents -->
 <div class="modal" id="friendsModal">
  <div class="modalbox">
   <div class="row"><h3 style="flex:1">FRIENDS</h3><button class="btn" id="closeFriends">×</button></div>
@@ -461,6 +460,7 @@ footer{font-size:.85rem;color:var(--dim)}
  </div>
 </div>
 
+<!-- Universal Alert Modal -->
 <div class="modal" id="customAlertModal">
 <div class="modalbox alert-box-content">
 <div id="customAlertIcon" class="alert-icon info"><i class="fa-solid fa-circle-info"></i></div>
@@ -472,6 +472,7 @@ footer{font-size:.85rem;color:var(--dim)}
 </div>
 </div>
 
+<!-- Loading Modal -->
 <div class="modal show" id="loadingModal">
 <div class="modalbox" style="text-align:center; display:grid; place-items:center; gap:14px; padding:30px;">
 <div style="width:48px;height:48px;border:4px solid #ffffff20;border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite"></div>
@@ -520,11 +521,10 @@ let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:
 let userSide = 1; 
 let nextStartingSide = 1; 
 
-/* ඡායාරූපයට ගැළපෙන පරිදි සුදු සහ රතු ඉත්තන්ගේ Designs සකස් කර ඇත */
 const PIECE_DESIGNS=[
- {name:'සුදු මැණික්',bg:'radial-gradient(circle at 35% 35%, #ffffff, #dedede, #b0b0b0)',border:'#999999',color:'#2d3436',icon:''},
- {name:'රතු මැණික්',bg:'radial-gradient(circle at 35% 35%, #ff5252, #c62828, #8e0000)',border:'#5f0000',color:'#fff',icon:''},
+ {name:'මුතු සුදු',bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●'},
  {name:'රන් ඔටුන්න',bg:'linear-gradient(135deg,#ffeaa7,#fdcb6e)',border:'#e1b12c',color:'#2d3436',icon:'★'},
+ {name:'රුධිර රතු',bg:'radial-gradient(circle at 30% 30%,#ff7675,#d63031)',border:'#c0392b',color:'#fff',icon:'◆'},
  {name:'මරකත කොළ',bg:'radial-gradient(circle at 30% 30%,#55efc4,#00b894)',border:'#00a8ff',color:'#fff',icon:'▲'},
  {name:'අහස් නිල්',bg:'radial-gradient(circle at 30% 30%,#74b9ff,#0984e3)',border:'#0066cc',color:'#fff',icon:'■'},
  {name:'දම් රැජින',bg:'radial-gradient(circle at 30% 30%,#a29bfe,#6c5ce7)',border:'#4834d4',color:'#fff',icon:'✿'},
@@ -857,13 +857,9 @@ function initBoard(){
 
  if(single){
   userSide = nextStartingSide; 
-  $('p1sub').textContent = userSide === 1 ? '0/115' : '0/115';
-  $('p2sub').textContent = userSide === 1 ? '0/115' : '0/115';
- }
- if($('matchBetDisplay')) {
-  $('matchBetDisplay').textContent = (window.currentBetPoints || 50) * 2;
  }
  render();
+ updateScores();
  setTurnUI();
  if(single && turn !== userSide){ aiTimer=setTimeout(aiMove, 600); }
 }
@@ -929,6 +925,19 @@ function allMoves(side,b=board){
  return caps.length?caps:normal;
 }
 
+function updateScores(){
+ let p1Captured = 0, p2Captured = 0;
+ for(let r=0;r<8;r++){
+  for(let c=0;c<8;c++){
+   if(board[r][c] === -1 || board[r][c] === -2) p1Captured++;
+   if(board[r][c] === 1 || board[r][c] === 2) p2Captured++;
+  }
+ }
+ $('p1sub').textContent = (12 - p1Captured) + "/115";
+ $('p2sub').textContent = (12 - p2Captured) + "/115";
+ $('arenaBetPoints').textContent = window.currentBetPoints || 100;
+}
+
 function render(){
  const el=$('board');
  el.innerHTML='';
@@ -951,21 +960,21 @@ function render(){
     const val=board[r][c];
     const p=document.createElement('div');
     
-    let pieceDesignIndex = val > 0 ? 0 : 1; 
+    let pieceDesignIndex = 0;
     let appliedEffect = '';
 
     if(single){
      const isUser = (Math.sign(val) === userSide);
-     if(isUser && user.pieceIndex) pieceDesignIndex = user.pieceIndex;
+     pieceDesignIndex = isUser ? (user.pieceIndex || 0) : 2; // Default Red for Opponent
      if(isUser) appliedEffect = user.selectedEffect || '';
     } else {
      const isHostPiece = (Math.sign(val) === 1);
-     pieceDesignIndex = isHostPiece ? (window.hostPieceIndex || 0) : (window.guestPieceIndex || 1);
+     pieceDesignIndex = isHostPiece ? (window.hostPieceIndex || 0) : (window.guestPieceIndex || 2);
      if(role === 'host' && isHostPiece) appliedEffect = user.selectedEffect || '';
      if(role === 'guest' && !isHostPiece) appliedEffect = user.selectedEffect || '';
     }
     
-    const design = PIECE_DESIGNS[pieceDesignIndex] || (val > 0 ? PIECE_DESIGNS[0] : PIECE_DESIGNS[1]);
+    const design = PIECE_DESIGNS[pieceDesignIndex] || PIECE_DESIGNS[0];
     let fxClass = '';
     if(appliedEffect){
      const fxObj = AVAILABLE_EFFECTS.find(x=>x.id === appliedEffect);
@@ -997,6 +1006,7 @@ function render(){
    el.appendChild(sq);
   }
  }
+ updateScores();
 }
 
 function clickSquare(r,c){
@@ -1081,12 +1091,12 @@ async function playMove(m){
 
 function setTurnUI(){ 
  if(single){
-  $('p1').classList.toggle('active', turn===userSide);
-  $('p2').classList.toggle('active', turn!==userSide);
+  $('p1').style.opacity = turn===userSide ? '1' : '0.6';
+  $('p2').style.opacity = turn!==userSide ? '1' : '0.6';
   $('gameStatus').textContent = turn===userSide ? 'ඔබගේ වාරය' : 'AI පරිගණකයේ වාරය';
  }else{
-  $('p1').classList.toggle('active', turn===1);
-  $('p2').classList.toggle('active', turn===-1);
+  $('p1').style.opacity = turn===1 ? '1' : '0.6';
+  $('p2').style.opacity = turn===-1 ? '1' : '0.6';
   $('gameStatus').textContent = turn===(role==='host'?1:-1)?'ඔබගේ වාරය':'ප්‍රතිවාදියාගේ වාරය';
  }
  startTurnClock(Date.now()+10000);
@@ -1236,9 +1246,8 @@ function listenRoom(){
   $('p1name').textContent=d.hostName||'Host';
   $('p2name').textContent=d.guestName||'Guest';
   window.currentBetPoints = Number(d.betPoints) || 10;
-  if($('matchBetDisplay')) $('matchBetDisplay').textContent = window.currentBetPoints * 2;
   window.hostPieceIndex = Number(d.hostPieceIndex) || 0;
-  window.guestPieceIndex = Number(d.guestPieceIndex) || 1;
+  window.guestPieceIndex = Number(d.guestPieceIndex) || 0;
   
   if(d.status==='waiting'){
    clearInterval(turnClockTimer);
@@ -1315,8 +1324,8 @@ function listenRoom(){
 }
 
 function setTurnUIRoom(){ 
- $('p1').classList.toggle('active',turn===1);
- $('p2').classList.toggle('active',turn===-1);
+ $('p1').style.opacity = turn===1 ? '1' : '0.6';
+ $('p2').style.opacity = turn===-1 ? '1' : '0.6';
  $('gameStatus').textContent=turn===(role==='host'?1:-1)?'ඔබගේ වාරය':'ප්‍රතිවාදියාගේ වාරය';
 }
 
@@ -1420,7 +1429,7 @@ function listenInvites(){
      
      window.currentBetPoints = betVal;
      await roomRefSnap.update({
-      guestPieceIndex: user.pieceIndex || 1,
+      guestPieceIndex: user.pieceIndex || 0,
       status:'playing',
       startedAt:Date.now(),
       turnStartedAt:Date.now(),
@@ -1532,7 +1541,7 @@ $('closeFriends').onclick=()=>{stopFriendsPresence();modal('friendsModal',false)
 $('findFriends').onclick=()=>{stopFriendsPresence();modal('friendsModal',false);$('maxUserPoints').textContent=user.points;$('betAmountInput').value=Math.min(50,user.points);modal('betModal',true)};
 $('collectRewards').onclick=()=>location.href='shopandreward.html';
 $('coinShop').onclick=()=>location.href='shopandreward.html';
-$('freestyle').onclick=()=>{window.currentBetPoints=0;window.practiceMode=true;single=true;roomId=null;role=null;nextStartingSide=1;$('lobby').style.display='none';$('arena').style.display='flex';$('p1name').textContent=user.name||'ඔබ';$('p2name').textContent='AI පරිගණකය (Practice)';initBoard()};
+$('freestyle').onclick=()=>{window.currentBetPoints=0;window.practiceMode=true;single=true;roomId=null;role=null;nextStartingSide=1;$('lobby').style.display='none';$('arena').style.display='flex';$('p1name').textContent=user.name||'ඔබ';$('p2name').textContent='AI (Practice)';initBoard()};
 $('single').onclick=()=>{
  $('maxSinglePoints').textContent = user.points;
  $('singleBetInput').value = Math.min(50, user.points);
@@ -1553,7 +1562,7 @@ $('startSingleGame').onclick=()=>{
  $('lobby').style.display='none';
  $('arena').style.display='flex';
  $('p1name').textContent=user.name||'ඔබ';
- $('p2name').textContent='AI පරිගණකය (Hard)';
+ $('p2name').textContent='AI පරිගණකය (Practice)';
  initBoard();
 };
 
@@ -1623,6 +1632,10 @@ $('forfeit').onclick=()=>{
   'නැත (Cancel)',
   'ඔව් (Yes)'
  );
+};
+
+$('chatBtn').onclick=()=>{
+ toast('Chat පහසුකම ළඟදීම...', 'fa-comment-dots');
 };
 
 $('rematch').onclick=async()=>{
