@@ -13,6 +13,11 @@ body{min-height:100dvh}.app{min-height:100dvh;max-width:1100px;margin:auto;paddi
 header,footer,.panel,.lobby,.side{background:var(--panel);border:1px solid #ffd16640;border-radius:15px;padding:10px 14px}
 header,footer{display:flex;align-items:center;justify-content:space-between;gap:10px}header{min-height:58px}.brand{font-size:1.25rem;color:var(--gold);font-weight:800}
 
+/* Profile Card */
+.profile-float{position:fixed;bottom:20px;right:20px;z-index:15;background:var(--panel);border:2px solid var(--gold);border-radius:14px;padding:8px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:0 4px 15px rgba(0,0,0,0.5);transition:.2s}
+.profile-float:hover{transform:scale(1.03);background:rgba(28,36,60,.98)}
+.avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe08a,#ff8db5,#7ee7ff);color:#18213e;font-size:1.1rem}
+
 .btn,.btn-gold,.btn-outline{border:0;border-radius:9px;padding:9px 13px;cursor:pointer;font-weight:700;transition:.2s;text-decoration:none;display:inline-flex;align-items:center;gap:6px;justify-content:center}
 .btn,.btn-outline{background:#ffffff12;color:white;border:1px solid #ffffff30}.btn:hover{background:#ffffff20}
 .btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111}.btn-gold:hover{filter:brightness(1.1)}
@@ -20,8 +25,181 @@ header,footer{display:flex;align-items:center;justify-content:space-between;gap:
 
 main{flex:1;display:grid;place-items:center;min-height:400px}.lobby{width:min(100%,550px);padding:22px;display:grid;gap:16px}.lobby h2{text-align:center;color:var(--gold)}.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.mode{padding:22px 10px;border:1px solid #ffffff25;border-radius:12px;text-align:center;background:#ffffff08;cursor:pointer;transition:.2s}.mode:hover{border-color:var(--gold);background:#ffffff12}.mode i{font-size:2rem;color:var(--gold);display:block;margin-bottom:8px}
 
-.piece{width:78%;height:78%;border-radius:50%;box-shadow:0 4px 8px rgba(0,0,0,0.4);display:grid;place-items:center;font-size:1.1rem;position:relative}
-.king:after{content:'♛';font-size:clamp(12px,3vw,20px);position:absolute;bottom:2px;right:2px;color:#ffd166;text-shadow:0 1px 2px #000}
+/* --- ඡායාරූපය පරිදි නව Arena / Gameplay UI --- */
+.arena {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 85vh;
+  background: radial-gradient(circle at center, #521115 0%, #200406 100%);
+  padding: 15px 12px;
+  border-radius: 20px;
+  box-shadow: inset 0 0 40px rgba(0,0,0,0.8), 0 10px 25px rgba(0,0,0,0.6);
+  position: relative;
+  border: 1px solid #731e24;
+}
+
+.top-match-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+  margin-bottom: 5px;
+}
+
+.match-player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 90px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+
+.match-player .avatar-box {
+  width: 58px;
+  height: 58px;
+  border-radius: 12px;
+  border: 2px solid #ffd166;
+  background: #111;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.match-player .player-name {
+  font-size: 0.95rem;
+  font-weight: bold;
+  color: #fff;
+  margin-top: 4px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.match-player .player-score {
+  font-size: 0.9rem;
+  color: #e2e8f0;
+  margin-top: 2px;
+}
+
+.match-player.active .avatar-box {
+  border-color: #ffd166;
+  box-shadow: 0 0 15px #ffd166aa;
+}
+
+.match-pot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: 50%;
+  top: 0px;
+  transform: translateX(-50%);
+}
+
+.match-pot i {
+  font-size: 2.2rem;
+  color: #f59e0b;
+  filter: drop-shadow(0 2px 5px rgba(0,0,0,0.6));
+}
+
+.match-pot .pot-amount {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+}
+
+.game-title-text {
+  color: #eec88b;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 6px 0 10px;
+  text-shadow: 0 2px 4px #000;
+  letter-spacing: 0.5px;
+}
+
+.board-wrap {
+  width: 100%;
+  aspect-ratio: 1;
+  position: relative;
+  margin: 0 auto;
+  border: 12px solid #8d5631;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 0 10px rgba(0,0,0,0.5);
+  background: #8d5631;
+}
+
+.board {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  border: 2px solid #542d13;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.sq { display: grid; place-items: center; position: relative; cursor: pointer; touch-action: manipulation; }
+.sq.light { background: #e3c08d; }
+.sq.dark { background: #472712; }
+.sq.selected { background: #ffd166 !important; }
+.sq.target:after { content: ''; width: 32%; height: 32%; border-radius: 50%; background: #2ecc71; }
+.sq.capture:after { content: ''; width: 42%; height: 42%; border-radius: 50%; background: #ff6b81; }
+
+.piece {
+  width: 82%;
+  height: 82%;
+  border-radius: 50%;
+  box-shadow: inset 0 3px 6px rgba(255,255,255,0.4), 0 4px 6px rgba(0,0,0,0.6);
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
+  position: relative;
+}
+
+.king:after {
+  content: '♛';
+  font-size: clamp(12px, 3vw, 20px);
+  position: absolute;
+  color: #ffd166;
+  text-shadow: 0 1px 3px #000;
+}
+
+.bottom-game-bar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 5px 2px;
+}
+
+.action-circle-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  border: 2px solid #fef08a;
+  color: #111;
+  font-size: 1.2rem;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  transition: transform 0.2s;
+}
+
+.action-circle-btn:hover { transform: scale(1.05); }
 
 /* In-game Visual Effects */
 .fx-pink{box-shadow:0 0 15px #ff9ff3,0 0 28px #f368e0!important}
@@ -38,14 +216,17 @@ main{flex:1;display:grid;place-items:center;min-height:400px}.lobby{width:min(10
 @keyframes pulseFire{0%{filter:brightness(1)}100%{filter:brightness(1.4)}}
 @keyframes pulseLight{0%{opacity:0.7}100%{opacity:1}}
 
-.close{position:absolute;right:-9px;top:-9px;border:2px solid white;border-radius:50%;width:32px;height:32px;background:#e74c3c;color:white;z-index:3;cursor:pointer;display:grid;place-items:center}
-.status{text-align:center;color:var(--gold);min-height:25px}
+.status{text-align:center;color:var(--gold);min-height:22px;font-size:1.05rem;font-weight:600;}
 
-#clockPanel{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:12px;padding:5px 10px}
-#clockRing{--progress:100;width:55px;height:55px;border-radius:50%;display:grid;place-items:center;position:relative;background:conic-gradient(var(--gold) calc(var(--progress)*1%),#ffffff18 0);box-shadow:0 0 18px #ffd16635;transition:background .18s linear,box-shadow .2s}
+#clockPanel{display:flex;align-items:center;justify-content:center;gap:10px;padding:2px 10px}
+#clockRing{--progress:100;width:52px;height:52px;border-radius:50%;display:grid;place-items:center;position:relative;background:conic-gradient(var(--gold) calc(var(--progress)*1%),#ffffff18 0);box-shadow:0 0 15px #ffd16635;transition:background .18s linear,box-shadow .2s}
 #clockRing:before{content:'';position:absolute;inset:5px;border-radius:50%;background:#111a31;border:1px solid #ffffff20}
-#turnClock{position:relative;z-index:1;font-size:1.2rem;font-weight:800;color:var(--gold)}
-#clockCaption{font-size:.85rem;color:#ddd}
+#turnClock{position:relative;z-index:1;font-size:1.2rem;font-weight:800;font-variant-numeric:tabular-nums;color:var(--gold)}
+#clockCaption{font-size:.85rem;color:var(--dim)}
+#clockRing.urgent{animation:clockPulse .65s ease-in-out infinite;box-shadow:0 0 22px #ff6b8180}
+#clockRing.urgent #turnClock{color:var(--red)}
+@keyframes clockPulse{50%{transform:scale(1.07);filter:brightness(1.25)}}
+@keyframes spin{to{transform:rotate(360deg)}}
 
 .modal{position:fixed;inset:0;background:rgba(5,8,20,0.8);backdrop-filter:blur(6px);display:none;place-items:center;z-index:100;padding:15px;animation:fadeIn .25s ease}
 .modal.show{display:grid}
@@ -80,11 +261,11 @@ input:focus{border-color:var(--gold);box-shadow:0 0 10px rgba(255,209,102,0.3)}
 #connection{font-size:.8rem;color:#4ade80}
 footer{font-size:.85rem;color:var(--dim)}
 
-/* Reference-inspired responsive game lobby & Carrom Arena Theme */
-html,body{min-height:100%;background:radial-gradient(ellipse at 50% 15%,#32384b 0,#1a2032 46%,#080d1b 100%);color:#fff}
-body{padding:0}.app{min-height:100dvh;max-width:760px;padding:16px 22px 112px;gap:14px}
+/* Responsive game lobby */
+.app{min-height:100dvh;max-width:760px;padding:16px 22px 112px;gap:14px}
 .home-top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:2px 0 18px}
 .profile-float{position:static;z-index:1;background:transparent;border:0;border-radius:0;padding:0;display:flex;align-items:center;gap:12px;cursor:pointer;box-shadow:none}
+.profile-float:hover{transform:none;background:transparent}
 .avatar{width:82px;height:82px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe08a,#ffb52e);color:#18213e;font-size:2rem;border:4px solid #ffca45;box-shadow:0 0 18px #ffbf3880}
 #headerName{font-size:1.25rem;color:#fff;font-weight:800}.pro-label{color:#ffd166;font-size:.95rem;font-weight:800;letter-spacing:.7px}
 .coin-pill{display:flex;align-items:center;gap:10px;border:2px solid #9b8245;border-radius:32px;background:#101522;padding:7px 10px 7px 16px;min-width:142px;justify-content:center;box-shadow:0 5px 15px #0005}
@@ -100,157 +281,32 @@ body{padding:0}.app{min-height:100dvh;max-width:760px;padding:16px 22px 112px;ga
 .mode-multi{background:linear-gradient(120deg,#08a85c,#32d27b)}.mode-multi:after{content:'⚔️'}
 .mode-free{background:linear-gradient(120deg,#f19a00,#d57a00)}.mode-free:after{content:'🎯'}
 #connection{margin:2px 4px;color:#9ca9c3!important}
-
 .bottom-nav{position:fixed;z-index:50;left:50%;bottom:12px;transform:translateX(-50%);width:min(calc(100% - 28px),720px);min-height:86px;border:2px solid #665d49;border-radius:28px;background:rgba(14,21,39,.96);display:flex;align-items:center;justify-content:space-around;padding:8px 5px;box-shadow:0 8px 24px #0009;backdrop-filter:blur(12px)}
 .nav-item{background:none;border:0;color:#aab4c7;text-decoration:none;display:flex;flex:1;min-width:0;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:.95rem;font-weight:700;cursor:pointer}
 .nav-item i{font-size:2rem}.nav-item.active{color:#ffd166}.nav-item span{line-height:1.1}
-
-/* --- Carrom / Photo Inspired Arena UI Styles --- */
-.arena {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 82vh;
-  padding: 12px 10px;
-  background: radial-gradient(circle at 50% 30%, #7a1515 0%, #3a0000 70%, #1f0000 100%);
-  border-radius: 24px;
-  box-shadow: inset 0 0 50px rgba(0,0,0,0.8), 0 8px 25px rgba(0,0,0,0.5);
-  position: relative;
-}
-
-.carrom-top-bar {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 4px;
-}
-
-.player-card {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.player-avatar-frame {
-  width: 52px;
-  height: 52px;
-  border-radius: 12px;
-  border: 2px solid #ffd166;
-  padding: 2px;
-  background: rgba(0,0,0,0.4);
-  box-shadow: 0 0 10px rgba(255, 209, 102, 0.4);
-}
-
-.player-avatar-frame .avatar {
-  width: 100%;
-  height: 100%;
-  border-radius: 8px;
-  font-size: 1.2rem;
-  border: none;
-  box-shadow: none;
-}
-
-.player-info {
-  display: flex;
-  flex-direction: column;
-  color: #fff;
-}
-.player-info.align-right { text-align: right; }
-.player-info b { font-size: 0.95rem; letter-spacing: 0.5px; }
-.player-score { font-size: 0.8rem; color: #d0d0d0; }
-
-.pot-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.pot-coins-icon { font-size: 1.6rem; color: #ffca28; filter: drop-shadow(0 3px 5px rgba(0,0,0,0.6)); }
-.pot-amount { font-size: 1.5rem; font-weight: 800; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
-
-.board-frame-outer {
-  position: relative;
-  padding: 12px;
-  background: linear-gradient(145deg, #7c3f20, #421e0d);
-  border: 4px solid #fca311;
-  border-radius: 22px;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.8), inset 0 0 15px rgba(0,0,0,0.7);
-  width: min(100%, min(55vh, 420px));
-  aspect-ratio: 1;
-  margin: 8px auto;
-}
-
-.corner-pocket {
-  position: absolute;
-  width: 24px;
-  height: 24px;
-  background: #111;
-  border: 2px solid #ff9f1c;
-  border-radius: 50%;
-  z-index: 2;
-}
-.corner-pocket.top-left { top: 5px; left: 5px; }
-.corner-pocket.top-right { top: 5px; right: 5px; }
-.corner-pocket.bottom-left { bottom: 5px; left: 5px; }
-.corner-pocket.bottom-right { bottom: 5px; right: 5px; }
-
-.board-wrap {
-  width: 100%;
-  height: 100%;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
-  position: relative;
-}
-
-.board {
-  width: 100%;
-  height: 100%;
-  display: grid;
-  grid-template-columns: repeat(8,1fr);
-  grid-template-rows: repeat(8,1fr);
-  border: none;
-  border-radius: 0;
-}
-
-.sq { display: grid; place-items: center; position: relative; cursor: pointer; touch-action: manipulation; }
-.sq.light { background: #e2c092; }
-.sq.dark { background: #8b5a2b; }
-.sq.selected { background: #ffd166!important; }
-.sq.target:after { content:''; width:32%; height:32%; border-radius:50%; background:#50e8ae }
-.sq.capture:after { content:''; width:42%; height:42%; border-radius:50%; background:#ff6b81 }
-
-.carrom-bottom-bar {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 10px;
-}
-
-.icon-circle-btn {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  border: 2px solid #ffd166;
-  background: linear-gradient(145deg, #ffb703, #fb8500);
-  color: #1a0000;
-  font-size: 1.25rem;
-  cursor: pointer;
-  display: grid;
-  place-items: center;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-  transition: transform 0.2s;
-}
-.icon-circle-btn:hover { transform: scale(1.08); }
-
-.profile-summary{text-align:center;padding:12px 10px 16px;border:1px solid #ffffff20;border-radius:16px;background:#ffffff08}
+.modalbox{max-height:86dvh}.profile-summary{text-align:center;padding:12px 10px 16px;border:1px solid #ffffff20;border-radius:16px;background:#ffffff08}
 .profile-avatar-large{width:74px;height:74px;margin:0 auto 8px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe08a,#ffad62);color:#18213e;border:3px solid #ffd166;font-size:2rem}
-.profile-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.profile-summary h2{font-size:1.5rem;color:#fff}.profile-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
 .profile-stats>div{display:grid;gap:2px;background:#0003;border-radius:10px;padding:8px}
 .profile-stats b{font-size:1.3rem;color:#ffd166}.profile-stats small{font-size:.75rem;color:#aab4c7}
+#profileModal .modalbox,#friendsModal .modalbox{width:min(100%,520px)}.list{max-height:45vh}
+
+@media (max-width:600px){
+ .app{padding:12px 14px calc(98px + env(safe-area-inset-bottom));gap:12px;}
+ .home-top{gap:8px;padding:2px 0 8px;}
+ .avatar{width:58px;height:58px;font-size:1.55rem;border-width:3px;flex:0 0 auto;}
+ #headerName{font-size:clamp(.95rem,4vw,1.15rem);overflow-wrap:anywhere;}
+ .pro-label{font-size:.78rem;}
+ .coin-pill{min-width:0;gap:7px;padding:5px 7px 5px 10px;}
+ .coin-pill>i{font-size:1.25rem;}
+ .coin-pill b{font-size:1.15rem;}
+ .coin-pill button{width:34px;height:34px;font-size:1.35rem;flex:0 0 auto;}
+ .lobby{gap:12px;}
+ .reward-banner{min-height:76px;padding:12px 10px;border-radius:20px;font-size:clamp(1.2rem,5.5vw,1.55rem);gap:10px;}
+ .mode{min-height:120px;border-radius:22px;padding:16px 18px;}
+ .bottom-nav{width:calc(100% - 18px);min-height:68px;padding:5px 2px;border-radius:20px;}
+ .arena{max-width:100%; min-height: auto;}
+}
 </style>
 </head>
 <body>
@@ -264,12 +320,10 @@ body{padding:0}.app{min-height:100dvh;max-width:760px;padding:16px 22px 112px;ga
  </div>
  <div class="coin-pill"><i class="fa-solid fa-coins"></i><b><span id="points">500</span></b><button id="coinShop" aria-label="Shop">+</button></div>
 </div>
-
 <header class="legacy-header">
 <div class="brand"><i class="fa-solid fa-chess-board"></i> ශ්‍රී ලංකා දාම්</div>
 <button class="btn" id="logout">Logout</button>
 </header>
-
 <main>
 <section class="lobby" id="lobby">
 <button class="reward-banner" id="collectRewards"><i class="fa-solid fa-shield-halved"></i> Collect Rewards</button>
@@ -281,56 +335,51 @@ body{padding:0}.app{min-height:100dvh;max-width:760px;padding:16px 22px 112px;ga
 <div id="connection">● Firebase සම්බන්ධ වෙමින්...</div>
 </section>
 
-<!-- Updated Arena UI matching Carrom Layout -->
+<!-- ඡායාරූපය පරිදි නව Gameplay / Arena UI -->
 <section class="arena" id="arena" style="display:none">
-  <div class="carrom-top-bar">
-    <div class="player-card" id="p1">
-      <div class="player-avatar-frame">
-        <div class="avatar" id="p1Avatar"><i class="fa-solid fa-user"></i></div>
+  <div class="top-match-header">
+    <div class="match-player player" id="p1">
+      <div class="avatar-box">
+        <i class="fa-solid fa-user" style="font-size: 1.5rem; color: #f59e0b;"></i>
       </div>
-      <div class="player-info">
-        <b id="p1name">ඔබ</b>
-        <span class="player-score" id="p1sub">සුදු (White)</span>
-      </div>
+      <span class="player-name" id="p1name">ඔබ</span>
+      <span class="player-score" id="p1sub">0/115</span>
     </div>
 
-    <div class="pot-container">
-      <div class="pot-coins-icon"><i class="fa-solid fa-coins"></i></div>
-      <div class="pot-amount" id="potPoints">400</div>
+    <div class="match-pot">
+      <i class="fa-solid fa-coins"></i>
+      <span class="pot-amount" id="matchBetDisplay">400</span>
     </div>
 
-    <div class="player-card" id="p2">
-      <div class="player-info align-right">
-        <b id="p2name">ප්‍රතිවාදියා</b>
-        <span class="player-score" id="p2sub">රතු (Red)</span>
+    <div class="match-player player" id="p2">
+      <div class="avatar-box">
+        <i class="fa-solid fa-user-ninja" style="font-size: 1.5rem; color: #ec4899;"></i>
       </div>
-      <div class="player-avatar-frame">
-        <div class="avatar" id="p2Avatar"><i class="fa-solid fa-robot"></i></div>
-      </div>
+      <span class="player-name" id="p2name">ප්‍රතිවාදියා</span>
+      <span class="player-score" id="p2sub">0/115</span>
     </div>
   </div>
 
-  <div class="board-frame-outer">
-    <div class="corner-pocket top-left"></div>
-    <div class="corner-pocket top-right"></div>
-    <div class="corner-pocket bottom-left"></div>
-    <div class="corner-pocket bottom-right"></div>
-    
-    <div class="board-wrap">
-      <div class="board" id="board"></div>
-    </div>
+  <div class="game-title-text">Checkers Game</div>
+
+  <div class="board-wrap">
+    <div class="board" id="board"></div>
   </div>
 
-  <div class="status" id="gameStatus"></div>
+  <div class="status" id="gameStatus" style="margin-top: 6px;"></div>
 
   <div id="clockPanel">
-    <div id="clockRing" role="timer" aria-live="off"><span id="turnClock">10</span></div>
+    <div id="clockRing" role="timer"><span id="turnClock">10</span></div>
     <span id="clockCaption">ඉතිරි කාලය</span>
   </div>
 
-  <div class="carrom-bottom-bar">
-    <button class="icon-circle-btn" id="chatBtn" title="Chat"><i class="fa-solid fa-comment-dots"></i></button>
-    <button class="icon-circle-btn" id="forfeit" title="Menu"><i class="fa-solid fa-bars"></i></button>
+  <div class="bottom-game-bar">
+    <button class="action-circle-btn" id="chatBtn" title="පණිවිඩ යවන්න">
+      <i class="fa-solid fa-comment-dots"></i>
+    </button>
+    <button class="action-circle-btn" id="forfeit" title="තරඟයෙන් ඉවත් වන්න">
+      <i class="fa-solid fa-bars"></i>
+    </button>
   </div>
 </section>
 </main>
@@ -372,8 +421,10 @@ body{padding:0}.app{min-height:100dvh;max-width:760px;padding:16px 22px 112px;ga
 </div>
 <p style="font-size:.9rem;color:var(--dim)">දාම් ඉත්තන්ගේ මෝස්තර (Piece Designs):</p>
 <div class="pieces-grid" id="piecesGrid"></div>
+
 <p style="font-size:.9rem;color:var(--gold);margin-top:10px">මිලදීගත් විශේෂ Effects (Special Effects):</p>
 <div class="pieces-grid" id="effectsGrid"></div>
+
 <button class="btn-gold" id="saveProfile" style="margin-top:10px">සුරකින්න (Save)</button>
 </div>
 </div>
@@ -469,10 +520,11 @@ let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:
 let userSide = 1; 
 let nextStartingSide = 1; 
 
+/* ඡායාරූපයට ගැළපෙන පරිදි සුදු සහ රතු ඉත්තන්ගේ Designs සකස් කර ඇත */
 const PIECE_DESIGNS=[
- {name:'මුතු සුදු',bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●'},
+ {name:'සුදු මැණික්',bg:'radial-gradient(circle at 35% 35%, #ffffff, #dedede, #b0b0b0)',border:'#999999',color:'#2d3436',icon:''},
+ {name:'රතු මැණික්',bg:'radial-gradient(circle at 35% 35%, #ff5252, #c62828, #8e0000)',border:'#5f0000',color:'#fff',icon:''},
  {name:'රන් ඔටුන්න',bg:'linear-gradient(135deg,#ffeaa7,#fdcb6e)',border:'#e1b12c',color:'#2d3436',icon:'★'},
- {name:'රුධිර රතු',bg:'radial-gradient(circle at 30% 30%,#ff7675,#d63031)',border:'#c0392b',color:'#fff',icon:'◆'},
  {name:'මරකත කොළ',bg:'radial-gradient(circle at 30% 30%,#55efc4,#00b894)',border:'#00a8ff',color:'#fff',icon:'▲'},
  {name:'අහස් නිල්',bg:'radial-gradient(circle at 30% 30%,#74b9ff,#0984e3)',border:'#0066cc',color:'#fff',icon:'■'},
  {name:'දම් රැජින',bg:'radial-gradient(circle at 30% 30%,#a29bfe,#6c5ce7)',border:'#4834d4',color:'#fff',icon:'✿'},
@@ -805,8 +857,11 @@ function initBoard(){
 
  if(single){
   userSide = nextStartingSide; 
-  $('p1sub').textContent = userSide === 1 ? 'සුදු (White)' : 'රතු (Red)';
-  $('p2sub').textContent = userSide === 1 ? 'රතු (Red)' : 'සුදු (White)';
+  $('p1sub').textContent = userSide === 1 ? '0/115' : '0/115';
+  $('p2sub').textContent = userSide === 1 ? '0/115' : '0/115';
+ }
+ if($('matchBetDisplay')) {
+  $('matchBetDisplay').textContent = (window.currentBetPoints || 50) * 2;
  }
  render();
  setTurnUI();
@@ -896,21 +951,21 @@ function render(){
     const val=board[r][c];
     const p=document.createElement('div');
     
-    let pieceDesignIndex = 0;
+    let pieceDesignIndex = val > 0 ? 0 : 1; 
     let appliedEffect = '';
 
     if(single){
      const isUser = (Math.sign(val) === userSide);
-     pieceDesignIndex = isUser ? (user.pieceIndex || 0) : 0;
+     if(isUser && user.pieceIndex) pieceDesignIndex = user.pieceIndex;
      if(isUser) appliedEffect = user.selectedEffect || '';
     } else {
      const isHostPiece = (Math.sign(val) === 1);
-     pieceDesignIndex = isHostPiece ? (window.hostPieceIndex || 0) : (window.guestPieceIndex || 0);
+     pieceDesignIndex = isHostPiece ? (window.hostPieceIndex || 0) : (window.guestPieceIndex || 1);
      if(role === 'host' && isHostPiece) appliedEffect = user.selectedEffect || '';
      if(role === 'guest' && !isHostPiece) appliedEffect = user.selectedEffect || '';
     }
     
-    const design = PIECE_DESIGNS[pieceDesignIndex] || PIECE_DESIGNS[0];
+    const design = PIECE_DESIGNS[pieceDesignIndex] || (val > 0 ? PIECE_DESIGNS[0] : PIECE_DESIGNS[1]);
     let fxClass = '';
     if(appliedEffect){
      const fxObj = AVAILABLE_EFFECTS.find(x=>x.id === appliedEffect);
@@ -1046,6 +1101,7 @@ function startTurnClock(deadline){
   const left=Math.ceil(remaining/1000);
   number.textContent=String(left);
   ring.style.setProperty('--progress',Math.max(0,Math.min(100,remaining/10000*100)));
+  ring.classList.toggle('urgent',left<=3);
   caption.textContent=!single?(turn===(role==='host'?1:-1)?'ඔබගේ කාලය':'ප්‍රතිවාදියාගේ කාලය'):'ඉතිරි කාලය';
   if(remaining<=0){
    clearInterval(turnClockTimer);
@@ -1180,9 +1236,9 @@ function listenRoom(){
   $('p1name').textContent=d.hostName||'Host';
   $('p2name').textContent=d.guestName||'Guest';
   window.currentBetPoints = Number(d.betPoints) || 10;
-  if($('potPoints')) $('potPoints').textContent = window.currentBetPoints * 2;
+  if($('matchBetDisplay')) $('matchBetDisplay').textContent = window.currentBetPoints * 2;
   window.hostPieceIndex = Number(d.hostPieceIndex) || 0;
-  window.guestPieceIndex = Number(d.guestPieceIndex) || 0;
+  window.guestPieceIndex = Number(d.guestPieceIndex) || 1;
   
   if(d.status==='waiting'){
    clearInterval(turnClockTimer);
@@ -1309,7 +1365,6 @@ $('proceedToInvite').onclick = () => {
  if(betVal > user.points) return showCustomAlert('ප්‍රමාණවත් නොවේ', 'ඔබ සතුව ප්‍රමාණවත් Points නොමැත!', 'warning');
 
  window.currentBetPoints = betVal;
- if($('potPoints')) $('potPoints').textContent = betVal * 2;
  $('activeBetDisplay').textContent = betVal;
  modal('betModal', false);
  if(window._inviteTarget){const t=window._inviteTarget;window._inviteTarget=null;sendInviteToUser(t);return;}
@@ -1364,9 +1419,8 @@ function listenInvites(){
      if(!roomSnap.exists()){return showCustomAlert('වලංගු නැත', 'මෙම ආරාධනාව දැන් වලංගු නැත.', 'error');await s.ref.update({status:'expired'});}
      
      window.currentBetPoints = betVal;
-     if($('potPoints')) $('potPoints').textContent = betVal * 2;
      await roomRefSnap.update({
-      guestPieceIndex: user.pieceIndex || 0,
+      guestPieceIndex: user.pieceIndex || 1,
       status:'playing',
       startedAt:Date.now(),
       turnStartedAt:Date.now(),
@@ -1413,9 +1467,11 @@ function paintFriendsList(){
   const status=document.createElement('span');
   status.className='friend-status '+(isOnline?'is-online':'is-offline');
   status.textContent=isOnline?'● Online':'● Offline';
+  status.setAttribute('aria-label',isOnline?'Online':'Offline');
   const name=document.createElement('b');name.className='friend-name';name.textContent=friend.name||'Player';
   identity.append(status,name);
   const invite=document.createElement('button');invite.className='btn-gold';invite.textContent='Invite';
+  invite.title=isOnline?'Invite this player':'මෙම ක්‍රීඩකයා Offline';
   invite.onclick=()=>{
    modal('friendsModal',false);
    stopFriendsPresence();
@@ -1440,7 +1496,7 @@ async function renderFriends(){
     if(v&&v.uid&&v.uid!==fbUser.uid)merged.set(v.uid,{uid:v.uid,name:v.name||'Player'});
    });
   }
- }catch(e){}
+ }catch(e){console.warn('Friends load:',e)}
  try{
   const recent=JSON.parse(localStorage.getItem(RECENT)||'[]');
   recent.forEach(friend=>{
@@ -1448,7 +1504,7 @@ async function renderFriends(){
     merged.set(friend.uid,{uid:friend.uid,name:friend.name||'Player'});
    }
   });
- }catch(e){}
+ }catch(e){console.warn('Recent friends load:',e)}
  friendsCache=[...merged.values()];
  if(!friendsCache.length){paintFriendsList();return;}
  friendsPresenceRef=db.ref('publicProfiles_v6');
@@ -1462,11 +1518,13 @@ async function renderFriends(){
   paintFriendsList();
  };
  friendsPresenceRef.on('value',friendsPresenceCb,error=>{
-  friendsCache.forEach(friend=>{if(friendsStatusMap[friend.uid]===undefined)friendsStatusMap[friend.uid]=false;});
+  console.warn('Friends presence listener:',error);
+  friendsCache.forEach(friend=>{
+   if(friendsStatusMap[friend.uid]===undefined)friendsStatusMap[friend.uid]=false;
+  });
   paintFriendsList();
  });
 }
-
 $('navHome').onclick=()=>{document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));$('navHome').classList.add('active');};
 $('navFriends').onclick=()=>{document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));$('navFriends').classList.add('active');renderFriends();modal('friendsModal',true)};
 $('navProfile').onclick=()=>{document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));$('navProfile').classList.add('active');$('openProfile').click()};
@@ -1474,12 +1532,13 @@ $('closeFriends').onclick=()=>{stopFriendsPresence();modal('friendsModal',false)
 $('findFriends').onclick=()=>{stopFriendsPresence();modal('friendsModal',false);$('maxUserPoints').textContent=user.points;$('betAmountInput').value=Math.min(50,user.points);modal('betModal',true)};
 $('collectRewards').onclick=()=>location.href='shopandreward.html';
 $('coinShop').onclick=()=>location.href='shopandreward.html';
-$('freestyle').onclick=()=>{window.currentBetPoints=0;window.practiceMode=true;single=true;roomId=null;role=null;nextStartingSide=1;if($('potPoints'))$('potPoints').textContent='0';$('lobby').style.display='none';$('arena').style.display='flex';$('p1name').textContent=user.name||'ඔබ';$('p2name').textContent='AI පරිගණකය (Practice)';initBoard()};
+$('freestyle').onclick=()=>{window.currentBetPoints=0;window.practiceMode=true;single=true;roomId=null;role=null;nextStartingSide=1;$('lobby').style.display='none';$('arena').style.display='flex';$('p1name').textContent=user.name||'ඔබ';$('p2name').textContent='AI පරිගණකය (Practice)';initBoard()};
 $('single').onclick=()=>{
  $('maxSinglePoints').textContent = user.points;
  $('singleBetInput').value = Math.min(50, user.points);
  modal('singleBetModal', true);
 };
+
 $('closeSingleBet').onclick=()=>modal('singleBetModal', false);
 
 $('startSingleGame').onclick=()=>{
@@ -1489,7 +1548,6 @@ $('startSingleGame').onclick=()=>{
 
  modal('singleBetModal', false);
  window.currentBetPoints = betVal;
- if($('potPoints')) $('potPoints').textContent = betVal * 2;
  single=true;roomId=null;role=null;nextStartingSide=1;
  $('openProfile').style.display='none';
  $('lobby').style.display='none';
@@ -1527,9 +1585,17 @@ $('search').addEventListener('keydown',e=>{if(e.key==='Enter')searchOnlinePlayer
 function leaveRoom(){
  clearInterval(turnClockTimer);
  window._clockKey=null;
- if(roomRef&&roomCb)roomRef.off('value',roomCb);
- roomRef=null;roomCb=null;roomId=null;role=null;single=true;gameOver=false;
+ if(roomRef&&roomCb){
+  roomRef.off('value',roomCb);
+ }
+ roomRef=null;
+ roomCb=null;
+ roomId=null;
+ role=null;
+ single=true;
+ gameOver=false;
  clearTimeout(aiTimer);
+
  modal('overModal', false);
  $('arena').style.display='none';
  $('lobby').style.display='grid';
@@ -1537,16 +1603,25 @@ function leaveRoom(){
 }
 
 $('forfeit').onclick=()=>{
- if(gameOver) { leaveRoom(); return; }
+ if(gameOver) {
+  leaveRoom();
+  return;
+ }
  showCustomAlert(
   'තරඟයෙන් ඉවත් වීම',
   'ඔබට සැබවින්ම තරඟයෙන් ඉවත් වීමට අවශ්‍යද? (මෙය පැරදීමක් ලෙස සටහන් වේ)',
   'warning',
   async ()=>{
-   if(single){ finish(-userSide,'ඔබ තරඟයෙන් ඉවත් විය.'); }
-   else { const winner = (role === 'host') ? -1 : 1; await publishFinish(winner, 'ප්‍රතිවාදියා තරඟයෙන් ඉවත් විය.'); }
+   if(single){
+    finish(-userSide,'ඔබ තරඟයෙන් ඉවත් විය.');
+   } else {
+    const winner = (role === 'host') ? -1 : 1;
+    await publishFinish(winner, 'ප්‍රතිවාදියා තරඟයෙන් ඉවත් විය.');
+   }
   },
-  true, 'නැත (Cancel)', 'ඔව් (Yes)'
+  true,
+  'නැත (Cancel)',
+  'ඔව් (Yes)'
  );
 };
 
@@ -1557,17 +1632,29 @@ $('rematch').onclick=async()=>{
   const snap=await roomRef.once('value');
   const d=snap.val();
   if(!d||d.status!=='finished')return;
-  const localWin=(d.winner==1&&role==='host')||(d.winner===-1&&role==='guest');
+  const localWin=(d.winner===1&&role==='host')||(d.winner===-1&&role==='guest');
+  
   if(!localWin&&!d.rematchRequestedBy){
-   await roomRef.transaction(room=>{if(!room||room.status!=='finished')return;room.rematchRequestedBy=role;return room;});
+   await roomRef.transaction(room=>{
+    if(!room||room.status!=='finished')return;
+    room.rematchRequestedBy=role;
+    return room;
+   });
    toast('Rematch ඉල්ලීම යවන ලදී.', 'fa-paper-plane');
   }else if(localWin&&d.rematchRequestedBy&&d.rematchRequestedBy!==role){
    await roomRef.transaction(room=>{
     if(!room||room.status!=='finished')return;
-    room.status='playing'; room.gameId=(room.gameId||1)+1;
+    room.status='playing';
+    room.gameId=(room.gameId||1)+1;
     room.board=Array.from({length:8},(_,r)=>Array.from({length:8},(_,c)=>(r+c)%2?(r<3?-1:r>4?1:0):0));
-    room.turn=1; room.startedAt=Date.now(); room.turnStartedAt=Date.now();
-    room.forced=null; room.rematchRequestedBy=null; room.winner=null; room.message=null; room.finishedAt=null;
+    room.turn=1;
+    room.startedAt=Date.now();
+    room.turnStartedAt=Date.now();
+    room.forced=null;
+    room.rematchRequestedBy=null;
+    room.winner=null;
+    room.message=null;
+    room.finishedAt=null;
     return room;
    });
    modal('overModal',false);
@@ -1576,12 +1663,31 @@ $('rematch').onclick=async()=>{
  }catch(e){toast('Rematch ක්‍රියාවලිය අසාර්ථක විය.', 'fa-circle-xmark');}
 };
 
-$('exit').onclick=()=>leaveRoom();
-$('home').onclick=()=>{ if(roomId&&!gameOver){showCustomAlert('ප්‍රධාන පිටුවට යාම','තරඟය අතරතුර ඉවත් වුවහොත් එය පරාජයක් ලෙස සටහන් වේ.', 'warning',()=>{$('forfeit').click();},true,'නැත','ඔව්');return;} leaveRoom(); };
+$('exit').onclick=()=>{
+ leaveRoom();
+};
+
+$('home').onclick=()=>{
+ if(roomId && !gameOver){
+  showCustomAlert(
+   'ප්‍රධාන පිටුවට යාම',
+   'තරඟය අතරතුර ඉවත් වුවහොත් එය පරාජයක් ලෙස සටහන් වේ. ඔබට පිටුවට යාමට අවශ්‍යද?',
+   'warning',
+   ()=>{$('forfeit').click();},
+   true,
+   'නැත',
+   'ඔව්'
+  );
+  return;
+ }
+ leaveRoom();
+};
 
 $('logout').onclick=async()=>{
  showCustomAlert(
-  'Logout වීම', 'ඔබට සැබවින්ම ගිණුමෙන් ඉවත් වීමට (Logout) අවශ්‍යද?', 'warning',
+  'Logout වීම',
+  'ඔබට සැබවින්ම ගිණුමෙන් ඉවත් වීමට (Logout) අවශ්‍යද?',
+  'warning',
   async ()=>{
    try{
     if(fbUser)await db.ref('publicProfiles_v6/'+fbUser.uid).update({online:false});
@@ -1592,7 +1698,9 @@ $('logout').onclick=async()=>{
     leaveRoom();modal('authModal',true);toast('සාර්ථකව Logout විය.', 'fa-circle-check');
    }catch(e){toast('Logout වීමට නොහැකි විය.', 'fa-circle-xmark')}
   },
-  true, 'නැත', 'ඔව්'
+  true,
+  'නැත',
+  'ඔව්'
  );
 };
 </script>
