@@ -23,13 +23,14 @@ header,footer{display:flex;align-items:center;justify-content:space-between;gap:
 .btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111}.btn-gold:hover{filter:brightness(1.1)}
 .btn:disabled,.btn-gold:disabled{opacity:.45;cursor:not-allowed}
 
-main{flex:1;display:grid;place-items:center;min-height:400px}.lobby{width:min(100%,550px);padding:22px;display:grid;gap:16px}.lobby h2{text-align:center;color:var(--gold)}.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.mode{padding:22px 10px;border:1px solid #ffffff25;border-radius:12px;text-align:center;background:#ffffff08;cursor:pointer;transition:.2s}.mode:hover{border-color:var(--gold);background:#ffffff12}.mode i{font-size:2rem;color:var(--gold);display:block;margin-bottom:8px}
+main{flex:1;display:grid;place-items:center;min-height:400px;width:100%;}.lobby{width:min(100%,550px);padding:22px;display:grid;gap:16px}.lobby h2{text-align:center;color:var(--gold)}.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.mode{padding:22px 10px;border:1px solid #ffffff25;border-radius:12px;text-align:center;background:#ffffff08;cursor:pointer;transition:.2s}.mode:hover{border-color:var(--gold);background:#ffffff12}.mode i{font-size:2rem;color:var(--gold);display:block;margin-bottom:8px}
 
 /* =========================================================
-   UPDATED ARENA UI (MODIFIED TO MATCH THE PROVIDED IMAGE)
+   FULL SCREEN ARENA UI
    ========================================================= */
 .arena {
-  width: min(100%, 460px);
+  width: min(100%, 480px);
+  min-height: calc(100dvh - 24px);
   margin: 0 auto;
   background: #110505;
   border: 2px solid #ffca4540;
@@ -37,7 +38,8 @@ main{flex:1;display:grid;place-items:center;min-height:400px}.lobby{width:min(10
   padding: 16px 14px 20px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  justify-content: space-between;
+  gap: 10px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.8);
   position: relative;
 }
@@ -59,14 +61,14 @@ main{flex:1;display:grid;place-items:center;min-height:400px}.lobby{width:min(10
 }
 
 .arena-avatar-box {
-  width: 64px;
-  height: 64px;
+  width: 60px;
+  height: 60px;
   border-radius: 18px;
   border: 3px solid #ff9f43;
   background: #2b1107;
   display: grid;
   place-items: center;
-  font-size: 1.8rem;
+  font-size: 1.7rem;
   color: #ff9f43;
   box-shadow: 0 0 12px rgba(255,159,67,0.3);
   transition: .3s ease;
@@ -78,7 +80,7 @@ main{flex:1;display:grid;place-items:center;min-height:400px}.lobby{width:min(10
 }
 
 .arena-player-card b {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   color: #fff;
   white-space: nowrap;
   overflow: hidden;
@@ -87,7 +89,7 @@ main{flex:1;display:grid;place-items:center;min-height:400px}.lobby{width:min(10
 }
 
 .arena-player-card small {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   color: #a0aec0;
   letter-spacing: 0.5px;
 }
@@ -100,13 +102,13 @@ main{flex:1;display:grid;place-items:center;min-height:400px}.lobby{width:min(10
 }
 
 .arena-coins-center i {
-  font-size: 2.2rem;
+  font-size: 2.1rem;
   color: #ffca45;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
 }
 
 .arena-coins-center b {
-  font-size: 1.4rem;
+  font-size: 1.35rem;
   color: #fff;
   letter-spacing: 1px;
 }
@@ -114,7 +116,7 @@ main{flex:1;display:grid;place-items:center;min-height:400px}.lobby{width:min(10
 .arena-title {
   text-align: center;
   color: #ffca45;
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   font-weight: 800;
   letter-spacing: 1px;
   margin-top: -2px;
@@ -179,9 +181,9 @@ main{flex:1;display:grid;place-items:center;min-height:400px}.lobby{width:min(10
 .status {
   text-align: center;
   color: #ffca45;
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   font-weight: 700;
-  min-height: 28px;
+  min-height: 26px;
 }
 
 #clockPanel {
@@ -193,8 +195,8 @@ main{flex:1;display:grid;place-items:center;min-height:400px}.lobby{width:min(10
 
 #clockRing {
   --progress: 100;
-  width: 58px;
-  height: 58px;
+  width: 54px;
+  height: 54px;
   border-radius: 50%;
   display: grid;
   place-items: center;
@@ -214,12 +216,12 @@ main{flex:1;display:grid;place-items:center;min-height:400px}.lobby{width:min(10
 #turnClock {
   position: relative;
   z-index: 1;
-  font-size: 1.35rem;
+  font-size: 1.25rem;
   font-weight: 800;
   color: #ffca45;
 }
 #clockCaption {
-  font-size: 1rem;
+  font-size: 0.95rem;
   color: #a0aec0;
   font-weight: 600;
 }
@@ -235,13 +237,13 @@ main{flex:1;display:grid;place-items:center;min-height:400px}.lobby{width:min(10
 }
 
 .arena-circle-btn {
-  width: 54px;
-  height: 54px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   border: 2px solid #ffca45;
   background: linear-gradient(135deg, #ffca45, #e09100);
   color: #110505;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   display: grid;
   place-items: center;
   cursor: pointer;
@@ -388,9 +390,9 @@ button,a,input{touch-action:manipulation;}
  .row>*{flex:1 1 120px;}
  .listitem{flex-wrap:wrap;}
  .listitem button{min-height:38px;}
- .arena { width: 100%; border-radius: 20px; padding: 12px 10px 16px; }
- .arena-avatar-box { width: 52px; height: 52px; font-size: 1.5rem; }
- .arena-title { font-size: 1.35rem; }
+ .arena { width: 100%; border-radius: 20px; padding: 12px 10px 16px; min-height: calc(100dvh - 24px); }
+ .arena-avatar-box { width: 50px; height: 50px; font-size: 1.4rem; }
+ .arena-title { font-size: 1.3rem; }
 }
 
 @media(max-width:380px){
@@ -414,7 +416,7 @@ button,a,input{touch-action:manipulation;}
 <div class="app">
 
 <!-- Home top profile and coin balance -->
-<div class="home-top">
+<div class="home-top" id="homeTop">
  <div class="profile-float" id="openProfile" title="ප්‍රොෆයිලය විවෘත කරන්න">
   <span class="avatar" id="headerAvatar"><i class="fa-solid fa-user"></i></span>
   <div><b id="headerName">ක්‍රීඩකයා</b><br><small class="pro-label">PRO PLAYER</small></div>
@@ -436,9 +438,7 @@ button,a,input{touch-action:manipulation;}
 <div id="connection">● Firebase සම්බන්ධ වෙමින්...</div>
 </section>
 
-<!-- =========================================================
-     UPDATED ARENA SECTION (MATCHING THE PHOTO UI EXACTLY)
-     ========================================================= -->
+<!-- ARENA SECTION (FULL SCREEN MODE) -->
 <section class="arena" id="arena" style="display:none">
  <div class="arena-top-header">
   <div class="arena-player-card active" id="p1">
@@ -478,7 +478,7 @@ button,a,input{touch-action:manipulation;}
 </section>
 </main>
 
-<footer class="bottom-nav">
+<footer class="bottom-nav" id="bottomNav">
  <button class="nav-item active" id="navHome"><i class="fa-solid fa-house"></i><span>Home</span></button>
  <button class="nav-item" id="navFriends"><i class="fa-solid fa-user-group"></i><span>Friends</span></button>
  <button class="nav-item" id="navProfile"><i class="fa-solid fa-circle-user"></i><span>Profile</span></button>
@@ -657,15 +657,15 @@ function playSound(type){
   
   if(type === 'click'){
    osc.type='sine'; osc.frequency.setValueAtTime(400,now); osc.frequency.exponentialRampToValueAtTime(200,now+0.05);
-   gain.gain.setValueAtTime(0.1,now); gain.gain.linearRampToValueAtTime(0.01,now+0.05);
+   gain.gain.setValueAtTime(0.1,now); gain.linearRampToValueAtTime(0.01,now+0.05);
    osc.start(now); osc.stop(now+0.05);
   }else if(type === 'move'){
    osc.type='triangle'; osc.frequency.setValueAtTime(250,now); osc.frequency.exponentialRampToValueAtTime(350,now+0.08);
-   gain.gain.setValueAtTime(0.15,now); gain.gain.linearRampToValueAtTime(0.01,now+0.08);
+   gain.gain.setValueAtTime(0.15,now); gain.linearRampToValueAtTime(0.01,now+0.08);
    osc.start(now); osc.stop(now+0.08);
   }else if(type === 'capture'){
    osc.type='sawtooth'; osc.frequency.setValueAtTime(150,now); osc.frequency.exponentialRampToValueAtTime(80,now+0.15);
-   gain.gain.setValueAtTime(0.2,now); gain.gain.linearRampToValueAtTime(0.01,now+0.15);
+   gain.gain.setValueAtTime(0.2,now); gain.linearRampToValueAtTime(0.01,now+0.15);
    osc.start(now); osc.stop(now+0.15);
   }else if(type === 'win'){
    osc.type='sine';
@@ -673,7 +673,7 @@ function playSound(type){
     const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
     o.connect(g); g.connect(audioCtx.destination);
     o.frequency.setValueAtTime([300,400,500,650][i],now+t);
-    g.gain.setValueAtTime(0.15,now+t); g.gain.linearRampToValueAtTime(0.01,now+t+0.12);
+    g.gain.setValueAtTime(0.15,now+t); g.linearRampToValueAtTime(0.01,now+t+0.12);
     o.start(now+t); o.stop(now+t+0.12);
    });
   }else if(type === 'lose'){
@@ -682,7 +682,7 @@ function playSound(type){
     const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
     o.connect(g); g.connect(audioCtx.destination);
     o.frequency.setValueAtTime([300,220,150][i],now+t);
-    g.gain.setValueAtTime(0.15,now+t); g.gain.linearRampToValueAtTime(0.01,now+t+0.15);
+    g.gain.setValueAtTime(0.15,now+t); g.linearRampToValueAtTime(0.01,now+t+0.15);
     o.start(now+t); o.stop(now+t+0.15);
    });
   }
@@ -1418,7 +1418,8 @@ function setTurnUIRoom(){
 
 async function enterRoom(id,r){
  roomId=id; role=r; single=false;
- $('openProfile').style.display='none';
+ $('homeTop').style.display='none';
+ $('bottomNav').style.display='none';
  modal('multiModal',false);
  $('lobby').style.display='none';
  $('arena').style.display='flex';
@@ -1632,6 +1633,8 @@ $('freestyle').onclick=()=>{
  window.currentBetPoints=0;
  window.practiceMode=true;
  single=true;roomId=null;role=null;nextStartingSide=1;
+ $('homeTop').style.display='none';
+ $('bottomNav').style.display='none';
  $('lobby').style.display='none';
  $('arena').style.display='flex';
  $('p1name').textContent=user.name||'ඔබ';
@@ -1657,7 +1660,8 @@ $('startSingleGame').onclick=()=>{
  modal('singleBetModal', false);
  window.currentBetPoints = betVal;
  single=true;roomId=null;role=null;nextStartingSide=1;
- $('openProfile').style.display='none';
+ $('homeTop').style.display='none';
+ $('bottomNav').style.display='none';
  $('lobby').style.display='none';
  $('arena').style.display='flex';
  $('p1name').textContent=user.name||'ඔබ';
@@ -1709,7 +1713,8 @@ function leaveRoom(){
  modal('overModal', false);
  $('arena').style.display='none';
  $('lobby').style.display='grid';
- $('openProfile').style.display='flex';
+ $('homeTop').style.display='flex';
+ $('bottomNav').style.display='flex';
 }
 
 $('forfeit').onclick=()=>{
