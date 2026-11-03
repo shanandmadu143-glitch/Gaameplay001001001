@@ -8,8 +8,8 @@
 <style>
 :root{--bg:#080b18;--panel:rgba(18,24,43,.96);--gold:#ffd166;--dim:#a0aec0;--red:#ff6b81;--green:#2ecc71;--blue:#4facfe}
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Gemunu Libre','Poppins',sans-serif;user-select:none}
-html,body{width:100%;height:100%;overflow:hidden;background:radial-gradient(circle at 18% 18%,#3b2e2530,transparent 35%),linear-gradient(145deg,#080b18,#111a31 55%,#0a1022);color:#f8f9fa}
-body{height:100dvh}.app{height:100dvh;max-width:1100px;margin:auto;padding:10px;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden}
+html,body{width:100%;min-height:100%;background:radial-gradient(circle at 18% 18%,#3b2e2530,transparent 35%),linear-gradient(145deg,#080b18,#111a31 55%,#0a1022);color:#f8f9fa;overflow-x:hidden}
+body{min-height:100dvh}.app{min-height:100dvh;max-width:1100px;margin:auto;padding:10px;display:flex;flex-direction:column;gap:12px;position:relative}
 header,footer,.panel,.lobby,.side{background:var(--panel);border:1px solid #ffd16640;border-radius:15px;padding:10px 14px}
 header,footer{display:flex;align-items:center;justify-content:space-between;gap:10px}header{min-height:58px}.brand{font-size:1.25rem;color:var(--gold);font-weight:800}
 
@@ -23,30 +23,24 @@ header,footer{display:flex;align-items:center;justify-content:space-between;gap:
 .btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111}.btn-gold:hover{filter:brightness(1.1)}
 .btn:disabled,.btn-gold:disabled{opacity:.45;cursor:not-allowed}
 
-main{flex:1;display:grid;place-items:center;min-height:400px;width:100%;overflow:hidden}
-.lobby{width:min(100%,550px);padding:22px;display:grid;gap:16px}
-.lobby h2{text-align:center;color:var(--gold)}
-.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.mode{padding:22px 10px;border:1px solid #ffffff25;border-radius:12px;text-align:center;background:#ffffff08;cursor:pointer;transition:.2s}
-.mode:hover{border-color:var(--gold);background:#ffffff12}
-.mode i{font-size:2rem;color:var(--gold);display:block;margin-bottom:8px}
+main{flex:1;display:grid;place-items:center;min-height:400px;width:100%;}.lobby{width:min(100%,550px);padding:22px;display:grid;gap:16px}.lobby h2{text-align:center;color:var(--gold)}.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.mode{padding:22px 10px;border:1px solid #ffffff25;border-radius:12px;text-align:center;background:#ffffff08;cursor:pointer;transition:.2s}.mode:hover{border-color:var(--gold);background:#ffffff12}.mode i{font-size:2rem;color:var(--gold);display:block;margin-bottom:8px}
 
 /* =========================================================
-   FULL SCREEN NON-SCROLLABLE ARENA UI
+   FULL SCREEN ARENA UI (NO SCROLL FIT)
    ========================================================= */
 .arena {
-  width: min(100%, 460px);
-  height: 100%;
-  max-height: calc(100dvh - 20px);
+  width: min(100%, 480px);
+  height: 100dvh;
+  max-height: 100dvh;
   margin: 0 auto;
   background: #110505;
   border: 2px solid #ffca4540;
-  border-radius: 28px;
-  padding: 12px 14px;
+  border-radius: 0px;
+  padding: 12px 14px 14px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  align-items: center;
+  gap: 6px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.8);
   position: relative;
   overflow: hidden;
@@ -65,7 +59,7 @@ main{flex:1;display:grid;place-items:center;min-height:400px;width:100%;overflow
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 3px;
+  gap: 2px;
 }
 
 .arena-avatar-box {
@@ -98,8 +92,9 @@ main{flex:1;display:grid;place-items:center;min-height:400px;width:100%;overflow
 }
 
 .arena-player-card small {
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   color: #a0aec0;
+  letter-spacing: 0.5px;
 }
 
 .arena-coins-center {
@@ -122,15 +117,15 @@ main{flex:1;display:grid;place-items:center;min-height:400px;width:100%;overflow
 }
 
 .board-wrap {
-  width: min(100%, 380px);
+  width: min(100%, 82vw, 380px);
   aspect-ratio: 1;
   position: relative;
   margin: 0 auto;
   background: #4a2810;
-  padding: 10px;
+  padding: 8px;
   border-radius: 20px;
   box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 8px 20px rgba(0,0,0,0.6);
-  border: 4px solid #2d1709;
+  border: 3px solid #2d1709;
 }
 
 .board {
@@ -139,7 +134,7 @@ main{flex:1;display:grid;place-items:center;min-height:400px;width:100%;overflow
   display: grid;
   grid-template-columns: repeat(8,1fr);
   grid-template-rows: repeat(8,1fr);
-  border-radius: 6px;
+  border-radius: 8px;
   overflow: hidden;
   border: 2px solid #231206;
 }
@@ -169,7 +164,7 @@ main{flex:1;display:grid;place-items:center;min-height:400px;width:100%;overflow
 }
 .king:after {
   content:'♛';
-  font-size: clamp(10px,2.5vw,16px);
+  font-size: clamp(12px,3vw,20px);
   position: absolute;
   bottom: 2px;
   right: 2px;
@@ -182,21 +177,20 @@ main{flex:1;display:grid;place-items:center;min-height:400px;width:100%;overflow
   color: #ffca45;
   font-size: 1.1rem;
   font-weight: 700;
-  min-height: 24px;
+  min-height: 22px;
 }
 
 #clockPanel {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  cursor: pointer;
+  gap: 12px;
 }
 
 #clockRing {
   --progress: 100;
-  width: 48px;
-  height: 48px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   display: grid;
   place-items: center;
@@ -204,11 +198,15 @@ main{flex:1;display:grid;place-items:center;min-height:400px;width:100%;overflow
   background: conic-gradient(#ffca45 calc(var(--progress)*1%), #ffffff18 0);
   box-shadow: 0 0 12px rgba(255,209,102,0.3);
   transition: background .18s linear;
+  cursor: pointer;
+}
+#clockRing:hover {
+  transform: scale(1.05);
 }
 #clockRing:before {
   content: '';
   position: absolute;
-  inset: 4px;
+  inset: 5px;
   border-radius: 50%;
   background: #110505;
   border: 1px solid #ffffff20;
@@ -216,12 +214,12 @@ main{flex:1;display:grid;place-items:center;min-height:400px;width:100%;overflow
 #turnClock {
   position: relative;
   z-index: 1;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   font-weight: 800;
   color: #ffca45;
 }
 #clockCaption {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: #a0aec0;
   font-weight: 600;
 }
@@ -232,17 +230,18 @@ main{flex:1;display:grid;place-items:center;min-height:400px;width:100%;overflow
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 0 4px;
+  padding: 0 6px;
+  margin-top: 2px;
 }
 
 .arena-circle-btn {
-  width: 48px;
-  height: 48px;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
   border: 2px solid #ffca45;
   background: linear-gradient(135deg, #ffca45, #e09100);
   color: #110505;
-  font-size: 1.3rem;
+  font-size: 1.25rem;
   display: grid;
   place-items: center;
   cursor: pointer;
@@ -251,27 +250,88 @@ main{flex:1;display:grid;place-items:center;min-height:400px;width:100%;overflow
 }
 .arena-circle-btn:active { transform: scale(0.92); }
 
-/* Chat Modal Styles */
-.chat-messages {
-  max-height: 220px;
+/* SIDE CHAT DRAWER */
+.chat-drawer {
+  position: absolute;
+  top: 0;
+  right: -100%;
+  width: 280px;
+  height: 100%;
+  background: rgba(18, 24, 43, 0.98);
+  border-left: 2px solid var(--gold);
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  transition: right 0.3s ease;
+  box-shadow: -5px 0 20px rgba(0,0,0,0.8);
+  backdrop-filter: blur(10px);
+}
+.chat-drawer.open {
+  right: 0;
+}
+.chat-header {
+  padding: 12px;
+  background: rgba(0,0,0,0.3);
+  border-bottom: 1px solid rgba(255,209,102,0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--gold);
+}
+.chat-body {
+  flex: 1;
+  padding: 10px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 8px;
-  background: rgba(0,0,0,0.3);
-  border-radius: 10px;
-  border: 1px solid #ffffff15;
 }
 .chat-msg {
-  padding: 8px 12px;
-  border-radius: 10px;
-  font-size: 0.9rem;
-  max-width: 80%;
-  overflow-wrap: anywhere;
+  background: rgba(255,255,255,0.06);
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  max-width: 85%;
+  word-break: break-word;
 }
-.chat-msg.mine { background: #2479df; align-self: flex-end; color: #fff; }
-.chat-msg.theirs { background: #2d3748; align-self: flex-start; color: #ffd166; }
+.chat-msg.me {
+  align-self: flex-end;
+  background: #ffca4533;
+  border: 1px solid #ffca4566;
+  color: #fff;
+}
+.chat-msg.them {
+  align-self: flex-start;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+}
+.chat-footer {
+  padding: 10px;
+  display: flex;
+  gap: 6px;
+  background: rgba(0,0,0,0.3);
+}
+.chat-footer input {
+  padding: 8px;
+  font-size: 0.85rem;
+}
+.quick-chats {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding: 6px 10px;
+  background: rgba(0,0,0,0.2);
+}
+.quick-btn {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  border-radius: 12px;
+  white-space: nowrap;
+  cursor: pointer;
+}
 
 /* In-game Visual Effects */
 .fx-pink{box-shadow:0 0 15px #ff9ff3,0 0 28px #f368e0!important}
@@ -366,6 +426,54 @@ button,a,input{touch-action:manipulation;}
 .modalbox{width:min(100%,520px);max-height:calc(100dvh - 28px);overflow-y:auto;overscroll-behavior:contain;}
 .bottom-nav{bottom:max(8px,env(safe-area-inset-bottom));}
 #toast{max-width:calc(100vw - 28px);text-align:center;}
+
+@media (max-width:600px){
+ .app{padding:12px 14px calc(98px + env(safe-area-inset-bottom));gap:12px;}
+ .home-top{gap:8px;padding:2px 0 8px;}
+ .profile-float{gap:8px;min-width:0;}
+ .avatar{width:58px;height:58px;font-size:1.55rem;border-width:3px;flex:0 0 auto;}
+ #headerName{font-size:clamp(.95rem,4vw,1.15rem);overflow-wrap:anywhere;}
+ .pro-label{font-size:.78rem;}
+ .coin-pill{min-width:0;gap:7px;padding:5px 7px 5px 10px;}
+ .coin-pill>i{font-size:1.25rem;}
+ .coin-pill b{font-size:1.15rem;}
+ .coin-pill button{width:34px;height:34px;font-size:1.35rem;flex:0 0 auto;}
+ .lobby{gap:12px;}
+ .reward-banner{min-height:76px;padding:12px 10px;border-radius:20px;font-size:clamp(1.2rem,5.5vw,1.55rem);gap:10px;letter-spacing:.2px;}
+ .reward-banner i{font-size:1.6rem;}
+ .mode-grid{gap:12px;}
+ .mode{min-height:120px;border-radius:22px;padding:16px 18px;}
+ .mode b{font-size:clamp(1.2rem,6vw,1.65rem);max-width:78%;overflow-wrap:anywhere;}
+ .mode p{font-size:clamp(.85rem,3.7vw,1rem);max-width:78%;line-height:1.25;}
+ .mode:after{right:14px;font-size:clamp(2.5rem,12vw,3.4rem);}
+ .bottom-nav{width:calc(100% - 18px);min-height:68px;padding:5px 2px;border-radius:20px;}
+ .nav-item{font-size:clamp(.68rem,2.8vw,.82rem);gap:2px;}
+ .nav-item i{font-size:clamp(1.25rem,6vw,1.55rem);}
+ .pieces-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;}
+ .piece-option{padding:8px 5px;min-width:0;}
+ .row{flex-wrap:wrap;}
+ .row>*{flex:1 1 120px;}
+ .listitem{flex-wrap:wrap;}
+ .listitem button{min-height:38px;}
+ .arena { width: 100%; border-radius: 0; padding: 10px 8px; height: 100dvh; }
+ .arena-avatar-box { width: 46px; height: 46px; font-size: 1.2rem; }
+}
+
+@media(max-width:380px){
+ .app{padding-left:10px;padding-right:10px;}
+ .avatar{width:52px;height:52px;}
+ .coin-pill{gap:5px;padding-left:7px;}
+ .coin-pill>i{font-size:1.1rem;}
+ .coin-pill b{font-size:1.05rem;}
+ .coin-pill button{width:31px;height:31px;}
+ .mode{min-height:108px;padding:13px 14px;border-radius:18px;}
+ .mode:after{right:10px;font-size:2.4rem;}
+ .mode b{font-size:1.15rem;}
+ .mode p{font-size:.8rem;}
+ .bottom-nav{width:calc(100% - 12px);}
+ .nav-item i{font-size:1.2rem;}
+ .nav-item{font-size:.65rem;}
+}
 </style>
 </head>
 <body>
@@ -394,7 +502,7 @@ button,a,input{touch-action:manipulation;}
 <div id="connection">● Firebase සම්බන්ධ වෙමින්...</div>
 </section>
 
-<!-- ARENA SECTION (NON-SCROLLABLE FULL SCREEN) -->
+<!-- ARENA SECTION (FULL SCREEN MODE) -->
 <section class="arena" id="arena" style="display:none">
  <div class="arena-top-header">
   <div class="arena-player-card active" id="p1">
@@ -419,14 +527,35 @@ button,a,input{touch-action:manipulation;}
 
  <div class="status" id="gameStatus">ඔබගේ වාරය</div>
 
- <div id="clockPanel" title="Chat කිරීමට Click කරන්න">
-  <div id="clockRing" role="timer" aria-live="off"><span id="turnClock">10</span></div>
+ <div id="clockPanel">
+  <div id="clockRing" role="timer" aria-live="off" title="Chat කිරීම සඳහා Click කරන්න"><span id="turnClock">10</span></div>
   <span id="clockCaption">ඉතිරි කාලය</span>
  </div>
 
  <div class="arena-controls">
   <button class="arena-circle-btn" id="arenaChatBtn" title="Chat"><i class="fa-solid fa-comment-dots"></i></button>
-  <button class="arena-circle-btn" id="arenaMenuBtn" title="Menu (ඉවත් වීමට)"><i class="fa-solid fa-bars"></i></button>
+  <button class="arena-circle-btn" id="arenaMenuBtn" title="Menu"><i class="fa-solid fa-bars"></i></button>
+ </div>
+
+ <!-- SIDE CHAT DRAWER -->
+ <div class="chat-drawer" id="chatDrawer">
+  <div class="chat-header">
+   <b><i class="fa-solid fa-comments"></i> In-Game Chat</b>
+   <button class="btn" id="closeChat" style="padding:2px 8px;font-size:0.8rem">✕</button>
+  </div>
+  <div class="quick-chats">
+   <button class="quick-btn" onclick="sendQuickChat('Good Game! 👍')">Good Game! 👍</button>
+   <button class="quick-btn" onclick="sendQuickChat('Well Played! 👏')">Well Played! 👏</button>
+   <button class="quick-btn" onclick="sendQuickChat('Hurry up! ⏳')">Hurry up! ⏳</button>
+   <button class="quick-btn" onclick="sendQuickChat('Nice move! 🔥')">Nice move! 🔥</button>
+  </div>
+  <div class="chat-body" id="chatMessages">
+   <div class="chat-msg them">ප්‍රතිවාදියා සමඟ Chat කරන්න...</div>
+  </div>
+  <div class="chat-footer">
+   <input type="text" id="chatInput" placeholder="පණිවිඩයක් ලියන්න...">
+   <button class="btn-gold" id="sendChatBtn" style="padding:8px 12px"><i class="fa-solid fa-paper-plane"></i></button>
+  </div>
  </div>
 </section>
 </main>
@@ -502,7 +631,7 @@ button,a,input{touch-action:manipulation;}
 </div>
 </div>
 
-<!-- Friends Modal -->
+<!-- Friends / invited opponents -->
 <div class="modal" id="friendsModal">
  <div class="modalbox">
   <div class="row"><h3 style="flex:1">FRIENDS</h3><button class="btn" id="closeFriends">×</button></div>
@@ -510,20 +639,6 @@ button,a,input{touch-action:manipulation;}
   <div class="list" id="friendsList">යහළුවන් ලබාගනිමින්...</div>
   <button class="btn-gold" id="findFriends">යහළුවන් සොයන්න / Invite කරන්න</button>
  </div>
-</div>
-
-<!-- Chat Modal (Opens on Clock Click / Chat Button Click) -->
-<div class="modal" id="chatModal">
-<div class="modalbox">
-<div class="row"><h3 style="flex:1">ප්‍රතිවාදියා සමඟ Chat</h3><button class="btn" id="closeChat">×</button></div>
-<div class="chat-messages" id="chatMessages">
- <div class="chat-msg theirs">සුභ පැතුම්! තරඟය ආරම්භ කරමු.</div>
-</div>
-<div class="row" style="margin-top:10px;">
- <input id="chatInput" placeholder="පණිවිඩයක් ලියන්න..." style="flex:1">
- <button class="btn-gold" id="sendChatBtn">යවන්න</button>
-</div>
-</div>
 </div>
 
 <!-- Universal Alert Modal -->
@@ -582,7 +697,7 @@ button,a,input{touch-action:manipulation;}
 'use strict';
 const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
 const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user',RECENT='sinhala_draughts_recent_v7';
-let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,selectedEffect:'',unlockedEffects:[]},board=[],turn=1,selected=null,moves=[],single=true,roomId=null,roomRef=null,roomCb=null,role=null,gameOver=false,aiTimer=null,processing=false,inviteRef=null,inviteCb=null,awarded={},turnClockTimer=null,turnDeadline=0,dragFrom=null,missedCapture=null,friendsPresenceRef=null,friendsPresenceCb=null,friendsCache=[],friendsStatusMap={};
+let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,selectedEffect:'',unlockedEffects:[]},board=[],turn=1,selected=null,moves=[],single=true,roomId=null,roomRef=null,roomCb=null,role=null,gameOver=false,aiTimer=null,processing=false,inviteRef=null,inviteCb=null,awarded={},turnClockTimer=null,turnDeadline=0,dragFrom=null,missedCapture=null,friendsPresenceRef=null,friendsPresenceCb=null,friendsCache=[],friendsStatusMap={},chatRef=null,chatCb=null;
 
 let userSide = 1; 
 let nextStartingSide = 1; 
@@ -624,15 +739,15 @@ function playSound(type){
   
   if(type === 'click'){
    osc.type='sine'; osc.frequency.setValueAtTime(400,now); osc.frequency.exponentialRampToValueAtTime(200,now+0.05);
-   gain.gain.setValueAtTime(0.1,now); gain.gain.linearRampToValueAtTime(0.01,now+0.05);
+   gain.gain.setValueAtTime(0.1,now); gain.linearRampToValueAtTime(0.01,now+0.05);
    osc.start(now); osc.stop(now+0.05);
   }else if(type === 'move'){
    osc.type='triangle'; osc.frequency.setValueAtTime(250,now); osc.frequency.exponentialRampToValueAtTime(350,now+0.08);
-   gain.gain.setValueAtTime(0.15,now); gain.gain.linearRampToValueAtTime(0.01,now+0.08);
+   gain.gain.setValueAtTime(0.15,now); gain.linearRampToValueAtTime(0.01,now+0.08);
    osc.start(now); osc.stop(now+0.08);
   }else if(type === 'capture'){
    osc.type='sawtooth'; osc.frequency.setValueAtTime(150,now); osc.frequency.exponentialRampToValueAtTime(80,now+0.15);
-   gain.gain.setValueAtTime(0.2,now); gain.gain.linearRampToValueAtTime(0.01,now+0.15);
+   gain.gain.setValueAtTime(0.2,now); gain.linearRampToValueAtTime(0.01,now+0.15);
    osc.start(now); osc.stop(now+0.15);
   }else if(type === 'win'){
    osc.type='sine';
@@ -640,7 +755,7 @@ function playSound(type){
     const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
     o.connect(g); g.connect(audioCtx.destination);
     o.frequency.setValueAtTime([300,400,500,650][i],now+t);
-    g.gain.setValueAtTime(0.15,now+t); g.gain.linearRampToValueAtTime(0.01,now+t+0.12);
+    g.gain.setValueAtTime(0.15,now+t); g.linearRampToValueAtTime(0.01,now+t+0.12);
     o.start(now+t); o.stop(now+t+0.12);
    });
   }else if(type === 'lose'){
@@ -649,7 +764,7 @@ function playSound(type){
     const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
     o.connect(g); g.connect(audioCtx.destination);
     o.frequency.setValueAtTime([300,220,150][i],now+t);
-    g.gain.setValueAtTime(0.15,now+t); g.gain.linearRampToValueAtTime(0.01,now+t+0.15);
+    g.gain.setValueAtTime(0.15,now+t); g.linearRampToValueAtTime(0.01,now+t+0.15);
     o.start(now+t); o.stop(now+t+0.15);
    });
   }
@@ -741,26 +856,20 @@ try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);auth=firebas
 
 function presence(){if(!fbUser||!user.name)return;const r=db.ref('publicProfiles_v6/'+fbUser.uid);r.child('online').onDisconnect().set(false).catch(e=>{});r.update({name:user.name,online:true,points:user.points,pieceIndex:user.pieceIndex||0,selectedEffect:user.selectedEffect||'',lastSeen:firebase.database.ServerValue.TIMESTAMP}).catch(e=>{})}
 
+function applyAvatarToBox(elementId, designIndex){
+ const el = $(elementId);
+ if(!el) return;
+ const design = PIECE_DESIGNS[designIndex] || PIECE_DESIGNS[0];
+ el.style.background = design.bg;
+ el.style.borderColor = design.border;
+ el.style.color = design.color;
+ el.innerHTML = design.icon;
+}
+
 function updateHeader(){
  $('headerName').textContent=user.name||'ක්‍රීඩකයා';
  $('points').textContent=user.points!==undefined?user.points:500;
- const design=PIECE_DESIGNS[user.pieceIndex||0]||PIECE_DESIGNS[0];
- const av=$('headerAvatar');
- av.style.background=design.bg;
- av.style.borderColor=design.border;
- av.style.color=design.color;
- av.innerHTML=design.icon;
-}
-
-function updateArenaAvatars(){
- const design=PIECE_DESIGNS[user.pieceIndex||0]||PIECE_DESIGNS[0];
- const p1Box = $('p1AvatarBox');
- if(p1Box){
-  p1Box.style.background=design.bg;
-  p1Box.style.borderColor=design.border;
-  p1Box.style.color=design.color;
-  p1Box.innerHTML=design.icon;
- }
+ applyAvatarToBox('headerAvatar', user.pieceIndex||0);
 }
 
 function saveUser(){
@@ -936,8 +1045,9 @@ function initBoard(){
   userSide = nextStartingSide; 
   $('p1sub').textContent = '0/115';
   $('p2sub').textContent = '0/115';
+  applyAvatarToBox('p1AvatarBox', user.pieceIndex||0);
+  applyAvatarToBox('p2AvatarBox', 0);
  }
- updateArenaAvatars();
  render();
  setTurnUI();
  if(single && turn !== userSide){ aiTimer=setTimeout(aiMove, 600); }
@@ -1303,6 +1413,79 @@ async function publishFinish(winner,message){
  }catch(e){}
 }
 
+function listenChat(){
+ if(!roomId) return;
+ if(chatRef && chatCb) chatRef.off('child_added', chatCb);
+ chatRef = db.ref('rooms_v6/' + roomId + '/chat');
+ $('chatMessages').innerHTML = '';
+ chatCb = chatRef.on('child_added', snapshot => {
+  const msg = snapshot.val();
+  if(!msg) return;
+  const isMe = msg.sender === fbUser.uid;
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + (isMe ? 'me' : 'them');
+  div.textContent = msg.text;
+  $('chatMessages').appendChild(div);
+  $('chatMessages').scrollTop = $('chatMessages').scrollHeight;
+  if(!isMe) playSound('click');
+ });
+}
+
+function sendChatMessage(text){
+ text = text.trim();
+ if(!text) return;
+ if(single){
+  const divMe = document.createElement('div');
+  divMe.className = 'chat-msg me';
+  divMe.textContent = text;
+  $('chatMessages').appendChild(divMe);
+  
+  setTimeout(()=>{
+   const replies = ["හොඳයි 👍", "ඔබේ වාරය!", "නියමයි 🔥", "හොඳ ක්‍රීඩාවක්! 😊"];
+   const divAi = document.createElement('div');
+   divAi.className = 'chat-msg them';
+   divAi.textContent = replies[Math.floor(Math.random()*replies.length)];
+   $('chatMessages').appendChild(divAi);
+   $('chatMessages').scrollTop = $('chatMessages').scrollHeight;
+  }, 1000);
+  
+  $('chatMessages').scrollTop = $('chatMessages').scrollHeight;
+  return;
+ }
+ if(!roomRef) return;
+ db.ref('rooms_v6/' + roomId + '/chat').push({
+  sender: fbUser.uid,
+  text: text,
+  time: Date.now()
+ });
+}
+
+function sendQuickChat(msg){
+ sendChatMessage(msg);
+}
+
+$('sendChatBtn').onclick = () => {
+ const val = $('chatInput').value;
+ sendChatMessage(val);
+ $('chatInput').value = '';
+};
+
+$('chatInput').addEventListener('keydown', e => {
+ if(e.key === 'Enter'){
+  $('sendChatBtn').click();
+ }
+});
+
+function toggleChatDrawer(){
+ const drawer = $('chatDrawer');
+ drawer.classList.toggle('open');
+ playSound('click');
+}
+
+$('arenaChatBtn').onclick = toggleChatDrawer;
+$('clockRing').onclick = toggleChatDrawer;
+$('closeChat').onclick = () => $('chatDrawer').classList.remove('open');
+
 function listenRoom(){
  if(roomRef&&roomCb)roomRef.off('value',roomCb);
  roomRef=db.ref('rooms_v6/'+roomId);
@@ -1315,24 +1498,9 @@ function listenRoom(){
   window.hostPieceIndex = Number(d.hostPieceIndex) || 0;
   window.guestPieceIndex = Number(d.guestPieceIndex) || 0;
   
-  // Set guest/host avatars in arena
-  if(!single){
-   const isHost = (role === 'host');
-   const myDesign = PIECE_DESIGNS[isHost ? window.hostPieceIndex : window.guestPieceIndex] || PIECE_DESIGNS[0];
-   const p1Box = $('p1AvatarBox');
-   p1Box.style.background = myDesign.bg;
-   p1Box.style.borderColor = myDesign.border;
-   p1Box.style.color = myDesign.color;
-   p1Box.innerHTML = myDesign.icon;
-
-   const oppDesign = PIECE_DESIGNS[isHost ? window.guestPieceIndex : window.hostPieceIndex] || PIECE_DESIGNS[0];
-   let p2Box = $('p2AvatarBox');
-   p2Box.style.background = oppDesign.bg;
-   p2Box.style.borderColor = oppDesign.border;
-   p2Box.style.color = oppDesign.color;
-   p2Box.innerHTML = oppDesign.icon;
-  }
-
+  applyAvatarToBox('p1AvatarBox', window.hostPieceIndex);
+  applyAvatarToBox('p2AvatarBox', window.guestPieceIndex);
+  
   if(d.status==='waiting'){
    clearInterval(turnClockTimer);
    $('gameStatus').textContent='ආරාධනාව පිළිගන්නා තෙක් රැඳී සිටින්න...';
@@ -1405,6 +1573,7 @@ function listenRoom(){
    }
   }
  });
+ listenChat();
 }
 
 function setTurnUIRoom(){ 
@@ -1619,7 +1788,6 @@ async function renderFriends(){
   paintFriendsList();
  });
 }
-
 $('navHome').onclick=()=>{document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));$('navHome').classList.add('active');};
 $('navFriends').onclick=()=>{document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));$('navFriends').classList.add('active');renderFriends();modal('friendsModal',true)};
 $('navProfile').onclick=()=>{document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));$('navProfile').classList.add('active');$('openProfile').click()};
@@ -1627,7 +1795,6 @@ $('closeFriends').onclick=()=>{stopFriendsPresence();modal('friendsModal',false)
 $('findFriends').onclick=()=>{stopFriendsPresence();modal('friendsModal',false);$('maxUserPoints').textContent=user.points;$('betAmountInput').value=Math.min(50,user.points);modal('betModal',true)};
 $('collectRewards').onclick=()=>location.href='shopandreward.html';
 $('coinShop').onclick=()=>location.href='shopandreward.html';
-
 $('freestyle').onclick=()=>{
  window.currentBetPoints=0;
  window.practiceMode=true;
@@ -1701,8 +1868,13 @@ function leaveRoom(){
  if(roomRef&&roomCb){
   roomRef.off('value',roomCb);
  }
+ if(chatRef&&chatCb){
+  chatRef.off('child_added',chatCb);
+ }
  roomRef=null;
  roomCb=null;
+ chatRef=null;
+ chatCb=null;
  roomId=null;
  role=null;
  single=true;
@@ -1711,78 +1883,37 @@ function leaveRoom(){
 
  modal('overModal', false);
  $('arena').style.display='none';
+ $('chatDrawer').classList.remove('open');
  $('lobby').style.display='grid';
  $('homeTop').style.display='flex';
  $('bottomNav').style.display='flex';
 }
 
-function openChatModal(){
- modal('chatModal', true);
-}
-
-$('clockPanel').onclick = openChatModal;
-if($('arenaChatBtn')) {
- $('arenaChatBtn').onclick = openChatModal;
-}
-$('closeChat').onclick = () => modal('chatModal', false);
-
-$('sendChatBtn').onclick = () => {
- const input = $('chatInput');
- const text = input.value.trim();
- if(!text) return;
- 
- const msgBox = $('chatMessages');
- const div = document.createElement('div');
- div.className = 'chat-msg mine';
- div.textContent = text;
- msgBox.appendChild(div);
- input.value = '';
- msgBox.scrollTop = msgBox.scrollHeight;
- 
- // If single player, give a playful AI response
- if(single) {
-  setTimeout(() => {
-   const reply = document.createElement('div');
-   reply.className = 'chat-msg theirs';
-   reply.textContent = 'මම සූදානම්! හොඳින් සෙල්ලම් කරන්න.';
-   msgBox.appendChild(reply);
-   msgBox.scrollTop = msgBox.scrollHeight;
-  }, 1000);
- } else if(roomId && roomRef) {
-  // Multiplayer chat handling can be synced via Firebase if needed
-  db.ref('rooms_v6/'+roomId+'/chats').push({
-   sender: fbUser.uid,
-   name: user.name,
-   text: text,
-   timestamp: firebase.database.ServerValue.TIMESTAMP
-  });
+function handleMenuForfeit(){
+ if(gameOver) {
+  leaveRoom();
+  return;
  }
-};
+ showCustomAlert(
+  'තරඟයෙන් ඉවත් වීම',
+  'ඔබට සැබවින්ම තරඟයෙන් ඉවත් වීමට අවශ්‍යද? (මෙය පැරදීමක් ලෙස සටහන් වේ)',
+  'warning',
+  async ()=>{
+   if(single){
+    finish(-userSide,'ඔබ තරඟයෙන් ඉවත් විය.');
+   } else {
+    const winner = (role === 'host') ? -1 : 1;
+    await publishFinish(winner, 'ප්‍රතිවාදියා තරඟයෙන් ඉවත් විය.');
+   }
+  },
+  true,
+  'නැත (Cancel)',
+  'ඔව් (Yes)'
+ );
+}
 
-// Menu button click handles forfeit / exit options
 if($('arenaMenuBtn')) {
- $('arenaMenuBtn').onclick = () => {
-  if(gameOver) {
-   leaveRoom();
-   return;
-  }
-  showCustomAlert(
-   'තරඟයෙන් ඉවත් වීම',
-   'ඔබට සැබවින්ම තරඟයෙන් ඉවත් වීමට අවශ්‍යද? (මෙය පැරදීමක් ලෙස සටහන් වේ)',
-   'warning',
-   async ()=>{
-    if(single){
-     finish(-userSide,'ඔබ තරඟයෙන් ඉවත් විය.');
-    } else {
-     const winner = (role === 'host') ? -1 : 1;
-     await publishFinish(winner, 'ප්‍රතිවාදියා තරඟයෙන් ඉවත් විය.');
-    }
-   },
-   true,
-   'නැත (Cancel)',
-   'ඔව් (Yes)'
-  );
- };
+ $('arenaMenuBtn').onclick = handleMenuForfeit;
 }
 
 $('rematch').onclick=async()=>{
@@ -1829,15 +1960,7 @@ $('exit').onclick=()=>{
 
 $('home').onclick=()=>{
  if(roomId && !gameOver){
-  showCustomAlert(
-   'ප්‍රධාන පිටුවට යාම',
-   'තරඟය අතරතුර ඉවත් වුවහොත් එය පරාජයක් ලෙස සටහන් වේ. ඔබට පිටුවට යාමට අවශ්‍යද?',
-   'warning',
-   ()=>{$('arenaMenuBtn').click();},
-   true,
-   'නැත',
-   'ඔව්'
-  );
+  handleMenuForfeit();
   return;
  }
  leaveRoom();
