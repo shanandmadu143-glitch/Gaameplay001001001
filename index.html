@@ -8,8 +8,8 @@
 <style>
 :root{--bg:#080b18;--panel:rgba(18,24,43,.96);--gold:#ffd166;--dim:#a0aec0;--red:#ff6b81;--green:#2ecc71;--blue:#4facfe}
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Gemunu Libre','Poppins',sans-serif;user-select:none}
-html,body{width:100%;min-height:100%;background:radial-gradient(circle at 18% 18%,#3b2e2530,transparent 35%),linear-gradient(145deg,#080b18,#111a31 55%,#0a1022);color:#f8f9fa}
-body{min-height:100dvh}.app{min-height:100dvh;max-width:1100px;margin:auto;padding:10px;display:flex;flex-direction:column;gap:12px;position:relative}
+html,body{width:100%;height:100%;overflow:hidden;background:radial-gradient(circle at 18% 18%,#3b2e2530,transparent 35%),linear-gradient(145deg,#080b18,#111a31 55%,#0a1022);color:#f8f9fa}
+body{height:100dvh}.app{height:100dvh;max-width:1100px;margin:auto;padding:10px;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden}
 header,footer,.panel,.lobby,.side{background:var(--panel);border:1px solid #ffd16640;border-radius:15px;padding:10px 14px}
 header,footer{display:flex;align-items:center;justify-content:space-between;gap:10px}header{min-height:58px}.brand{font-size:1.25rem;color:var(--gold);font-weight:800}
 
@@ -23,25 +23,33 @@ header,footer{display:flex;align-items:center;justify-content:space-between;gap:
 .btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111}.btn-gold:hover{filter:brightness(1.1)}
 .btn:disabled,.btn-gold:disabled{opacity:.45;cursor:not-allowed}
 
-main{flex:1;display:grid;place-items:center;min-height:400px;width:100%;}.lobby{width:min(100%,550px);padding:22px;display:grid;gap:16px}.lobby h2{text-align:center;color:var(--gold)}.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.mode{padding:22px 10px;border:1px solid #ffffff25;border-radius:12px;text-align:center;background:#ffffff08;cursor:pointer;transition:.2s}.mode:hover{border-color:var(--gold);background:#ffffff12}.mode i{font-size:2rem;color:var(--gold);display:block;margin-bottom:8px}
+main{flex:1;display:grid;place-items:center;min-height:400px;width:100%;overflow:hidden}
+.lobby{width:min(100%,550px);padding:22px;display:grid;gap:16px}
+.lobby h2{text-align:center;color:var(--gold)}
+.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mode{padding:22px 10px;border:1px solid #ffffff25;border-radius:12px;text-align:center;background:#ffffff08;cursor:pointer;transition:.2s}
+.mode:hover{border-color:var(--gold);background:#ffffff12}
+.mode i{font-size:2rem;color:var(--gold);display:block;margin-bottom:8px}
 
 /* =========================================================
-   FULL SCREEN ARENA UI
+   FULL SCREEN NON-SCROLLABLE ARENA UI
    ========================================================= */
 .arena {
-  width: min(100%, 480px);
-  min-height: calc(100dvh - 24px);
+  width: min(100%, 460px);
+  height: 100%;
+  max-height: calc(100dvh - 20px);
   margin: 0 auto;
   background: #110505;
   border: 2px solid #ffca4540;
   border-radius: 28px;
-  padding: 16px 14px 20px;
+  padding: 12px 14px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 10px;
+  align-items: center;
   box-shadow: 0 10px 30px rgba(0,0,0,0.8);
   position: relative;
+  overflow: hidden;
 }
 
 .arena-top-header {
@@ -57,21 +65,22 @@ main{flex:1;display:grid;place-items:center;min-height:400px;width:100%;}.lobby{
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 4px;
+  gap: 3px;
 }
 
 .arena-avatar-box {
-  width: 60px;
-  height: 60px;
-  border-radius: 18px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
   border: 3px solid #ff9f43;
   background: #2b1107;
   display: grid;
   place-items: center;
-  font-size: 1.7rem;
+  font-size: 1.4rem;
   color: #ff9f43;
   box-shadow: 0 0 12px rgba(255,159,67,0.3);
   transition: .3s ease;
+  overflow: hidden;
 }
 
 .arena-player-card.active .arena-avatar-box {
@@ -80,7 +89,7 @@ main{flex:1;display:grid;place-items:center;min-height:400px;width:100%;}.lobby{
 }
 
 .arena-player-card b {
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   color: #fff;
   white-space: nowrap;
   overflow: hidden;
@@ -89,9 +98,8 @@ main{flex:1;display:grid;place-items:center;min-height:400px;width:100%;}.lobby{
 }
 
 .arena-player-card small {
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   color: #a0aec0;
-  letter-spacing: 0.5px;
 }
 
 .arena-coins-center {
@@ -102,34 +110,25 @@ main{flex:1;display:grid;place-items:center;min-height:400px;width:100%;}.lobby{
 }
 
 .arena-coins-center i {
-  font-size: 2.1rem;
+  font-size: 1.8rem;
   color: #ffca45;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
 }
 
 .arena-coins-center b {
-  font-size: 1.35rem;
+  font-size: 1.2rem;
   color: #fff;
   letter-spacing: 1px;
 }
 
-.arena-title {
-  text-align: center;
-  color: #ffca45;
-  font-size: 1.5rem;
-  font-weight: 800;
-  letter-spacing: 1px;
-  margin-top: -2px;
-}
-
 .board-wrap {
-  width: 100%;
+  width: min(100%, 380px);
   aspect-ratio: 1;
   position: relative;
   margin: 0 auto;
   background: #4a2810;
-  padding: 12px;
-  border-radius: 24px;
+  padding: 10px;
+  border-radius: 20px;
   box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 8px 20px rgba(0,0,0,0.6);
   border: 4px solid #2d1709;
 }
@@ -140,7 +139,7 @@ main{flex:1;display:grid;place-items:center;min-height:400px;width:100%;}.lobby{
   display: grid;
   grid-template-columns: repeat(8,1fr);
   grid-template-rows: repeat(8,1fr);
-  border-radius: 8px;
+  border-radius: 6px;
   overflow: hidden;
   border: 2px solid #231206;
 }
@@ -170,7 +169,7 @@ main{flex:1;display:grid;place-items:center;min-height:400px;width:100%;}.lobby{
 }
 .king:after {
   content:'♛';
-  font-size: clamp(12px,3vw,20px);
+  font-size: clamp(10px,2.5vw,16px);
   position: absolute;
   bottom: 2px;
   right: 2px;
@@ -181,22 +180,23 @@ main{flex:1;display:grid;place-items:center;min-height:400px;width:100%;}.lobby{
 .status {
   text-align: center;
   color: #ffca45;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 700;
-  min-height: 26px;
+  min-height: 24px;
 }
 
 #clockPanel {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 10px;
+  cursor: pointer;
 }
 
 #clockRing {
   --progress: 100;
-  width: 54px;
-  height: 54px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   display: grid;
   place-items: center;
@@ -208,7 +208,7 @@ main{flex:1;display:grid;place-items:center;min-height:400px;width:100%;}.lobby{
 #clockRing:before {
   content: '';
   position: absolute;
-  inset: 5px;
+  inset: 4px;
   border-radius: 50%;
   background: #110505;
   border: 1px solid #ffffff20;
@@ -216,12 +216,12 @@ main{flex:1;display:grid;place-items:center;min-height:400px;width:100%;}.lobby{
 #turnClock {
   position: relative;
   z-index: 1;
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 800;
   color: #ffca45;
 }
 #clockCaption {
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   color: #a0aec0;
   font-weight: 600;
 }
@@ -232,18 +232,17 @@ main{flex:1;display:grid;place-items:center;min-height:400px;width:100%;}.lobby{
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 0 6px;
-  margin-top: 2px;
+  padding: 0 4px;
 }
 
 .arena-circle-btn {
-  width: 52px;
-  height: 52px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   border: 2px solid #ffca45;
   background: linear-gradient(135deg, #ffca45, #e09100);
   color: #110505;
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   display: grid;
   place-items: center;
   cursor: pointer;
@@ -252,21 +251,27 @@ main{flex:1;display:grid;place-items:center;min-height:400px;width:100%;}.lobby{
 }
 .arena-circle-btn:active { transform: scale(0.92); }
 
-.close {
-  position: absolute;
-  right: -8px;
-  top: -8px;
-  border: 2px solid white;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  background: #e74c3c;
-  color: white;
-  z-index: 3;
-  cursor: pointer;
-  display: grid;
-  place-items: center;
+/* Chat Modal Styles */
+.chat-messages {
+  max-height: 220px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 10px;
+  border: 1px solid #ffffff15;
 }
+.chat-msg {
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  max-width: 80%;
+  overflow-wrap: anywhere;
+}
+.chat-msg.mine { background: #2479df; align-self: flex-end; color: #fff; }
+.chat-msg.theirs { background: #2d3748; align-self: flex-start; color: #ffd166; }
 
 /* In-game Visual Effects */
 .fx-pink{box-shadow:0 0 15px #ff9ff3,0 0 28px #f368e0!important}
@@ -361,55 +366,6 @@ button,a,input{touch-action:manipulation;}
 .modalbox{width:min(100%,520px);max-height:calc(100dvh - 28px);overflow-y:auto;overscroll-behavior:contain;}
 .bottom-nav{bottom:max(8px,env(safe-area-inset-bottom));}
 #toast{max-width:calc(100vw - 28px);text-align:center;}
-
-@media (max-width:600px){
- .app{padding:12px 14px calc(98px + env(safe-area-inset-bottom));gap:12px;}
- .home-top{gap:8px;padding:2px 0 8px;}
- .profile-float{gap:8px;min-width:0;}
- .avatar{width:58px;height:58px;font-size:1.55rem;border-width:3px;flex:0 0 auto;}
- #headerName{font-size:clamp(.95rem,4vw,1.15rem);overflow-wrap:anywhere;}
- .pro-label{font-size:.78rem;}
- .coin-pill{min-width:0;gap:7px;padding:5px 7px 5px 10px;}
- .coin-pill>i{font-size:1.25rem;}
- .coin-pill b{font-size:1.15rem;}
- .coin-pill button{width:34px;height:34px;font-size:1.35rem;flex:0 0 auto;}
- .lobby{gap:12px;}
- .reward-banner{min-height:76px;padding:12px 10px;border-radius:20px;font-size:clamp(1.2rem,5.5vw,1.55rem);gap:10px;letter-spacing:.2px;}
- .reward-banner i{font-size:1.6rem;}
- .mode-grid{gap:12px;}
- .mode{min-height:120px;border-radius:22px;padding:16px 18px;}
- .mode b{font-size:clamp(1.2rem,6vw,1.65rem);max-width:78%;overflow-wrap:anywhere;}
- .mode p{font-size:clamp(.85rem,3.7vw,1rem);max-width:78%;line-height:1.25;}
- .mode:after{right:14px;font-size:clamp(2.5rem,12vw,3.4rem);}
- .bottom-nav{width:calc(100% - 18px);min-height:68px;padding:5px 2px;border-radius:20px;}
- .nav-item{font-size:clamp(.68rem,2.8vw,.82rem);gap:2px;}
- .nav-item i{font-size:clamp(1.25rem,6vw,1.55rem);}
- .pieces-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;}
- .piece-option{padding:8px 5px;min-width:0;}
- .row{flex-wrap:wrap;}
- .row>*{flex:1 1 120px;}
- .listitem{flex-wrap:wrap;}
- .listitem button{min-height:38px;}
- .arena { width: 100%; border-radius: 20px; padding: 12px 10px 16px; min-height: calc(100dvh - 24px); }
- .arena-avatar-box { width: 50px; height: 50px; font-size: 1.4rem; }
- .arena-title { font-size: 1.3rem; }
-}
-
-@media(max-width:380px){
- .app{padding-left:10px;padding-right:10px;}
- .avatar{width:52px;height:52px;}
- .coin-pill{gap:5px;padding-left:7px;}
- .coin-pill>i{font-size:1.1rem;}
- .coin-pill b{font-size:1.05rem;}
- .coin-pill button{width:31px;height:31px;}
- .mode{min-height:108px;padding:13px 14px;border-radius:18px;}
- .mode:after{right:10px;font-size:2.4rem;}
- .mode b{font-size:1.15rem;}
- .mode p{font-size:.8rem;}
- .bottom-nav{width:calc(100% - 12px);}
- .nav-item i{font-size:1.2rem;}
- .nav-item{font-size:.65rem;}
-}
 </style>
 </head>
 <body>
@@ -438,11 +394,11 @@ button,a,input{touch-action:manipulation;}
 <div id="connection">● Firebase සම්බන්ධ වෙමින්...</div>
 </section>
 
-<!-- ARENA SECTION (FULL SCREEN MODE) -->
+<!-- ARENA SECTION (NON-SCROLLABLE FULL SCREEN) -->
 <section class="arena" id="arena" style="display:none">
  <div class="arena-top-header">
   <div class="arena-player-card active" id="p1">
-   <div class="arena-avatar-box"><i class="fa-solid fa-user"></i></div>
+   <div class="arena-avatar-box" id="p1AvatarBox"><i class="fa-solid fa-user"></i></div>
    <b id="p1name">yomal</b>
    <small id="p1sub">0/115</small>
   </div>
@@ -451,29 +407,26 @@ button,a,input{touch-action:manipulation;}
    <b id="arenaBetDisplay">100</b>
   </div>
   <div class="arena-player-card" id="p2">
-   <div class="arena-avatar-box"><i class="fa-solid fa-chess-knight"></i></div>
+   <div class="arena-avatar-box" id="p2AvatarBox"><i class="fa-solid fa-chess-knight"></i></div>
    <b id="p2name">AI පරිගණකය</b>
    <small id="p2sub">0/115</small>
   </div>
  </div>
 
- <div class="arena-title">Checkers Game</div>
-
  <div class="board-wrap">
-  <button class="close" id="forfeit" title="තරඟයෙන් ඉවත් වන්න">×</button>
   <div class="board" id="board"></div>
  </div>
 
  <div class="status" id="gameStatus">ඔබගේ වාරය</div>
 
- <div id="clockPanel">
+ <div id="clockPanel" title="Chat කිරීමට Click කරන්න">
   <div id="clockRing" role="timer" aria-live="off"><span id="turnClock">10</span></div>
   <span id="clockCaption">ඉතිරි කාලය</span>
  </div>
 
  <div class="arena-controls">
   <button class="arena-circle-btn" id="arenaChatBtn" title="Chat"><i class="fa-solid fa-comment-dots"></i></button>
-  <button class="arena-circle-btn" id="arenaMenuBtn" title="Menu"><i class="fa-solid fa-bars"></i></button>
+  <button class="arena-circle-btn" id="arenaMenuBtn" title="Menu (ඉවත් වීමට)"><i class="fa-solid fa-bars"></i></button>
  </div>
 </section>
 </main>
@@ -549,7 +502,7 @@ button,a,input{touch-action:manipulation;}
 </div>
 </div>
 
-<!-- Friends / invited opponents -->
+<!-- Friends Modal -->
 <div class="modal" id="friendsModal">
  <div class="modalbox">
   <div class="row"><h3 style="flex:1">FRIENDS</h3><button class="btn" id="closeFriends">×</button></div>
@@ -557,6 +510,20 @@ button,a,input{touch-action:manipulation;}
   <div class="list" id="friendsList">යහළුවන් ලබාගනිමින්...</div>
   <button class="btn-gold" id="findFriends">යහළුවන් සොයන්න / Invite කරන්න</button>
  </div>
+</div>
+
+<!-- Chat Modal (Opens on Clock Click / Chat Button Click) -->
+<div class="modal" id="chatModal">
+<div class="modalbox">
+<div class="row"><h3 style="flex:1">ප්‍රතිවාදියා සමඟ Chat</h3><button class="btn" id="closeChat">×</button></div>
+<div class="chat-messages" id="chatMessages">
+ <div class="chat-msg theirs">සුභ පැතුම්! තරඟය ආරම්භ කරමු.</div>
+</div>
+<div class="row" style="margin-top:10px;">
+ <input id="chatInput" placeholder="පණිවිඩයක් ලියන්න..." style="flex:1">
+ <button class="btn-gold" id="sendChatBtn">යවන්න</button>
+</div>
+</div>
 </div>
 
 <!-- Universal Alert Modal -->
@@ -657,15 +624,15 @@ function playSound(type){
   
   if(type === 'click'){
    osc.type='sine'; osc.frequency.setValueAtTime(400,now); osc.frequency.exponentialRampToValueAtTime(200,now+0.05);
-   gain.gain.setValueAtTime(0.1,now); gain.linearRampToValueAtTime(0.01,now+0.05);
+   gain.gain.setValueAtTime(0.1,now); gain.gain.linearRampToValueAtTime(0.01,now+0.05);
    osc.start(now); osc.stop(now+0.05);
   }else if(type === 'move'){
    osc.type='triangle'; osc.frequency.setValueAtTime(250,now); osc.frequency.exponentialRampToValueAtTime(350,now+0.08);
-   gain.gain.setValueAtTime(0.15,now); gain.linearRampToValueAtTime(0.01,now+0.08);
+   gain.gain.setValueAtTime(0.15,now); gain.gain.linearRampToValueAtTime(0.01,now+0.08);
    osc.start(now); osc.stop(now+0.08);
   }else if(type === 'capture'){
    osc.type='sawtooth'; osc.frequency.setValueAtTime(150,now); osc.frequency.exponentialRampToValueAtTime(80,now+0.15);
-   gain.gain.setValueAtTime(0.2,now); gain.linearRampToValueAtTime(0.01,now+0.15);
+   gain.gain.setValueAtTime(0.2,now); gain.gain.linearRampToValueAtTime(0.01,now+0.15);
    osc.start(now); osc.stop(now+0.15);
   }else if(type === 'win'){
    osc.type='sine';
@@ -673,7 +640,7 @@ function playSound(type){
     const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
     o.connect(g); g.connect(audioCtx.destination);
     o.frequency.setValueAtTime([300,400,500,650][i],now+t);
-    g.gain.setValueAtTime(0.15,now+t); g.linearRampToValueAtTime(0.01,now+t+0.12);
+    g.gain.setValueAtTime(0.15,now+t); g.gain.linearRampToValueAtTime(0.01,now+t+0.12);
     o.start(now+t); o.stop(now+t+0.12);
    });
   }else if(type === 'lose'){
@@ -682,7 +649,7 @@ function playSound(type){
     const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
     o.connect(g); g.connect(audioCtx.destination);
     o.frequency.setValueAtTime([300,220,150][i],now+t);
-    g.gain.setValueAtTime(0.15,now+t); g.linearRampToValueAtTime(0.01,now+t+0.15);
+    g.gain.setValueAtTime(0.15,now+t); g.gain.linearRampToValueAtTime(0.01,now+t+0.15);
     o.start(now+t); o.stop(now+t+0.15);
    });
   }
@@ -783,6 +750,17 @@ function updateHeader(){
  av.style.borderColor=design.border;
  av.style.color=design.color;
  av.innerHTML=design.icon;
+}
+
+function updateArenaAvatars(){
+ const design=PIECE_DESIGNS[user.pieceIndex||0]||PIECE_DESIGNS[0];
+ const p1Box = $('p1AvatarBox');
+ if(p1Box){
+  p1Box.style.background=design.bg;
+  p1Box.style.borderColor=design.border;
+  p1Box.style.color=design.color;
+  p1Box.innerHTML=design.icon;
+ }
 }
 
 function saveUser(){
@@ -959,6 +937,7 @@ function initBoard(){
   $('p1sub').textContent = '0/115';
   $('p2sub').textContent = '0/115';
  }
+ updateArenaAvatars();
  render();
  setTurnUI();
  if(single && turn !== userSide){ aiTimer=setTimeout(aiMove, 600); }
@@ -1336,6 +1315,24 @@ function listenRoom(){
   window.hostPieceIndex = Number(d.hostPieceIndex) || 0;
   window.guestPieceIndex = Number(d.guestPieceIndex) || 0;
   
+  // Set guest/host avatars in arena
+  if(!single){
+   const isHost = (role === 'host');
+   const myDesign = PIECE_DESIGNS[isHost ? window.hostPieceIndex : window.guestPieceIndex] || PIECE_DESIGNS[0];
+   const p1Box = $('p1AvatarBox');
+   p1Box.style.background = myDesign.bg;
+   p1Box.style.borderColor = myDesign.border;
+   p1Box.style.color = myDesign.color;
+   p1Box.innerHTML = myDesign.icon;
+
+   const oppDesign = PIECE_DESIGNS[isHost ? window.guestPieceIndex : window.hostPieceIndex] || PIECE_DESIGNS[0];
+   let p2Box = $('p2AvatarBox');
+   p2Box.style.background = oppDesign.bg;
+   p2Box.style.borderColor = oppDesign.border;
+   p2Box.style.color = oppDesign.color;
+   p2Box.innerHTML = oppDesign.icon;
+  }
+
   if(d.status==='waiting'){
    clearInterval(turnClockTimer);
    $('gameStatus').textContent='ආරාධනාව පිළිගන්නා තෙක් රැඳී සිටින්න...';
@@ -1622,6 +1619,7 @@ async function renderFriends(){
   paintFriendsList();
  });
 }
+
 $('navHome').onclick=()=>{document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));$('navHome').classList.add('active');};
 $('navFriends').onclick=()=>{document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));$('navFriends').classList.add('active');renderFriends();modal('friendsModal',true)};
 $('navProfile').onclick=()=>{document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));$('navProfile').classList.add('active');$('openProfile').click()};
@@ -1629,6 +1627,7 @@ $('closeFriends').onclick=()=>{stopFriendsPresence();modal('friendsModal',false)
 $('findFriends').onclick=()=>{stopFriendsPresence();modal('friendsModal',false);$('maxUserPoints').textContent=user.points;$('betAmountInput').value=Math.min(50,user.points);modal('betModal',true)};
 $('collectRewards').onclick=()=>location.href='shopandreward.html';
 $('coinShop').onclick=()=>location.href='shopandreward.html';
+
 $('freestyle').onclick=()=>{
  window.currentBetPoints=0;
  window.practiceMode=true;
@@ -1717,34 +1716,73 @@ function leaveRoom(){
  $('bottomNav').style.display='flex';
 }
 
-$('forfeit').onclick=()=>{
- if(gameOver) {
-  leaveRoom();
-  return;
+function openChatModal(){
+ modal('chatModal', true);
+}
+
+$('clockPanel').onclick = openChatModal;
+if($('arenaChatBtn')) {
+ $('arenaChatBtn').onclick = openChatModal;
+}
+$('closeChat').onclick = () => modal('chatModal', false);
+
+$('sendChatBtn').onclick = () => {
+ const input = $('chatInput');
+ const text = input.value.trim();
+ if(!text) return;
+ 
+ const msgBox = $('chatMessages');
+ const div = document.createElement('div');
+ div.className = 'chat-msg mine';
+ div.textContent = text;
+ msgBox.appendChild(div);
+ input.value = '';
+ msgBox.scrollTop = msgBox.scrollHeight;
+ 
+ // If single player, give a playful AI response
+ if(single) {
+  setTimeout(() => {
+   const reply = document.createElement('div');
+   reply.className = 'chat-msg theirs';
+   reply.textContent = 'මම සූදානම්! හොඳින් සෙල්ලම් කරන්න.';
+   msgBox.appendChild(reply);
+   msgBox.scrollTop = msgBox.scrollHeight;
+  }, 1000);
+ } else if(roomId && roomRef) {
+  // Multiplayer chat handling can be synced via Firebase if needed
+  db.ref('rooms_v6/'+roomId+'/chats').push({
+   sender: fbUser.uid,
+   name: user.name,
+   text: text,
+   timestamp: firebase.database.ServerValue.TIMESTAMP
+  });
  }
- showCustomAlert(
-  'තරඟයෙන් ඉවත් වීම',
-  'ඔබට සැබවින්ම තරඟයෙන් ඉවත් වීමට අවශ්‍යද? (මෙය පැරදීමක් ලෙස සටහන් වේ)',
-  'warning',
-  async ()=>{
-   if(single){
-    finish(-userSide,'ඔබ තරඟයෙන් ඉවත් විය.');
-   } else {
-    const winner = (role === 'host') ? -1 : 1;
-    await publishFinish(winner, 'ප්‍රතිවාදියා තරඟයෙන් ඉවත් විය.');
-   }
-  },
-  true,
-  'නැත (Cancel)',
-  'ඔව් (Yes)'
- );
 };
 
+// Menu button click handles forfeit / exit options
 if($('arenaMenuBtn')) {
- $('arenaMenuBtn').onclick = () => $('forfeit').click();
-}
-if($('arenaChatBtn')) {
- $('arenaChatBtn').onclick = () => toast('Chat විශේෂාංගය ළඟදීම පැමිණේ!', 'fa-comment');
+ $('arenaMenuBtn').onclick = () => {
+  if(gameOver) {
+   leaveRoom();
+   return;
+  }
+  showCustomAlert(
+   'තරඟයෙන් ඉවත් වීම',
+   'ඔබට සැබවින්ම තරඟයෙන් ඉවත් වීමට අවශ්‍යද? (මෙය පැරදීමක් ලෙස සටහන් වේ)',
+   'warning',
+   async ()=>{
+    if(single){
+     finish(-userSide,'ඔබ තරඟයෙන් ඉවත් විය.');
+    } else {
+     const winner = (role === 'host') ? -1 : 1;
+     await publishFinish(winner, 'ප්‍රතිවාදියා තරඟයෙන් ඉවත් විය.');
+    }
+   },
+   true,
+   'නැත (Cancel)',
+   'ඔව් (Yes)'
+  );
+ };
 }
 
 $('rematch').onclick=async()=>{
@@ -1795,7 +1833,7 @@ $('home').onclick=()=>{
    'ප්‍රධාන පිටුවට යාම',
    'තරඟය අතරතුර ඉවත් වුවහොත් එය පරාජයක් ලෙස සටහන් වේ. ඔබට පිටුවට යාමට අවශ්‍යද?',
    'warning',
-   ()=>{$('forfeit').click();},
+   ()=>{$('arenaMenuBtn').click();},
    true,
    'නැත',
    'ඔව්'
