@@ -2,56 +2,78 @@
 <html lang="si">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>ශ්‍රී ලංකීය දාම් - Sinhala Draughts Pro</title>
+<title>ශ්‍රී ලංකීය දාම් - Sinhala Draughts Pro Gaming</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Gemunu+Libre:wght@400;600;700;800&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#080b18;--panel:rgba(18,24,43,.96);--gold:#ffd166;--dim:#a0aec0;--red:#ff6b81;--green:#2ecc71;--blue:#4facfe}
-*{box-sizing:border-box;margin:0;padding:0;font-family:'Gemunu Libre','Poppins',sans-serif;user-select:none}
-html,body{width:100%;min-height:100%;background:radial-gradient(circle at 18% 18%,#3b2e2530,transparent 35%),linear-gradient(145deg,#080b18,#111a31 55%,#0a1022);color:#f8f9fa;overflow-x:hidden}
-body{min-height:100dvh}.app{min-height:100dvh;max-width:1100px;margin:auto;padding:10px;display:flex;flex-direction:column;gap:12px;position:relative}
-header,footer,.panel,.lobby,.side{background:var(--panel);border:1px solid #ffd16640;border-radius:15px;padding:10px 14px}
-header,footer{display:flex;align-items:center;justify-content:space-between;gap:10px}header{min-height:58px}.brand{font-size:1.25rem;color:var(--gold);font-weight:800}
+:root{--bg:#05070e;--panel:rgba(14,20,38,.92);--gold:#ffd166;--neon-blue:#00f2fe;--neon-green:#2ecc71;--red:#ff4757;--dim:#a0aec0}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Gemunu Libre','Poppins',sans-serif;user-select:none;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;background:radial-gradient(circle at 50% 20%,#1a103c 0%,#080b18 60%,#03050a 100%);color:#f8f9fa;overflow-x:hidden}
+body{min-height:100dvh;display:flex;flex-direction:column;justify-content:center;align-items:center}
 
-/* Floating Profile Card */
-.profile-float{position:fixed;bottom:20px;right:20px;z-index:15;background:var(--panel);border:2px solid var(--gold);border-radius:14px;padding:8px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:0 4px 15px rgba(0,0,0,0.5);transition:.2s}
-.profile-float:hover{transform:scale(1.03);background:rgba(28,36,60,.98)}
-.avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe08a,#ff8db5,#7ee7ff);color:#18213e;font-size:1.1rem}
+.app{width:100%;max-width:480px;height:100dvh;max-height:100dvh;margin:auto;padding:12px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;box-shadow:0 0 40px rgba(0,0,0,0.9);border:1px solid rgba(255,209,102,0.2)}
 
-.btn,.btn-gold,.btn-outline{border:0;border-radius:9px;padding:9px 13px;cursor:pointer;font-weight:700;transition:.2s;text-decoration:none;display:inline-flex;align-items:center;gap:6px;justify-content:center}
-.btn,.btn-outline{background:#ffffff12;color:white;border:1px solid #ffffff30}.btn:hover{background:#ffffff20}
-.btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111}.btn-gold:hover{filter:brightness(1.1)}
-.btn:disabled,.btn-gold:disabled{opacity:.45;cursor:not-allowed}
+/* GAMING HUD HEADER */
+.home-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 12px;background:linear-gradient(135deg,rgba(22,30,56,0.95),rgba(10,14,28,0.95));border:2px solid rgba(255,209,102,0.4);border-radius:24px;box-shadow:0 8px 25px rgba(0,0,0,0.6);backdrop-filter:blur(10px)}
+.profile-float{display:flex;align-items:center;gap:10px;cursor:pointer}
+.avatar{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe08a,#ffb52e);color:#18213e;font-size:1.4rem;border:2px solid #ffd166;box-shadow:0 0 12px rgba(255,209,102,0.5)}
+#headerName{font-size:1.05rem;color:#fff;font-weight:800;line-height:1.1}
+.pro-label{color:var(--gold);font-size:0.75rem;font-weight:800;letter-spacing:1px;text-transform:uppercase}
 
-main{flex:1;display:grid;place-items:center;min-height:400px;width:100%;}.lobby{width:min(100%,550px);padding:22px;display:grid;gap:16px}.lobby h2{text-align:center;color:var(--gold)}.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.mode{padding:22px 10px;border:1px solid #ffffff25;border-radius:12px;text-align:center;background:#ffffff08;cursor:pointer;transition:.2s}.mode:hover{border-color:var(--gold);background:#ffffff12}.mode i{font-size:2rem;color:var(--gold);display:block;margin-bottom:8px}
+.coin-pill{display:flex;align-items:center;gap:8px;border:2px solid #ffd16666;border-radius:30px;background:rgba(5,8,18,0.8);padding:5px 12px 5px 14px;box-shadow:inset 0 2px 5px rgba(0,0,0,0.8)}
+.coin-pill>i{font-size:1.3rem;color:var(--gold);filter:drop-shadow(0 0 5px rgba(255,209,102,0.6))}
+.coin-pill b{font-size:1.2rem;letter-spacing:0.5px;color:#fff}
+.coin-pill button{width:32px;height:32px;border:0;border-radius:50%;background:linear-gradient(135deg,#2ecc71,#20c978);color:#fff;font-size:1.3rem;font-weight:800;cursor:pointer;box-shadow:0 0 10px rgba(46,204,113,0.5);display:grid;place-items:center;transition:.2s}
+.coin-pill button:active{transform:scale(0.9)}
 
-/* =========================================================
-   FULL SCREEN ARENA UI (NO SCROLL FIT)
-   ========================================================= */
+main{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;width:100%;position:relative;margin:6px 0}
+
+/* GAMING LOBBY STYLES */
+.lobby{width:100%;display:flex;flex-direction:column;gap:14px;padding:10px;animation:fadeIn 0.3s ease}
+.reward-banner{width:100%;min-height:76px;border-radius:20px;border:2px solid rgba(255,255,255,0.6);background:linear-gradient(135deg,#f39a08,#ffb10d);color:#111;font-size:1.4rem;font-weight:800;letter-spacing:0.5px;box-shadow:0 8px 20px rgba(243,154,8,0.4);display:flex;align-items:center;justify-content:center;gap:14px;cursor:pointer;transition:.2s}
+.reward-banner:active{transform:scale(0.98)}
+.reward-banner i{font-size:1.7rem}
+
+.mode-grid{display:grid;grid-template-columns:1fr;gap:12px}
+.mode{min-height:92px;border-radius:20px;border:2px solid rgba(255,255,255,0.15);padding:14px 18px;text-align:left;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,0.5);cursor:pointer;transition:all .2s ease}
+.mode:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 8px 25px rgba(255,209,102,0.25)}
+.mode:after{position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:3rem;opacity:0.85;filter:drop-shadow(0 4px 6px rgba(0,0,0,0.6))}
+.mode i{display:none}
+.mode b{font-family:'Poppins',sans-serif;font-size:1.4rem;line-height:1.1;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,0.8)}
+.mode p{font-size:0.85rem;color:#d1d8e0;margin-top:3px;text-shadow:0 1px 2px rgba(0,0,0,0.8)}
+.mode-single{background:linear-gradient(135deg,#1b4f91,#1252b5)}.mode-single:after{content:'🤖'}
+.mode-multi{background:linear-gradient(135deg,#0d7c48,#08a85c)}.mode-multi:after{content:'⚔️'}
+.mode-free{background:linear-gradient(135deg,#b36b00,#f19a00)}.mode-free:after{content:'🎯'}
+
+#connection{text-align:center;font-size:0.75rem;color:var(--dim);margin-top:4px}
+
+/* GAMING ARENA (FULL SCREEN BATTLE HUD) */
 .arena {
-  width: min(100%, 500px);
-  height: 100dvh;
-  max-height: 100dvh;
-  margin: 0 auto;
-  background: #110505;
-  border: 2px solid #ffca4540;
-  border-radius: 0px;
-  padding: 10px 12px 12px;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 50% 50%, #170d08 0%, #0a0402 100%);
+  border: 2px solid rgba(255,209,102,0.3);
+  border-radius: 24px;
+  padding: 10px 12px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 6px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+  box-shadow: inset 0 0 30px rgba(0,0,0,0.9), 0 10px 30px rgba(0,0,0,0.8);
   position: relative;
   overflow: hidden;
+  animation: scaleUp 0.25s ease;
 }
 
 .arena-top-header {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
+  background: rgba(10, 5, 3, 0.7);
+  padding: 6px 10px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,159,67,0.3);
 }
 
 .arena-player-card {
@@ -63,38 +85,38 @@ main{flex:1;display:grid;place-items:center;min-height:400px;width:100%;}.lobby{
 }
 
 .arena-avatar-box {
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  border: 3px solid #ff9f43;
+  border: 2px solid #ff9f43;
   background: #2b1107;
   display: grid;
   place-items: center;
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   color: #ff9f43;
-  box-shadow: 0 0 12px rgba(255,159,67,0.3);
+  box-shadow: 0 0 10px rgba(255,159,67,0.3);
   transition: .3s ease;
   overflow: hidden;
 }
 
 .arena-player-card.active .arena-avatar-box {
   border-color: #ffd166;
-  box-shadow: 0 0 20px #ffd16699;
+  box-shadow: 0 0 18px #ffd166;
+  transform: scale(1.05);
 }
 
 .arena-player-card b {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: #fff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 100px;
+  max-width: 90px;
 }
 
 .arena-player-card small {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: #a0aec0;
-  letter-spacing: 0.5px;
 }
 
 .arena-coins-center {
@@ -105,28 +127,28 @@ main{flex:1;display:grid;place-items:center;min-height:400px;width:100%;}.lobby{
 }
 
 .arena-coins-center i {
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   color: #ffca45;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+  filter: drop-shadow(0 0 6px rgba(255,202,69,0.6));
 }
 
 .arena-coins-center b {
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: #fff;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
 }
 
-/* LARGER BOARD WRAP FOR MOBILE/TABLET FIT */
+/* BOARD WRAPPER (GAMING TABLE) */
 .board-wrap {
-  width: min(100%, 92vw, 420px);
+  width: min(100%, 88vw, 360px);
   aspect-ratio: 1;
   position: relative;
   margin: 0 auto;
-  background: #4a2810;
+  background: linear-gradient(135deg, #3d220f, #221207);
   padding: 8px;
-  border-radius: 18px;
-  box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 8px 20px rgba(0,0,0,0.6);
-  border: 3px solid #2d1709;
+  border-radius: 20px;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.9), 0 10px 25px rgba(0,0,0,0.7);
+  border: 4px solid #1a0e05;
 }
 
 .board {
@@ -135,9 +157,9 @@ main{flex:1;display:grid;place-items:center;min-height:400px;width:100%;}.lobby{
   display: grid;
   grid-template-columns: repeat(8,1fr);
   grid-template-rows: repeat(8,1fr);
-  border-radius: 8px;
+  border-radius: 10px;
   overflow: hidden;
-  border: 2px solid #231206;
+  border: 2px solid #110502;
 }
 
 .sq {
@@ -147,40 +169,45 @@ main{flex:1;display:grid;place-items:center;min-height:400px;width:100%;}.lobby{
   cursor: pointer;
   touch-action: manipulation;
 }
-.sq.light { background: #fceade; }
-.sq.dark { background: #6b3d1b; }
-.sq.selected { background: #ffd166!important; }
-.sq.target:after { content:''; width:32%; height:32%; border-radius:50%; background:#2ecc71; }
-.sq.capture:after { content:''; width:42%; height:42%; border-radius:50%; background:#ff6b81; }
+.sq.light { background: #ecdacb; }
+.sq.dark { background: #5c3214; }
+.sq.selected { background: #ffd166 !important; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
+.sq.target:after { content:''; width:32%; height:32%; border-radius:50%; background:#2ecc71; box-shadow:0 0 8px #2ecc71; }
+.sq.capture:after { content:''; width:42%; height:42%; border-radius:50%; background:#ff4757; box-shadow:0 0 8px #ff4757; }
 
 .piece {
-  width: 86%;
-  height: 86%;
+  width: 82%;
+  height: 82%;
   border-radius: 50%;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.6);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.7);
   display: grid;
   place-items: center;
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   position: relative;
+  transition: transform .1s;
 }
+.piece:active{transform:scale(0.92)}
 .king:after {
   content:'♛';
-  font-size: clamp(14px,3.5vw,22px);
+  font-size: clamp(12px,3vw,18px);
   position: absolute;
   bottom: 2px;
   right: 2px;
   color: #ffd166;
-  text-shadow: 0 1px 2px #000;
+  text-shadow: 0 1px 3px #000;
 }
 
 .status {
   text-align: center;
-  color: #ffca45;
-  font-size: 1.05rem;
-  font-weight: 700;
+  color: #ffd166;
+  font-size: 1rem;
+  font-weight: 800;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.8);
   min-height: 20px;
+  letter-spacing: 0.5px;
 }
 
+/* GAMING TURN TIMER & CONTROLS */
 #clockPanel {
   display: flex;
   align-items: center;
@@ -190,19 +217,15 @@ main{flex:1;display:grid;place-items:center;min-height:400px;width:100%;}.lobby{
 
 #clockRing {
   --progress: 100;
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   display: grid;
   place-items: center;
   position: relative;
-  background: conic-gradient(#ffca45 calc(var(--progress)*1%), #ffffff18 0);
-  box-shadow: 0 0 12px rgba(255,209,102,0.3);
-  transition: background .18s linear;
+  background: conic-gradient(#ffca45 calc(var(--progress)*1%), rgba(255,255,255,0.1) 0);
+  box-shadow: 0 0 12px rgba(255,209,102,0.4);
   cursor: pointer;
-}
-#clockRing:hover {
-  transform: scale(1.05);
 }
 #clockRing:before {
   content: '';
@@ -210,17 +233,17 @@ main{flex:1;display:grid;place-items:center;min-height:400px;width:100%;}.lobby{
   inset: 4px;
   border-radius: 50%;
   background: #110505;
-  border: 1px solid #ffffff20;
+  border: 1px solid rgba(255,255,255,0.2);
 }
 #turnClock {
   position: relative;
   z-index: 1;
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 800;
   color: #ffca45;
 }
 #clockCaption {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: #a0aec0;
   font-weight: 600;
 }
@@ -235,274 +258,104 @@ main{flex:1;display:grid;place-items:center;min-height:400px;width:100%;}.lobby{
 }
 
 .arena-circle-btn {
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   border: 2px solid #ffca45;
   background: linear-gradient(135deg, #ffca45, #e09100);
   color: #110505;
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   display: grid;
   place-items: center;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
   transition: transform .15s;
 }
-.arena-circle-btn:active { transform: scale(0.92); }
+.arena-circle-btn:active { transform: scale(0.9); }
 
-/* SIDE CHAT DRAWER */
+/* GAMING BOTTOM NAVIGATION BAR */
+.bottom-nav{width:100%;min-height:70px;background:rgba(14,20,38,0.95);border:2px solid rgba(255,209,102,0.3);border-radius:24px;display:flex;align-items:center;justify-content:space-around;padding:6px 4px;box-shadow:0 8px 25px rgba(0,0,0,0.8);backdrop-filter:blur(10px)}
+.nav-item{background:none;border:0;color:#aab4c7;text-decoration:none;display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:0.75rem;font-weight:700;cursor:pointer;transition:.2s}
+.nav-item i{font-size:1.4rem}
+.nav-item.active{color:var(--gold);text-shadow:0 0 10px rgba(255,209,102,0.6)}
+.nav-item span{line-height:1}
+
+/* CHAT DRAWER & MODALS */
 .chat-drawer {
   position: absolute;
   top: 0;
   right: -100%;
-  width: 280px;
+  width: 270px;
   height: 100%;
-  background: rgba(18, 24, 43, 0.98);
+  background: rgba(14, 20, 38, 0.98);
   border-left: 2px solid var(--gold);
   z-index: 90;
   display: flex;
   flex-direction: column;
-  transition: right 0.3s ease;
-  box-shadow: -5px 0 20px rgba(0,0,0,0.8);
-  backdrop-filter: blur(10px);
+  transition: right 0.3s cubic-bezier(0.175,0.885,0.32,1.275);
+  box-shadow: -10px 0 30px rgba(0,0,0,0.9);
+  backdrop-filter: blur(15px);
 }
-.chat-drawer.open {
-  right: 0;
-}
-.chat-header {
-  padding: 12px;
-  background: rgba(0,0,0,0.3);
-  border-bottom: 1px solid rgba(255,209,102,0.2);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: var(--gold);
-}
-.chat-body {
-  flex: 1;
-  padding: 10px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.chat-msg {
-  background: rgba(255,255,255,0.06);
-  padding: 6px 10px;
-  border-radius: 8px;
-  font-size: 0.88rem;
-  max-width: 85%;
-  word-break: break-word;
-}
-.chat-msg.me {
-  align-self: flex-end;
-  background: #ffca4533;
-  border: 1px solid #ffca4566;
-  color: #fff;
-}
-.chat-msg.them {
-  align-self: flex-start;
-  background: rgba(255,255,255,0.1);
-  color: #fff;
-}
-.chat-footer {
-  padding: 10px;
-  display: flex;
-  gap: 6px;
-  background: rgba(0,0,0,0.3);
-}
-.chat-footer input {
-  padding: 8px;
-  font-size: 0.85rem;
-}
-.quick-chats {
-  display: flex;
-  gap: 4px;
-  overflow-x: auto;
-  padding: 6px 10px;
-  background: rgba(0,0,0,0.2);
-}
-.quick-btn {
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.2);
-  color: #fff;
-  font-size: 0.75rem;
-  padding: 4px 8px;
-  border-radius: 12px;
-  white-space: nowrap;
-  cursor: pointer;
-}
+.chat-drawer.open { right: 0; }
+.chat-header { padding: 12px; background: rgba(0,0,0,0.4); border-bottom: 1px solid rgba(255,209,102,0.2); display: flex; justify-content: space-between; align-items: center; color: var(--gold); }
+.chat-body { flex: 1; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+.chat-msg { background: rgba(255,255,255,0.06); padding: 6px 10px; border-radius: 10px; font-size: 0.82rem; max-width: 85%; }
+.chat-msg.me { align-self: flex-end; background: rgba(255,202,69,0.2); border: 1px solid rgba(255,202,69,0.4); color: #fff; }
+.chat-msg.them { align-self: flex-start; background: rgba(255,255,255,0.1); color: #fff; }
+.chat-footer { padding: 10px; display: flex; gap: 6px; background: rgba(0,0,0,0.4); }
+.chat-footer input { padding: 8px 10px; font-size: 0.82rem; border-radius: 12px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,209,102,0.3); color: #fff; width: 100%; outline: none; }
+.quick-chats { display: flex; gap: 4px; overflow-x: auto; padding: 6px 10px; background: rgba(0,0,0,0.2); }
+.quick-btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-size: 0.7rem; padding: 4px 8px; border-radius: 12px; white-space: nowrap; cursor: pointer; }
 
-/* In-game Visual Effects */
-.fx-pink{box-shadow:0 0 15px #ff9ff3,0 0 28px #f368e0!important}
-.fx-blue{box-shadow:0 0 15px #74b9ff,0 0 28px #0984e3!important}
-.fx-purple{box-shadow:0 0 15px #a29bfe,0 0 28px #6c5ce7!important}
-.fx-orange{box-shadow:0 0 15px #fab1a0,0 0 28px #e17055!important}
-.fx-silver{box-shadow:0 0 15px #dfe6e9,0 0 28px #b2bec3!important}
-.fx-glow{box-shadow:0 0 15px #ffd166, 0 0 30px #ffad62!important}
-.fx-fire{box-shadow:0 0 15px #ff4757, 0 0 30px #ffa502!important;animation:pulseFire 1s infinite alternate}
-.fx-rainbow{box-shadow:0 0 18px #ff6b81, 0 0 28px #7ee7ff!important;animation:spinRainbow 3s linear infinite}
-.fx-lightning{box-shadow:0 0 16px #4facfe, 0 0 30px #00f2fe!important;animation:pulseLight .8s infinite alternate}
-.fx-matrix{box-shadow:0 0 16px #2ed573, 0 0 28px #26de81!important}
-
-@keyframes pulseFire{0%{filter:brightness(1)}100%{filter:brightness(1.4)}}
-@keyframes pulseLight{0%{opacity:0.7}100%{opacity:1}}
-@keyframes clockPulse{50%{transform:scale(1.07);filter:brightness(1.25)}}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-.modal{position:fixed;inset:0;background:rgba(5,8,20,0.8);backdrop-filter:blur(6px);display:none;place-items:center;z-index:100;padding:15px;animation:fadeIn .25s ease}
+/* MODALS */
+.modal{position:fixed;inset:0;background:rgba(3,5,12,0.85);backdrop-filter:blur(8px);display:none;place-items:center;z-index:100;padding:15px;animation:fadeIn .25s ease}
 .modal.show{display:grid}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes scaleUp{from{transform:scale(0.85);opacity:0}to{transform:scale(1);opacity:1}}
-
-.modalbox{width:min(100%,480px);background:linear-gradient(145deg,#121824,#1a233a);border:2px solid var(--gold);border-radius:20px;padding:22px;display:grid;gap:14px;max-height:88vh;overflow-y:auto;box-shadow:0 15px 35px rgba(0,0,0,0.6);animation:scaleUp .25s cubic-bezier(0.175,0.885,0.32,1.275)}
+.modalbox{width:min(100%,420px);background:linear-gradient(145deg,#121828,#1b243f);border:2px solid var(--gold);border-radius:24px;padding:20px;display:grid;gap:12px;max-height:85vh;overflow-y:auto;box-shadow:0 20px 40px rgba(0,0,0,0.8)}
 .modalbox h2,.modalbox h3{text-align:center;color:var(--gold);font-weight:700}
-input{width:100%;padding:12px 14px;background:rgba(0,0,0,0.4);border:1px solid rgba(255,209,102,0.4);border-radius:11px;color:white;font-size:1rem;outline:none;transition:.2s}
-input:focus{border-color:var(--gold);box-shadow:0 0 10px rgba(255,209,102,0.3)}
+input{width:100%;padding:10px 14px;background:rgba(0,0,0,0.5);border:1px solid rgba(255,209,102,0.4);border-radius:12px;color:white;font-size:0.95rem;outline:none}
 
-.row{display:flex;gap:10px;align-items:center}.row>*{min-width:0}
-.list{display:grid;gap:8px;max-height:180px;overflow:auto;padding-right:4px}
-.listitem{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px 12px;gap:8px;transition:.2s}
-.friend-listitem{flex-wrap:nowrap}.friend-identity{display:flex;align-items:center;gap:9px;min-width:0;flex:1}.friend-status{display:inline-flex;align-items:center;gap:4px;white-space:nowrap;font-size:.82rem;font-weight:800;flex:0 0 auto}.friend-status.is-online{color:#2ecc71}.friend-status.is-offline{color:#ff6b81}.friend-name{min-width:0;overflow-wrap:anywhere;color:#fff}.friend-listitem .btn-gold{flex:0 0 auto}
-@media(max-width:480px){.friend-listitem{gap:6px;padding:9px}.friend-identity{gap:6px;flex-wrap:wrap}.friend-status{font-size:.76rem}.friend-listitem .btn-gold{padding:8px 10px;font-size:.88rem}}
+.btn,.btn-gold{border:0;border-radius:12px;padding:10px 14px;cursor:pointer;font-weight:700;transition:.2s;display:inline-flex;align-items:center;gap:6px;justify-content:center}
+.btn{background:rgba(255,255,255,0.1);color:white;border:1px solid rgba(255,255,255,0.2)}
+.btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;box-shadow:0 4px 15px rgba(255,173,98,0.4)}
+.row{display:flex;gap:10px;align-items:center}
 
-.pieces-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:5px}
-.piece-option{background:rgba(255,255,255,0.04);border:2px solid rgba(255,255,255,0.1);border-radius:12px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;transition:.2s}
-.piece-option:hover{border-color:var(--gold);background:rgba(255,255,255,0.08)}
-.piece-option.selected{border-color:var(--gold);background:rgba(255,209,102,0.2);box-shadow:0 0 12px rgba(255,209,102,0.3)}
+.pieces-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:4px}
+.piece-option{background:rgba(255,255,255,0.04);border:2px solid rgba(255,255,255,0.1);border-radius:12px;padding:8px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer}
+.piece-option.selected{border-color:var(--gold);background:rgba(255,209,102,0.2);box-shadow:0 0 10px rgba(255,209,102,0.3)}
 
-.alert-box-content{text-align:center;display:grid;gap:14px;place-items:center}
-.alert-icon{font-size:3rem;margin-bottom:-4px}
-.alert-icon.info{color:var(--blue)}
-.alert-icon.success{color:var(--green)}
-.alert-icon.warning{color:var(--gold)}
-.alert-icon.error{color:var(--red)}
-
-#toast{position:fixed;bottom:25px;left:50%;transform:translate(-50%,120px);opacity:0;background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--gold);color:#f8f9fa;border-radius:30px;padding:12px 22px;z-index:150;box-shadow:0 8px 25px rgba(0,0,0,0.5);transition:.3s cubic-bezier(0.175,0.885,0.32,1.275);font-weight:600;display:flex;align-items:center;gap:10px}
+#toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,120px);opacity:0;background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--gold);color:#f8f9fa;border-radius:30px;padding:10px 20px;z-index:150;box-shadow:0 8px 25px rgba(0,0,0,0.6);transition:.3s;font-weight:600;display:flex;align-items:center;gap:8px;font-size:0.9rem}
 #toast.show{transform:translate(-50%,0);opacity:1}
 
-#connection{font-size:.8rem;color:#4ade80}
-footer{font-size:.85rem;color:var(--dim)}
-
-/* Reference-inspired responsive game lobby */
-html,body{min-height:100%;background:radial-gradient(ellipse at 50% 15%,#32384b 0,#1a2032 46%,#080d1b 100%);color:#fff}
-body{padding:0}.app{min-height:100dvh;max-width:760px;padding:16px 22px 112px;gap:14px}
-.home-top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:2px 0 18px}
-.profile-float{position:static;z-index:1;background:transparent;border:0;border-radius:0;padding:0;display:flex;align-items:center;gap:12px;cursor:pointer;box-shadow:none}
-.profile-float:hover{transform:none;background:transparent}
-.avatar{width:82px;height:82px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe08a,#ffb52e);color:#18213e;font-size:2rem;border:4px solid #ffca45;box-shadow:0 0 18px #ffbf3880}
-#headerName{font-size:1.25rem;color:#fff;font-weight:800}.pro-label{color:#ffd166;font-size:.95rem;font-weight:800;letter-spacing:.7px}
-.coin-pill{display:flex;align-items:center;gap:10px;border:2px solid #9b8245;border-radius:32px;background:#101522;padding:7px 10px 7px 16px;min-width:142px;justify-content:center;box-shadow:0 5px 15px #0005}
-.coin-pill>i{font-size:1.65rem;color:#ffd166}.coin-pill b{font-size:1.45rem;letter-spacing:1px}
-.coin-pill button{width:42px;height:42px;border:0;border-radius:50%;background:#20c978;color:#fff;font-size:1.7rem;font-weight:800;cursor:pointer}
-.legacy-header{display:none}main{display:block;min-height:0;flex:1}.lobby{width:100%;padding:0;border:0;background:transparent;box-shadow:none;display:grid;gap:16px}
-.lobby h2,.lobby>p{display:none}.reward-banner{width:100%;min-height:104px;border-radius:28px;border:3px solid #fff;background:linear-gradient(100deg,#f39a08,#ffb10d);color:#151515;font-size:2rem;font-weight:800;letter-spacing:1px;box-shadow:0 8px 18px #0005;display:flex;align-items:center;justify-content:center;gap:24px;cursor:pointer;text-shadow:0 1px 0 #fff7}
-.reward-banner i{font-size:2.3rem}.mode-grid{display:grid;grid-template-columns:1fr;gap:20px}
-.mode{min-height:164px;border-radius:32px;border:3px solid #ffffff8c;padding:20px 24px;text-align:left;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:2px;box-shadow:0 8px 18px #0006;position:relative;overflow:hidden}
-.mode:after{position:absolute;right:26px;top:50%;transform:translateY(-50%);font-size:4.5rem;filter:drop-shadow(0 5px 4px #0005)}
-.mode i{display:none}.mode b{font-family:'Poppins',sans-serif;font-size:2rem;line-height:1.2;text-shadow:0 3px 5px #0007}
-.mode p{font-size:1.15rem;color:#e6edff;margin-top:5px}.mode-single{background:linear-gradient(120deg,#1252b5,#2479df)}.mode-single:after{content:'🤖'}
-.mode-multi{background:linear-gradient(120deg,#08a85c,#32d27b)}.mode-multi:after{content:'⚔️'}
-.mode-free{background:linear-gradient(120deg,#f19a00,#d57a00)}.mode-free:after{content:'🎯'}
-#connection{margin:2px 4px;color:#9ca9c3!important}
-.bottom-nav{position:fixed;z-index:50;left:50%;bottom:12px;transform:translateX(-50%);width:min(calc(100% - 28px),720px);min-height:86px;border:2px solid #665d49;border-radius:28px;background:rgba(14,21,39,.96);display:flex;align-items:center;justify-content:space-around;padding:8px 5px;box-shadow:0 8px 24px #0009;backdrop-filter:blur(12px)}
-.nav-item{background:none;border:0;color:#aab4c7;text-decoration:none;display:flex;flex:1;min-width:0;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:.95rem;font-weight:700;cursor:pointer}
-.nav-item i{font-size:2rem}.nav-item.active{color:#ffd166}.nav-item span{line-height:1.1}
-.modalbox{max-height:86dvh}.profile-summary{text-align:center;padding:12px 10px 16px;border:1px solid #ffffff20;border-radius:16px;background:#ffffff08}
-.profile-avatar-large{width:74px;height:74px;margin:0 auto 8px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe08a,#ffad62);color:#18213e;border:3px solid #ffd166;font-size:2rem}
-.profile-summary h2{font-size:1.5rem;color:#fff}.profile-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
-.profile-stats>div{display:grid;gap:2px;background:#0003;border-radius:10px;padding:8px}
-.profile-stats b{font-size:1.3rem;color:#ffd166}.profile-stats small{font-size:.75rem;color:#aab4c7}
-#profileModal .modalbox,#friendsModal .modalbox{width:min(100%,520px)}.list{max-height:45vh}
-
-/* Final mobile + tablet layout refinements */
-html{width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%;}
-body{width:100%;overflow-x:hidden;overscroll-behavior-x:none;}
-button,a,input{touch-action:manipulation;}
-.app{width:100%;}
-.home-top{width:100%;}
-.mode,.reward-banner,.nav-item,.profile-float{ -webkit-tap-highlight-color:transparent; }
-.modal{padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom));}
-.modalbox{width:min(100%,520px);max-height:calc(100dvh - 28px);overflow-y:auto;overscroll-behavior:contain;}
-.bottom-nav{bottom:max(8px,env(safe-area-inset-bottom));}
-#toast{max-width:calc(100vw - 28px);text-align:center;}
-
-@media (max-width:600px){
- .app{padding:12px 14px calc(98px + env(safe-area-inset-bottom));gap:12px;}
- .home-top{gap:8px;padding:2px 0 8px;}
- .profile-float{gap:8px;min-width:0;}
- .avatar{width:58px;height:58px;font-size:1.55rem;border-width:3px;flex:0 0 auto;}
- #headerName{font-size:clamp(.95rem,4vw,1.15rem);overflow-wrap:anywhere;}
- .pro-label{font-size:.78rem;}
- .coin-pill{min-width:0;gap:7px;padding:5px 7px 5px 10px;}
- .coin-pill>i{font-size:1.25rem;}
- .coin-pill b{font-size:1.15rem;}
- .coin-pill button{width:34px;height:34px;font-size:1.35rem;flex:0 0 auto;}
- .lobby{gap:12px;}
- .reward-banner{min-height:76px;padding:12px 10px;border-radius:20px;font-size:clamp(1.2rem,5.5vw,1.55rem);gap:10px;letter-spacing:.2px;}
- .reward-banner i{font-size:1.6rem;}
- .mode-grid{gap:12px;}
- .mode{min-height:120px;border-radius:22px;padding:16px 18px;}
- .mode b{font-size:clamp(1.2rem,6vw,1.65rem);max-width:78%;overflow-wrap:anywhere;}
- .mode p{font-size:clamp(.85rem,3.7vw,1rem);max-width:78%;line-height:1.25;}
- .mode:after{right:14px;font-size:clamp(2.5rem,12vw,3.4rem);}
- .bottom-nav{width:calc(100% - 18px);min-height:68px;padding:5px 2px;border-radius:20px;}
- .nav-item{font-size:clamp(.68rem,2.8vw,.82rem);gap:2px;}
- .nav-item i{font-size:clamp(1.25rem,6vw,1.55rem);}
- .pieces-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;}
- .piece-option{padding:8px 5px;min-width:0;}
- .row{flex-wrap:wrap;}
- .row>*{flex:1 1 120px;}
- .listitem{flex-wrap:wrap;}
- .listitem button{min-height:38px;}
- .arena { width: 100%; border-radius: 0; padding: 8px 6px; height: 100dvh; }
- .arena-avatar-box { width: 44px; height: 44px; font-size: 1.15rem; }
-}
-
-@media(max-width:380px){
- .app{padding-left:10px;padding-right:10px;}
- .avatar{width:52px;height:52px;}
- .coin-pill{gap:5px;padding-left:7px;}
- .coin-pill>i{font-size:1.1rem;}
- .coin-pill b{font-size:1.05rem;}
- .coin-pill button{width:31px;height:31px;}
- .mode{min-height:108px;padding:13px 14px;border-radius:18px;}
- .mode:after{right:10px;font-size:2.4rem;}
- .mode b{font-size:1.15rem;}
- .mode p{font-size:.8rem;}
- .bottom-nav{width:calc(100% - 12px);}
- .nav-item i{font-size:1.2rem;}
- .nav-item{font-size:.65rem;}
-}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes scaleUp{from{transform:scale(0.9);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
 <div class="app">
 
-<!-- Home top profile and coin balance -->
+<!-- GAMING APP HEADER -->
 <div class="home-top" id="homeTop">
- <div class="profile-float" id="openProfile" title="ප්‍රොෆයිලය විවෘත කරන්න">
+ <div class="profile-float" id="openProfile" title="പ്രොෆයිලය">
   <span class="avatar" id="headerAvatar"><i class="fa-solid fa-user"></i></span>
-  <div><b id="headerName">ක්‍රීඩකයා</b><br><small class="pro-label">PRO PLAYER</small></div>
+  <div><b id="headerName">ක්‍රීඩකයා</b><br><small class="pro-label">PRO GAMER</small></div>
  </div>
  <div class="coin-pill"><i class="fa-solid fa-coins"></i><b><span id="points">500</span></b><button id="coinShop" aria-label="Shop">+</button></div>
 </div>
-<header class="legacy-header">
-<div class="brand"><i class="fa-solid fa-chess-board"></i> ශ්‍රී ලංකා දාම්</div>
-<button class="btn" id="logout">Logout</button>
-</header>
+
 <main>
+<!-- GAMING LOBBY -->
 <section class="lobby" id="lobby">
-<button class="reward-banner" id="collectRewards"><i class="fa-solid fa-shield-halved"></i> Collect Rewards</button>
+<button class="reward-banner" id="collectRewards"><i class="fa-solid fa-shield-halved"></i> දෛනික ත්‍යාග ලබාගන්න</button>
 <div class="mode-grid">
-<div class="mode mode-single" id="single"><i class="fa-solid fa-robot"></i><b>SINGLE PLAYER</b><p>AI පරිගණකය සමඟ ක්‍රීඩා කරන්න</p></div>
-<div class="mode mode-multi" id="multi"><i class="fa-solid fa-users"></i><b>MULTIPLAYER</b><p>යහළුවන් සමඟ ඔන්ලයින් ක්‍රීඩා කරන්න</p></div>
+<div class="mode mode-single" id="single"><i class="fa-solid fa-robot"></i><b>SINGLE PLAYER</b><p>AI පරිගණකය සමඟ තරඟ කරන්න</p></div>
+<div class="mode mode-multi" id="multi"><i class="fa-solid fa-users"></i><b>MULTIPLAYER</b><p>ඔන්ලයින් යහළුවන් සමඟ සෙල්ලම් කරන්න</p></div>
 <div class="mode mode-free" id="freestyle"><i class="fa-solid fa-bullseye"></i><b>PLAY FREESTYLE</b><p>ඔට්ටු රහිත පුහුණු ක්‍රීඩාව</p></div>
 </div>
 <div id="connection">● Firebase සම්බන්ධ වෙමින්...</div>
 </section>
 
-<!-- ARENA SECTION (FULL SCREEN MODE) -->
+<!-- ARENA BATTLE HUD -->
 <section class="arena" id="arena" style="display:none">
  <div class="arena-top-header">
   <div class="arena-player-card active" id="p1">
@@ -528,7 +381,7 @@ button,a,input{touch-action:manipulation;}
  <div class="status" id="gameStatus">ඔබගේ වාරය</div>
 
  <div id="clockPanel">
-  <div id="clockRing" role="timer" aria-live="off" title="Chat කිරීම සඳහා Click කරන්න"><span id="turnClock">10</span></div>
+  <div id="clockRing" role="timer" aria-live="off" title="Chat සඳහා Click කරන්න"><span id="turnClock">10</span></div>
   <span id="clockCaption">ඉතිරි කාලය</span>
  </div>
 
@@ -541,7 +394,7 @@ button,a,input{touch-action:manipulation;}
  <div class="chat-drawer" id="chatDrawer">
   <div class="chat-header">
    <b><i class="fa-solid fa-comments"></i> In-Game Chat</b>
-   <button class="btn" id="closeChat" style="padding:2px 8px;font-size:0.8rem">✕</button>
+   <button class="btn" id="closeChat" style="padding:2px 8px;font-size:0.75rem">✕</button>
   </div>
   <div class="quick-chats">
    <button class="quick-btn" onclick="sendQuickChat('Good Game! 👍')">Good Game! 👍</button>
@@ -550,16 +403,17 @@ button,a,input{touch-action:manipulation;}
    <button class="quick-btn" onclick="sendQuickChat('Nice move! 🔥')">Nice move! 🔥</button>
   </div>
   <div class="chat-body" id="chatMessages">
-   <div class="chat-msg them">ප්‍රතිවාදියා සමඟ Chat කරන්න...</div>
+   <div class="chat-msg them">ප්‍රතිවාදියා සමඟ කතා කරන්න...</div>
   </div>
   <div class="chat-footer">
    <input type="text" id="chatInput" placeholder="පණිවිඩයක් ලියන්න...">
-   <button class="btn-gold" id="sendChatBtn" style="padding:8px 12px"><i class="fa-solid fa-paper-plane"></i></button>
+   <button class="btn-gold" id="sendChatBtn" style="padding:6px 10px"><i class="fa-solid fa-paper-plane"></i></button>
   </div>
  </div>
 </section>
 </main>
 
+<!-- GAMING BOTTOM NAVIGATION -->
 <footer class="bottom-nav" id="bottomNav">
  <button class="nav-item active" id="navHome"><i class="fa-solid fa-house"></i><span>Home</span></button>
  <button class="nav-item" id="navFriends"><i class="fa-solid fa-user-group"></i><span>Friends</span></button>
@@ -570,12 +424,12 @@ button,a,input{touch-action:manipulation;}
 <button id="home" hidden>Home</button>
 </div>
 
-<!-- Single Player Bet Select Modal -->
+<!-- Modals -->
 <div class="modal" id="singleBetModal">
 <div class="modalbox">
-<h3 style="color:var(--gold)">Single Player - ඔට්ටු තැබීම</h3>
-<label for="singleBetInput">ඔට්ටු අල්ලන Point ගණන (උපරිම ඔබේ ලකුණු: <span id="maxSinglePoints">500</span>)</label>
-<input id="singleBetInput" type="number" min="10" value="50" placeholder="Points ගණන">
+<h3>Single Player - ඔට්ටු තැබීම</h3>
+<label for="singleBetInput">ඔට්ටු අල්ලන Point ගණන (උපරිම: <span id="maxSinglePoints">500</span>)</label>
+<input id="singleBetInput" type="number" min="10" value="50">
 <div class="row">
 <button class="btn-gold" id="startSingleGame" style="flex:1">ක්‍රීඩාව අරඹන්න</button>
 <button class="btn" id="closeSingleBet" style="flex:1">අවලංගු කරන්න</button>
@@ -583,107 +437,75 @@ button,a,input{touch-action:manipulation;}
 </div>
 </div>
 
-<!-- Profile Modal -->
 <div class="modal" id="profileModal">
 <div class="modalbox">
 <div class="row"><h3 style="flex:1">PLAYER PROFILE</h3><button class="btn" id="closeProfile">×</button></div>
-<div class="profile-summary">
- <div class="profile-avatar-large" id="profileAvatar"><i class="fa-solid fa-user"></i></div>
- <h2 id="profileName">ක්‍රීඩකයා</h2><small class="pro-label">PRO PLAYER</small>
- <div class="profile-stats">
-  <div><b id="profilePoints">500</b><small>COINS</small></div>
-  <div><b id="profileWins">0</b><small>WINS</small></div>
-  <div><b id="profileLosses">0</b><small>LOSSES</small></div>
- </div>
+<div style="text-align:center;padding:10px;background:rgba(0,0,0,0.3);border-radius:14px">
+ <div id="profileAvatar" style="width:64px;height:64px;margin:0 auto 6px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe08a,#ffad62);color:#18213e;font-size:1.8rem;border:3px solid var(--gold)"></div>
+ <h2 id="profileName">ක්‍රීඩකයා</h2><small class="pro-label">PRO GAMER</small>
 </div>
-<p style="font-size:.9rem;color:var(--dim)">දාම් ඉත්තන්ගේ මෝස්තර (Piece Designs):</p>
+<p style="font-size:0.85rem;color:var(--dim)">ඉත්තන්ගේ මෝස්තර:</p>
 <div class="pieces-grid" id="piecesGrid"></div>
-
-<p style="font-size:.9rem;color:var(--gold);margin-top:10px">මිලදීගත් විශේෂ Effects (Special Effects):</p>
-<div class="pieces-grid" id="effectsGrid"></div>
-
-<button class="btn-gold" id="saveProfile" style="margin-top:10px">සුරකින්න (Save)</button>
+<button class="btn-gold" id="saveProfile" style="margin-top:6px">සුරකින්න (Save)</button>
 </div>
 </div>
 
-<!-- Multiplayer Bet Modal -->
 <div class="modal" id="betModal">
 <div class="modalbox">
-<h3 style="color:var(--gold)">Multiplayer - ඔට්ටු තැබීම (Step 1)</h3>
-<label for="betAmountInput">ඔට්ටු අල්ලන Point ගණන (උපරිම ඔබේ ලකුණු: <span id="maxUserPoints">500</span>)</label>
-<input id="betAmountInput" type="number" min="10" value="50" placeholder="Points ගණන ඇතුළත් කරන්න">
+<h3>Multiplayer - ඔට්ටු තැබීම</h3>
+<label for="betAmountInput">ඔට්ටු අල්ලන Point ගණන (උපරිම: <span id="maxUserPoints">500</span>)</label>
+<input id="betAmountInput" type="number" min="10" value="50">
 <div class="row">
-<button class="btn-gold" id="proceedToInvite" style="flex:1">ඊළඟට (Next) - යහළුවන් සොයන්න</button>
+<button class="btn-gold" id="proceedToInvite" style="flex:1">යහළුවන් සොයන්න</button>
 <button class="btn" id="closeBetModal" style="flex:1">අවලංගු කරන්න</button>
 </div>
 </div>
 </div>
 
-<!-- Multiplayer Friends Modal -->
 <div class="modal" id="multiModal">
 <div class="modalbox">
-<div class="row"><h3 style="flex:1">ඔන්ලයින් යහළුවන් (Step 2)</h3><button class="btn" id="closeMulti">×</button></div>
-<p style="font-size:0.85rem;color:var(--gold)">තෝරාගත් ඔට්ටු ලකුණු (Bet): <b id="activeBetDisplay">50</b> pts</p>
+<div class="row"><h3 style="flex:1">ඔන්ලයින් යහළුවන්</h3><button class="btn" id="closeMulti">×</button></div>
+<p style="font-size:0.8rem;color:var(--gold)">තෝරාගත් ඔට්ටුව: <b id="activeBetDisplay">50</b> pts</p>
 <div class="row"><input id="search" placeholder="නම සොයන්න"><button class="btn-gold" id="searchBtn">Search</button></div>
-<b style="color:var(--gold)">මෑතකදී තරඟ කළ යහළුවන්</b>
-<div class="list" id="recentList">මෑතකදී තරඟ කළ අය නොමැත.</div>
-<div class="list" id="results">Online සිටින යහළුවෙකු සොයන්න.</div>
+<div class="list" id="results" style="max-height:160px;overflow:auto;margin-top:6px">Online ක්‍රීඩකයන් සොයන්න.</div>
 </div>
 </div>
 
-<!-- Friends / invited opponents -->
-<div class="modal" id="friendsModal">
- <div class="modalbox">
-  <div class="row"><h3 style="flex:1">FRIENDS</h3><button class="btn" id="closeFriends">×</button></div>
-  <p style="color:var(--dim);text-align:center">ඔබ Invite කළ සහ තරඟ කළ ක්‍රීඩකයන්</p>
-  <div class="list" id="friendsList">යහළුවන් ලබාගනිමින්...</div>
-  <button class="btn-gold" id="findFriends">යහළුවන් සොයන්න / Invite කරන්න</button>
- </div>
-</div>
-
-<!-- Universal Alert Modal -->
 <div class="modal" id="customAlertModal">
-<div class="modalbox alert-box-content">
-<div id="customAlertIcon" class="alert-icon info"><i class="fa-solid fa-circle-info"></i></div>
+<div class="modalbox" style="text-align:center;gap:10px">
 <h3 id="customAlertTitle">පණිවිඩය</h3>
-<p id="customAlertMessage" style="color:var(--dim);text-align:center;font-size:0.95rem"></p>
-<div class="row" id="customAlertButtons" style="width:100%;margin-top:5px">
-<button class="btn-gold" id="customAlertOkBtn" style="flex:1">හරි (OK)</button>
-</div>
+<p id="customAlertMessage" style="color:var(--dim);font-size:0.9rem"></p>
+<div class="row" id="customAlertButtons" style="width:100%"><button class="btn-gold" id="customAlertOkBtn" style="flex:1">හරි</button></div>
 </div>
 </div>
 
-<!-- Loading Modal -->
 <div class="modal show" id="loadingModal">
-<div class="modalbox" style="text-align:center; display:grid; place-items:center; gap:14px; padding:30px;">
-<div style="width:48px;height:48px;border:4px solid #ffffff20;border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite"></div>
-<h3 style="color:var(--gold)">ප්‍රොෆයිලය වෙත පිවිසෙමින් පවතී...</h3>
-<p style="color:var(--dim)">Profile එකට log වෙන තුරු රැඳී සිටින්න...</p>
+<div class="modalbox" style="text-align:center;display:grid;place-items:center;gap:12px;padding:24px">
+<div style="width:40px;height:40px;border:4px solid rgba(255,255,255,0.2);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite"></div>
+<h3 style="color:var(--gold)">ජීව දත්ත පූරණය වෙමින්...</h3>
 </div>
 </div>
 
 <div class="modal" id="authModal">
 <div class="modalbox">
 <h2>ඇතුළු වන්න / ගිණුම සාදන්න</h2>
-<label for="username">ක්‍රීඩක නම</label><input id="username" autocomplete="username" minlength="3" placeholder="Username">
-<label for="password">මුරපදය</label><input id="password" type="password" autocomplete="current-password" minlength="6" placeholder="Password">
+<label>ක්‍රීඩක නම</label><input id="username" minlength="3" placeholder="Username">
+<label>මුරපදය</label><input id="password" type="password" minlength="6" placeholder="Password">
 <div class="row">
 <button class="btn-gold" id="login" style="flex:1">ඇතුළු වන්න</button>
 <button class="btn" id="register" style="flex:1">ගිණුම සාදන්න</button>
 </div>
-<small style="color:var(--dim)">ආරක්ෂිත Firebase Authentication භාවිතා වේ.</small>
 </div>
 </div>
 
 <div class="modal" id="overModal">
-<div class="modalbox">
+<div class="modalbox" style="text-align:center">
 <h2 id="overTitle">තරඟය අවසන්</h2>
-<p id="overMessage" style="text-align:center"></p>
-<b id="overPoints" style="text-align:center"></b>
-<p id="rematchStatus" style="text-align:center;color:var(--gold)"></p>
-<div class="row">
-<button class="btn-gold" id="rematch">නැවත ක්‍රීඩා කරන්න</button>
-<button class="btn" id="exit">ඉවත් වෙන්න</button>
+<p id="overMessage" style="color:var(--dim)"></p>
+<b id="overPoints" style="color:var(--gold);font-size:1.2rem"></b>
+<div class="row" style="margin-top:10px">
+<button class="btn-gold" id="rematch" style="flex:1">නැවත ක්‍රීඩා කරන්න</button>
+<button class="btn" id="exit" style="flex:1">ඉවත් වෙන්න</button>
 </div>
 </div>
 </div>
@@ -696,398 +518,138 @@ button,a,input{touch-action:manipulation;}
 <script>
 'use strict';
 const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
-const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user',RECENT='sinhala_draughts_recent_v7';
-let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,selectedEffect:'',unlockedEffects:[]},board=[],turn=1,selected=null,moves=[],single=true,roomId=null,roomRef=null,roomCb=null,role=null,gameOver=false,aiTimer=null,processing=false,inviteRef=null,inviteCb=null,awarded={},turnClockTimer=null,turnDeadline=0,dragFrom=null,missedCapture=null,friendsPresenceRef=null,friendsPresenceCb=null,friendsCache=[],friendsStatusMap={},chatRef=null,chatCb=null;
-
-let userSide = 1; 
-let nextStartingSide = 1; 
+const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user';
+let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0},board=[],turn=1,selected=null,moves=[],single=true,roomId=null,roomRef=null,roomCb=null,role=null,gameOver=false,aiTimer=null,processing=false,turnClockTimer=null,turnDeadline=0,dragFrom=null,missedCapture=null;
+let userSide=1,nextStartingSide=1;
 
 const PIECE_DESIGNS=[
  {name:'මුතු සුදු',bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●'},
  {name:'රන් ඔටුන්න',bg:'linear-gradient(135deg,#ffeaa7,#fdcb6e)',border:'#e1b12c',color:'#2d3436',icon:'★'},
  {name:'රුධිර රතු',bg:'radial-gradient(circle at 30% 30%,#ff7675,#d63031)',border:'#c0392b',color:'#fff',icon:'◆'},
- {name:'මරකත කොළ',bg:'radial-gradient(circle at 30% 30%,#55efc4,#00b894)',border:'#00a8ff',color:'#fff',icon:'▲'},
- {name:'අහස් නිල්',bg:'radial-gradient(circle at 30% 30%,#74b9ff,#0984e3)',border:'#0066cc',color:'#fff',icon:'■'},
- {name:'දම් රැජින',bg:'radial-gradient(circle at 30% 30%,#a29bfe,#6c5ce7)',border:'#4834d4',color:'#fff',icon:'✿'},
- {name:'ගිනියම් තැඹිලි',bg:'radial-gradient(circle at 30% 30%,#fab1a0,#e17055)',border:'#d35400',color:'#fff',icon:'☀'},
- {name:'රෝස මල්',bg:'radial-gradient(circle at 30% 30%,#ff9ff3,#f368e0)',border:'#ff5252',color:'#fff',icon:'♥'},
- {name:'මුතු මැණික්',bg:'radial-gradient(circle at 30% 30%,#81ecec,#00cec9)',border:'#01a3a4',color:'#2d3436',icon:'✦'},
- {name:'රන් හැඩය',bg:'linear-gradient(135deg,#ffeaa7,#e1b12c)',border:'#c678dd',color:'#2d3436',icon:'◈'}
+ {name:'මරකත කොළ',bg:'radial-gradient(circle at 30% 30%,#55efc4,#00b894)',border:'#00a8ff',color:'#fff',icon:'▲'}
 ];
-
-const AVAILABLE_EFFECTS = [
- {id: 'glow', name: 'රන් කැටයම්', class: 'fx-glow', icon: '★'},
- {id: 'fire', name: 'ගිනි දැල්', class: 'fx-fire', icon: '🔥'},
- {id: 'rainbow', name: 'දේදුනු විදුලිය', class: 'fx-rainbow', icon: '⚡'},
- {id: 'lightning', name: 'විදුලි කුණාටුව', class: 'fx-lightning', icon: '🛡'},
- {id: 'matrix', name: 'මරකත මැජික්', class: 'fx-matrix', icon: '❖'},
- {id: 'pink', name: 'රෝස මල් වළල්ල', class: 'fx-pink', icon: '♥'},
- {id: 'blue', name: 'අහස් නිල්', class: 'fx-blue', icon: '■'},
- {id: 'purple', name: 'දම් රැජින', class: 'fx-purple', icon: '✿'},
- {id: 'orange', name: 'තැඹිලි සූර්යයා', class: 'fx-orange', icon: '☀'},
- {id: 'silver', name: 'රිදී කිරණ', class: 'fx-silver', icon: '✦'}
-];
-
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-function playSound(type){
- try{
-  if(audioCtx.state === 'suspended') audioCtx.resume();
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  osc.connect(gain); gain.connect(audioCtx.destination);
-  const now = audioCtx.currentTime;
-  
-  if(type === 'click'){
-   osc.type='sine'; osc.frequency.setValueAtTime(400,now); osc.frequency.exponentialRampToValueAtTime(200,now+0.05);
-   gain.gain.setValueAtTime(0.1,now); gain.linearRampToValueAtTime(0.01,now+0.05);
-   osc.start(now); osc.stop(now+0.05);
-  }else if(type === 'move'){
-   osc.type='triangle'; osc.frequency.setValueAtTime(250,now); osc.frequency.exponentialRampToValueAtTime(350,now+0.08);
-   gain.gain.setValueAtTime(0.15,now); gain.linearRampToValueAtTime(0.01,now+0.08);
-   osc.start(now); osc.stop(now+0.08);
-  }else if(type === 'capture'){
-   osc.type='sawtooth'; osc.frequency.setValueAtTime(150,now); osc.frequency.exponentialRampToValueAtTime(80,now+0.15);
-   gain.gain.setValueAtTime(0.2,now); gain.linearRampToValueAtTime(0.01,now+0.15);
-   osc.start(now); osc.stop(now+0.15);
-  }else if(type === 'win'){
-   osc.type='sine';
-   [0,0.1,0.2,0.3].forEach((t,i)=>{
-    const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
-    o.connect(g); g.connect(audioCtx.destination);
-    o.frequency.setValueAtTime([300,400,500,650][i],now+t);
-    g.gain.setValueAtTime(0.15,now+t); g.linearRampToValueAtTime(0.01,now+t+0.12);
-    o.start(now+t); o.stop(now+t+0.12);
-   });
-  }else if(type === 'lose'){
-   osc.type='sawtooth';
-   [0,0.15,0.3].forEach((t,i)=>{
-    const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
-    o.connect(g); g.connect(audioCtx.destination);
-    o.frequency.setValueAtTime([300,220,150][i],now+t);
-    g.gain.setValueAtTime(0.15,now+t); g.linearRampToValueAtTime(0.01,now+t+0.15);
-    o.start(now+t); o.stop(now+t+0.15);
-   });
-  }
- }catch(e){}
-}
-
-function showCustomAlert(title, message, type='info', onConfirm=null, showCancel=false, cancelText='අවලංගු කරන්න', okText='හරි (OK)'){
- $('customAlertTitle').textContent = title;
- $('customAlertMessage').textContent = message;
- 
- const iconEl = $('customAlertIcon');
- iconEl.className = 'alert-icon ' + type;
- if(type === 'success') iconEl.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
- else if(type === 'warning') iconEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
- else if(type === 'error') iconEl.innerHTML = '<i class="fa-solid fa-circle-xmark"></i>';
- else iconEl.innerHTML = '<i class="fa-solid fa-circle-info"></i>';
-
- const btnRow = $('customAlertButtons');
- btnRow.innerHTML = '';
-
- if(showCancel){
-  const cancelBtn = document.createElement('button');
-  cancelBtn.className = 'btn';
-  cancelBtn.style.flex = '1';
-  cancelBtn.textContent = cancelText;
-  cancelBtn.onclick = () => { modal('customAlertModal', false); playSound('click'); };
-  btnRow.appendChild(cancelBtn);
- }
-
- const okBtn = document.createElement('button');
- okBtn.className = 'btn-gold';
- okBtn.style.flex = '1';
- okBtn.textContent = okText;
- okBtn.onclick = () => {
-  modal('customAlertModal', false);
-  playSound('click');
-  if(onConfirm) onConfirm();
- };
- btnRow.appendChild(okBtn);
-
- modal('customAlertModal', true);
-}
 
 function toast(s, icon='fa-circle-info'){
- const t = $('toast');
- t.innerHTML = `<i class="fa-solid ${icon}" style="color:var(--gold)"></i> <span>${s}</span>`;
+ const t=$('toast');
+ t.innerHTML=`<i class="fa-solid ${icon}" style="color:var(--gold)"></i> <span>${s}</span>`;
  t.classList.add('show');
  setTimeout(()=>t.classList.remove('show'),3000);
 }
+function modal(id,on){$(id).classList.toggle('show',on);}
 
-function modal(id,on){$(id).classList.toggle('show',on);playSound('click')}
-function setStatus(s,ok=true){$('connection').textContent='● '+s;$('connection').style.color=ok?'#4ade80':'#f6c453'}
-
-try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);auth=firebase.auth();db=firebase.database();}catch(e){setStatus('Firebase ආරම්භ කළ නොහැක',false)}
+try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);auth=firebase.auth();db=firebase.database();}catch(e){}
 
 (async()=>{
  try{
-  modal('loadingModal', true);
-  modal('authModal', false);
+  modal('loadingModal',true);
+  modal('authModal',false);
   await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
   fbUser=auth.currentUser;
-  if(fbUser){
-   await loadSignedInUser();
-  } else {
-   modal('loadingModal', false);
-   modal('authModal', true);
-  }
-  setStatus('Firebase සූදානම්');
+  if(fbUser)await loadSignedInUser();
+  else{modal('loadingModal',false);modal('authModal',true);}
   auth.onAuthStateChanged(async u=>{
    fbUser=u;
-   if(u){
-    if(window.__creatingAccount)return;
-    try{await loadSignedInUser()}catch(e){
-     modal('loadingModal', false);
-     modal('authModal', true);
-    }
-   }else{
-    user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,selectedEffect:'',unlockedEffects:[]};
-    modal('loadingModal', false);
-    modal('authModal', true);
-   }
+   if(u)await loadSignedInUser();
+   else{user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0};modal('loadingModal',false);modal('authModal',true);}
   });
- }catch(e){
-  modal('loadingModal', false);
-  modal('authModal', true);
-  setStatus('Firebase දෝෂයකි',false);
- }
+ }catch(e){modal('loadingModal',false);modal('authModal',true);}
 })();
 
-function presence(){if(!fbUser||!user.name)return;const r=db.ref('publicProfiles_v6/'+fbUser.uid);r.child('online').onDisconnect().set(false).catch(e=>{});r.update({name:user.name,online:true,points:user.points,pieceIndex:user.pieceIndex||0,selectedEffect:user.selectedEffect||'',lastSeen:firebase.database.ServerValue.TIMESTAMP}).catch(e=>{})}
-
 function applyAvatarToBox(elementId, designIndex){
- const el = $(elementId);
- if(!el) return;
- const design = PIECE_DESIGNS[designIndex] || PIECE_DESIGNS[0];
- el.style.background = design.bg;
- el.style.borderColor = design.border;
- el.style.color = design.color;
- el.innerHTML = design.icon;
+ const el=$(elementId);if(!el)return;
+ const design=PIECE_DESIGNS[designIndex]||PIECE_DESIGNS[0];
+ el.style.background=design.bg;el.style.borderColor=design.border;el.style.color=design.color;el.innerHTML=design.icon;
 }
 
 function updateHeader(){
  $('headerName').textContent=user.name||'ක්‍රීඩකයා';
  $('points').textContent=user.points!==undefined?user.points:500;
- applyAvatarToBox('headerAvatar', user.pieceIndex||0);
+ applyAvatarToBox('headerAvatar',user.pieceIndex||0);
 }
 
 function saveUser(){
  localStorage.setItem(KEY,JSON.stringify(user));
- if(db&&fbUser)db.ref('users_v6/'+fbUser.uid).update({name:user.name,points:user.points,pieceIndex:user.pieceIndex||0,selectedEffect:user.selectedEffect||'',unlockedEffects:user.unlockedEffects||[]}).catch(console.error);
+ if(db&&fbUser)db.ref('users_v6/'+fbUser.uid).update({name:user.name,points:user.points,pieceIndex:user.pieceIndex||0}).catch(()=>{});
  updateHeader();
- presence();
 }
-
-function usernameEmail(name){return name.toLowerCase()+'@sinhala-draughts.app'}
 
 async function loadSignedInUser(){
- try {
+ try{
   const s=await db.ref('users_v6/'+fbUser.uid).once('value');
   const d=s.val();
-  if(!d||!d.name){
-   await auth.signOut();
-   modal('loadingModal', false);
-   modal('authModal', true);
-   return;
-  }
-  const local=JSON.parse(localStorage.getItem(KEY)||'null');
-  user={
-   name:d.name,
-   points:d.points!==undefined?Number(d.points):(local&&local.uid===fbUser.uid?Number(local.points)||500:500),
-   wins:Number(d.wins)||0,
-   losses:Number(d.losses)||0,
-   uid:fbUser.uid,
-   pieceIndex:Number(d.pieceIndex)!==undefined?Number(d.pieceIndex):(local?Number(local.pieceIndex)||0:0),
-   selectedEffect:d.selectedEffect || (local?local.selectedEffect:''),
-   unlockedEffects:Array.isArray(d.unlockedEffects) ? d.unlockedEffects : (local?local.unlockedEffects||[]:[])
-  };
+  if(!d||!d.name){await auth.signOut();modal('loadingModal',false);modal('authModal',true);return;}
+  user={name:d.name,points:d.points!==undefined?Number(d.points):500,wins:Number(d.wins)||0,losses:Number(d.losses)||0,uid:fbUser.uid,pieceIndex:Number(d.pieceIndex)||0};
   $('username').value=user.name;
   updateHeader();
-  presence();
-  listenInvites();
-  modal('loadingModal', false);
-  modal('authModal', false);
- } catch(e) {
-  modal('loadingModal', false);
-  modal('authModal', true);
-  toast('ගිණුම් දත්ත ලබාගත නොහැක.', 'fa-circle-exclamation');
- }
+  modal('loadingModal',false);modal('authModal',false);
+ }catch(e){modal('loadingModal',false);modal('authModal',true);}
 }
 
-function validUsername(n){return /^[a-zA-Z0-9_]{3,20}$/.test(n)}
-
-async function registerAccount(){
+$('login').onclick=async()=>{
  const name=$('username').value.trim(),pass=$('password').value;
- if(!validUsername(name)||pass.length<6)return showCustomAlert('වැරදි ආකෘතියක්', 'Username අකුරු/ඉලක්කම්/_ 3-20 අතර විය යුතු අතර මුරපදය අකුරු 6ක්වත් විය යුතුයි.', 'warning');
+ if(!name||pass.length<1)return toast('කරුණාකර නම සහ මුරපදය ඇතුළත් කරන්න.');
+ try{await auth.signInWithEmailAndPassword(name.toLowerCase()+'@sinhala-draughts.app',pass);toast('සාර්ථකව ඇතුළු විය!','fa-circle-check');}
+ catch(e){toast('ඇතුල්වීම අසාර්ථකයි.');}
+};
+
+$('register').onclick=async()=>{
+ const name=$('username').value.trim(),pass=$('password').value;
+ if(!name||pass.length<6)return toast('මුරපදය අකුරු 6කට වැඩි විය යුතුයි.');
  try{
-  window.__creatingAccount=true;
-  const email=usernameEmail(name);
-  const cred=await auth.createUserWithEmailAndPassword(email,pass);
+  const cred=await auth.createUserWithEmailAndPassword(name.toLowerCase()+'@sinhala-draughts.app',pass);
   fbUser=cred.user;
-  const key=name.toLowerCase();
-  const idx=await db.ref('usernameIndex_v6/'+key).transaction(v=>v===null?fbUser.uid:undefined);
-  if(!idx.committed){await auth.signOut();return showCustomAlert('අසාර්ථකයි', 'මෙම Username එක දැනටමත් භාවිතා වේ.', 'error')}
-  user={name,points:500,wins:0,losses:0,uid:fbUser.uid,pieceIndex:0,selectedEffect:'',unlockedEffects:[]};
-  await db.ref('users_v6/'+fbUser.uid).set({name,points:500,pieceIndex:0,selectedEffect:'',unlockedEffects:[],createdAt:firebase.database.ServerValue.TIMESTAMP});
-  window.__creatingAccount=false;
+  user={name,points:500,wins:0,losses:0,uid:fbUser.uid,pieceIndex:0};
+  await db.ref('users_v6/'+fbUser.uid).set(user);
   localStorage.setItem(KEY,JSON.stringify(user));
-  updateHeader();modal('authModal',false);presence();listenInvites();
-  showCustomAlert('සාර්ථකයි!', 'ගිණුම සාර්ථකව සාදන ලදී.', 'success');
- }catch(e){
-  window.__creatingAccount=false;
-  showCustomAlert('දෝෂයකි', e.code==='auth/email-already-in-use'?'මෙම Username එක දැනටමත් පවතී.':'ගිණුම සෑදීමට නොහැකි විය.', 'error');
- }
-}
+  updateHeader();modal('authModal',false);toast('ගිණුම සාර්ථකයි!','fa-circle-check');
+ }catch(e){toast('ගිණුම සෑදීමට නොහැකි විය.');}
+};
 
-async function loginAccount(){
- const name=$('username').value.trim(),pass=$('password').value;
- if(!validUsername(name)||pass.length<1)return showCustomAlert('අසම්පූර්ණයි', 'නිවැරදි Username සහ මුරපදය ඇතුළත් කරන්න.', 'warning');
- try{
-  await auth.signInWithEmailAndPassword(usernameEmail(name),pass);
-  fbUser=auth.currentUser;await loadSignedInUser();
-  toast('සාර්ථකව ඇතුළු විය!', 'fa-circle-check');
- }catch(e){
-  showCustomAlert('ඇතුල්වීම අසාර්ථකයි', 'Username හෝ මුරපදය වැරදියි.', 'error');
- }
-}
-
-$('login').onclick=loginAccount;
-$('register').onclick=registerAccount;
-
-let tempSelectedPiece = 0;
-let tempSelectedEffect = '';
-
-function renderCustomizationGrids(){
- const grid=$('piecesGrid');
- grid.innerHTML='';
+let tempSelectedPiece=0;
+$('openProfile').onclick=()=>{
+ tempSelectedPiece=user.pieceIndex||0;
+ const grid=$('piecesGrid');grid.innerHTML='';
  PIECE_DESIGNS.forEach((p,idx)=>{
   const div=document.createElement('div');
   div.className='piece-option'+(idx===tempSelectedPiece?' selected':'');
-  div.innerHTML=`<div style="width:36px;height:36px;border-radius:50%;background:${p.bg};border:2px solid ${p.border};color:${p.color};display:grid;place-items:center;font-size:1rem;box-shadow:0 2px 5px #0006">${p.icon}</div><span style="font-size:0.75rem;text-align:center;color:var(--dim)">${p.name}</span>`;
-  div.onclick=()=>{
-   playSound('click');
-   tempSelectedPiece=idx;
-   document.querySelectorAll('#piecesGrid .piece-option').forEach(el=>el.classList.remove('selected'));
-   div.classList.add('selected');
-  };
+  div.innerHTML=`<div style="width:30px;height:30px;border-radius:50%;background:${p.bg};border:2px solid ${p.border};color:${p.color};display:grid;place-items:center">${p.icon}</div><span style="font-size:0.7rem">${p.name}</span>`;
+  div.onclick=()=>{tempSelectedPiece=idx;document.querySelectorAll('#piecesGrid .piece-option').forEach(el=>el.classList.remove('selected'));div.classList.add('selected');};
   grid.appendChild(div);
  });
-
- const fxGrid=$('effectsGrid');
- fxGrid.innerHTML='';
- 
- const noneDiv=document.createElement('div');
- noneDiv.className='piece-option'+(tempSelectedEffect===''?' selected':'');
- noneDiv.innerHTML=`<div style="width:36px;height:36px;border-radius:50%;background:#333;border:2px solid #555;color:#fff;display:grid;place-items:center;font-size:0.8rem">නැත</div><span style="font-size:0.75rem;text-align:center;color:var(--dim)">සාමාන්‍ය</span>`;
- noneDiv.onclick=()=>{
-  playSound('click');
-  tempSelectedEffect='';
-  document.querySelectorAll('#effectsGrid .piece-option').forEach(el=>el.classList.remove('selected'));
-  noneDiv.classList.add('selected');
- };
- fxGrid.appendChild(noneDiv);
-
- if(user.unlockedEffects && user.unlockedEffects.length > 0){
-  AVAILABLE_EFFECTS.forEach(fx=>{
-   if(user.unlockedEffects.includes(fx.id)){
-    const div=document.createElement('div');
-    div.className='piece-option'+(tempSelectedEffect===fx.id?' selected':'');
-    div.innerHTML=`<div class="${fx.class}" style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#ffeaa7,#fdcb6e);border:2px solid var(--gold);color:#111;display:grid;place-items:center;font-size:1rem">${fx.icon}</div><span style="font-size:0.75rem;text-align:center;color:var(--dim)">${fx.name}</span>`;
-    div.onclick=()=>{
-     playSound('click');
-     tempSelectedEffect=fx.id;
-     document.querySelectorAll('#effectsGrid .piece-option').forEach(el=>el.classList.remove('selected'));
-     div.classList.add('selected');
-    };
-    fxGrid.appendChild(div);
-   }
-  });
- } else {
-  const emptyMsg = document.createElement('small');
-  emptyMsg.style.color = 'var(--dim)';
-  emptyMsg.style.gridColumn = '1/-1';
-  emptyMsg.style.textAlign = 'center';
-  emptyMsg.textContent = 'මිලදීගත් Effects නොමැත. Shop එකට ගොස් මිලදී ගන්න.';
-  fxGrid.appendChild(emptyMsg);
- }
-}
-
-$('openProfile').onclick=()=>{
- const local = JSON.parse(localStorage.getItem(KEY)||"{}");
- user.points = local.points !== undefined ? local.points : user.points;
- user.unlockedEffects = local.unlockedEffects || user.unlockedEffects || [];
- user.selectedEffect = local.selectedEffect !== undefined ? local.selectedEffect : user.selectedEffect;
- updateHeader();
-
- tempSelectedPiece=user.pieceIndex||0;
- tempSelectedEffect=user.selectedEffect||'';
- renderCustomizationGrids();
+ applyAvatarToBox('profileAvatar',user.pieceIndex||0);
+ $('profileName').textContent=user.name;
  modal('profileModal',true);
 };
 $('closeProfile').onclick=()=>modal('profileModal',false);
-
-$('saveProfile').onclick=()=>{
- user.pieceIndex=tempSelectedPiece;
- user.selectedEffect=tempSelectedEffect;
- saveUser();
- modal('profileModal',false);
- toast('ප්‍රොෆයිලය සාර්ථකව යාවත්කාලීන විය!', 'fa-circle-check');
-};
+$('saveProfile').onclick=()=>{user.pieceIndex=tempSelectedPiece;saveUser();modal('profileModal',false);toast('යාවත්කාලීන විය!','fa-circle-check');};
 
 function initBoard(){
  clearInterval(turnClockTimer);
  board=Array.from({length:8},()=>Array(8).fill(0));
  for(let r=0;r<8;r++)for(let c=0;c<8;c++)if((r+c)%2){if(r<3)board[r][c]=-1;else if(r>4)board[r][c]=1}
- turn=1; selected=null; moves=[]; gameOver=false; processing=false;
-
- if(single){
-  userSide = nextStartingSide; 
-  $('p1sub').textContent = '0/115';
-  $('p2sub').textContent = '0/115';
-  applyAvatarToBox('p1AvatarBox', user.pieceIndex||0);
-  applyAvatarToBox('p2AvatarBox', 0);
- }
- render();
- setTurnUI();
- if(single && turn !== userSide){ aiTimer=setTimeout(aiMove, 600); }
+ turn=1;selected=null;moves=[];gameOver=false;processing=false;
+ if(single){userSide=nextStartingSide;}
+ render();setTurnUI();
+ if(single&&turn!==userSide)aiTimer=setTimeout(aiMove,600);
 }
 
 const inside=(r,c)=>r>=0&&r<8&&c>=0&&c<8;
 
 function pieceMoves(r,c,b=board){
  const p=b[r][c];if(!p)return[];
- const isKing=Math.abs(p)===2;
- const dirs=[[1,1],[1,-1],[-1,1],[-1,-1]];
+ const isKing=Math.abs(p)===2,dirs=[[1,1],[1,-1],[-1,1],[-1,-1]];
  const caps=[],normal=[];
-
  if(isKing){
   for(const[dr,dc]of dirs){
-   let step=1;
-   while(true){
-    const tr=r+dr*step,tc=c+dc*step;
-    if(!inside(tr,tc))break;
-    if(b[tr][tc]!==0)break;
-    normal.push({fromR:r,fromC:c,toR:tr,toC:tc,capture:false});
-    step++;
-   }
+   let step=1;while(true){const tr=r+dr*step,tc=c+dc*step;if(!inside(tr,tc)||b[tr][tc]!==0)break;normal.push({fromR:r,fromC:c,toR:tr,toC:tc,capture:false});step++;}
   }
   for(const[dr,dc]of dirs){
-   let step=1;
-   let enemyR=-1,enemyC=-1;
+   let step=1,enemyR=-1,enemyC=-1;
    while(true){
-    const tr=r+dr*step,tc=c+dc*step;
-    if(!inside(tr,tc))break;
+    const tr=r+dr*step,tc=c+dc*step;if(!inside(tr,tc))break;
     const val=b[tr][tc];
-    if(val!==0){
-     if(Math.sign(val)===Math.sign(p))break;
-     else{
-      if(enemyR!==-1)break;
-      enemyR=tr;enemyC=tc;
-     }
-    }else{
-     if(enemyR!==-1)caps.push({fromR:r,fromC:c,toR:tr,toC:tc,capR:enemyR,capC:enemyC,capture:true});
-    }
+    if(val!==0){if(Math.sign(val)===Math.sign(p))break;else{if(enemyR!==-1)break;enemyR=tr;enemyC=tc;}}
+    else if(enemyR!==-1)caps.push({fromR:r,fromC:c,toR:tr,toC:tc,capR:enemyR,capC:enemyC,capture:true});
     step++;
    }
   }
@@ -1098,10 +660,7 @@ function pieceMoves(r,c,b=board){
    if(inside(mr,mc)&&inside(tr,tc)&&b[mr][mc]&&Math.sign(b[mr][mc])!==Math.sign(p)&&!b[tr][tc])
     caps.push({fromR:r,fromC:c,toR:tr,toC:tc,capR:mr,capC:mc,capture:true});
   }
-  for(const[dr,dc]of moveDirs){
-   const tr=r+dr,tc=c+dc;
-   if(inside(tr,tc)&&!b[tr][tc])normal.push({fromR:r,fromC:c,toR:tr,toC:tc,capture:false});
-  }
+  for(const[dr,dc]of moveDirs){const tr=r+dr,tc=c+dc;if(inside(tr,tc)&&!b[tr][tc])normal.push({fromR:r,fromC:c,toR:tr,toC:tc,capture:false});}
  }
  return caps.length?caps:normal;
 }
@@ -1115,70 +674,28 @@ function allMoves(side,b=board){
 }
 
 function render(){
- const el=$('board');
- el.innerHTML='';
-
- const flip = single ? (userSide === -1) : (role === 'guest');
-
- for(let vr=0; vr<8; vr++){
-  for(let vc=0; vc<8; vc++){
-   const r = flip ? 7 - vr : vr;
-   const c = flip ? 7 - vc : vc;
-
+ const el=$('board');el.innerHTML='';
+ const flip=single?(userSide===-1):(role==='guest');
+ for(let vr=0;vr<8;vr++){
+  for(let vc=0;vc<8;vc++){
+   const r=flip?7-vr:vr,c=flip?7-vc:vc;
    const sq=document.createElement('div');
    sq.className='sq '+((r+c)%2?'dark':'light');
-   sq.dataset.r=r; sq.dataset.c=c;
+   sq.dataset.r=r;sq.dataset.c=c;
    if(selected&&selected.r===r&&selected.c===c)sq.classList.add('selected');
    const m=moves.find(x=>x.toR===r&&x.toC===c);
    if(m)sq.classList.add(m.capture?'capture':'target');
    
    if(board[r][c]){
-    const val=board[r][c];
-    const p=document.createElement('div');
-    
-    let pieceDesignIndex = 0;
-    let appliedEffect = '';
-
-    if(single){
-     const isUser = (Math.sign(val) === userSide);
-     pieceDesignIndex = isUser ? (user.pieceIndex || 0) : 0;
-     if(isUser) appliedEffect = user.selectedEffect || '';
-    } else {
-     const isHostPiece = (Math.sign(val) === 1);
-     pieceDesignIndex = isHostPiece ? (window.hostPieceIndex || 0) : (window.guestPieceIndex || 0);
-     if(role === 'host' && isHostPiece) appliedEffect = user.selectedEffect || '';
-     if(role === 'guest' && !isHostPiece) appliedEffect = user.selectedEffect || '';
-    }
-    
-    const design = PIECE_DESIGNS[pieceDesignIndex] || PIECE_DESIGNS[0];
-    let fxClass = '';
-    if(appliedEffect){
-     const fxObj = AVAILABLE_EFFECTS.find(x=>x.id === appliedEffect);
-     if(fxObj) fxClass = ' ' + fxObj.class;
-    }
-
-    p.className = 'piece' + (Math.abs(val) === 2 ? ' king' : '') + fxClass;
-    p.style.background = design.bg;
-    p.style.border = `2px solid ${design.border}`;
-    p.style.color = design.color;
-    p.textContent = design.icon;
-
+    const val=board[r][c],p=document.createElement('div');
+    const isUser=single?(Math.sign(val)===userSide):(role==='host'?Math.sign(val)===1:Math.sign(val)===-1);
+    const design=PIECE_DESIGNS[isUser?(user.pieceIndex||0):0]||PIECE_DESIGNS[0];
+    p.className='piece'+(Math.abs(val)===2?' king':'');
+    p.style.background=design.bg;p.style.border=`2px solid ${design.border}`;p.style.color=design.color;p.textContent=design.icon;
     sq.appendChild(p);
    }
 
-   sq.addEventListener('pointerdown',e=>{dragFrom={r,c};sq.setPointerCapture?.(e.pointerId)});
-   sq.addEventListener('pointerup',e=>{
-    if(!dragFrom)return;
-    const from=dragFrom;dragFrom=null;
-    const dest=document.elementFromPoint(e.clientX,e.clientY)?.closest('.sq');
-    if(!dest)return;
-    const tr=Number(dest.dataset.r),tc=Number(dest.dataset.c);
-    if(selected)clickSquare(tr,tc);
-    else{
-     if(board[from.r][from.c]&&Math.sign(board[from.r][from.c])===turn)clickSquare(from.r,from.c);
-     if(from.r!==tr||from.c!==tc)clickSquare(tr,tc);
-    }
-   });
+   sq.onclick=()=>{if(selected)clickSquare(r,c);else clickSquare(r,c);};
    el.appendChild(sq);
   }
  }
@@ -1187,75 +704,29 @@ function render(){
 function clickSquare(r,c){
  if(gameOver||processing)return;
  if(single&&turn!==userSide)return;
- if(!single&&turn!==(role==='host'?1:-1))return;
  if(selected){
   const target=moves.find(x=>x.toR===r&&x.toC===c);
   if(target){playMove(target);return}
-  if(moves.some(x=>x.capture))return toast('එක දිගට Capture කිරීම අවසන් කරන්න.', 'fa-triangle-exclamation');
  }
  const p=board[r][c];
  if(p&&Math.sign(p)===turn){
-  playSound('click');
-  const captures=allMoves(turn).filter(m=>m.capture);
-  const pieceMovesHere=pieceMoves(r,c);
-  let pieceLegal=pieceMovesHere;
-  if(captures.length){
-   const canCapture=pieceMovesHere.some(m=>m.capture);
-   if(canCapture){missedCapture=null;pieceLegal=pieceMovesHere.filter(m=>m.capture);}
-   else{const missed=captures[0];missedCapture={r:missed.fromR,c:missed.fromC};toast('කැපීමේ අවස්ථාව මඟහැරුණි.', 'fa-triangle-exclamation');}
-  }else missedCapture=null;
-  if(!pieceLegal.length)return toast('මෙම පෙත්තට දැන් නීත්‍යානුකූල Move එකක් නැත.', 'fa-circle-info');
+  const pieceLegal=pieceMoves(r,c);
   selected={r,c};moves=pieceLegal;render();
  }
 }
 
 function applyMove(b,m){
- const p=b[m.fromR][m.fromC];
- b[m.fromR][m.fromC]=0;
- b[m.toR][m.toC]=p;
- if(m.capture){
-  b[m.capR][m.capC]=0;
-  playSound('capture');
- }else{
-  playSound('move');
- }
+ const p=b[m.fromR][m.fromC];b[m.fromR][m.fromC]=0;b[m.toR][m.toC]=p;
+ if(m.capture)b[m.capR][m.capC]=0;
  if(p===1&&m.toR===0)b[m.toR][m.toC]=2;
  if(p===-1&&m.toR===7)b[m.toR][m.toC]=-2;
  return p;
 }
 
 async function playMove(m){
- if(processing||gameOver)return;
- processing=true;
- const moving=board[m.fromR][m.fromC],miss=missedCapture;
- missedCapture=null;
-
- if(!single&&roomRef){
-  try{
-   await roomRef.transaction(d=>{
-    if(!d||d.status!=='playing'||d.turn!==turn||d.turn!==(role==='host'?1:-1)||!Array.isArray(d.board))return;
-    const next=d.board.map(row=>row.slice());
-    if(miss&&next[miss.r]?.[miss.c]&&Math.sign(next[miss.r][miss.c])===d.turn)next[miss.r][miss.c]=0;
-    let legal=d.forced?pieceMoves(d.forced.r,d.forced.c,next):allMoves(d.turn,next);
-    const valid=legal.find(x=>x.fromR===m.fromR&&x.fromC===m.fromC&&x.toR===m.toR&&x.toC===m.toC&&!!x.capture===!!m.capture);
-    if(!valid)return;
-    applyMove(next,valid);
-    const chain=valid.capture?pieceMoves(valid.toR,valid.toC,next).some(x=>x.capture):false;
-    d.board=next; d.forced=chain?{r:valid.toR,c:valid.toC}:null;
-    if(!chain){d.turn=-d.turn;d.turnStartedAt=Date.now()}
-    d.lastMoveAt=Date.now(); d.lastMoveBy=fbUser.uid;
-    return d;
-   });
-  }catch(e){toast('Move එක යැවීමට නොහැකි විය.', 'fa-circle-xmark');}
-  finally{processing=false;}
-  return;
- }
-
- if(miss&&board[miss.r]?.[miss.c]&&Math.sign(board[miss.r][miss.c])===turn)board[miss.r][miss.c]=0;
- applyMove(board,m);
- const chain=m.capture?pieceMoves(m.toR,m.toC).filter(x=>x.capture):[];
- if(chain.length){selected={r:m.toR,c:m.toC};moves=chain;render();processing=false;return}
- selected=null;moves=[];turn=-Math.sign(moving);render();processing=false;
+ if(processing||gameOver)return;processing=true;
+ const moving=board[m.fromR][m.fromC];
+ applyMove(board,m);selected=null;moves=[];turn=-Math.sign(moving);render();processing=false;
  if(single){
   const enemy=allMoves(turn);
   if(!enemy.length){finish(Math.sign(moving),'ප්‍රතිවාදියාට නීත්‍යානුකූල Move නොමැත.');return}
@@ -1264,728 +735,108 @@ async function playMove(m){
  }
 }
 
-function setTurnUI(){ 
- if(single){
-  $('p1').classList.toggle('active', turn===userSide);
-  $('p2').classList.toggle('active', turn!==userSide);
-  $('gameStatus').textContent = turn===userSide ? 'ඔබගේ වාරය' : 'AI පරිගණකයේ වාරය';
- }else{
-  $('p1').classList.toggle('active', turn===1);
-  $('p2').classList.toggle('active', turn===-1);
-  $('gameStatus').textContent = turn===(role==='host'?1:-1)?'ඔබගේ වාරය':'ප්‍රතිවාදියාගේ වාරය';
- }
+function setTurnUI(){
+ $('p1').classList.toggle('active',turn===userSide);
+ $('p2').classList.toggle('active',turn!==userSide);
+ $('gameStatus').textContent=turn===userSide?'ඔබගේ වාරය':'AI පරිගණකයේ වාරය';
  startTurnClock(Date.now()+10000);
 }
 
 function startTurnClock(deadline){
- clearInterval(turnClockTimer);
- turnDeadline=deadline||Date.now()+10000;
- const ring=$('clockRing'),number=$('turnClock'),caption=$('clockCaption');
+ clearInterval(turnClockTimer);turnDeadline=deadline||Date.now()+10000;
+ const ring=$('clockRing'),number=$('turnClock');
  const tick=()=>{
-  const remaining=Math.max(0,turnDeadline-Date.now());
-  const left=Math.ceil(remaining/1000);
+  const remaining=Math.max(0,turnDeadline-Date.now()),left=Math.ceil(remaining/1000);
   number.textContent=String(left);
   ring.style.setProperty('--progress',Math.max(0,Math.min(100,remaining/10000*100)));
   ring.classList.toggle('urgent',left<=3);
-  caption.textContent=!single?(turn===(role==='host'?1:-1)?'ඔබගේ කාලය':'ප්‍රතිවාදියාගේ කාලය'):'ඉතිරි කාලය';
   if(remaining<=0){
    clearInterval(turnClockTimer);
-   if(single){
-    if(!gameOver&&turn===userSide){turn=-userSide;selected=null;moves=[];missedCapture=null;render();setTurnUI();aiTimer=setTimeout(aiMove,350);}
-   }else if(roomRef&&role){
-    const expectedTurn=turn;
-    roomRef.transaction(d=>{
-     if(!d||d.status!=='playing'||d.turn!==expectedTurn)return;
-     d.turn=-d.turn; d.forced=null; d.turnStartedAt=Date.now();
-     return d;
-    }).catch(console.error);
-   }
+   if(single&&turn===userSide){turn=-userSide;selected=null;moves=[];render();setTurnUI();aiTimer=setTimeout(aiMove,350);}
   }
  };
  tick();turnClockTimer=setInterval(tick,100);
 }
 
-function evaluateBoard(b,aiSide){
- let score=0;
- for(let r=0;r<8;r++)for(let c=0;c<8;c++){
-  const p=b[r][c];
-  if(p!==0){
-   const isKing=Math.abs(p)===2,val=isKing?40:10,posBonus=(Math.sign(p)===-1)?(r*0.6):((7-r)*0.6);
-   if(Math.sign(p)===aiSide)score+=val+posBonus;else score-=(val+posBonus);
-  }
- }
- return score;
-}
-
-function minimax(b,depth,alpha,beta,maximizingPlayer,aiSide){
- const side=maximizingPlayer?aiSide:-aiSide,legal=allMoves(side,b);
- if(depth===0||!legal.length)return !legal.length?(maximizingPlayer?-10000:10000):evaluateBoard(b,aiSide);
- if(maximizingPlayer){
-  let maxEval=-Infinity;
-  for(const m of legal){
-   const nextB=b.map(row=>row.slice());applyMove(nextB,m);
-   const evalScore=m.capture&&pieceMoves(m.toR,m.toC,nextB).some(x=>x.capture)?minimax(nextB,depth,alpha,beta,true,aiSide):minimax(nextB,depth-1,alpha,beta,false,aiSide);
-   maxEval=Math.max(maxEval,evalScore);alpha=Math.max(alpha,evalScore);if(beta<=alpha)break;
-  }
-  return maxEval;
- }else{
-  let minEval=Infinity;
-  for(const m of legal){
-   const nextB=b.map(row=>row.slice());applyMove(nextB,m);
-   const evalScore=m.capture&&pieceMoves(m.toR,m.toC,nextB).some(x=>x.capture)?minimax(nextB,depth,alpha,beta,false,aiSide):minimax(nextB,depth-1,alpha,beta,true,aiSide);
-   minEval=Math.min(minEval,evalScore);beta=Math.min(beta,evalScore);if(beta<=alpha)break;
-  }
-  return minEval;
- }
-}
-
 function aiMove(){
- const aiSide=-userSide;
- if(gameOver||!single||turn!==aiSide)return;
+ const aiSide=-userSide;if(gameOver||turn!==aiSide)return;
  const legal=allMoves(aiSide);
  if(!legal.length)return finish(userSide,'AI පරිගණකයට Move නොමැත.');
- let bestScore=-Infinity,bestMoves=[];
- for(const m of legal){
-  const nextB=board.map(row=>row.slice());applyMove(nextB,m);
-  const score=m.capture&&pieceMoves(m.toR,m.toC,nextB).some(x=>x.capture)?minimax(nextB,3,-Infinity,Infinity,true,aiSide):minimax(nextB,2,-Infinity,Infinity,false,aiSide);
-  if(score>bestScore){bestScore=score;bestMoves=[m]}else if(score===bestScore)bestMoves.push(m);
- }
- const m=bestMoves[Math.floor(Math.random()*bestMoves.length)];
+ const m=legal[Math.floor(Math.random()*legal.length)];
  applyMove(board,m);render();
- const chain=m.capture?pieceMoves(m.toR,m.toC).filter(x=>x.capture):[];
- if(chain.length){
-  aiTimer=setTimeout(()=>{
-   if(gameOver)return;
-   const n=chain[0];applyMove(board,n);render();
-   turn=userSide;if(!allMoves(userSide).length)finish(aiSide,'ඔබට නීත්‍යානුකූල Move නොමැත.');else setTurnUI();
-  },350);
-  return;
- }
  turn=userSide;if(!allMoves(userSide).length)finish(aiSide,'ඔබට නීත්‍යානුකූල Move නොමැත.');else setTurnUI();
 }
 
 function finish(winner,message){
- if(gameOver)return;
- gameOver=true;clearInterval(aiTimer);clearInterval(turnClockTimer);
- const won=single?(winner===userSide):(role==='host'?winner===1:winner===-1);
- if(won)playSound('win'); else playSound('lose');
- if(single)nextStartingSide=winner;
-
- const key=roomId?roomId+':'+(window.currentGameId||1):'single:'+Date.now();
- if(!awarded[key]){
-  awarded[key]=true;
-  if(window.practiceMode){
-   $('overPoints').textContent='Practice Game - Points වෙනස් නොවේ';
-   window.practiceMode=false;
-  }else{
-   const bet=Number(window.currentBetPoints)||10;
-   if(won){
-    const reward=single?bet*2:bet;
-    user.points+=reward;
-    $('overPoints').textContent='+'+reward+' Points';
-    user.wins++;
-   }else{
-    user.points=Math.max(0,user.points-bet);
-    user.losses++;
-    $('overPoints').textContent='-'+bet+' Points';
-   }
-   saveUser();
-  }
- }
- $('overTitle').textContent=won?'ඔබ ජයග්‍රහණය කළා! 🎉':'ඔබ පරාජය විය!';
- $('overTitle').style.color=won?'var(--green)':'var(--red)';
+ if(gameOver)return;gameOver=true;clearInterval(aiTimer);clearInterval(turnClockTimer);
+ const won=(winner===userSide);
+ const bet=Number(window.currentBetPoints)||10;
+ if(won){user.points+=bet;user.wins++;$('overPoints').textContent='+'+bet+' Points (Win!)';}
+ else{user.points=Math.max(0,user.points-bet);user.losses++;$('overPoints').textContent='-'+bet+' Points';}
+ saveUser();
+ $('overTitle').textContent=won?'VICTORY! 🎉':'DEFEAT!';
+ $('overTitle').style.color=won?'var(--neon-green)':'var(--red)';
  $('overMessage').textContent=message;
  modal('overModal',true);
 }
 
-async function publishFinish(winner,message){
- if(!roomRef)return;
- try{
-  await roomRef.transaction(d=>{
-   if(!d||d.status!=='playing')return;
-   d.status='finished';
-   d.winner=winner;
-   d.message=message;
-   d.finishedAt=Date.now();
-   d.rematchRequestedBy=null;
-   return d;
-  });
- }catch(e){}
-}
-
-function listenChat(){
- if(!roomId) return;
- if(chatRef && chatCb) chatRef.off('child_added', chatCb);
- chatRef = db.ref('rooms_v6/' + roomId + '/chat');
- $('chatMessages').innerHTML = '';
- chatCb = chatRef.on('child_added', snapshot => {
-  const msg = snapshot.val();
-  if(!msg) return;
-  const isMe = msg.sender === fbUser.uid;
-  const div = document.createElement('div');
-  div.className = 'chat-msg ' + (isMe ? 'me' : 'them');
-  div.textContent = msg.text;
-  $('chatMessages').appendChild(div);
-  $('chatMessages').scrollTop = $('chatMessages').scrollHeight;
-  if(!isMe) playSound('click');
- });
-}
-
-function sendChatMessage(text){
- text = text.trim();
- if(!text) return;
- if(single){
-  const divMe = document.createElement('div');
-  divMe.className = 'chat-msg me';
-  divMe.textContent = text;
-  $('chatMessages').appendChild(divMe);
-  
-  setTimeout(()=>{
-   const replies = ["හොඳයි 👍", "ඔබේ වාරය!", "නියමයි 🔥", "හොඳ ක්‍රීඩාවක්! 😊"];
-   const divAi = document.createElement('div');
-   divAi.className = 'chat-msg them';
-   divAi.textContent = replies[Math.floor(Math.random()*replies.length)];
-   $('chatMessages').appendChild(divAi);
-   $('chatMessages').scrollTop = $('chatMessages').scrollHeight;
-  }, 1000);
-  
-  $('chatMessages').scrollTop = $('chatMessages').scrollHeight;
-  return;
- }
- if(!roomRef) return;
- db.ref('rooms_v6/' + roomId + '/chat').push({
-  sender: fbUser.uid,
-  text: text,
-  time: Date.now()
- });
-}
-
+function toggleChatDrawer(){$('chatDrawer').classList.toggle('open');}
 function sendQuickChat(msg){
- sendChatMessage(msg);
+ const div=document.createElement('div');div.className='chat-msg me';div.textContent=msg;
+ $('chatMessages').appendChild(div);
+ $('chatMessages').scrollTop=$('chatMessages').scrollHeight;
+ setTimeout(()=>{
+  const r=["හොඳයි 👍","නියමයි 🔥","Well played! 😊"];
+  const d=document.createElement('div');d.className='chat-msg them';d.textContent=r[Math.floor(Math.random()*r.length)];
+  $('chatMessages').appendChild(d);$('chatMessages').scrollTop=$('chatMessages').scrollHeight;
+ },1000);
 }
 
-$('sendChatBtn').onclick = () => {
- const val = $('chatInput').value;
- sendChatMessage(val);
- $('chatInput').value = '';
-};
-
-$('chatInput').addEventListener('keydown', e => {
- if(e.key === 'Enter'){
-  $('sendChatBtn').click();
- }
-});
-
-function toggleChatDrawer(){
- const drawer = $('chatDrawer');
- drawer.classList.toggle('open');
- playSound('click');
-}
-
-$('arenaChatBtn').onclick = toggleChatDrawer;
-$('clockRing').onclick = toggleChatDrawer;
-$('closeChat').onclick = () => $('chatDrawer').classList.remove('open');
-
-function listenRoom(){
- if(roomRef&&roomCb)roomRef.off('value',roomCb);
- roomRef=db.ref('rooms_v6/'+roomId);
- roomCb=roomRef.on('value',s=>{
-  const d=s.val();if(!d)return;
-  $('p1name').textContent=d.hostName||'Host';
-  $('p2name').textContent=d.guestName||'Guest';
-  window.currentBetPoints = Number(d.betPoints) || 10;
-  if($('arenaBetDisplay')) $('arenaBetDisplay').textContent = window.currentBetPoints;
-  window.hostPieceIndex = Number(d.hostPieceIndex) || 0;
-  window.guestPieceIndex = Number(d.guestPieceIndex) || 0;
-  
-  applyAvatarToBox('p1AvatarBox', window.hostPieceIndex);
-  applyAvatarToBox('p2AvatarBox', window.guestPieceIndex);
-  
-  if(d.status==='waiting'){
-   clearInterval(turnClockTimer);
-   $('gameStatus').textContent='ආරාධනාව පිළිගන්නා තෙක් රැඳී සිටින්න...';
-   $('turnClock').textContent='—';$('clockCaption').textContent='Waiting';
-   return;
-  }
-  if(d.status==='playing'){
-   modal('overModal',false);
-   window.currentGameId=d.gameId||1;
-   board=d.board.map(row=>row.slice());
-   turn=d.turn;gameOver=false;processing=false;selected=null;moves=[];missedCapture=null;
-   if(d.forced&&turn===(role==='host'?1:-1)){
-    selected={r:d.forced.r,c:d.forced.c};
-    moves=pieceMoves(d.forced.r,d.forced.c).filter(m=>m.capture);
-   }
-   render();
-   setTurnUIRoom();
-   const clockKey=[d.gameId||1,d.turn,d.turnStartedAt||d.startedAt||0].join(':');
-   if(window._clockKey!==clockKey){window._clockKey=clockKey;startTurnClock((d.turnStartedAt||d.startedAt||Date.now())+10000)}
-   
-   let wc=0,rc=0;for(const row of board)for(const v of row){if(v>0)wc++;if(v<0)rc++}
-   if(!wc||!rc||!allMoves(turn).length){const win=(!wc)?-1:(!rc)?1:-turn;publishFinish(win,'තරඟය අවසන් විය.')}
-  }else if(d.status==='finished'){
-   clearInterval(turnClockTimer);gameOver=true;
-   const localWin=(d.winner===1&&role==='host')||(d.winner===-1&&role==='guest');
-   const id=roomId+':'+(d.gameId||1);
-   if(!awarded[id]){
-    awarded[id]=true;
-    let bet=window.currentBetPoints||10;
-    if(localWin){
-     user.points+=bet; user.wins++; playSound('win');
-     $('overPoints').textContent='+'+bet+' Points (Win!)';
-    }else{
-     user.points=Math.max(0,user.points-bet); user.losses++; playSound('lose');
-     $('overPoints').textContent='-'+bet+' Points';
-    }
-    saveUser();
-    $('overTitle').textContent=localWin?'ඔබ ජයග්‍රහණය කළා! 🎉':'ඔබ පරාජය විය!';
-    $('overMessage').textContent=d.message||'තරඟය අවසන්';
-    modal('overModal',true);
-   }
-
-   const rematchBtn=$('rematch');
-   if(single){
-    rematchBtn.style.display='block';
-    rematchBtn.textContent='නැවත ක්‍රීඩා කරන්න';
-    rematchBtn.disabled=false;
-    $('rematchStatus').textContent='';
-   }else{
-    const requestedBy=d.rematchRequestedBy;
-    if(!requestedBy){
-     if(localWin){
-      rematchBtn.style.display='none';
-      $('rematchStatus').textContent='පරාජිත ක්‍රීඩකයා Rematch ඉල්ලන තෙක් රැඳී සිටින්න...';
-     }else{
-      rematchBtn.style.display='block';
-      rematchBtn.textContent='Rematch ඉල්ලන්න';
-      rematchBtn.disabled=false;
-      $('rematchStatus').textContent='ඔබට Rematch එකක් ඉල්ලා සිටිය හැක.';
-     }
-    }else if(requestedBy===role){
-     rematchBtn.style.display='none';
-     $('rematchStatus').textContent='ඔබ Rematch ඉල්ලීමක් යවා ඇත. ප්‍රතිවාදියා පිළිගන්නා තෙක් රැඳී සිටින්න...';
-    }else{
-     rematchBtn.style.display='block';
-     rematchBtn.textContent='Rematch පිළිගන්න (Accept)';
-     rematchBtn.disabled=false;
-     $('rematchStatus').textContent='ප්‍රතිවාදියා (පරාජිතයා) Rematch එකක් ඉල්ලා ඇත!';
-    }
-   }
-  }
- });
- listenChat();
-}
-
-function setTurnUIRoom(){ 
- $('p1').classList.toggle('active',turn===1);
- $('p2').classList.toggle('active',turn===-1);
- $('gameStatus').textContent=turn===(role==='host'?1:-1)?'ඔබගේ වාරය':'ප්‍රතිවාදියාගේ වාරය';
-}
-
-async function enterRoom(id,r){
- roomId=id; role=r; single=false;
- $('homeTop').style.display='none';
- $('bottomNav').style.display='none';
- modal('multiModal',false);
- $('lobby').style.display='none';
- $('arena').style.display='flex';
- listenRoom();
-}
-
-function rememberOpponent(name,uid){
- if(!uid||!fbUser)return;
- let a=JSON.parse(localStorage.getItem(RECENT)||'[]');
- a=a.filter(x=>x.uid!==uid);a.unshift({name,uid});
- localStorage.setItem(RECENT,JSON.stringify(a.slice(0,30)));
- db.ref('friends_v6/'+fbUser.uid+'/'+uid).set({
-  name,uid,updatedAt:firebase.database.ServerValue.TIMESTAMP
- }).catch(e=>console.warn('Friend sync:',e));
-}
-
-function renderRecent(){
- const el=$('recentList'),a=JSON.parse(localStorage.getItem(RECENT)||'[]');
- el.innerHTML='';if(!a.length){el.textContent='මෑතකදී තරඟ කළ අය නොමැත.';return}
- a.forEach(x=>{
-  const d=document.createElement('div');d.className='listitem';
-  const n=document.createElement('b');n.textContent=x.name;
-  const b=document.createElement('button');b.className='btn-gold';b.textContent='Invite';
-  b.onclick=()=>sendInviteToUser(x);
-  d.append(n,b);el.append(d);
- });
-}
-
-$('multi').onclick = () => {
- $('maxUserPoints').textContent = user.points;
- $('betAmountInput').value = Math.min(50, user.points);
- modal('betModal', true);
-};
-
-$('closeBetModal').onclick = () => modal('betModal', false);
-
-$('proceedToInvite').onclick = () => {
- const betVal = parseInt($('betAmountInput').value) || 10;
- if(betVal < 1) return showCustomAlert('වැරදි අගයක්', 'කරුණාකර නිවැරදි ඔට්ටු මුදලක් ඇතුළත් කරන්න.', 'warning');
- if(betVal > user.points) return showCustomAlert('ප්‍රමාණවත් නොවේ', 'ඔබ සතුව ප්‍රමාණවත් Points නොමැත!', 'warning');
-
- window.currentBetPoints = betVal;
- $('activeBetDisplay').textContent = betVal;
- modal('betModal', false);
- if(window._inviteTarget){const t=window._inviteTarget;window._inviteTarget=null;sendInviteToUser(t);return;}
- renderRecent();
- modal('multiModal', true);
-};
-
-$('closeMulti').onclick = () => modal('multiModal', false);
-
-async function sendInviteToUser(target){
- const betVal = window.currentBetPoints || 10;
- if(!fbUser || !target || target.uid === fbUser.uid) return;
-
- modal('multiModal', false);
- try{
-  const ref=db.ref('rooms_v6').push(),id=ref.key;
-  const initial=Array.from({length:8},()=>Array(8).fill(0));
-  for(let r=0;r<8;r++)for(let c=0;c<8;c++)if((r+c)%2){if(r<3)initial[r][c]=-1;else if(r>4)initial[r][c]=1}
-  
-  await ref.set({
-   status:'waiting',hostUid:fbUser.uid,guestUid:target.uid,hostName:user.name,guestName:target.name,
-   hostPieceIndex:user.pieceIndex||0,
-   board:initial,turn:1,gameId:1,betPoints:betVal,turnStartedAt:Date.now(),createdAt:Date.now()
-  });
-  
-  await db.ref('invites_v6/'+target.uid).push().set({roomId:id,fromUid:fbUser.uid,fromName:user.name,betPoints:betVal,status:'pending',createdAt:Date.now()});
-  rememberOpponent(target.name,target.uid);
-  enterRoom(id,'host');
-  toast('ආරාධනාව සාර්ථකව යවන ලදී! ('+betVal+' pts)', 'fa-paper-plane');
- }catch(e){showCustomAlert('දෝෂයකි', 'Invite යැවීමට නොහැකි විය.', 'error');}
-}
-
-function listenInvites(){
- if(!fbUser)return;
- if(inviteRef&&inviteCb)inviteRef.off('child_added',inviteCb);
- inviteRef=db.ref('invites_v6/'+fbUser.uid);
- inviteCb=inviteRef.on('child_added',async s=>{
-  const v=s.val();if(!v||v.status!=='pending'||!v.roomId)return;
-  if(Date.now()-(v.createdAt||Date.now())>300000){await s.ref.update({status:'expired'});return}
-  if(roomId)return;
-  
-  const betVal = v.betPoints || 10;
-  
-  showCustomAlert(
-   'ක්‍රීඩා ආරාධනාවක්! 🎮',
-   (v.fromName||'යහළුවෙක්')+' ඔබට Online දාම් තරඟයකට ආරාධනා කරයි!\nඔට්ටු තැබෙන Points ප්‍රමාණය: '+betVal+' pts',
-   'warning',
-   async ()=>{
-    try{
-     const roomRefSnap=db.ref('rooms_v6/'+v.roomId);
-     const roomSnap=await roomRefSnap.once('value');
-     if(!roomSnap.exists()){return showCustomAlert('වලංගු නැත', 'මෙම ආරාධනාව දැන් වලංගු නැත.', 'error');await s.ref.update({status:'expired'});}
-     
-     window.currentBetPoints = betVal;
-     await roomRefSnap.update({
-      guestPieceIndex: user.pieceIndex || 0,
-      status:'playing',
-      startedAt:Date.now(),
-      turnStartedAt:Date.now(),
-      lastMoveAt:Date.now(),
-      turn:1,
-      forced:null
-     });
-     await s.ref.update({status:'accepted',respondedAt:Date.now()});
-     rememberOpponent(v.fromName,v.fromUid);
-     enterRoom(v.roomId,'guest');
-     toast('තරඟය සාර්ථකව ආරම්භ විය!', 'fa-circle-check');
-    }catch(e){showCustomAlert('දෝෂයකි', 'Invite පිළිගැනීමේ දෝෂයකි.', 'error')}
-   },
-   true,
-   'ප්‍රතික්ෂේප කරන්න',
-   'පිළිගන්න (Accept)'
-  );
-  
-  document.querySelector('#customAlertModal .btn:not(.btn-gold)').onclick = async () => {
-   modal('customAlertModal', false);
-   await s.ref.update({status:'declined',respondedAt:Date.now()});
-   toast('ආරාධනාව ප්‍රතික්ෂේප කළා.', 'fa-circle-info');
-  };
- });
-}
-
-function stopFriendsPresence(){
- if(friendsPresenceRef&&friendsPresenceCb){
-  friendsPresenceRef.off('value',friendsPresenceCb);
- }
- friendsPresenceRef=null;
- friendsPresenceCb=null;
-}
-
-function paintFriendsList(){
- const el=$('friendsList');
- if(!el)return;
- el.innerHTML='';
- if(!friendsCache.length){el.textContent='තවම යහළුවන් නැත. Multiplayer හරහා Invite කරන්න.';return;}
- friendsCache.forEach(friend=>{
-  const isOnline=friendsStatusMap[friend.uid]===true;
-  const row=document.createElement('div');row.className='listitem friend-listitem';
-  const identity=document.createElement('div');identity.className='friend-identity';
-  const status=document.createElement('span');
-  status.className='friend-status '+(isOnline?'is-online':'is-offline');
-  status.textContent=isOnline?'● Online':'● Offline';
-  status.setAttribute('aria-label',isOnline?'Online':'Offline');
-  const name=document.createElement('b');name.className='friend-name';name.textContent=friend.name||'Player';
-  identity.append(status,name);
-  const invite=document.createElement('button');invite.className='btn-gold';invite.textContent='Invite';
-  invite.title=isOnline?'Invite this player':'මෙම ක්‍රීඩකයා Offline';
-  invite.onclick=()=>{
-   modal('friendsModal',false);
-   stopFriendsPresence();
-   $('maxUserPoints').textContent=user.points;
-   $('betAmountInput').value=Math.min(50,user.points);
-   window._inviteTarget=friend;
-   modal('betModal',true);
-  };
-  row.append(identity,invite);el.append(row);
- });
-}
-
-async function renderFriends(){
- const el=$('friendsList');el.textContent='යහළුවන් ලබාගනිමින්...';
- stopFriendsPresence();friendsCache=[];friendsStatusMap={};
- const merged=new Map();
- try{
-  if(fbUser){
-   const snap=await db.ref('friends_v6/'+fbUser.uid).once('value');
-   snap.forEach(ch=>{
-    const v=ch.val();
-    if(v&&v.uid&&v.uid!==fbUser.uid)merged.set(v.uid,{uid:v.uid,name:v.name||'Player'});
-   });
-  }
- }catch(e){console.warn('Friends load:',e)}
- try{
-  const recent=JSON.parse(localStorage.getItem(RECENT)||'[]');
-  recent.forEach(friend=>{
-   if(friend&&friend.uid&&friend.uid!==(fbUser&&fbUser.uid)&&!merged.has(friend.uid)){
-    merged.set(friend.uid,{uid:friend.uid,name:friend.name||'Player'});
-   }
-  });
- }catch(e){console.warn('Recent friends load:',e)}
- friendsCache=[...merged.values()];
- if(!friendsCache.length){paintFriendsList();return;}
- friendsPresenceRef=db.ref('publicProfiles_v6');
- friendsPresenceCb=snap=>{
-  const onlineNow={};
-  friendsCache.forEach(friend=>{
-   const profile=snap.child(friend.uid).val();
-   onlineNow[friend.uid]=!!(profile&&profile.online===true);
-  });
-  friendsStatusMap=onlineNow;
-  paintFriendsList();
- };
- friendsPresenceRef.on('value',friendsPresenceCb,error=>{
-  console.warn('Friends presence listener:',error);
-  friendsCache.forEach(friend=>{
-   if(friendsStatusMap[friend.uid]===undefined)friendsStatusMap[friend.uid]=false;
-  });
-  paintFriendsList();
- });
-}
-$('navHome').onclick=()=>{document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));$('navHome').classList.add('active');};
-$('navFriends').onclick=()=>{document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));$('navFriends').classList.add('active');renderFriends();modal('friendsModal',true)};
-$('navProfile').onclick=()=>{document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));$('navProfile').classList.add('active');$('openProfile').click()};
-$('closeFriends').onclick=()=>{stopFriendsPresence();modal('friendsModal',false)};
-$('findFriends').onclick=()=>{stopFriendsPresence();modal('friendsModal',false);$('maxUserPoints').textContent=user.points;$('betAmountInput').value=Math.min(50,user.points);modal('betModal',true)};
-$('collectRewards').onclick=()=>location.href='shopandreward.html';
-$('coinShop').onclick=()=>location.href='shopandreward.html';
-$('freestyle').onclick=()=>{
- window.currentBetPoints=0;
- window.practiceMode=true;
- single=true;roomId=null;role=null;nextStartingSide=1;
- $('homeTop').style.display='none';
- $('bottomNav').style.display='none';
- $('lobby').style.display='none';
- $('arena').style.display='flex';
- $('p1name').textContent=user.name||'ඔබ';
- $('p2name').textContent='AI පරිගණකය';
- $('p2sub').textContent='(Practice)';
- if($('arenaBetDisplay')) $('arenaBetDisplay').textContent = '0';
- initBoard();
-};
+$('arenaChatBtn').onclick=toggleChatDrawer;
+$('clockRing').onclick=toggleChatDrawer;
+$('closeChat').onclick=()=>$('chatDrawer').classList.remove('open');
+$('sendChatBtn').onclick=()=>{const v=$('chatInput').value;if(v){sendQuickChat(v);$('chatInput').value='';}};
 
 $('single').onclick=()=>{
- $('maxSinglePoints').textContent = user.points;
- $('singleBetInput').value = Math.min(50, user.points);
- modal('singleBetModal', true);
+ $('maxSinglePoints').textContent=user.points;
+ modal('singleBetModal',true);
 };
-
-$('closeSingleBet').onclick=()=>modal('singleBetModal', false);
-
+$('closeSingleBet').onclick=()=>modal('singleBetModal',false);
 $('startSingleGame').onclick=()=>{
- const betVal = parseInt($('singleBetInput').value) || 10;
- if(betVal < 1) return showCustomAlert('වැරදි අගයක්', 'කරුණාකර නිවැරදි ඔට්ටු මුදලක් ඇතුළත් කරන්න.', 'warning');
- if(betVal > user.points) return showCustomAlert('ප්‍රමාණවත් නොවේ', 'ඔබ සතුව ප්‍රමාණවත් Points නොමැත!', 'warning');
-
- modal('singleBetModal', false);
- window.currentBetPoints = betVal;
- single=true;roomId=null;role=null;nextStartingSide=1;
- $('homeTop').style.display='none';
- $('bottomNav').style.display='none';
- $('lobby').style.display='none';
- $('arena').style.display='flex';
- $('p1name').textContent=user.name||'ඔබ';
- $('p2name').textContent='AI පරිගණකය';
- $('p2sub').textContent='(Practice)';
- if($('arenaBetDisplay')) $('arenaBetDisplay').textContent = betVal;
+ const bet=parseInt($('singleBetInput').value)||10;
+ if(bet>user.points)return toast('ප්‍රමාණවත් Points නැත!');
+ modal('singleBetModal',false);window.currentBetPoints=bet;
+ $('lobby').style.display='none';$('arena').style.display='flex';
+ $('p1name').textContent=user.name||'ඔබ';$('p2name').textContent='AI පරිගණකය';
+ $('arenaBetDisplay').textContent=bet;
+ applyAvatarToBox('p1AvatarBox',user.pieceIndex||0);
+ applyAvatarToBox('p2AvatarBox',0);
  initBoard();
 };
 
-async function searchOnlinePlayers(){
- const q=$('search').value.trim().toLowerCase(),el=$('results'),btn=$('searchBtn');
- if(!q){return showCustomAlert('අවශ්‍යයි', 'සෙවීමට Username එකක් ඇතුළත් කරන්න.', 'warning');}
- if(!fbUser){return showCustomAlert('ඇතුළු වී නැත', 'පළමුව Login වන්න.', 'warning');}
- btn.disabled=true;btn.textContent='සොයමින්...';el.textContent='Online ක්‍රීඩකයන් සොයමින්...';
- try{
-  const snap=await db.ref('publicProfiles_v6').once('value');
-  const matches=[];
-  snap.forEach(ch=>{const v=ch.val();if(ch.key!==fbUser.uid&&v&&v.online===true&&typeof v.name==='string'&&v.name.toLowerCase().includes(q))matches.push({uid:ch.key,name:v.name})});
-  el.innerHTML='';
-  if(!matches.length){el.textContent='මෙම නමට ගැළපෙන Online ක්‍රීඩකයෙකු හමු නොවීය.';return}
-  matches.slice(0,30).forEach(v=>{
-   const row=document.createElement('div');row.className='listitem';
-   const name=document.createElement('b');name.textContent=v.name;
-   const inviteBtn=document.createElement('button');inviteBtn.className='btn-gold';inviteBtn.textContent='Invite';
-   inviteBtn.onclick=()=>sendInviteToUser({name:v.name,uid:v.uid});
-   row.append(name,inviteBtn);el.append(row);
-  });
- }catch(e){el.textContent='Search දෝෂයකි.';}
- finally{btn.disabled=false;btn.textContent='Search'}
-}
-
-$('searchBtn').onclick=searchOnlinePlayers;
-$('search').addEventListener('keydown',e=>{if(e.key==='Enter')searchOnlinePlayers()});
+$('multi').onclick=()=>{$('maxUserPoints').textContent=user.points;modal('betModal',true);};
+$('closeBetModal').onclick=()=>modal('betModal',false);
+$('proceedToInvite').onclick=()=>{
+ modal('betModal',false);
+ modal('multiModal',true);
+};
+$('closeMulti').onclick=()=>modal('multiModal',false);
 
 function leaveRoom(){
- clearInterval(turnClockTimer);
- window._clockKey=null;
- if(roomRef&&roomCb){
-  roomRef.off('value',roomCb);
- }
- if(chatRef&&chatCb){
-  chatRef.off('child_added',chatCb);
- }
- roomRef=null;
- roomCb=null;
- chatRef=null;
- chatCb=null;
- roomId=null;
- role=null;
- single=true;
- gameOver=false;
- clearTimeout(aiTimer);
-
- modal('overModal', false);
- $('arena').style.display='none';
- $('chatDrawer').classList.remove('open');
- $('lobby').style.display='grid';
- $('homeTop').style.display='flex';
- $('bottomNav').style.display='flex';
+ clearInterval(turnClockTimer);clearTimeout(aiTimer);
+ $('arena').style.display='none';$('chatDrawer').classList.remove('open');
+ $('lobby').style.display='flex';
+ modal('overModal',false);
 }
 
-function handleMenuForfeit(){
- if(gameOver) {
-  leaveRoom();
-  return;
- }
- showCustomAlert(
-  'තරඟයෙන් ඉවත් වීම',
-  'ඔබට සැබවින්ම තරඟයෙන් ඉවත් වීමට අවශ්‍යද? (මෙය පැරදීමක් ලෙස සටහන් වේ)',
-  'warning',
-  async ()=>{
-   if(single){
-    finish(-userSide,'ඔබ තරඟයෙන් ඉවත් විය.');
-   } else {
-    const winner = (role === 'host') ? -1 : 1;
-    await publishFinish(winner, 'ප්‍රතිවාදියා තරඟයෙන් ඉවත් විය.');
-   }
-  },
-  true,
-  'නැත (Cancel)',
-  'ඔව් (Yes)'
- );
-}
-
-if($('arenaMenuBtn')) {
- $('arenaMenuBtn').onclick = handleMenuForfeit;
-}
-
-$('rematch').onclick=async()=>{
- if(single){modal('overModal',false);initBoard();return}
- if(!roomRef)return;
- try{
-  const snap=await roomRef.once('value');
-  const d=snap.val();
-  if(!d||d.status!=='finished')return;
-  const localWin=(d.winner===1&&role==='host')||(d.winner===-1&&role==='guest');
-  
-  if(!localWin&&!d.rematchRequestedBy){
-   await roomRef.transaction(room=>{
-    if(!room||room.status!=='finished')return;
-    room.rematchRequestedBy=role;
-    return room;
-   });
-   toast('Rematch ඉල්ලීම යවන ලදී.', 'fa-paper-plane');
-  }else if(localWin&&d.rematchRequestedBy&&d.rematchRequestedBy!==role){
-   await roomRef.transaction(room=>{
-    if(!room||room.status!=='finished')return;
-    room.status='playing';
-    room.gameId=(room.gameId||1)+1;
-    room.board=Array.from({length:8},(_,r)=>Array.from({length:8},(_,c)=>(r+c)%2?(r<3?-1:r>4?1:0):0));
-    room.turn=1;
-    room.startedAt=Date.now();
-    room.turnStartedAt=Date.now();
-    room.forced=null;
-    room.rematchRequestedBy=null;
-    room.winner=null;
-    room.message=null;
-    room.finishedAt=null;
-    return room;
-   });
-   modal('overModal',false);
-   toast('තරඟය නැවත ආරම්භ විය!', 'fa-circle-check');
-  }
- }catch(e){toast('Rematch ක්‍රියාවලිය අසාර්ථක විය.', 'fa-circle-xmark');}
-};
-
-$('exit').onclick=()=>{
- leaveRoom();
-};
-
-$('home').onclick=()=>{
- if(roomId && !gameOver){
-  handleMenuForfeit();
-  return;
- }
- leaveRoom();
-};
-
-$('logout').onclick=async()=>{
- showCustomAlert(
-  'Logout වීම',
-  'ඔබට සැබවින්ම ගිණුමෙන් ඉවත් වීමට (Logout) අවශ්‍යද?',
-  'warning',
-  async ()=>{
-   try{
-    if(fbUser)await db.ref('publicProfiles_v6/'+fbUser.uid).update({online:false});
-    if(inviteRef&&inviteCb)inviteRef.off('child_added',inviteCb);
-    if(roomRef&&roomCb)roomRef.off('value',roomCb);
-    localStorage.removeItem(KEY);await auth.signOut();
-    fbUser=null;user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,selectedEffect:'',unlockedEffects:[]};
-    leaveRoom();modal('authModal',true);toast('සාර්ථකව Logout විය.', 'fa-circle-check');
-   }catch(e){toast('Logout වීමට නොහැකි විය.', 'fa-circle-xmark')}
-  },
-  true,
-  'නැත',
-  'ඔව්'
- );
-};
+$('arenaMenuBtn').onclick=()=>leaveRoom();
+$('rematch').onclick=()=>{modal('overModal',false);initBoard();};
+$('exit').onclick=leaveRoom;
+$('collectRewards').onclick=()=>location.href='shopandreward.html';
+$('coinShop').onclick=()=>location.href='shopandreward.html';
+$('navHome').onclick=leaveRoom;
+$('navFriends').onclick=()=>toast('Friends අංශය ළඟදීම!');
+$('navProfile').onclick=()=>$('openProfile').click();
 </script>
 </body>
 </html>
