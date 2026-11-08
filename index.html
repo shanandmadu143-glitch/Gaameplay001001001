@@ -357,7 +357,7 @@ button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var
 
 <!-- GAMING APP HEADER -->
 <div class="home-top" id="homeTop">
- <div class="profile-float" id="openProfile" title="പ്രොෆයිලය">
+ <div class="profile-float" id="openProfile" title="പ്രൊෆයිලය">
   <span class="avatar" id="headerAvatar"><i class="fa-solid fa-user"></i></span>
   <div><b id="headerName">ක්‍රීඩකයා</b><br><small class="pro-label">PRO GAMER</small></div>
  </div>
@@ -821,7 +821,7 @@ function finish(winner,message){
   saveUser();
  }
  $('overTitle').textContent=won?'VICTORY! 🎉':'DEFEAT!';
- $('overTitle'].style.color=won?'var(--neon-green)':'var(--red)';
+ $('overTitle').style.color=won?'var(--neon-green)':'var(--red)';
  $('overMessage').textContent=message;
  modal('overModal',true);
 }
@@ -893,7 +893,7 @@ $('proceedToInvite').onclick = () => {
 
 $('closeMulti').onclick = () => modal('multiModal', false);
 
-/* --- FIXED & ENHANCED FRIEND SEARCH & INVITE LOGIC --- */
+/* --- FIXED FRIEND SEARCH & INVITE LOGIC --- */
 $('searchBtn').onclick = async () => {
     const rawQuery = $('search').value.trim();
     const queryName = rawQuery.toLowerCase();
@@ -918,12 +918,10 @@ $('searchBtn').onclick = async () => {
         let found = false;
         Object.keys(users).forEach(uid => {
             const uData = users[uid];
-            // තමන්ගේ නම සෙවුම් ප්‍රතිඵලවල නොපෙන්වීම සහ අකුරු පරීක්ෂාව නිවැරදි කිරීම
             if(uid !== fbUser.uid && uData.name) {
                 const dbUserName = uData.name.trim();
                 const dbUserNameLower = dbUserName.toLowerCase();
                 
-                // නම සම්පූර්ණ ලෙස හෝ කොටසක් සමාන දැයි පරීක්ෂා කිරීම
                 if(dbUserNameLower.includes(queryName)) {
                     found = true;
                     const item = document.createElement('div');
@@ -956,7 +954,6 @@ function sendGameInvite(friendUid, friendName) {
     if(!db || !fbUser) return toast('සම්බන්ධතාවය අසාර්ථකයි.');
     const bet = Number(window.currentBetPoints) || 50;
     
-    // Create a new multiplayer room/invite node in Firebase
     const newRoomRef = db.ref('invites').push();
     const inviteId = newRoomRef.key;
 
@@ -971,7 +968,6 @@ function sendGameInvite(friendUid, friendName) {
         toast(`${friendName} වෙත ආරාධනය යවන ලදී! පිළිතුරු ලැබෙන තෙක් රැඳී සිටින්න.`);
         modal('multiModal', false);
         
-        // Listen for invite acceptance
         newRoomRef.on('value', snap => {
             const data = snap.val();
             if(data && data.status === 'accepted') {
