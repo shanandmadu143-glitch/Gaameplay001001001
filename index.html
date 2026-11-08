@@ -349,7 +349,6 @@ button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var
 .piece.fx-purple{box-shadow:inset 0 0 8px #a29bfe,0 0 10px #6c5ce7!important}
 .piece.fx-orange{box-shadow:inset 0 0 8px #fab1a0,0 0 10px #e17055!important}
 .piece.fx-silver{box-shadow:inset 0 0 8px #dfe6e9,0 0 10px #b2bec3!important}
-
 </style>
 </head>
 <body>
@@ -357,7 +356,7 @@ button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var
 
 <!-- GAMING APP HEADER -->
 <div class="home-top" id="homeTop">
- <div class="profile-float" id="openProfile" title="പ്രොෆයිලය">
+ <div class="profile-float" id="openProfile" title="ප්‍රොෆයිලය">
   <span class="avatar" id="headerAvatar"><i class="fa-solid fa-user"></i></span>
   <div><b id="headerName">ක්‍රීඩකයා</b><br><small class="pro-label">PRO GAMER</small></div>
  </div>
@@ -370,7 +369,7 @@ button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var
 <button class="reward-banner" id="collectRewards"><i class="fa-solid fa-shield-halved"></i> දෛනික ත්‍යාග ලබාගන්න</button>
 <div class="mode-grid">
 <div class="mode mode-single" id="single" role="button" tabindex="0"><i class="fa-solid fa-robot"></i><b>SINGLE PLAYER</b><p>AI පරිගණකය සමඟ තරඟ කරන්න</p></div>
-<div class="mode mode-multi" id="multi" role="button" tabindex="0"><i class="fa-solid fa-users"></i><b>MULTIPLAYER</b><p>ඔන්ලයින් යහළුවන් සමඟ සෙල්ලම් කරන්න</p></div>
+<div class="mode mode-multi" id="multi" role="button" tabindex="0"><i class="fa-solid fa-users"></i><b>MULTIPLAYER</b><p>ඔන්лайн යහළුවන් සමඟ සෙල්ලම් කරන්න</p></div>
 <div class="mode mode-free" id="freestyle" role="button" tabindex="0"><i class="fa-solid fa-bullseye"></i><b>PLAY FREESTYLE</b><p>ඔට්ටු රහිත පුහුණු ක්‍රීඩාව</p></div>
 </div>
 <div id="connection">● Firebase සම්බන්ධ වෙමින්...</div>
@@ -552,8 +551,8 @@ button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var
 'use strict';
 const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
 const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user';
-let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0},board=[],turn=1,selected=null,moves=[],single=true,roomId=null,roomRef=null,roomCb=null,role=null,gameOver=false,aiTimer=null,processing=false,turnClockTimer=null,turnDeadline=0,dragFrom=null,missedCapture=null;
-let userSide=1,nextStartingSide=1,gameMode='single',forcedContinuation=null;
+let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0},board=[],turn=1,selected=null,moves=[],single=true,roomId=null,roomRef=null,role=null,gameOver=false,aiTimer=null,processing=false,turnClockTimer=null,turnDeadline=0,forcedContinuation=null;
+let userSide=1,nextStartingSide=1,gameMode='single';
 let incomingInviteData=null;
 
 const PIECE_DESIGNS=[
@@ -595,7 +594,7 @@ catch(e){console.error('Firebase initialization failed:',e);$('connection').text
   console.error('Authentication initialization failed:',e);
   $('connection').textContent='Firebase සම්බන්ධතාවය පරීක්ෂා කරන්න';
   modal('loadingModal',false);modal('authModal',true);
-  toast('Firebase සම්බන්ධතාවය සකසා නැත. Configuration පරීක්ෂා කරන්න.');
+  toast('Firebase සම්බන්ධතාවය සකසා නැත.');
  }
 })();
 
@@ -632,7 +631,7 @@ async function loadSignedInUser(){
 $('login').onclick=async()=>{
  const name=$('username').value.trim(),pass=$('password').value;
  if(!auth)return toast('Firebase සම්බන්ධතාවය නොමැත.');
-  if(!/^[a-zA-Z0-9_]{3,20}$/.test(name)||pass.length<6)return toast('නම අකුරු/ඉලක්කම් 3-20 අතර සහ මුරපදය අවම අකුරු 6ක් විය යුතුයි.');
+ if(!/^[a-zA-Z0-9_]{3,20}$/.test(name)||pass.length<6)return toast('නම සහ මුරපදය නිවැරදිව ඇතුළත් කරන්න.');
  try{await auth.signInWithEmailAndPassword(name.toLowerCase()+'@sinhala-draughts.app',pass);toast('සාර්ථකව ඇතුළු විය!','fa-circle-check');}
  catch(e){toast('ඇතුල්වීම අසාර්ථකයි.');}
 };
@@ -640,7 +639,7 @@ $('login').onclick=async()=>{
 $('register').onclick=async()=>{
  const name=$('username').value.trim(),pass=$('password').value;
  if(!auth||!db)return toast('Firebase සම්බන්ධතාවය නොමැත.');
-  if(!/^[a-zA-Z0-9_]{3,20}$/.test(name)||pass.length<6)return toast('නම අකුරු/ඉලක්කම් 3-20 අතර සහ මුරපදය අවම අකුරු 6ක් විය යුතුයි.');
+ if(!/^[a-zA-Z0-9_]{3,20}$/.test(name)||pass.length<6)return toast('නම සහ මුරපදය නිවැරදිව ඇතුළත් කරන්න.');
  try{
   const cred=await auth.createUserWithEmailAndPassword(name.toLowerCase()+'@sinhala-draughts.app',pass);
   fbUser=cred.user;
@@ -741,7 +740,7 @@ function render(){
     sq.appendChild(p);
    }
 
-   sq.onclick=()=>{if(selected)clickSquare(r,c);else clickSquare(r,c);};
+   sq.onclick=()=>clickSquare(r,c);
    el.appendChild(sq);
   }
  }
@@ -749,6 +748,7 @@ function render(){
 
 function clickSquare(r,c){
  if(gameOver||processing)return;
+ if(!single&&turn!==userSide)return;
  if(single&&turn!==userSide)return;
  if(selected){
   const target=moves.find(x=>x.toR===r&&x.toC===c);
@@ -778,30 +778,35 @@ async function playMove(m){
  applyMove(board,m);selected=null;moves=[];
  const landed=board[m.toR][m.toC];
  const followUps=m.capture&&Math.abs(landed)===Math.abs(moving)?pieceMoves(m.toR,m.toC).filter(x=>x.capture):[];
+ 
  if(followUps.length){
   forcedContinuation={r:m.toR,c:m.toC};turn=Math.sign(landed);render();processing=false;setTurnUI();
+  if(!single && roomRef) syncMultiplayerState();
   if(single&&turn!==userSide)aiTimer=setTimeout(aiMove,450);
   return;
  }
+ 
  forcedContinuation=null;turn=-Math.sign(moving);render();processing=false;
  if(!allMoves(turn).length){finish(Math.sign(moving),'ප්‍රතිවාදියාට නීත්‍යානුකූල Move නොමැත.');return;}
- setTurnUI();if(single&&turn!==userSide)aiTimer=setTimeout(aiMove,500);
+ setTurnUI();
+ if(!single && roomRef) syncMultiplayerState();
+ if(single&&turn!==userSide)aiTimer=setTimeout(aiMove,500);
 }
 
 function setTurnUI(){
  $('p1').classList.toggle('active',turn===userSide);
  $('p2').classList.toggle('active',turn!==userSide);
  $('gameStatus').textContent=turn===userSide?'ඔබගේ වාරය':'ප්‍රතිවාදියාගේ වාරය';
- startTurnClock(Date.now()+10000);
+ startTurnClock(Date.now()+15000);
 }
 
 function startTurnClock(deadline){
- clearInterval(turnClockTimer);turnDeadline=deadline||Date.now()+10000;
+ clearInterval(turnClockTimer);turnDeadline=deadline||Date.now()+15000;
  const ring=$('clockRing'),number=$('turnClock');
  const tick=()=>{
   const remaining=Math.max(0,turnDeadline-Date.now()),left=Math.ceil(remaining/1000);
   number.textContent=String(left);
-  ring.style.setProperty('--progress',Math.max(0,Math.min(100,remaining/10000*100)));
+  ring.style.setProperty('--progress',Math.max(0,Math.min(100,remaining/15000*100)));
   ring.classList.toggle('urgent',left<=3);
   if(remaining<=0){
    clearInterval(turnClockTimer);
@@ -840,6 +845,7 @@ function finish(winner,message){
  $('overTitle').style.color=won?'var(--neon-green)':'var(--red)';
  $('overMessage').textContent=message;
  modal('overModal',true);
+ if(roomRef) roomRef.update({status: 'finished', winner: winner});
 }
 
 function toggleChatDrawer(){$('chatDrawer').classList.toggle('open');}
@@ -847,17 +853,21 @@ function sendQuickChat(msg){
  const div=document.createElement('div');div.className='chat-msg me';div.textContent=msg;
  $('chatMessages').appendChild(div);
  $('chatMessages').scrollTop=$('chatMessages').scrollHeight;
- setTimeout(()=>{
-  const r=["හොඳයි 👍","නියමයි 🔥","Well played! 😊"];
-  const d=document.createElement('div');d.className='chat-msg them';d.textContent=r[Math.floor(Math.random()*r.length)];
-  $('chatMessages').appendChild(d);$('chatMessages').scrollTop=$('chatMessages').scrollHeight;
- },1000);
+ if(roomRef) {
+  roomRef.child('chats').push({sender: user.name, message: msg});
+ } else {
+  setTimeout(()=>{
+   const r=["හොඳයි 👍","නියමයි 🔥","Well played! 😊"];
+   const d=document.createElement('div');d.className='chat-msg them';d.textContent=r[Math.floor(Math.random()*r.length)];
+   $('chatMessages').appendChild(d);$('chatMessages').scrollTop=$('chatMessages').scrollHeight;
+  },1000);
+ }
 }
 
 $('arenaChatBtn').onclick=toggleChatDrawer;
 $('clockRing').onclick=toggleChatDrawer;
 $('closeChat').onclick=()=>$('chatDrawer').classList.remove('open');
-$('sendChatBtn').onclick=()=>{const v=$('chatInput').value;if(v){sendQuickChat(v);$('chatInput').value='';}};
+$('sendChatBtn').onclick=()=>{const v=$('chatInput').value.trim();if(v){sendQuickChat(v);$('chatInput').value='';}};
 
 $('single').onclick=()=>{
  $('maxSinglePoints').textContent=user.points;
@@ -909,72 +919,47 @@ $('proceedToInvite').onclick = () => {
 
 $('closeMulti').onclick = () => modal('multiModal', false);
 
-/* --- ERROR-FREE FRIEND SEARCH & INVITE LOGIC --- */
 $('searchBtn').onclick = async () => {
-    const rawQuery = $('search').value.trim();
-    const queryName = rawQuery.toLowerCase();
+    const queryName = $('search').value.trim().toLowerCase();
     const resultsContainer = $('results');
     resultsContainer.innerHTML = 'සොයමින් පවතී...';
 
-    if(!queryName) {
-        resultsContainer.innerHTML = 'කරුණාකර සෙවීමට නමක් ඇතුළත් කරන්න.';
-        return;
-    }
-
-    if(!db || !fbUser) {
-        resultsContainer.innerHTML = 'සම්බන්ධතාවය අසාර්ථකයි. කරුණාකර නැවත Log වන්න.';
-        return;
-    }
-
+    if(!queryName) return resultsContainer.innerHTML = 'නමක් ඇතුළත් කරන්න.';
     try {
         const snapshot = await db.ref('users_v6').once('value');
-        if (!snapshot.exists()) {
-            resultsContainer.innerHTML = 'පරිශීලකයන් කිසිවකු හමු නොවීය.';
-            return;
-        }
-
+        if (!snapshot.exists()) return resultsContainer.innerHTML = 'පරිශීලකයන් හමු නොවීය.';
+        
         const users = snapshot.val();
         resultsContainer.innerHTML = '';
         let found = false;
 
         Object.keys(users).forEach(uid => {
             const uData = users[uid];
-            if(uid !== fbUser.uid && uData && uData.name) {
-                const dbUserName = String(uData.name).trim();
-                const dbUserNameLower = dbUserName.toLowerCase();
+            if(uid !== fbUser.uid && uData && uData.name && String(uData.name).toLowerCase().includes(queryName)) {
+                found = true;
+                const item = document.createElement('div');
+                item.style.cssText = 'display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.05);padding:8px 12px;border-radius:10px;margin-bottom:6px;';
+                item.innerHTML = `<div><b>${uData.name}</b><br><small style="color:var(--dim)">Points: ${uData.points || 0}</small></div>`;
                 
-                if(dbUserNameLower.includes(queryName)) {
-                    found = true;
-                    const item = document.createElement('div');
-                    item.style.cssText = 'display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.05);padding:8px 12px;border-radius:10px;margin-bottom:6px;';
-                    item.innerHTML = `<div><b>${dbUserName}</b><br><small style="color:var(--dim)">Points: ${uData.points || 0}</small></div>`;
-                    
-                    const inviteBtn = document.createElement('button');
-                    inviteBtn.className = 'btn-gold';
-                    inviteBtn.style.padding = '5px 12px';
-                    inviteBtn.style.fontSize = '0.8rem';
-                    inviteBtn.textContent = 'Invite';
-                    
-                    inviteBtn.onclick = () => sendGameInvite(uid, dbUserName);
-                    item.appendChild(inviteBtn);
-                    resultsContainer.appendChild(item);
-                }
+                const inviteBtn = document.createElement('button');
+                inviteBtn.className = 'btn-gold';
+                inviteBtn.style.padding = '5px 12px';
+                inviteBtn.style.fontSize = '0.8rem';
+                inviteBtn.textContent = 'Invite';
+                inviteBtn.onclick = () => sendGameInvite(uid, uData.name);
+                
+                item.appendChild(inviteBtn);
+                resultsContainer.appendChild(item);
             }
         });
-
-        if(!found) {
-            resultsContainer.innerHTML = 'එම නමින් ඔන්ලයින් ක්‍රීඩකයන් හමු නොවීය.';
-        }
+        if(!found) resultsContainer.innerHTML = 'ක්‍රීඩකයන් හමු නොවීය.';
     } catch(err) {
-        console.error('Search Error:', err);
-        resultsContainer.innerHTML = 'දත්ත ලබාගැනීමේ දෝෂයක් සිදු විය. කරුණාකර නැවත උත්සාහ කරන්න.';
+        resultsContainer.innerHTML = 'දෝෂයක් සිදු විය.';
     }
 };
 
 function sendGameInvite(friendUid, friendName) {
-    if(!db || !fbUser) return toast('සම්බන්ධතාවය අසාර්ථකයි.');
     const bet = Number(window.currentBetPoints) || 50;
-    
     const newRoomRef = db.ref('invites').push();
     const inviteId = newRoomRef.key;
 
@@ -986,7 +971,7 @@ function sendGameInvite(friendUid, friendName) {
         status: 'pending',
         timestamp: Date.now()
     }).then(() => {
-        toast(`${friendName} වෙත ආරාධනය යවන ලදී! පිළිතුරු ලැබෙන තෙක් රැඳී සිටින්න.`);
+        toast(`${friendName} වෙත ආරාධනය යවන ලදී!`);
         modal('multiModal', false);
         
         newRoomRef.on('value', snap => {
@@ -994,26 +979,12 @@ function sendGameInvite(friendUid, friendName) {
             if(data && data.status === 'accepted') {
                 newRoomRef.off();
                 roomId = inviteId;
-                gameMode = 'multi';
-                single = false;
-                role = 'host';
-                userSide = 1;
-                $('lobby').style.display = 'none';
-                $('arena').style.display = 'flex';
-                $('p1name').textContent = user.name;
-                $('p2name').textContent = friendName;
-                $('arenaBetDisplay').textContent = bet;
-                applyAvatarToBox('p1AvatarBox', user.pieceIndex || 0);
-                applyAvatarToBox('p2AvatarBox', 0);
-                initBoard();
-                toast('ප්‍රතිවාදියා ආරාධනාව පිළිගත්තා! ක්‍රීඩාව ආරම්භ වේ.');
+                setupMultiplayerGame(roomId, 'host', inviteId, friendName, bet);
             } else if(data && data.status === 'rejected') {
                 newRoomRef.off();
-                toast('ප්‍රතිවාදියා ආරාධනාව ප්‍රතික්ෂේප කළා.');
+                toast('ආරාධනය ප්‍රතික්ෂේප කළා.');
             }
         });
-    }).catch(e => {
-        toast('ආරාධනය යැවීම අසාර්ථක විය.');
     });
 }
 
@@ -1023,7 +994,7 @@ function listenForIncomingInvites() {
         const invite = snap.val();
         if(invite && invite.status === 'pending') {
             incomingInviteData = { id: snap.key, ...invite };
-            $('invitePopupText').textContent = `${invite.hostName} විසින් ඔට්ටුව ${invite.bet} ක් සමඟ ඔබට ක්‍රීඩා කිරීමට ආරාධනා කරයි!`;
+            $('invitePopupText').textContent = `${invite.hostName} විසින් ඔට්ටුව ${invite.bet} ක් සමඟ ඔබට ආරාධනා කරයි!`;
             modal('invitePopupModal', true);
         }
     });
@@ -1034,19 +1005,7 @@ $('acceptInviteBtn').onclick = () => {
     modal('invitePopupModal', false);
     db.ref('invites/' + incomingInviteData.id).update({ status: 'accepted' }).then(() => {
         roomId = incomingInviteData.id;
-        gameMode = 'multi';
-        single = false;
-        role = 'guest';
-        userSide = -1;
-        $('lobby').style.display = 'none';
-        $('arena').style.display = 'flex';
-        $('p1name').textContent = incomingInviteData.hostName;
-        $('p2name').textContent = user.name;
-        $('arenaBetDisplay').textContent = incomingInviteData.bet;
-        applyAvatarToBox('p1AvatarBox', 0);
-        applyAvatarToBox('p2AvatarBox', user.pieceIndex || 0);
-        initBoard();
-        toast('ක්‍රීඩාව ආරම්භ වේ!');
+        setupMultiplayerGame(roomId, 'guest', incomingInviteData.id, incomingInviteData.hostName, incomingInviteData.bet);
     });
 };
 
@@ -1056,23 +1015,94 @@ $('rejectInviteBtn').onclick = () => {
     db.ref('invites/' + incomingInviteData.id).update({ status: 'rejected' });
     incomingInviteData = null;
 };
-/* ------------------------------------------------ */
+
+function setupMultiplayerGame(id, assignedRole, inviteKey, opponentName, bet) {
+    gameMode = 'multi';
+    single = false;
+    role = assignedRole;
+    roomId = id;
+    window.currentBetPoints = bet;
+    userSide = (role === 'host') ? 1 : -1;
+
+    $('lobby').style.display = 'none';
+    $('arena').style.display = 'flex';
+    $('arenaBetDisplay').textContent = bet;
+
+    if(role === 'host') {
+        $('p1name').textContent = user.name;
+        $('p2name').textContent = opponentName;
+        applyAvatarToBox('p1AvatarBox', user.pieceIndex || 0);
+        applyAvatarToBox('p2AvatarBox', 0);
+        
+        roomRef = db.ref('rooms/' + roomId);
+        roomRef.set({
+            board: Array.from({length:8},()=>Array(8).fill(0)),
+            turn: 1,
+            hostName: user.name,
+            guestName: opponentName,
+            status: 'playing'
+        });
+        initBoard();
+    } else {
+        $('p1name').textContent = opponentName;
+        $('p2name').textContent = user.name;
+        applyAvatarToBox('p1AvatarBox', 0);
+        applyAvatarToBox('p2AvatarBox', user.pieceIndex || 0);
+        
+        roomRef = db.ref('rooms/' + roomId);
+        roomRef.on('value', snap => {
+            const data = snap.val();
+            if(data && data.board) {
+                board = data.board;
+                turn = data.turn;
+                render();
+                setTurnUI();
+                if(data.status === 'finished') {
+                    finish(data.winner, 'තරඟය අවසන් විය.');
+                }
+            }
+        });
+    }
+
+    roomRef.child('chats').on('child_added', snap => {
+        const c = snap.val();
+        if(c && c.sender !== user.name) {
+            const d = document.createElement('div');
+            d.className = 'chat-msg them';
+            d.textContent = `${c.sender}: ${c.message}`;
+            $('chatMessages').appendChild(d);
+            $('chatMessages').scrollTop = $('chatMessages').scrollHeight;
+        }
+    });
+
+    toast('ක්‍රීඩාව ආරම්භ වේ!');
+}
+
+function syncMultiplayerState() {
+    if(roomRef) {
+        roomRef.update({
+            board: board,
+            turn: turn
+        });
+    }
+}
 
 function leaveRoom(){
  clearInterval(turnClockTimer);clearTimeout(aiTimer);
+ if(roomRef) roomRef.off();
+ roomRef = null;
  $('arena').style.display='none';$('chatDrawer').classList.remove('open');
  $('lobby').style.display='flex';
  modal('overModal',false);
 }
 
 $('arenaMenuBtn').onclick=()=>leaveRoom();
-$('rematch').onclick=()=>{modal('overModal',false);if(gameMode==='single'&&Number(window.currentBetPoints)>user.points){toast('නැවත තරඟයට ප්‍රමාණවත් Points නැත.');leaveRoom();return;}initBoard();};
+$('rematch').onclick=()=>{modal('overModal',false);if(gameMode==='single'&&Number(window.currentBetPoints)>user.points){toast('ප්‍රමාණවත් Points නැත.');leaveRoom();return;}initBoard();};
 $('exit').onclick=leaveRoom;
 $('collectRewards').onclick=()=>location.href='shopandreward.html';
 $('coinShop').onclick=()=>location.href='shopandreward.html';
 $('navHome').onclick=leaveRoom;
 $('navProfile').onclick=()=>$('openProfile').click();
-['single','multi','freestyle'].forEach(id=>$(id).addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();$(id).click();}}));
 </script>
 </body>
 </html>
