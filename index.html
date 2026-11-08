@@ -821,7 +821,7 @@ function finish(winner,message){
   saveUser();
  }
  $('overTitle').textContent=won?'VICTORY! 🎉':'DEFEAT!';
- $('overTitle').style.color=won?'var(--neon-green)':'var(--red)';
+ $('overTitle'].style.color=won?'var(--neon-green)':'var(--red)';
  $('overMessage').textContent=message;
  modal('overModal',true);
 }
@@ -893,9 +893,10 @@ $('proceedToInvite').onclick = () => {
 
 $('closeMulti').onclick = () => modal('multiModal', false);
 
-// Friend Name Search & Invite Logic
+/* --- FIXED & ENHANCED FRIEND SEARCH & INVITE LOGIC --- */
 $('searchBtn').onclick = async () => {
-    const queryName = $('search').value.trim().toLowerCase();
+    const rawQuery = $('search').value.trim();
+    const queryName = rawQuery.toLowerCase();
     const resultsContainer = $('results');
     resultsContainer.innerHTML = 'සොයමින් පවතී...';
 
@@ -917,30 +918,37 @@ $('searchBtn').onclick = async () => {
         let found = false;
         Object.keys(users).forEach(uid => {
             const uData = users[uid];
-            if(uid !== fbUser.uid && uData.name && uData.name.toLowerCase().includes(queryName)) {
-                found = true;
-                const item = document.createElement('div');
-                item.style.cssText = 'display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.05);padding:8px 12px;border-radius:10px;margin-bottom:4px;';
-                item.innerHTML = `<div><b>${uData.name}</b><br><small style="color:var(--dim)">Points: ${uData.points || 0}</small></div>`;
+            // තමන්ගේ නම සෙවුම් ප්‍රතිඵලවල නොපෙන්වීම සහ අකුරු පරීක්ෂාව නිවැරදි කිරීම
+            if(uid !== fbUser.uid && uData.name) {
+                const dbUserName = uData.name.trim();
+                const dbUserNameLower = dbUserName.toLowerCase();
                 
-                const inviteBtn = document.createElement('button');
-                inviteBtn.className = 'btn-gold';
-                inviteBtn.style.padding = '5px 10px';
-                inviteBtn.style.fontSize = '0.8rem';
-                inviteBtn.textContent = 'Invite';
-                
-                inviteBtn.onclick = () => sendGameInvite(uid, uData.name);
-                item.appendChild(inviteBtn);
-                resultsContainer.appendChild(item);
+                // නම සම්පූර්ණ ලෙස හෝ කොටසක් සමාන දැයි පරීක්ෂා කිරීම
+                if(dbUserNameLower.includes(queryName)) {
+                    found = true;
+                    const item = document.createElement('div');
+                    item.style.cssText = 'display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.05);padding:8px 12px;border-radius:10px;margin-bottom:6px;';
+                    item.innerHTML = `<div><b>${dbUserName}</b><br><small style="color:var(--dim)">Points: ${uData.points || 0}</small></div>`;
+                    
+                    const inviteBtn = document.createElement('button');
+                    inviteBtn.className = 'btn-gold';
+                    inviteBtn.style.padding = '5px 12px';
+                    inviteBtn.style.fontSize = '0.8rem';
+                    inviteBtn.textContent = 'Invite';
+                    
+                    inviteBtn.onclick = () => sendGameInvite(uid, dbUserName);
+                    item.appendChild(inviteBtn);
+                    resultsContainer.appendChild(item);
+                }
             }
         });
 
         if(!found) {
-            resultsContainer.innerHTML = 'එම නමින් ක්‍රීඩකයන් හමු නොවීය.';
+            resultsContainer.innerHTML = 'එම නමින් ඔන්ලයින් ක්‍රීඩකයන් හමු නොවීය.';
         }
     } catch(err) {
         console.error(err);
-        resultsContainer.innerHTML = 'දත්ත ලබාගැනීමේ දෝෂයක් සිදු විය.';
+        resultsContainer.innerHTML = 'දත්ත ලබාගැනීමේ දෝෂයක් සිදු විය. කරුණාකර නැවත උත්සාහ කරන්න.';
     }
 };
 
