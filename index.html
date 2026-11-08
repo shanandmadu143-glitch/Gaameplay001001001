@@ -370,7 +370,7 @@ button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var
 <button class="reward-banner" id="collectRewards"><i class="fa-solid fa-shield-halved"></i> දෛනික ත්‍යාග ලබාගන්න</button>
 <div class="mode-grid">
 <div class="mode mode-single" id="single" role="button" tabindex="0"><i class="fa-solid fa-robot"></i><b>SINGLE PLAYER</b><p>AI පරිගණකය සමඟ තරඟ කරන්න</p></div>
-<div class="mode mode-multi" id="multi" role="button" tabindex="0" aria-disabled="true"><i class="fa-solid fa-users"></i><b>MULTIPLAYER</b><p>ඔන්ලයින් යහළුවන් සමඟ සෙල්ලම් කරන්න</p></div>
+<div class="mode mode-multi" id="multi" role="button" tabindex="0"><i class="fa-solid fa-users"></i><b>MULTIPLAYER</b><p>ඔන්ලයින් යහළුවන් සමඟ සෙල්ලම් කරන්න</p></div>
 <div class="mode mode-free" id="freestyle" role="button" tabindex="0"><i class="fa-solid fa-bullseye"></i><b>PLAY FREESTYLE</b><p>ඔට්ටු රහිත පුහුණු ක්‍රීඩාව</p></div>
 </div>
 <div id="connection">● Firebase සම්බන්ධ වෙමින්...</div>
@@ -867,12 +867,25 @@ $('startSingleGame').onclick=()=>{
  initBoard();
 };
 
-$('multi').onclick=()=>toast('Online Multiplayer සඳහා matchmaking / Firebase room සේවාව තවම සකසා නැත.');
+/* --- FIXED MULTIPLAYER & FRIENDS BUTTON HANDLERS --- */
+$('multi').onclick = () => {
+    $('maxUserPoints').textContent = user.points;
+    modal('betModal', true);
+};
+
+$('navFriends').onclick = () => {
+    $('activeBetDisplay').textContent = window.currentBetPoints || 50;
+    modal('multiModal', true);
+};
+/* ------------------------------------------------ */
+
 $('closeBetModal').onclick=()=>modal('betModal',false);
 $('proceedToInvite').onclick=()=>{
  const bet=Number($('betAmountInput').value);
  if(!Number.isInteger(bet)||bet<10||bet>user.points)return toast('Points 10 සිට ඔබ සතු උපරිම Points දක්වා ඇතුළත් කරන්න.');
  toast('Online matchmaking සේවාව සකස් කළ පසු යහළුවන් සොයාගත හැක.');
+ modal('betModal', false);
+ modal('multiModal', true);
 };
 $('closeMulti').onclick=()=>modal('multiModal',false);
 $('searchBtn').onclick=()=>toast('Online player search සේවාව තවම සම්බන්ධ කර නැත.');
@@ -890,7 +903,6 @@ $('exit').onclick=leaveRoom;
 $('collectRewards').onclick=()=>location.href='shopandreward.html';
 $('coinShop').onclick=()=>location.href='shopandreward.html';
 $('navHome').onclick=leaveRoom;
-$('navFriends').onclick=()=>toast('Friends අංශය ළඟදීම!');
 $('navProfile').onclick=()=>$('openProfile').click();
 ['single','multi','freestyle'].forEach(id=>$(id).addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();$(id).click();}}));
 </script>
