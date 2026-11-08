@@ -909,7 +909,7 @@ $('proceedToInvite').onclick = () => {
 
 $('closeMulti').onclick = () => modal('multiModal', false);
 
-/* --- FRIEND SEARCH & INVITE LOGIC --- */
+/* --- ERROR-FREE FRIEND SEARCH & INVITE LOGIC --- */
 $('searchBtn').onclick = async () => {
     const rawQuery = $('search').value.trim();
     const queryName = rawQuery.toLowerCase();
@@ -921,21 +921,26 @@ $('searchBtn').onclick = async () => {
         return;
     }
 
+    if(!db || !fbUser) {
+        resultsContainer.innerHTML = 'සම්බන්ධතාවය අසාර්ථකයි. කරුණාකර නැවත Log වන්න.';
+        return;
+    }
+
     try {
         const snapshot = await db.ref('users_v6').once('value');
-        const users = snapshot.val();
-        resultsContainer.innerHTML = '';
-
-        if(!users) {
-            resultsContainer.innerHTML = 'පරිශීලකයන් හමු නොවීය.';
+        if (!snapshot.exists()) {
+            resultsContainer.innerHTML = 'පරිශීලකයන් කිසිවකු හමු නොවීය.';
             return;
         }
 
+        const users = snapshot.val();
+        resultsContainer.innerHTML = '';
         let found = false;
+
         Object.keys(users).forEach(uid => {
             const uData = users[uid];
-            if(uid !== fbUser.uid && uData.name) {
-                const dbUserName = uData.name.trim();
+            if(uid !== fbUser.uid && uData && uData.name) {
+                const dbUserName = String(uData.name).trim();
                 const dbUserNameLower = dbUserName.toLowerCase();
                 
                 if(dbUserNameLower.includes(queryName)) {
@@ -961,8 +966,8 @@ $('searchBtn').onclick = async () => {
             resultsContainer.innerHTML = 'එම නමින් ඔන්ලයින් ක්‍රීඩකයන් හමු නොවීය.';
         }
     } catch(err) {
-        console.error(err);
-        resultsContainer.innerHTML = 'දත්ත ලබාගැනීමේ දෝෂයක් සිදු විය.';
+        console.error('Search Error:', err);
+        resultsContainer.innerHTML = 'දත්ත ලබාගැනීමේ දෝෂයක් සිදු විය. කරුණාකර නැවත උත්සාහ කරන්න.';
     }
 };
 
@@ -984,7 +989,6 @@ function sendGameInvite(friendUid, friendName) {
         toast(`${friendName} වෙත ආරාධනය යවන ලදී! පිළිතුරු ලැබෙන තෙක් රැඳී සිටින්න.`);
         modal('multiModal', false);
         
-        // Listen for acceptance
         newRoomRef.on('value', snap => {
             const data = snap.val();
             if(data && data.status === 'accepted') {
@@ -1013,7 +1017,6 @@ function sendGameInvite(friendUid, friendName) {
     });
 }
 
-// Listen for incoming invites when user is logged in
 function listenForIncomingInvites() {
     if(!db || !fbUser) return;
     db.ref('invites').orderByChild('guestUid').equalTo(fbUser.uid).on('child_added', snap => {
