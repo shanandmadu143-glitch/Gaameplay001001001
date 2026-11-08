@@ -487,8 +487,8 @@ button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var
 <div class="modalbox">
 <div class="row"><h3 style="flex:1">ඔන්ලයින් යහළුවන්</h3><button class="btn" id="closeMulti">×</button></div>
 <p style="font-size:0.8rem;color:var(--gold)">තෝරාගත් ඔට්ටුව: <b id="activeBetDisplay">50</b> pts</p>
-<div class="row"><input id="search" placeholder="නම සොයන්න"><button class="btn-gold" id="searchBtn">Search</button></div>
-<div class="list" id="results" style="max-height:160px;overflow:auto;margin-top:6px">Online ක්‍රීඩකයන් සොයන්න.</div>
+<div class="row"><input id="search" placeholder="යහළුවාගේ නම ලියන්න..."><button class="btn-gold" id="searchBtn">Search</button></div>
+<div class="list" id="results" style="max-height:180px;overflow-y:auto;margin-top:6px;display:flex;flex-direction:column;gap:6px;">Online ක්‍රීඩකයන් සොයන්න.</div>
 </div>
 </div>
 
@@ -867,28 +867,128 @@ $('startSingleGame').onclick=()=>{
  initBoard();
 };
 
-/* --- FIXED MULTIPLAYER & FRIENDS BUTTON HANDLERS --- */
+/* --- MULTIPLAYER & FRIENDS HANDLERS --- */
 $('multi').onclick = () => {
+    if(!fbUser) return toast('කරුණාකර පළමුව ගිණුමට ඇතුළු වන්න.');
     $('maxUserPoints').textContent = user.points;
     modal('betModal', true);
 };
 
 $('navFriends').onclick = () => {
+    if(!fbUser) return toast('කරුණාකර පළමුව ගිණුමට ඇතුළු වන්න.');
     $('activeBetDisplay').textContent = window.currentBetPoints || 50;
     modal('multiModal', true);
 };
-/* ------------------------------------------------ */
 
-$('closeBetModal').onclick=()=>modal('betModal',false);
-$('proceedToInvite').onclick=()=>{
- const bet=Number($('betAmountInput').value);
- if(!Number.isInteger(bet)||bet<10||bet>user.points)return toast('Points 10 සිට ඔබ සතු උපරිම Points දක්වා ඇතුළත් කරන්න.');
- toast('Online matchmaking සේවාව සකස් කළ පසු යහළුවන් සොයාගත හැක.');
- modal('betModal', false);
- modal('multiModal', true);
+$('closeBetModal').onclick = () => modal('betModal', false);
+
+$('proceedToInvite').onclick = () => {
+    const bet = Number($('betAmountInput').value);
+    if(!Number.isInteger(bet) || bet < 10 || bet > user.points) return toast('Points 10 සිට ඔබ සතු උපරිම Points දක්වා ඇතුළත් කරන්න.');
+    window.currentBetPoints = bet;
+    $('activeBetDisplay').textContent = bet;
+    modal('betModal', false);
+    modal('multiModal', true);
 };
-$('closeMulti').onclick=()=>modal('multiModal',false);
-$('searchBtn').onclick=()=>toast('Online player search සේවාව තවම සම්බන්ධ කර නැත.');
+
+$('closeMulti').onclick = () => modal('multiModal', false);
+
+// Friend Name Search & Invite Logic
+$('searchBtn').onclick = async () => {
+    const queryName = $('search').value.trim().toLowerCase();
+    const resultsContainer = $('results');
+    resultsContainer.innerHTML = 'සොයමින් පවතී...';
+
+    if(!queryName) {
+        resultsContainer.innerHTML = 'කරුණාකර සෙවීමට නමක් ඇතුළත් කරන්න.';
+        return;
+    }
+
+    try {
+        const snapshot = await db.ref('users_v6').once('value');
+        const users = snapshot.val();
+        resultsContainer.innerHTML = '';
+
+        if(!users) {
+            resultsContainer.innerHTML = 'පරිශීලකයන් හමු නොවීය.';
+            return;
+        }
+
+        let found = false;
+        Object.keys(users).forEach(uid => {
+            const uData = users[uid];
+            if(uid !== fbUser.uid && uData.name && uData.name.toLowerCase().includes(queryName)) {
+                found = true;
+                const item = document.createElement('div');
+                item.style.cssText = 'display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.05);padding:8px 12px;border-radius:10px;margin-bottom:4px;';
+                item.innerHTML = `<div><b>${uData.name}</b><br><small style="color:var(--dim)">Points: ${uData.points || 0}</small></div>`;
+                
+                const inviteBtn = document.createElement('button');
+                inviteBtn.className = 'btn-gold';
+                inviteBtn.style.padding = '5px 10px';
+                inviteBtn.style.fontSize = '0.8rem';
+                inviteBtn.textContent = 'Invite';
+                
+                inviteBtn.onclick = () => sendGameInvite(uid, uData.name);
+                item.appendChild(inviteBtn);
+                resultsContainer.appendChild(item);
+            }
+        });
+
+        if(!found) {
+            resultsContainer.innerHTML = 'එම නමින් ක්‍රීඩකයන් හමු නොවීය.';
+        }
+    } catch(err) {
+        console.error(err);
+        resultsContainer.innerHTML = 'දත්ත ලබාගැනීමේ දෝෂයක් සිදු විය.';
+    }
+};
+
+function sendGameInvite(friendUid, friendName) {
+    if(!db || !fbUser) return toast('සම්බන්ධතාවය අසාර්ථකයි.');
+    const bet = Number(window.currentBetPoints) || 50;
+    
+    // Create a new multiplayer room/invite node in Firebase
+    const newRoomRef = db.ref('invites').push();
+    const inviteId = newRoomRef.key;
+
+    newRoomRef.set({
+        hostUid: fbUser.uid,
+        hostName: user.name,
+        guestUid: friendUid,
+        bet: bet,
+        status: 'pending',
+        timestamp: Date.now()
+    }).then(() => {
+        toast(`${friendName} වෙත ආරාධනය යවන ලදී! පිළිතුරු ලැබෙන තෙක් රැඳී සිටින්න.`);
+        modal('multiModal', false);
+        
+        // Listen for invite acceptance
+        newRoomRef.on('value', snap => {
+            const data = snap.val();
+            if(data && data.status === 'accepted') {
+                newRoomRef.off();
+                roomId = inviteId;
+                gameMode = 'multi';
+                single = false;
+                role = 'host';
+                userSide = 1;
+                $('lobby').style.display = 'none';
+                $('arena').style.display = 'flex';
+                $('p1name').textContent = user.name;
+                $('p2name').textContent = friendName;
+                $('arenaBetDisplay').textContent = bet;
+                applyAvatarToBox('p1AvatarBox', user.pieceIndex || 0);
+                applyAvatarToBox('p2AvatarBox', 0);
+                initBoard();
+                toast('ප්‍රතිවාදියා ආරාධනාව පිළිගත්තා! ක්‍රීඩාව ආරම්භ වේ.');
+            }
+        });
+    }).catch(e => {
+        toast('ආරාධනය යැවීම අසාර්ථක විය.');
+    });
+}
+/* ------------------------------------------------ */
 
 function leaveRoom(){
  clearInterval(turnClockTimer);clearTimeout(aiTimer);
