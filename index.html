@@ -357,7 +357,7 @@ button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var
 
 <!-- GAMING APP HEADER -->
 <div class="home-top" id="homeTop">
- <div class="profile-float" id="openProfile" title="പ്രൊෆයිලය">
+ <div class="profile-float" id="openProfile" title="പ്രොෆයිලය">
   <span class="avatar" id="headerAvatar"><i class="fa-solid fa-user"></i></span>
   <div><b id="headerName">ක්‍රීඩකයා</b><br><small class="pro-label">PRO GAMER</small></div>
  </div>
@@ -390,7 +390,7 @@ button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var
   </div>
   <div class="arena-player-card" id="p2">
    <div class="arena-avatar-box" id="p2AvatarBox"><i class="fa-solid fa-chess-knight"></i></div>
-   <b id="p2name">AI පරිගණකය</b>
+   <b id="p2name">ප්‍රතිවාදියා</b>
    <small id="p2sub">0/115</small>
   </div>
  </div>
@@ -492,6 +492,18 @@ button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var
 </div>
 </div>
 
+<!-- Invite Popup Modal for Guest -->
+<div class="modal" id="invitePopupModal">
+<div class="modalbox" style="text-align:center;gap:10px">
+<h3>ක්‍රීඩා ආරාධනයක්!</h3>
+<p id="invitePopupText" style="color:var(--dim);font-size:0.9rem"></p>
+<div class="row" style="width:100%">
+<button class="btn-gold" id="acceptInviteBtn" style="flex:1">පිළගන්න (Accept)</button>
+<button class="btn" id="rejectInviteBtn" style="flex:1">ප්‍රතික්ෂේප කරන්න</button>
+</div>
+</div>
+</div>
+
 <div class="modal" id="customAlertModal">
 <div class="modalbox" style="text-align:center;gap:10px">
 <h3 id="customAlertTitle">පණිවිඩය</h3>
@@ -542,6 +554,7 @@ const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomai
 const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user';
 let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0},board=[],turn=1,selected=null,moves=[],single=true,roomId=null,roomRef=null,roomCb=null,role=null,gameOver=false,aiTimer=null,processing=false,turnClockTimer=null,turnDeadline=0,dragFrom=null,missedCapture=null;
 let userSide=1,nextStartingSide=1,gameMode='single',forcedContinuation=null;
+let incomingInviteData=null;
 
 const PIECE_DESIGNS=[
  {name:'මුතු සුදු',bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●'},
@@ -571,7 +584,10 @@ catch(e){console.error('Firebase initialization failed:',e);$('connection').text
   await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
   auth.onAuthStateChanged(async u=>{
    fbUser=u;
-   if(u)await loadSignedInUser();
+   if(u) {
+    await loadSignedInUser();
+    listenForIncomingInvites();
+   }
    else{user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0};updateHeader();modal('loadingModal',false);modal('authModal',true);}
   });
   $('connection').textContent='● Firebase සේවාව සූදානම්';
@@ -775,7 +791,7 @@ async function playMove(m){
 function setTurnUI(){
  $('p1').classList.toggle('active',turn===userSide);
  $('p2').classList.toggle('active',turn!==userSide);
- $('gameStatus').textContent=turn===userSide?'ඔබගේ වාරය':'AI පරිගණකයේ වාරය';
+ $('gameStatus').textContent=turn===userSide?'ඔබගේ වාරය':'ප්‍රතිවාදියාගේ වාරය';
  startTurnClock(Date.now()+10000);
 }
 
@@ -893,7 +909,7 @@ $('proceedToInvite').onclick = () => {
 
 $('closeMulti').onclick = () => modal('multiModal', false);
 
-/* --- FIXED FRIEND SEARCH & INVITE LOGIC --- */
+/* --- FRIEND SEARCH & INVITE LOGIC --- */
 $('searchBtn').onclick = async () => {
     const rawQuery = $('search').value.trim();
     const queryName = rawQuery.toLowerCase();
@@ -946,7 +962,7 @@ $('searchBtn').onclick = async () => {
         }
     } catch(err) {
         console.error(err);
-        resultsContainer.innerHTML = 'දත්ත ලබාගැනීමේ දෝෂයක් සිදු විය. කරුණාකර නැවත උත්සාහ කරන්න.';
+        resultsContainer.innerHTML = 'දත්ත ලබාගැනීමේ දෝෂයක් සිදු විය.';
     }
 };
 
@@ -968,6 +984,7 @@ function sendGameInvite(friendUid, friendName) {
         toast(`${friendName} වෙත ආරාධනය යවන ලදී! පිළිතුරු ලැබෙන තෙක් රැඳී සිටින්න.`);
         modal('multiModal', false);
         
+        // Listen for acceptance
         newRoomRef.on('value', snap => {
             const data = snap.val();
             if(data && data.status === 'accepted') {
@@ -986,12 +1003,56 @@ function sendGameInvite(friendUid, friendName) {
                 applyAvatarToBox('p2AvatarBox', 0);
                 initBoard();
                 toast('ප්‍රතිවාදියා ආරාධනාව පිළිගත්තා! ක්‍රීඩාව ආරම්භ වේ.');
+            } else if(data && data.status === 'rejected') {
+                newRoomRef.off();
+                toast('ප්‍රතිවාදියා ආරාධනාව ප්‍රතික්ෂේප කළා.');
             }
         });
     }).catch(e => {
         toast('ආරාධනය යැවීම අසාර්ථක විය.');
     });
 }
+
+// Listen for incoming invites when user is logged in
+function listenForIncomingInvites() {
+    if(!db || !fbUser) return;
+    db.ref('invites').orderByChild('guestUid').equalTo(fbUser.uid).on('child_added', snap => {
+        const invite = snap.val();
+        if(invite && invite.status === 'pending') {
+            incomingInviteData = { id: snap.key, ...invite };
+            $('invitePopupText').textContent = `${invite.hostName} විසින් ඔට්ටුව ${invite.bet} ක් සමඟ ඔබට ක්‍රීඩා කිරීමට ආරාධනා කරයි!`;
+            modal('invitePopupModal', true);
+        }
+    });
+}
+
+$('acceptInviteBtn').onclick = () => {
+    if(!incomingInviteData) return;
+    modal('invitePopupModal', false);
+    db.ref('invites/' + incomingInviteData.id).update({ status: 'accepted' }).then(() => {
+        roomId = incomingInviteData.id;
+        gameMode = 'multi';
+        single = false;
+        role = 'guest';
+        userSide = -1;
+        $('lobby').style.display = 'none';
+        $('arena').style.display = 'flex';
+        $('p1name').textContent = incomingInviteData.hostName;
+        $('p2name').textContent = user.name;
+        $('arenaBetDisplay').textContent = incomingInviteData.bet;
+        applyAvatarToBox('p1AvatarBox', 0);
+        applyAvatarToBox('p2AvatarBox', user.pieceIndex || 0);
+        initBoard();
+        toast('ක්‍රීඩාව ආරම්භ වේ!');
+    });
+};
+
+$('rejectInviteBtn').onclick = () => {
+    if(!incomingInviteData) return;
+    modal('invitePopupModal', false);
+    db.ref('invites/' + incomingInviteData.id).update({ status: 'rejected' });
+    incomingInviteData = null;
+};
 /* ------------------------------------------------ */
 
 function leaveRoom(){
