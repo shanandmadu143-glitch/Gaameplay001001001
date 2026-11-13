@@ -556,7 +556,7 @@ button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var
 'use strict';
 const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
 const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user';
-let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0},board=[],turn=1,selected=null,moves=[],single=true,roomId=null,roomRef=null,roomValueHandler=null,role=null,gameOver=false,aiTimer=null,processing=false,turnClockTimer=null,turnDeadline=0,forcedContinuation=null;
+let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0},board=[],turn=1,selected=null,moves=[],single=true,roomId=null,roomRef=null,roomValueHandler=null,chatAddedHandler=null,role=null,gameOver=false,aiTimer=null,processing=false,turnClockTimer=null,turnDeadline=0,forcedContinuation=null;
 let userSide=1,nextStartingSide=1,gameMode='single';
 let incomingInviteData=null;
 let invitesListenerRef=null;
@@ -773,10 +773,15 @@ $('logoutBtn').onclick=async()=>{
  toast('ගිණුමෙන් ඉවත් විය.');
 };
 
+function createFreshBoard() {
+ const b = Array.from({length:8},()=>Array(8).fill(0));
+ for(let r=0;r<8;r++)for(let c=0;c<8;c++)if((r+c)%2){if(r<3)b[r][c]=-1;else if(r>4)b[r][c]=1}
+ return b;
+}
+
 function initBoard(){
  clearInterval(turnClockTimer);
- board=Array.from({length:8},()=>Array(8).fill(0));
- for(let r=0;r<8;r++)for(let c=0;c<8;c++)if((r+c)%2){if(r<3)board[r][c]=-1;else if(r>4)board[r][c]=1}
+ board=createFreshBoard();
  turn=1;selected=null;moves=[];gameOver=false;processing=false;forcedContinuation=null;
  if(single){userSide=nextStartingSide;}
  render();setTurnUI();
@@ -963,7 +968,7 @@ function finish(winner,message){
  $('overTitle').style.color=won?'var(--neon-green)':'var(--red)';
  $('overMessage').textContent=message;
  modal('overModal',true);
- if(roomRef) roomRef.update({status: 'finished', winner: winner, updatedAt: firebase.database.ServerValue.TIMESTAMP}).catch(console.error);
+ if(roomRef) roomRef.update({status: 'finished', winner: winner, updatedAt: firebase.database.ServerValue.TIMESTAMP}).catch(()=>{});
 }
 
 function toggleChatDrawer(){$('chatDrawer').classList.toggle('open');}
@@ -972,7 +977,7 @@ function sendQuickChat(msg){
  $('chatMessages').appendChild(div);
  $('chatMessages').scrollTop=$('chatMessages').scrollHeight;
  if(roomRef) {
-  roomRef.child('chats').push({sender: user.name, message: msg});
+  roomRef.child('chats').push({sender: user.name, message: msg}).catch(()=>{});
  } else {
   setTimeout(()=>{
    const r=["හොඳයි 👍","නියමයි 🔥","Well played! 😊"];
@@ -1017,7 +1022,7 @@ $('startSingleGame').onclick=()=>{
  initBoard();
 };
 
-/* --- MULTIPLAYER & FRIENDS HANDLERS --- */
+/* --- MULTIPLAYER & FRIENDS HANDLERS (FIXED RACE CONDITION) --- */
 $('multi').onclick = () => {
     if(!fbUser) return toast('කරුණාකර පළමුව ගිණුමට ඇතුළු වන්න.');
     $('maxUserPoints').textContent = user.points;
@@ -1102,52 +1107,58 @@ async function loadFriendResults(rawQuery) {
 $('searchBtn').onclick = () => loadFriendResults($('search').value);
 $('search').addEventListener('input', () => loadFriendResults($('search').value));
 
-function sendGameInvite(friendUid, friendName) {
+async function sendGameInvite(friendUid, friendName) {
     const bet = Number(window.currentBetPoints) || 50;
+    if(bet > user.points) return toast('ඔබ සතුව ප්‍රමාණවත් Points නොමැත.');
+
     const newInviteRef = db.ref('invites_v6/' + friendUid).push();
     const inviteId = newInviteRef.key;
+    const initialBoard = createFreshBoard();
 
-    const initialBoard = Array.from({length:8},()=>Array(8).fill(0));
-    for(let r=0;r<8;r++)for(let c=0;c<8;c++)if((r+c)%2){if(r<3)initialBoard[r][c]=-1;else if(r>4)initialBoard[r][c]=1}
+    try {
+        // STEP 1: Create the Room in rooms_v6 FIRST so guest already has permission when accepting!
+        await db.ref('rooms_v6/' + inviteId).set({
+            board: initialBoard,
+            turn: 1,
+            forcedContinuation: null,
+            hostUid: fbUser.uid,
+            guestUid: friendUid,
+            hostName: user.name,
+            guestName: friendName,
+            bet: bet,
+            status: 'waiting',
+            updatedAt: firebase.database.ServerValue.TIMESTAMP
+        });
 
-    newInviteRef.set({
-        fromUid: fbUser.uid,
-        hostName: user.name,
-        bet: bet,
-        status: 'pending',
-        timestamp: Date.now()
-    }).then(() => {
+        // STEP 2: Send the invitation
+        await newInviteRef.set({
+            fromUid: fbUser.uid,
+            hostName: user.name,
+            bet: bet,
+            status: 'pending',
+            timestamp: Date.now()
+        });
+
         toast(`${friendName} වෙත ආරාධනය යවන ලදී! පිළිගන්නා තෙක් රැඳී සිටින්න.`);
         modal('multiModal', false);
-        
+
+        // STEP 3: Listen for guest response
         newInviteRef.on('value', snap => {
             const data = snap.val();
             if(data && data.status === 'accepted') {
                 newInviteRef.off();
                 roomId = inviteId;
-                
-                db.ref('rooms_v6/' + roomId).set({
-                    board: initialBoard,
-                    turn: 1,
-                    forcedContinuation: null,
-                    hostUid: fbUser.uid,
-                    guestUid: friendUid,
-                    hostName: user.name,
-                    guestName: friendName,
-                    status: 'playing',
-                    updatedAt: firebase.database.ServerValue.TIMESTAMP
-                }).then(() => {
-                    setupMultiplayerGame(roomId, 'host', friendName, bet);
-                });
+                setupMultiplayerGame(roomId, 'host', friendName, bet);
             } else if(data && data.status === 'rejected') {
                 newInviteRef.off();
+                db.ref('rooms_v6/' + inviteId).remove().catch(()=>{});
                 toast('ආරාධනය ප්‍රතික්ෂේප කළා.');
             }
         });
-    }).catch(err => {
-        console.error('Invite error:', err);
-        toast('ආරාධනය යැවීමට නොහැකි විය.');
-    });
+    } catch(err) {
+        console.error('Invite/Room setup error:', err);
+        toast('ආරාධනය යැවීමට නොහැකි විය. අන්තර්ජාල සම්බන්ධතාවය පරීක්ෂා කරන්න.');
+    }
 }
 
 function listenForIncomingInvites() {
@@ -1164,31 +1175,54 @@ function listenForIncomingInvites() {
     });
 }
 
-$('acceptInviteBtn').onclick = () => {
+$('acceptInviteBtn').onclick = async () => {
     if(!incomingInviteData) return;
     const invite = incomingInviteData;
+    const bet = Number(invite.bet) || 0;
+
+    if(bet > user.points) {
+        toast('මෙම ඔට්ටුව සඳහා ඔබ සතුව ප්‍රමාණවත් Points නොමැත.');
+        return;
+    }
+
     incomingInviteData = null;
     modal('invitePopupModal', false);
-    
-    db.ref('invites_v6/' + fbUser.uid + '/' + invite.id).update({ status: 'accepted' }).then(() => {
+
+    try {
+        // Update room status to 'playing' first since room already exists
+        await db.ref('rooms_v6/' + invite.id).update({
+            status: 'playing',
+            updatedAt: firebase.database.ServerValue.TIMESTAMP
+        });
+
+        // Update invite status to 'accepted'
+        await db.ref('invites_v6/' + fbUser.uid + '/' + invite.id).update({
+            status: 'accepted'
+        });
+
         roomId = invite.id;
-        setupMultiplayerGame(roomId, 'guest', invite.hostName, invite.bet);
-    }).catch(err => {
+        setupMultiplayerGame(roomId, 'guest', invite.hostName, bet);
+    } catch(err) {
         console.error('Accept invite error:', err);
-        toast('ආරාධනය පිළිගැනීමට නොහැකි විය.');
-    });
+        toast('ආරාධනය පිළිගැනීමට නොහැකි විය. කාමරය කල් ඉකුත් වී ඇත.');
+    }
 };
 
 $('rejectInviteBtn').onclick = () => {
     if(!incomingInviteData) return;
     modal('invitePopupModal', false);
-    db.ref('invites_v6/' + fbUser.uid + '/' + incomingInviteData.id).update({ status: 'rejected' });
+    db.ref('invites_v6/' + fbUser.uid + '/' + incomingInviteData.id).update({ status: 'rejected' }).catch(()=>{});
     incomingInviteData = null;
 };
 
 function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
     if (!fbUser || !db) return toast('Firebase සම්බන්ධතාවය නොමැත.');
-    if (roomRef) { roomRef.off(); roomRef = null; }
+    if (roomRef) {
+        if(roomValueHandler) roomRef.off('value', roomValueHandler);
+        if(chatAddedHandler) roomRef.child('chats').off('child_added', chatAddedHandler);
+        roomRef = null;
+    }
+    
     gameMode = 'multi';
     single = false;
     role = assignedRole;
@@ -1197,6 +1231,8 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
     userSide = role === 'host' ? 1 : -1;
     selected = null; moves = []; forcedContinuation = null;
     gameOver = false;
+    board = createFreshBoard();
+    turn = 1;
     
     $('lobby').style.display = 'none';
     $('arena').style.display = 'flex';
@@ -1215,19 +1251,24 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
         applyAvatarToBox('p2AvatarBox', user.pieceIndex || 0);
     }
 
+    render();
+    setTurnUI();
+
     roomRef = db.ref('rooms_v6/' + roomId);
 
-    if(roomValueHandler) roomRef.off('value', roomValueHandler);
     roomValueHandler = snap => {
         const data = snap.val();
-        if (!data || !Array.isArray(data.board)) return;
-        board = data.board.map(row => Array.isArray(row) ? row.slice() : Array(8).fill(0));
+        if (!data) return;
+        if (Array.isArray(data.board)) {
+            board = data.board.map(row => Array.isArray(row) ? row.slice() : Array(8).fill(0));
+        }
         turn = Number(data.turn) === -1 ? -1 : 1;
         forcedContinuation = data.forcedContinuation &&
             Number.isInteger(data.forcedContinuation.r) &&
             Number.isInteger(data.forcedContinuation.c) ? data.forcedContinuation : null;
         selected = null; moves = [];
         render();
+
         if (data.status === 'finished') {
             if (!gameOver) finish(Number(data.winner), 'තරඟය අවසන් විය.');
             return;
@@ -1237,10 +1278,10 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
     
     roomRef.on('value', roomValueHandler, err => {
         console.error('Room listener failed:', err);
-        toast('ක්‍රීඩා සම්බන්ධතාවය බිඳ වැටුණා.');
+        if(!gameOver) toast('ක්‍රීඩා සම්බන්ධතාවය බිඳ වැටුණා.');
     });
 
-    roomRef.child('chats').on('child_added', snap => {
+    chatAddedHandler = snap => {
         const c = snap.val();
         if (c && c.sender !== user.name) {
             const d = document.createElement('div');
@@ -1249,8 +1290,10 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
             $('chatMessages').appendChild(d);
             $('chatMessages').scrollTop = $('chatMessages').scrollHeight;
         }
-    });
-    toast('ක්‍රීඩාව සාර්ථකව ආරම්භ විය!');
+    };
+    roomRef.child('chats').on('child_added', chatAddedHandler);
+
+    toast('ක්‍රීඩාව සාර්ථකව ආරම්භ විය!', 'fa-circle-check');
 }
 
 function syncMultiplayerState() {
@@ -1273,9 +1316,10 @@ function leaveRoom(){
   if(!gameOver && gameMode==='multi'){
    roomRef.update({status:'finished',winner:-userSide,updatedAt:firebase.database.ServerValue.TIMESTAMP}).catch(()=>{});
   }
-  roomRef.off();
+  if(roomValueHandler) roomRef.off('value', roomValueHandler);
+  if(chatAddedHandler) roomRef.child('chats').off('child_added', chatAddedHandler);
  }
- roomRef = null; roomValueHandler = null;
+ roomRef = null; roomValueHandler = null; chatAddedHandler = null;
  gameOver = false; selected = null; moves = []; forcedContinuation = null;
  $('arena').style.display='none';$('chatDrawer').classList.remove('open');
  $('lobby').style.display='flex';
