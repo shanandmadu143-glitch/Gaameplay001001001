@@ -965,7 +965,7 @@ function finish(winner,message){
   saveUser();
  }
  $('overTitle').textContent=won?'VICTORY! 🎉':'DEFEAT!';
- $('overTitle').style.color=won?'var(--neon-green)':'var(--red)';
+ $('overTitle'].style.color=won?'var(--neon-green)':'var(--red)';
  $('overMessage').textContent=message;
  modal('overModal',true);
  if(roomRef) roomRef.update({status: 'finished', winner: winner, updatedAt: firebase.database.ServerValue.TIMESTAMP}).catch(()=>{});
@@ -1022,7 +1022,7 @@ $('startSingleGame').onclick=()=>{
  initBoard();
 };
 
-/* --- MULTIPLAYER & FRIENDS HANDLERS (FIXED RACE CONDITION) --- */
+/* --- MULTIPLAYER & FRIENDS HANDLERS --- */
 $('multi').onclick = () => {
     if(!fbUser) return toast('කරුණාකර පළමුව ගිණුමට ඇතුළු වන්න.');
     $('maxUserPoints').textContent = user.points;
@@ -1116,7 +1116,6 @@ async function sendGameInvite(friendUid, friendName) {
     const initialBoard = createFreshBoard();
 
     try {
-        // STEP 1: Create the Room in rooms_v6 FIRST so guest already has permission when accepting!
         await db.ref('rooms_v6/' + inviteId).set({
             board: initialBoard,
             turn: 1,
@@ -1130,7 +1129,6 @@ async function sendGameInvite(friendUid, friendName) {
             updatedAt: firebase.database.ServerValue.TIMESTAMP
         });
 
-        // STEP 2: Send the invitation
         await newInviteRef.set({
             fromUid: fbUser.uid,
             hostName: user.name,
@@ -1142,7 +1140,6 @@ async function sendGameInvite(friendUid, friendName) {
         toast(`${friendName} වෙත ආරාධනය යවන ලදී! පිළිගන්නා තෙක් රැඳී සිටින්න.`);
         modal('multiModal', false);
 
-        // STEP 3: Listen for guest response
         newInviteRef.on('value', snap => {
             const data = snap.val();
             if(data && data.status === 'accepted') {
@@ -1189,13 +1186,11 @@ $('acceptInviteBtn').onclick = async () => {
     modal('invitePopupModal', false);
 
     try {
-        // Update room status to 'playing' first since room already exists
         await db.ref('rooms_v6/' + invite.id).update({
             status: 'playing',
             updatedAt: firebase.database.ServerValue.TIMESTAMP
         });
 
-        // Update invite status to 'accepted'
         await db.ref('invites_v6/' + fbUser.uid + '/' + invite.id).update({
             status: 'accepted'
         });
