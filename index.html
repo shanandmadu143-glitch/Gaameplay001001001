@@ -621,9 +621,49 @@ function updateHeader(){
  applyAvatarToBox('headerAvatar',user.pieceIndex||0);
 }
 
+// Sync with secure Rules paths: usernameIndex_v6 and publicProfiles_v6
+async function syncDatabaseIndices(oldName) {
+ if(!db||!fbUser||!user.name)return;
+ const cleanNewName=user.name.trim().toLowerCase();
+ const cleanOldName=oldName?oldName.trim().toLowerCase():null;
+
+ try {
+  if(cleanOldName && cleanOldName !== cleanNewName){
+   await db.ref('usernameIndex_v6/'+cleanOldName).remove().catch(()=>{});
+  }
+  await db.ref('usernameIndex_v6/'+cleanNewName).set(fbUser.uid);
+  await db.ref('publicProfiles_v6/'+fbUser.uid).set({
+   name: user.name,
+   points: Number(user.points)||500,
+   wins: Number(user.wins)||0,
+   losses: Number(user.losses)||0,
+   pieceIndex: Number(user.pieceIndex)||0
+  });
+ } catch(e){
+  console.error('Index sync error:', e);
+ }
+}
+
 function saveUser(){
  localStorage.setItem(KEY,JSON.stringify(user));
- if(db&&fbUser)db.ref('users_v6/'+fbUser.uid).update({name:user.name,points:user.points,wins:Number(user.wins)||0,losses:Number(user.losses)||0,pieceIndex:user.pieceIndex||0,unlockedEffects:Array.isArray(user.unlockedEffects)?user.unlockedEffects:[],selectedEffect:user.selectedEffect||'',lastRewardTime:Number(user.lastRewardTime)||0}).catch(e=>{console.error('User sync failed:',e);toast('දත්ත සුරැකීමට නොහැකි විය.');});
+ if(db&&fbUser){
+  const oldName=user.name;
+  db.ref('users_v6/'+fbUser.uid).update({
+   name:user.name,
+   points:user.points,
+   wins:Number(user.wins)||0,
+   losses:Number(user.losses)||0,
+   pieceIndex:user.pieceIndex||0,
+   unlockedEffects:Array.isArray(user.unlockedEffects)?user.unlockedEffects:[],
+   selectedEffect:user.selectedEffect||'',
+   lastRewardTime:Number(user.lastRewardTime)||0
+  }).then(()=>{
+   syncDatabaseIndices(oldName);
+  }).catch(e=>{
+   console.error('User sync failed:',e);
+   toast('දත්ත සුරැකීමට නොහැකි විය.');
+  });
+ }
  updateHeader();
 }
 
@@ -639,6 +679,7 @@ async function loadSignedInUser(){
   user={name:d.name,points:Number.isFinite(Number(d.points))?Number(d.points):500,wins:Number(d.wins)||0,losses:Number(d.losses)||0,uid:fbUser.uid,pieceIndex:Number(d.pieceIndex)||0,unlockedEffects:Array.isArray(d.unlockedEffects)?d.unlockedEffects:[],selectedEffect:typeof d.selectedEffect==='string'?d.selectedEffect:'',lastRewardTime:Number(d.lastRewardTime)||0};
   localStorage.setItem(KEY,JSON.stringify(user));
   $('username').value=user.name;
+  await syncDatabaseIndices(null);
   updateHeader();
   modal('loadingModal',false);modal('authModal',false);
  }catch(e){
@@ -679,10 +720,20 @@ $('register').onclick=async()=>{
  if(!/^[a-zA-Z0-9_]{3,20}$/.test(name)||pass.length<6)return toast('නම (අකුරු 3-20) සහ මුරපදය (අකුරු 6+) නිවැරදිව ඇතුළත් කරන්න.');
  try{
   modal('loadingModal',true);
+  // Check if username already exists in usernameIndex_v6
+  const indexSnap = await db.ref('usernameIndex_v6/'+name).once('value');
+  if(indexSnap.exists()){
+   modal('loadingModal',false);
+   return toast('මෙම නම දැනටමත් භාවිතයේ ඇත. වෙනත් නමක් තෝරන්න.');
+  }
+
   const cred=await auth.createUserWithEmailAndPassword(name+'@sinhala-draughts.app',pass);
   fbUser=cred.user;
   user={name:rawName,points:500,wins:0,losses:0,uid:fbUser.uid,pieceIndex:0,unlockedEffects:[],selectedEffect:'',lastRewardTime:0};
+  
   await db.ref('users_v6/'+fbUser.uid).set(user);
+  await syncDatabaseIndices(null);
+
   localStorage.setItem(KEY,JSON.stringify(user));
   updateHeader();
   modal('loadingModal',false);
@@ -693,8 +744,6 @@ $('register').onclick=async()=>{
   console.error('Register error:',e);
   if(e.code==='auth/email-already-in-use'){
    toast('මෙම නම දැනටමත් භාවිතයේ ඇත. ඇතුළු වීමට Login ඔබන්න.');
-  }else if(e.code==='auth/operation-not-allowed'){
-   toast('Firebase Email/Password Auth සක්‍රිය කර නැත.');
   }else{
    toast('ගිණුම සෑදීමට නොහැකි විය: '+(e.message||'නැවත උත්සාහ කරන්න'));
   }
@@ -907,11 +956,7 @@ function finish(winner,message){
  const won=(winner===userSide);
  const bet=Number(window.currentBetPoints)||0;
  if(gameMode==='freestyle')$('overPoints').textContent='පුහුණු තරඟය - Points වෙනස් නොවේ';
- else if(gameMode==='multi') {
-  if(won){user.points+=bet;user.wins++;$('overPoints').textContent='+'+bet+' Points (Win!)';}
-  else{user.points=Math.max(0,user.points-bet);user.losses++;$('overPoints').textContent='-'+bet+' Points';}
-  saveUser();
- } else {
+ else {
   if(won){user.points+=bet;user.wins++;$('overPoints').textContent='+'+bet+' Points (Win!)';}
   else{user.points=Math.max(0,user.points-bet);user.losses++;$('overPoints').textContent='-'+bet+' Points';}
   saveUser();
@@ -974,7 +1019,7 @@ $('startSingleGame').onclick=()=>{
  initBoard();
 };
 
-/* --- MULTIPLAYER & FRIENDS HANDLERS --- */
+/* --- MULTIPLAYER & FRIENDS HANDLERS COMPATIBLE WITH NEW RULES --- */
 $('multi').onclick = () => {
     if(!fbUser) return toast('කරුණාකර පළමුව ගිණුමට ඇතුළු වන්න.');
     $('maxUserPoints').textContent = user.points;
@@ -1008,19 +1053,20 @@ async function loadFriendResults(rawQuery) {
     resultsContainer.innerHTML = 'සොයමින් පවතී...';
 
     try {
-        const snapshot = await db.ref('users_v6').once('value');
-        if (!snapshot.exists()) {
-            resultsContainer.innerHTML = 'පරිශීලකයන් හමු නොවීය.';
+        // Since publicProfiles_v6 requires auth != null, we can read public profiles safely
+        const snap = await db.ref('publicProfiles_v6').once('value');
+        if (!snap.exists()) {
+            resultsContainer.innerHTML = 'ක්‍රීඩකයන් හමු නොවීය.';
             return;
         }
-        
-        const users = snapshot.val();
+
+        const profiles = snap.val();
         resultsContainer.innerHTML = '';
         let found = false;
 
-        Object.keys(users).forEach(uid => {
-            const uData = users[uid];
-            const candidateName = uData && uData.name ? String(uData.name) : '';
+        Object.keys(profiles).forEach(uid => {
+            const pData = profiles[uid];
+            const candidateName = pData && pData.name ? String(pData.name) : '';
             if(uid !== fbUser.uid && candidateName && (!queryName || candidateName.toLowerCase().includes(queryName))) {
                 found = true;
                 const item = document.createElement('div');
@@ -1030,7 +1076,7 @@ async function loadFriendResults(rawQuery) {
                 playerName.textContent = candidateName;
                 const playerMeta = document.createElement('small');
                 playerMeta.style.color = 'var(--dim)';
-                playerMeta.textContent = `Points: ${Number(uData.points) || 0}`;
+                playerMeta.textContent = `Points: ${Number(pData.points) || 0}`;
                 info.append(playerName, document.createElement('br'), playerMeta);
                 item.appendChild(info);
                 
@@ -1045,10 +1091,14 @@ async function loadFriendResults(rawQuery) {
                 resultsContainer.appendChild(item);
             }
         });
-        if(!found) resultsContainer.innerHTML = 'අදාළ නමින් ක්‍රීඩකයන් හමු නොවීය.';
+        if(!found) {
+            resultsContainer.innerHTML = queryName
+                ? 'අදාළ නමින් ක්‍රීඩකයන් හමු නොවීය.'
+                : 'යහළුවාගේ නම ලියා Search කරන්න.';
+        }
     } catch(err) {
         console.error('Search error:', err);
-        resultsContainer.innerHTML = 'දෝෂයක් සිදු විය. නැවත උත්සාහ කරන්න.';
+        resultsContainer.innerHTML = 'දෝෂයක් සිදු විය. Database Rules පරීක්ෂා කරන්න.';
     }
 }
 
@@ -1057,13 +1107,13 @@ $('search').addEventListener('input', () => loadFriendResults($('search').value)
 
 function sendGameInvite(friendUid, friendName) {
     const bet = Number(window.currentBetPoints) || 50;
-    const newRoomRef = db.ref('invites').push();
-    const inviteId = newRoomRef.key;
+    // According to rules: invites_v6/$recipientUid/$inviteId
+    const newInviteRef = db.ref('invites_v6/' + friendUid).push();
+    const inviteId = newInviteRef.key;
 
-    newRoomRef.set({
-        hostUid: fbUser.uid,
+    newInviteRef.set({
+        fromUid: fbUser.uid,
         hostName: user.name,
-        guestUid: friendUid,
         bet: bet,
         status: 'pending',
         timestamp: Date.now()
@@ -1071,14 +1121,14 @@ function sendGameInvite(friendUid, friendName) {
         toast(`${friendName} වෙත ආරාධනය යවන ලදී! පිළිගන්නා තෙක් රැඳී සිටින්න.`);
         modal('multiModal', false);
         
-        newRoomRef.on('value', snap => {
+        newInviteRef.on('value', snap => {
             const data = snap.val();
             if(data && data.status === 'accepted') {
-                newRoomRef.off();
+                newInviteRef.off();
                 roomId = inviteId;
                 setupMultiplayerGame(roomId, 'host', friendUid, friendName, bet);
             } else if(data && data.status === 'rejected') {
-                newRoomRef.off();
+                newInviteRef.off();
                 toast('ආරාධනය ප්‍රතික්ෂේප කළා.');
             }
         });
@@ -1091,11 +1141,12 @@ function sendGameInvite(friendUid, friendName) {
 function listenForIncomingInvites() {
     if(!db || !fbUser) return;
     if(invitesListenerRef) invitesListenerRef.off();
-    invitesListenerRef = db.ref('invites').orderByChild('guestUid').equalTo(fbUser.uid);
+    // Listening under invites_v6/$myUid
+    invitesListenerRef = db.ref('invites_v6/' + fbUser.uid);
     invitesListenerRef.on('child_added', snap => {
         const invite = snap.val();
         if(invite && invite.status === 'pending' && (Date.now() - Number(invite.timestamp || 0) < 300000)) {
-            incomingInviteData = { id: snap.key, ...invite };
+            incomingInviteData = { id: snap.key, fromUid: invite.fromUid, ...invite };
             $('invitePopupText').textContent = `${invite.hostName} විසින් ඔට්ටුව ${invite.bet} ක් සමඟ ඔබට ආරාධනා කරයි!`;
             modal('invitePopupModal', true);
         }
@@ -1107,9 +1158,10 @@ $('acceptInviteBtn').onclick = () => {
     const invite = incomingInviteData;
     incomingInviteData = null;
     modal('invitePopupModal', false);
-    db.ref('invites/' + invite.id).update({ status: 'accepted' }).then(() => {
+    
+    db.ref('invites_v6/' + fbUser.uid + '/' + invite.id).update({ status: 'accepted' }).then(() => {
         roomId = invite.id;
-        setupMultiplayerGame(roomId, 'guest', invite.hostUid, invite.hostName, invite.bet);
+        setupMultiplayerGame(roomId, 'guest', invite.fromUid, invite.hostName, invite.bet);
     }).catch(err => {
         console.error('Accept invite error:', err);
         toast('ආරාධනය පිළිගැනීමට නොහැකි විය.');
@@ -1119,7 +1171,7 @@ $('acceptInviteBtn').onclick = () => {
 $('rejectInviteBtn').onclick = () => {
     if(!incomingInviteData) return;
     modal('invitePopupModal', false);
-    db.ref('invites/' + incomingInviteData.id).update({ status: 'rejected' });
+    db.ref('invites_v6/' + fbUser.uid + '/' + incomingInviteData.id).update({ status: 'rejected' });
     incomingInviteData = null;
 };
 
@@ -1153,7 +1205,8 @@ function setupMultiplayerGame(id, assignedRole, opponentUid, opponentName, bet) 
         applyAvatarToBox('p2AvatarBox', user.pieceIndex || 0);
     }
 
-    roomRef = db.ref('rooms/' + roomId);
+    // According to rooms_v6 rules: rooms_v6/$roomId
+    roomRef = db.ref('rooms_v6/' + roomId);
     
     if (role === 'host') {
         roomRef.set({
