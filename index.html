@@ -470,7 +470,9 @@ button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var
  <div id="profileAvatar" style="width:64px;height:64px;margin:0 auto 6px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe08a,#ffad62);color:#18213e;font-size:1.8rem;border:3px solid var(--gold)"></div>
  <h2 id="profileName">ක්‍රීඩකයා</h2><small class="pro-label">PRO GAMER</small>
 </div>
-<p style="font-size:0.85rem;color:var(--dim);margin-top:4px;">Shop එකෙන් මිලදීගත් / Default <b>ඉත්තන්ගේ Theme (Themes 10)</b>:</p>
+<p style="font-size:0.85rem;color:var(--dim);margin-top:4px;">Shop එකෙන් මිලදීගත් / Default <b>ප්‍රොෆයිල් Avatars (20)</b>:</p>
+<div class="pieces-grid" id="avatarGrid"></div>
+<p style="font-size:0.85rem;color:var(--dim);margin-top:4px;">Shop එකෙන් මිලදීගත් / Default <b>ඉත්තන්ගේ Themes (20)</b>:</p>
 <div class="pieces-grid" id="piecesGrid"></div>
 <div class="row" style="margin-top:6px">
  <button class="btn-gold" id="saveProfile" style="flex:1">සුරකින්න (Save)</button>
@@ -560,28 +562,59 @@ button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var
 'use strict';
 const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
 const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user';
-let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user'},board=[],turn=1,selected=null,moves=[],single=true,roomId=null,roomRef=null,roomValueHandler=null,chatAddedHandler=null,role=null,gameOver=false,aiTimer=null,processing=false,turnClockTimer=null,turnDeadline=0,forcedContinuation=null;
+let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user',unlockedAvatars:['fa-user']},board=[],turn=1,selected=null,moves=[],single=true,roomId=null,roomRef=null,roomValueHandler=null,chatAddedHandler=null,role=null,gameOver=false,aiTimer=null,processing=false,turnClockTimer=null,turnDeadline=0,forcedContinuation=null;
 let userSide=1,nextStartingSide=1,gameMode='single';
 let incomingInviteData=null;
 let invitesListenerRef=null;
 let activeInviteWatcher=null;
 
-/* දාම් ඉත්තන් සඳහා Themes 10 ක් (සියල්ලම සාදා ඇත) */
+/* දාම් ඉත්තන් සඳහා Themes 20 ක් */
 const PIECE_DESIGNS=[
- {name:'මුතු සුදු (Default)',bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●',free:true},
- {name:'රන් ඔටුන්න',bg:'linear-gradient(135deg,#ffeaa7,#fdcb6e)',border:'#e1b12c',color:'#2d3436',icon:'★',free:false},
- {name:'රුධිර රතු',bg:'radial-gradient(circle at 30% 30%,#ff7675,#d63031)',border:'#c0392b',color:'#fff',icon:'◆',free:false},
- {name:'මරකත කොළ',bg:'radial-gradient(circle at 30% 30%,#55efc4,#00b894)',border:'#00a8ff',color:'#fff',icon:'▲',free:false},
- {name:'නියෝන් නිල්',bg:'radial-gradient(circle at 30% 30%,#74b9ff,#0984e3)',border:'#00f2fe',color:'#fff',icon:'✦',free:false},
- {name:'शाही දම් පාට',bg:'radial-gradient(circle at 30% 30%,#a29bfe,#6c5ce7)',border:'#fd79a8',color:'#fff',icon:'❖',free:false},
- {name:'අඳුරු කාබන්',bg:'radial-gradient(circle at 30% 30%,#636e72,#2d3436)',border:'#b2bec3',color:'#ffd166',icon:'♠',free:false},
- {name:'සූර්ය රන්',bg:'radial-gradient(circle at 30% 30%,#fab1a0,#e17055)',border:'#d63031',color:'#fff',icon:'☀',free:false},
- {name:'මැජෙන්ටා රෝස',bg:'radial-gradient(circle at 30% 30%,#ff7979,#eb4d4b)',border:'#ff7979',color:'#fff',icon:'✿',free:false},
- {name:'සැහැල්ලු සිල්වර්',bg:'radial-gradient(circle at 30% 30%,#dfe6e9,#b2bec3)',border:'#636e72',color:'#2d3436',icon:'⚙',free:false}
+ {id:0,name:'මුතු සුදු (Default)',bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●',free:true},
+ {id:1,name:'රන් ඔටුන්න',bg:'linear-gradient(135deg,#ffeaa7,#fdcb6e)',border:'#e1b12c',color:'#2d3436',icon:'★'},
+ {id:2,name:'රුධිර රතු',bg:'radial-gradient(circle at 30% 30%,#ff7675,#d63031)',border:'#c0392b',color:'#fff',icon:'◆'},
+ {id:3,name:'මරකත කොළ',bg:'radial-gradient(circle at 30% 30%,#55efc4,#00b894)',border:'#00a8ff',color:'#fff',icon:'▲'},
+ {id:4,name:'නියෝන් නිල්',bg:'radial-gradient(circle at 30% 30%,#74b9ff,#0984e3)',border:'#00f2fe',color:'#fff',icon:'✦'},
+ {id:5,name:'शाही දම් පාට',bg:'radial-gradient(circle at 30% 30%,#a29bfe,#6c5ce7)',border:'#fd79a8',color:'#fff',icon:'❖'},
+ {id:6,name:'අඳුරු කාබන්',bg:'radial-gradient(circle at 30% 30%,#636e72,#2d3436)',border:'#b2bec3',color:'#ffd166',icon:'♠'},
+ {id:7,name:'සූර්ය රන්',bg:'radial-gradient(circle at 30% 30%,#fab1a0,#e17055)',border:'#d63031',color:'#fff',icon:'☀'},
+ {id:8,name:'මැජෙන්ටා රෝස',bg:'radial-gradient(circle at 30% 30%,#ff7979,#eb4d4b)',border:'#ff7979',color:'#fff',icon:'✿'},
+ {id:9,name:'සැහැල්ලු සිල්වර්',bg:'radial-gradient(circle at 30% 30%,#dfe6e9,#b2bec3)',border:'#636e72',color:'#2d3436',icon:'⚙'},
+ {id:10,name:'කොස්මික් වයලට්',bg:'radial-gradient(circle at 30% 30%,#8e44ad,#3498db)',border:'#9b59b6',color:'#fff',icon:'☄'},
+ {id:11,name:'නියෝන් ලෙමන්',bg:'radial-gradient(circle at 30% 30%,#f1c40f,#f39c12)',border:'#f1c40f',color:'#111',icon:'⚡'},
+ {id:12,name:'ටර්කියුයිස්',bg:'radial-gradient(circle at 30% 30%,#1abc9c,#16a085)',border:'#1abc9c',color:'#fff',icon:'🌊'},
+ {id:13,name:'චොක්ලට් බ්‍රවුන්',bg:'radial-gradient(circle at 30% 30%,#d35400,#a04000)',border:'#e67e22',color:'#fff',icon:'☕'},
+ {id:14,name:'රෝස් ගෝල්ඩ්',bg:'radial-gradient(circle at 30% 30%,#f5b041,#eb984e)',border:'#f39c12',color:'#fff',icon:'♕'},
+ {id:15,name:'ගැඹුරු මිනිරන්',bg:'radial-gradient(circle at 30% 30%,#34495e,#2c3e50)',border:'#7f8c8d',color:'#ffd166',icon:'🛡'},
+ {id:16,name:'අයිස් මින්ට්',bg:'radial-gradient(circle at 30% 30%,#a3e4d7,#48c9b0)',border:'#17a589',color:'#111',icon:'❄'},
+ {id:17,name:'සැණකෙළි පර්පල්',bg:'radial-gradient(circle at 30% 30%,#d98880,#c0392b)',border:'#e74c3c',color:'#fff',icon:'🔮'},
+ {id:18,name:'විදුලි ලෙමන්',bg:'radial-gradient(circle at 30% 30%,#f7dc6f,#f9e79f)',border:'#f1c40f',color:'#111',icon:'✨'},
+ {id:19,name:'අමරණීය අඳුර',bg:'radial-gradient(circle at 30% 30%,#2c3e50,#000000)',border:'#ffd166',color:'#ffd166',icon:'♔'}
 ];
 
-/* ප්‍රොෆයිල් Avatar සංකේත ලැයිස්තුව */
-const AVATAR_ICONS=['fa-user','fa-chess-knight','fa-dragon','fa-mask','fa-robot','fa-ghost','fa-shield-halved','fa-crown'];
+/* ප්‍රොෆයිල් Avatar සංකේත 20 ක් */
+const AVATARS=[
+ {id:'fa-user',name:'සම්මත (Default)',icon:'fa-user'},
+ {id:'fa-chess-knight',name:'චෙස් නයිට්',icon:'fa-chess-knight'},
+ {id:'fa-dragon',name:'ගිනියම් ඩ්‍රැගන්',icon:'fa-dragon'},
+ {id:'fa-mask',name:'මුහුණු ආවරණය',icon:'fa-mask'},
+ {id:'fa-robot',name:'රොබෝ යන්ත්‍රය',icon:'fa-robot'},
+ {id:'fa-ghost',name:'අපූර්ව හොල්මන',icon:'fa-ghost'},
+ {id:'fa-shield-halved',name:'රජකීය පලිහ',icon:'fa-shield-halved'},
+ {id:'fa-crown',name:'රජකීය ඔටුන්න',icon:'fa-crown'},
+ {id:'fa-fire',name:'මහා ගින්න',icon:'fa-fire'},
+ {id:'fa-bolt',name:'අකුණු සැණැල්ල',icon:'fa-bolt'},
+ {id:'fa-skull',name:'හිස්කබල',icon:'fa-skull'},
+ {id:'fa-star',name:'රන් තරුව',icon:'fa-star'},
+ {id:'fa-gem',name:'දියමන්ති මැණික',icon:'fa-gem'},
+ {id:'fa-fighter-jet',name:'ජෙට් යානය',icon:'fa-fighter-jet'},
+ {id:'fa-meteor',name:'උල්කාපාතය',icon:'fa-meteor'},
+ {id:'fa-cat',name:'කූට බළලා',icon:'fa-cat'},
+ {id:'fa-dog',name:'බල්ලා',icon:'fa-dog'},
+ {id:'fa-paw',name:'සිංහ පාදය',icon:'fa-paw'},
+ {id:'fa-crosshairs',name:'ඉලක්කය',icon:'fa-crosshairs'},
+ {id:'fa-hat-wizard',name:'මායාකාරයා',icon:'fa-hat-wizard'}
+];
 
 function toast(s, icon='fa-circle-info'){
  const t=$('toast');
@@ -628,7 +661,7 @@ catch(e){console.error('Firebase initialization failed:',e);$('connection').text
     listenForIncomingInvites();
    } else {
     if(invitesListenerRef){invitesListenerRef.off();invitesListenerRef=null;}
-    user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user'};
+    user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user',unlockedAvatars:['fa-user']};
     updateHeader();
     modal('loadingModal',false);
     modal('authModal',true);
@@ -673,7 +706,8 @@ async function syncDatabaseIndices(oldName) {
    losses: Number(user.losses)||0,
    pieceIndex: Number(user.pieceIndex)||0,
    unlockedPieces: Array.isArray(user.unlockedPieces)?user.unlockedPieces:[0],
-   avatarIcon: user.avatarIcon||'fa-user'
+   avatarIcon: user.avatarIcon||'fa-user',
+   unlockedAvatars: Array.isArray(user.unlockedAvatars)?user.unlockedAvatars:['fa-user']
   });
  } catch(e){
   console.error('Index sync error:', e);
@@ -692,6 +726,7 @@ function saveUser(){
    pieceIndex:Number(user.pieceIndex)||0,
    unlockedPieces:Array.isArray(user.unlockedPieces)?user.unlockedPieces:[0],
    avatarIcon:user.avatarIcon||'fa-user',
+   unlockedAvatars:Array.isArray(user.unlockedAvatars)?user.unlockedAvatars:['fa-user'],
    lastRewardTime:Number(user.lastRewardTime)||0
   }).then(()=>{
    syncDatabaseIndices(oldName);
@@ -708,7 +743,7 @@ async function loadSignedInUser(){
   let d=s.val();
   if(!d||!d.name){
    const fallbackName=(fbUser.email||'').split('@')[0]||$('username').value.trim().replace(/\s+/g,'_')||'Player_'+fbUser.uid.slice(0,5);
-   d={name:fallbackName,points:500,wins:0,losses:0,uid:fbUser.uid,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user',lastRewardTime:0};
+   d={name:fallbackName,points:500,wins:0,losses:0,uid:fbUser.uid,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user',unlockedAvatars:['fa-user'],lastRewardTime:0};
    await db.ref('users_v6/'+fbUser.uid).set(d);
   }
   user={
@@ -720,6 +755,7 @@ async function loadSignedInUser(){
    pieceIndex:Number(d.pieceIndex)||0,
    unlockedPieces:Array.isArray(d.unlockedPieces)?d.unlockedPieces:[0],
    avatarIcon:d.avatarIcon||'fa-user',
+   unlockedAvatars:Array.isArray(d.unlockedAvatars)?d.unlockedAvatars:['fa-user'],
    lastRewardTime:Number(d.lastRewardTime)||0
   };
   localStorage.setItem(KEY,JSON.stringify(user));
@@ -772,7 +808,7 @@ $('register').onclick=async()=>{
 
   const cred=await auth.createUserWithEmailAndPassword(name+'@sinhala-draughts.app',pass);
   fbUser=cred.user;
-  user={name:rawName,points:500,wins:0,losses:0,uid:fbUser.uid,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user',lastRewardTime:0};
+  user={name:rawName,points:500,wins:0,losses:0,uid:fbUser.uid,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user',unlockedAvatars:['fa-user'],lastRewardTime:0};
   
   await db.ref('users_v6/'+fbUser.uid).set(user);
   await syncDatabaseIndices(null);
@@ -796,56 +832,43 @@ $('openProfile').onclick=()=>{
  tempSelectedPiece=user.pieceIndex||0;
  tempSelectedAvatar=user.avatarIcon||'fa-user';
  
- // 1. Avatar Selection List
- const grid=$('piecesGrid');
- grid.innerHTML='';
+ // 1. Avatar Selection List (20 Avatars)
+ const aGrid=$('avatarGrid');
+ aGrid.innerHTML='';
+ const unlockedAvatars = Array.isArray(user.unlockedAvatars) ? user.unlockedAvatars : ['fa-user'];
 
- const avatarTitle = document.createElement('div');
- avatarTitle.style.cssText = 'grid-column: span 3; font-size:0.8rem; color:var(--gold); font-weight:700; margin-bottom:2px;';
- avatarTitle.textContent = 'ඔබේ Avatar එක තෝරන්න:';
- grid.appendChild(avatarTitle);
-
- AVATAR_ICONS.forEach(iconName => {
+ AVATARS.forEach(av => {
+  const isUnlocked = unlockedAvatars.includes(av.id);
   const avDiv = document.createElement('div');
-  avDiv.className = 'piece-option' + (iconName === tempSelectedAvatar ? ' selected' : '');
-  avDiv.innerHTML = `<i class="fa-solid ${iconName}" style="font-size:1.5rem;color:var(--gold);padding:8px;"></i>`;
+  avDiv.className = 'piece-option' + (av.id === tempSelectedAvatar ? ' selected' : '') + (isUnlocked ? '' : ' locked');
+  avDiv.innerHTML = `<div style="font-size:1.4rem;color:var(--gold);padding:6px;"><i class="fa-solid ${av.icon}"></i></div><span style="font-size:0.6rem;text-align:center">${av.name}</span><small style="font-size:0.5rem;color:${isUnlocked?'var(--neon-green)':'var(--red)'}">${isUnlocked?'Unlocked':'Locked'}</small>`;
   avDiv.onclick = () => {
-   tempSelectedAvatar = iconName;
-   grid.querySelectorAll('.piece-option').forEach(el => {
-    if(el.dataset.type === 'avatar') el.classList.remove('selected');
-   });
+   if(!isUnlocked) return toast('මෙම Avatar එක Unlock කර නැත. Shop වෙත යන්න!');
+   tempSelectedAvatar = av.id;
+   aGrid.querySelectorAll('.piece-option').forEach(el => el.classList.remove('selected'));
    avDiv.classList.add('selected');
    applyAvatarToBox('profileAvatar', tempSelectedPiece, tempSelectedAvatar);
   };
-  avDiv.dataset.type = 'avatar';
-  grid.appendChild(avDiv);
+  aGrid.appendChild(avDiv);
  });
 
- // 2. Pieces / Themes Selection List
- const themeTitle = document.createElement('div');
- themeTitle.style.cssText = 'grid-column: span 3; font-size:0.8rem; color:var(--gold); font-weight:700; margin-top:8px; margin-bottom:2px;';
- themeTitle.textContent = 'Shop එකෙන් අයිති කරගත් ඉත්තන්ගේ Themes:';
- grid.appendChild(themeTitle);
-
- const unlocked = Array.isArray(user.unlockedPieces) ? user.unlockedPieces : [0];
+ // 2. Pieces / Themes Selection List (20 Themes)
+ const grid=$('piecesGrid');
+ grid.innerHTML='';
+ const unlockedPieces = Array.isArray(user.unlockedPieces) ? user.unlockedPieces : [0];
 
  PIECE_DESIGNS.forEach((p,idx)=>{
-  const isUnlocked = unlocked.includes(idx);
+  const isUnlocked = unlockedPieces.includes(idx);
   const div=document.createElement('div');
   div.className='piece-option'+(idx===tempSelectedPiece?' selected':'')+(isUnlocked?'':' locked');
-  div.innerHTML=`<div style="width:30px;height:30px;border-radius:50%;background:${p.bg};border:2px solid ${p.border};color:${p.color};display:grid;place-items:center">${p.icon}</div><span style="font-size:0.65rem;text-align:center">${p.name}</span><small style="font-size:0.55rem;color:${isUnlocked?'var(--neon-green)':'var(--red)'}">${isUnlocked?'Unlocked':'Locked'}</small>`;
+  div.innerHTML=`<div style="width:28px;height:28px;border-radius:50%;background:${p.bg};border:2px solid ${p.border};color:${p.color};display:grid;place-items:center;font-size:0.9rem">${p.icon}</div><span style="font-size:0.6rem;text-align:center">${p.name}</span><small style="font-size:0.5rem;color:${isUnlocked?'var(--neon-green)':'var(--red)'}">${isUnlocked?'Unlocked':'Locked'}</small>`;
   div.onclick=()=>{
-   if(!isUnlocked) {
-    return toast('මෙම Theme එක Unlock කර නැත. Shop වෙත යන්න!');
-   }
+   if(!isUnlocked) return toast('මෙම Theme එක Unlock කර නැත. Shop වෙත යන්න!');
    tempSelectedPiece=idx;
-   grid.querySelectorAll('.piece-option').forEach(el => {
-    if(el.dataset.type === 'piece') el.classList.remove('selected');
-   });
+   grid.querySelectorAll('.piece-option').forEach(el => el.classList.remove('selected'));
    div.classList.add('selected');
    applyAvatarToBox('profileAvatar', tempSelectedPiece, tempSelectedAvatar);
   };
-  div.dataset.type = 'piece';
   grid.appendChild(div);
  });
 
@@ -943,7 +966,6 @@ function render(){
     const val=board[r][c],p=document.createElement('div');
     const isMyPiece = single ? (Math.sign(val) === userSide) : (role === 'host' ? Math.sign(val) === 1 : Math.sign(val) === -1);
     
-    // Multiplayer එකේදී අදාළ ක්‍රීඩකයා තෝරාගත් Theme එක ලබා ගැනීම
     let pieceDesignIndex = 0;
     if (isMyPiece) {
      pieceDesignIndex = user.pieceIndex || 0;
