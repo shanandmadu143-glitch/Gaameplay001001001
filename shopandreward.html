@@ -11,7 +11,6 @@
 html,body{width:100%;min-height:100%;background:radial-gradient(circle at 20% 20%,#3b2e2530,transparent 40%),linear-gradient(145deg,#080b18,#111a31 60%,#0a1022);color:#f8f9fa;padding:12px}
 .app{max-width:960px;margin:auto;display:grid;gap:16px;padding-bottom:60px}
 
-/* Modern & Expanded Header */
 header{background:linear-gradient(135deg,rgba(25,34,60,0.95),rgba(15,20,38,0.98));border:2px solid rgba(255,209,102,0.3);border-radius:20px;padding:18px 24px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 10px 30px rgba(0,0,0,0.5);position:relative;overflow:hidden}
 header:after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
 
@@ -21,20 +20,16 @@ header:after{content:'';position:absolute;top:0;left:0;right:0;height:2px;backgr
 .header-points-sub{font-size:0.85rem;color:var(--dim);font-weight:600;display:flex;align-items:center;gap:6px;margin-top:2px}
 .header-points-sub span{color:var(--gold);font-weight:700}
 
-/* Floating Home Button (Bottom Right) */
 .float-home-btn{position:fixed;bottom:20px;right:20px;z-index:99;background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;border:2px solid var(--gold);border-radius:30px;padding:10px 18px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;box-shadow:0 6px 20px rgba(0,0,0,0.6);transition:.2s;font-size:0.95rem}
 .float-home-btn:hover{transform:scale(1.05);filter:brightness(1.1)}
 
-/* Points Popup Notification (Bottom Left) */
 #pointsPopup{position:fixed;bottom:20px;left:20px;z-index:99;background:rgba(18,24,43,0.95);border:2px solid var(--gold);color:var(--gold);padding:10px 16px;border-radius:14px;font-weight:700;box-shadow:0 6px 20px rgba(0,0,0,0.6);display:flex;align-items:center;gap:8px;transform:translateY(100px);opacity:0;transition:all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);font-size:0.95rem}
 #pointsPopup.show{transform:translateY(0);opacity:1}
 
-/* Category Navigation Tabs */
 .cat-tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
 .tab-btn{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--dim);padding:8px 16px;border-radius:10px;font-weight:700;cursor:pointer;white-space:nowrap;transition:.2s;font-size:0.9rem}
 .tab-btn.active{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;border-color:var(--gold);box-shadow:0 0 15px rgba(255,209,102,0.3)}
 
-/* Highlighted Reward Banner */
 .highlight-reward{background:linear-gradient(135deg,rgba(255,209,102,0.12),rgba(46,204,113,0.12));border:2px solid var(--gold);border-radius:16px;padding:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;position:relative;overflow:hidden;box-shadow:0 8px 20px rgba(0,0,0,0.3)}
 .reward-left{display:flex;align-items:center;gap:14px}
 .reward-icon-wrap{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#ffeaa7,#fdcb6e);color:#111;display:grid;place-items:center;font-size:1.5rem;box-shadow:0 0 15px rgba(255,209,102,0.5);animation:pulseIcon 2s infinite ease-in-out}
@@ -43,7 +38,6 @@ header:after{content:'';position:absolute;top:0;left:0;right:0;height:2px;backgr
 .reward-sub{color:var(--dim);font-size:0.8rem}
 .timer-badge{background:rgba(0,0,0,0.4);border:1px solid rgba(255,209,102,0.3);padding:3px 8px;border-radius:6px;font-size:0.75rem;color:var(--gold);display:inline-block;margin-top:4px;font-variant-numeric:tabular-nums}
 
-/* Items Grid & Cards */
 .shop-section{display:grid;gap:12px}
 .section-title{color:var(--gold);font-size:1.1rem;font-weight:700;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(255,255,255,0.08);padding-bottom:6px}
 
@@ -60,7 +54,6 @@ header:after{content:'';position:absolute;top:0;left:0;right:0;height:2px;backgr
 .btn-gold:hover{filter:brightness(1.1)}
 .btn-gold:disabled{opacity:0.4;cursor:not-allowed}
 
-/* Toast Notification */
 #toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,100px);opacity:0;background:#1e293b;border:1px solid var(--gold);color:white;border-radius:25px;padding:10px 20px;z-index:100;transition:.3s;font-weight:600;font-size:0.9rem}
 #toast.show{transform:translate(-50%,0);opacity:1}
 
@@ -112,6 +105,7 @@ button,a{touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
 <button class="tab-btn active" onclick="filterCategory('all', this)">සියල්ල (All)</button>
 <button class="tab-btn" onclick="filterCategory('rewards', this)">Free Rewards</button>
 <button class="tab-btn" onclick="filterCategory('themes', this)">Piece Themes (20)</button>
+<button class="tab-btn" onclick="filterCategory('avatars', this)">Profile Avatars (20)</button>
 </div>
 
 <!-- Highlighted Free Reward Section -->
@@ -133,7 +127,13 @@ button,a{touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
 <!-- Piece Themes Section (20 Themes) -->
 <div class="shop-section" id="themesSection">
 <div class="section-title"><i class="fa-solid fa-chess-board"></i> දාම් ඉත්තන් සඳහා Themes (නවතම Themes 20 - ලකුණු 100 බැගින්)</div>
-<div class="grid" id="shopGrid"></div>
+<div class="grid" id="themesGrid"></div>
+</div>
+
+<!-- Profile Avatars Section (20 Avatars) -->
+<div class="shop-section" id="avatarsSection">
+<div class="section-title"><i class="fa-solid fa-circle-user"></i> ප්‍රොෆයිල් Avatars (නවතම Avatars 20 - ලකුණු 100 බැගින්)</div>
+<div class="grid" id="avatarsGrid"></div>
 </div>
 </div>
 
@@ -148,12 +148,12 @@ const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomai
 const $=id=>document.getElementById(id);
 const KEY='sinhala_draughts_v7_user';
 const COOLDOWN_TIME=6*60*60*1000;
-const THEME_PRICE=100;
+const ITEM_PRICE=100;
 const REWARD_POINTS=200;
 let auth=null,db=null,fbUser=null,rewardTimer=null,popupTimer=null,toastTimer=null;
-let user={name:'',points:500,unlockedPieces:[0],pieceIndex:0,lastRewardTime:0};
+let user={name:'',points:500,unlockedPieces:[0],pieceIndex:0,unlockedAvatars:['fa-user'],avatarIcon:'fa-user',lastRewardTime:0};
 
-/* දාම් ඉත්තන් සඳහා Themes 20 ක් (දර්ශක 0 නොමිලේ වන අතර 1 සිට 19 දක්වා themes 100 බැගින් ලබාගත හැක) */
+/* දාම් ඉත්තන් සඳහා Themes 20 ක් */
 const THEMES=[
  {id:0,name:'මුතු සුදු (Default)',desc:'සම්මත සුදු පාට මෝස්තරයකි.',bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●',free:true},
  {id:1,name:'රන් ඔටුන්න',desc:'දිලිසෙන රන්වන් වළල්ලකි.',bg:'linear-gradient(135deg,#ffeaa7,#fdcb6e)',border:'#e1b12c',color:'#2d3436',icon:'★'},
@@ -177,6 +177,30 @@ const THEMES=[
  {id:19,name:'අමරණීය අඳුර',desc:'අපූර්ව කළු පැහැති රාජකීය ස්ටයිල් එක.',bg:'radial-gradient(circle at 30% 30%,#2c3e50,#000000)',border:'#ffd166',color:'#ffd166',icon:'♔'}
 ];
 
+/* ප්‍රොෆයිල් Avatar සංකේත 20 ක් */
+const AVATARS=[
+ {id:'fa-user',name:'සම්මත පරිශීලක (Default)',desc:'මූලික ප්‍රොෆයිල් රූපයයි.',icon:'fa-user',free:true},
+ {id:'fa-chess-knight',name:'චෙස් නයිට්',desc:'ශක්තිමත් සටන්කාමී පෙනුම.',icon:'fa-chess-knight'},
+ {id:'fa-dragon',name:'ගිනියම් ඩ්‍රැගන්',desc:'භයානක මකර සංකේතය.',icon:'fa-dragon'},
+ {id:'fa-mask',name:'රහසිගත මුහුණු ආවරණය',desc:'රහස් ඒජන්ට් පෙනුම.',icon:'fa-mask'},
+ {id:'fa-robot',name:'රොබෝ යන්ත්‍රය',desc:'තාක්ෂණික බුද්ධිය.',icon:'fa-robot'},
+ {id:'fa-ghost',name:'අපූර්ව හොල්මන',desc:'අභිරහස් චරිතය.',icon:'fa-ghost'},
+ {id:'fa-shield-halved',name:'රජකීය පලිහ',desc:'ආරක්ෂිත පලිහ.',icon:'fa-shield-halved'},
+ {id:'fa-crown',name:'රජකීය ඔටුන්න',desc:'ශ්‍රේෂ්ඨතම ජයග්‍රාහකයා.',icon:'fa-crown'},
+ {id:'fa-fire',name:'මහා ගින්න',desc:'දැඩි උද්යෝගය.',icon:'fa-fire'},
+ {id:'fa-bolt',name:'අකුණු සැණැල්ල',desc:'වේගවත් ක්‍රීඩකයා.',icon:'fa-bolt'},
+ {id:'fa-skull',name:'හිස්කබල සංකේතය',desc:'භයානක ප්‍රතිවාදියා.',icon:'fa-skull'},
+ {id:'fa-star',name:'රන් තරුව',desc:'දීප්තිමත් තාරකාව.',icon:'fa-star'},
+ {id:'fa-gem',name:'දියමන්ති මැණික',desc:'වටිනාකම සහ ධනය.',icon:'fa-gem'},
+ {id:'fa-fighter-jet',name:'යුධ ජෙට් යානය',desc:'වේගය සහ බලය.',icon:'fa-fighter-jet'},
+ {id:'fa-meteor',name:'උල්කාපාතය',desc:'අහසින් පතිත වන බලය.',icon:'fa-meteor'},
+ {id:'fa-cat',name:'කූට බළලා',desc:'නොපෙනෙන ලෙස පහර දීම.',icon:'fa-cat'},
+ {id:'fa-dog',name:'විශ්වාසවන්ත බල්ලා',desc:'ස්ථිර සටන් සගයා.',icon:'fa-dog'},
+ {id:'fa-paw',name:'සිංහ පාදය',desc:'මෘග බලය.',icon:'fa-paw'},
+ {id:'fa-crosshairs',name:'ඉලක්ක ලක්ෂ්‍යය',desc:'නැත වරදින ඉලක්කය.',icon:'fa-crosshairs'},
+ {id:'fa-hat-wizard',name:'මායාකාර තොප්පිය',desc:'උපක්‍රමශීලී ක්‍රීඩාව.',icon:'fa-hat-wizard'}
+];
+
 function safeReadUser(){
  try{
   const saved=JSON.parse(localStorage.getItem(KEY)||'{}');
@@ -185,9 +209,11 @@ function safeReadUser(){
    points:Number.isFinite(Number(saved.points))?Math.max(0,Math.floor(Number(saved.points))):500,
    unlockedPieces:Array.isArray(saved.unlockedPieces)?saved.unlockedPieces.map(Number):[0],
    pieceIndex:Number.isFinite(Number(saved.pieceIndex))?Number(saved.pieceIndex):0,
+   unlockedAvatars:Array.isArray(saved.unlockedAvatars)?saved.unlockedAvatars:['fa-user'],
+   avatarIcon:saved.avatarIcon||'fa-user',
    lastRewardTime:Number(saved.lastRewardTime)||0
   };
- }catch(e){return {name:'',points:500,unlockedPieces:[0],pieceIndex:0,lastRewardTime:0};}
+ }catch(e){return {name:'',points:500,unlockedPieces:[0],pieceIndex:0,unlockedAvatars:['fa-user'],avatarIcon:'fa-user',lastRewardTime:0};}
 }
 user=safeReadUser();
 
@@ -214,10 +240,13 @@ function normalizeCloudData(data){
   points:Number.isFinite(Number(d.points))?Math.max(0,Math.floor(Number(d.points))):user.points,
   unlockedPieces:Array.isArray(d.unlockedPieces)?d.unlockedPieces.map(Number):user.unlockedPieces,
   pieceIndex:Number.isFinite(Number(d.pieceIndex))?Number(d.pieceIndex):user.pieceIndex,
+  unlockedAvatars:Array.isArray(d.unlockedAvatars)?d.unlockedAvatars:user.unlockedAvatars,
+  avatarIcon:d.avatarIcon||user.avatarIcon,
   lastRewardTime:Number(d.lastRewardTime)||0,
   uid:fbUser?fbUser.uid:null
  };
  if(!user.unlockedPieces.includes(user.pieceIndex))user.pieceIndex=0;
+ if(!user.unlockedAvatars.includes(user.avatarIcon))user.avatarIcon='fa-user';
  persistLocal();updatePointsUI();renderShop();updateRewardTimer();
 }
 async function saveCloudPatch(patch){
@@ -229,7 +258,7 @@ async function saveCloudPatch(patch){
 }
 async function mutateCloud(mutator){
  if(!fbUser||!db){
-  const draft={...user,unlockedPieces:[...user.unlockedPieces]};
+  const draft={...user,unlockedPieces:[...user.unlockedPieces],unlockedAvatars:[...user.unlockedAvatars]};
   const result=mutator(draft);
   if(!result.ok)return result;
   user=draft;persistLocal();updatePointsUI();renderShop();updateRewardTimer();showPointsPopup();return result;
@@ -237,13 +266,15 @@ async function mutateCloud(mutator){
  try{
   const ref=db.ref('users_v6/'+fbUser.uid);
   const tx=await ref.transaction(current=>{
-   const d=current||{name:user.name||'',points:user.points,wins:0,losses:0,pieceIndex:0};
+   const d=current||{name:user.name||'',points:user.points,wins:0,losses:0,pieceIndex:0,avatarIcon:'fa-user'};
    d.points=Number.isFinite(Number(d.points))?Math.max(0,Math.floor(Number(d.points))):user.points;
    d.unlockedPieces=Array.isArray(d.unlockedPieces)?d.unlockedPieces:[0];
+   d.unlockedAvatars=Array.isArray(d.unlockedAvatars)?d.unlockedAvatars:['fa-user'];
    d.lastRewardTime=Number(d.lastRewardTime)||0;
    const result=mutator(d);
    if(!result.ok)return;
    d.unlockedPieces=[...new Set(d.unlockedPieces.map(Number))];
+   d.unlockedAvatars=[...new Set(d.unlockedAvatars)];
    return d;
   },undefined,false);
   if(!tx.committed){toast('දත්ත යාවත්කාලීන නොවීය. නැවත උත්සාහ කරන්න.');return {ok:false};}
@@ -257,10 +288,12 @@ function filterCategory(category,button){
  if(button)button.classList.add('active');
  $('rewardSection').style.display=(category==='all'||category==='rewards')?'grid':'none';
  $('themesSection').style.display=(category==='all'||category==='themes')?'grid':'none';
+ $('avatarsSection').style.display=(category==='all'||category==='avatars')?'grid':'none';
 }
 
 function renderShop(){
- const grid=$('shopGrid');grid.replaceChildren();
+ // Render Themes
+ const tGrid=$('themesGrid');tGrid.replaceChildren();
  THEMES.forEach(theme=>{
   const unlocked=user.unlockedPieces.includes(theme.id);
   const selected=user.pieceIndex===theme.id;
@@ -277,8 +310,8 @@ function renderShop(){
   const action=document.createElement('button');action.className='btn-gold';
 
   if(!unlocked){
-   action.textContent=`Buy (${THEME_PRICE} pts)`;
-   action.disabled=user.points<THEME_PRICE;
+   action.textContent=`Buy (${ITEM_PRICE} pts)`;
+   action.disabled=user.points<ITEM_PRICE;
    action.addEventListener('click',()=>buyTheme(theme.id));
   }else if(selected){
    action.textContent='✓ භාවිතා කරමින් පවතී';
@@ -289,7 +322,40 @@ function renderShop(){
    action.textContent='භාවිතා කරන්න';
    action.addEventListener('click',()=>selectTheme(theme.id));
   }
-  card.append(preview,name,desc,action);grid.appendChild(card);
+  card.append(preview,name,desc,action);tGrid.appendChild(card);
+ });
+
+ // Render Avatars
+ const aGrid=$('avatarsGrid');aGrid.replaceChildren();
+ AVATARS.forEach(avatar=>{
+  const unlocked=user.unlockedAvatars.includes(avatar.id);
+  const selected=user.avatarIcon===avatar.id;
+  const card=document.createElement('article');card.className='item-card';
+  const preview=document.createElement('div');
+  preview.className='preview-circle';
+  preview.style.background='linear-gradient(135deg,#ffeaa7,#fdcb6e)';
+  preview.style.border='2px solid #ffd166';
+  preview.style.color='#18213e';
+  preview.innerHTML=`<i class="fa-solid ${avatar.icon}"></i>`;
+
+  const name=document.createElement('div');name.className='item-name';name.textContent=avatar.name;
+  const desc=document.createElement('div');desc.className='item-desc';desc.textContent=avatar.desc;
+  const action=document.createElement('button');action.className='btn-gold';
+
+  if(!unlocked){
+   action.textContent=`Buy (${ITEM_PRICE} pts)`;
+   action.disabled=user.points<ITEM_PRICE;
+   action.addEventListener('click',()=>buyAvatar(avatar.id));
+  }else if(selected){
+   action.textContent='✓ භාවිතා කරමින් පවතී';
+   action.disabled=true;
+   action.style.background='#2ecc71';
+   action.style.color='#fff';
+  }else{
+   action.textContent='භාවිතා කරන්න';
+   action.addEventListener('click',()=>selectAvatar(avatar.id));
+  }
+  card.append(preview,name,desc,action);aGrid.appendChild(card);
  });
 }
 
@@ -298,8 +364,8 @@ async function buyTheme(id){
  const result=await mutateCloud(d=>{
   if(!Array.isArray(d.unlockedPieces))d.unlockedPieces=[0];
   if(d.unlockedPieces.map(Number).includes(id))return {ok:false,message:'මෙම Theme එක දැනටමත් ඔබ සතුයි.'};
-  if(Number(d.points)<THEME_PRICE)return {ok:false,message:'මිලදී ගැනීමට Points 100ක් ප්‍රමාණවත් නැත.'};
-  d.points=Number(d.points)-THEME_PRICE;
+  if(Number(d.points)<ITEM_PRICE)return {ok:false,message:'මිලදී ගැනීමට Points 100ක් ප්‍රමාණවත් නැත.'};
+  d.points=Number(d.points)-ITEM_PRICE;
   d.unlockedPieces.push(id);
   d.pieceIndex=id;
   return {ok:true};
@@ -312,6 +378,27 @@ async function selectTheme(id){
  if(!THEMES.some(f=>f.id===id)||!user.unlockedPieces.includes(id))return toast('මෙම Theme එක මුලින් ලබාගන්න.');
  const ok=await saveCloudPatch({pieceIndex:id});
  if(ok)toast('Theme එක ක්‍රීඩාවට යෙදුවා!','fa-circle-check');
+}
+
+async function buyAvatar(id){
+ const avatar=AVATARS.find(f=>f.id===id);if(!avatar)return;
+ const result=await mutateCloud(d=>{
+  if(!Array.isArray(d.unlockedAvatars))d.unlockedAvatars=['fa-user'];
+  if(d.unlockedAvatars.includes(id))return {ok:false,message:'මෙම Avatar එක දැනටමත් ඔබ සතුයි.'};
+  if(Number(d.points)<ITEM_PRICE)return {ok:false,message:'මිලදී ගැනීමට Points 100ක් ප්‍රමාණවත් නැත.'};
+  d.points=Number(d.points)-ITEM_PRICE;
+  d.unlockedAvatars.push(id);
+  d.avatarIcon=id;
+  return {ok:true};
+ });
+ if(!result.ok){if(result.message)toast(result.message);else if(!fbUser)toast('මිලදී ගැනීම අසාර්ථකයි.');return;}
+ toast('Avatar එක සාර්ථකව මිලදී ගත්තා! 🎉');
+}
+
+async function selectAvatar(id){
+ if(!AVATARS.some(f=>f.id===id)||!user.unlockedAvatars.includes(id))return toast('මෙම Avatar එක මුලින් ලබාගන්න.');
+ const ok=await saveCloudPatch({avatarIcon:id});
+ if(ok)toast('Avatar එක ප්‍රොෆයිලයට යෙදුවා!','fa-circle-check');
 }
 
 function updateRewardTimer(){
@@ -357,6 +444,7 @@ async function init(){
      await db.ref('users_v6/'+account.uid).update({
       name:user.name||account.displayName||'ක්‍රීඩකයා',points:user.points,
       unlockedPieces:user.unlockedPieces,pieceIndex:user.pieceIndex,
+      unlockedAvatars:user.unlockedAvatars,avatarIcon:user.avatarIcon,
       lastRewardTime:user.lastRewardTime
      });
     }
