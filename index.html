@@ -340,8 +340,8 @@ input{width:100%;padding:10px 14px;background:rgba(0,0,0,0.5);border:1px solid r
 .btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;box-shadow:0 4px 15px rgba(255,173,98,0.4)}
 .row{display:flex;gap:10px;align-items:center}
 
-.pieces-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:4px;max-height:160px;overflow-y:auto;padding:4px}
-.piece-option{background:rgba(255,255,255,0.04);border:2px solid rgba(255,255,255,0.1);border-radius:12px;padding:6px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;transition:.2s}
+.pieces-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:4px}
+.piece-option{background:rgba(255,255,255,0.04);border:2px solid rgba(255,255,255,0.1);border-radius:12px;padding:8px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer}
 .piece-option.selected{border-color:var(--gold);background:rgba(255,209,102,0.2);box-shadow:0 0 10px rgba(255,209,102,0.3)}
 
 #toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,120px);opacity:0;background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--gold);color:#f8f9fa;border-radius:30px;padding:10px 20px;z-index:150;box-shadow:0 8px 25px rgba(0,0,0,0.6);transition:.3s;font-weight:600;display:flex;align-items:center;gap:8px;font-size:0.9rem}
@@ -361,7 +361,7 @@ input{width:100%;padding:10px 14px;background:rgba(0,0,0,0.5);border:1px solid r
 button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var(--neon-blue);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 
-/* Shop-unlocked piece & board visual effects */
+/* Shop-unlocked piece effects */
 .piece.fx-glow{box-shadow:inset 0 0 8px #ffd166,0 0 10px #ffd166!important}
 .piece.fx-fire{box-shadow:inset 0 0 8px #ff4757,0 0 10px #ff4757!important}
 .piece.fx-rainbow{box-shadow:inset 0 0 8px #ff6b81,0 0 10px #7ee7ff!important}
@@ -398,8 +398,9 @@ button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var
 <div id="connection">● Firebase සම්බන්ධ වෙමින්...</div>
 </section>
 
-<!-- FULL SCREEN ARENA BATTLE HUD -->
+<!-- FULL SCREEN ARENA BATTLE HUD (Only Players, Bet Points, Board, Timer, Chat & Close/Menu) -->
 <section class="arena" id="arena" style="display:none">
+ <!-- 1. TWO PLAYERS & BET POINTS -->
  <div class="arena-top-header">
   <div class="arena-player-card active" id="p1">
    <div class="arena-avatar-box" id="p1AvatarBox"><i class="fa-solid fa-user"></i></div>
@@ -417,19 +418,24 @@ button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var
   </div>
  </div>
 
+ <!-- 2. DRAUGHTS BOARD -->
  <div class="board-wrap">
   <div class="board" id="board"></div>
  </div>
 
+ <!-- 3. BOTTOM CONTROLS: CHAT BUTTON, TURN TIMER & CLOSE/MENU BUTTON -->
  <div class="arena-bottom-bar">
   <button class="arena-circle-btn" id="arenaChatBtn" title="Chat"><i class="fa-solid fa-comment-dots"></i></button>
+
   <div id="clockPanel">
    <div id="clockRing" role="timer" aria-live="off"><span id="turnClock">15</span></div>
    <span id="clockCaption">ඔබගේ වාරය</span>
   </div>
+
   <button class="arena-circle-btn close-btn" id="arenaMenuBtn" title="Close / Menu"><i class="fa-solid fa-xmark"></i></button>
  </div>
 
+ <!-- 4. SIDE CHAT DRAWER -->
  <div class="chat-drawer" id="chatDrawer">
   <div class="chat-header">
    <b><i class="fa-solid fa-comments"></i> In-Game Chat</b>
@@ -452,6 +458,7 @@ button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var
 </section>
 </main>
 
+<!-- GAMING BOTTOM NAVIGATION (Hidden during gameplay) -->
 <footer class="bottom-nav" id="bottomNav">
  <button class="nav-item active" id="navHome"><i class="fa-solid fa-house"></i><span>Home</span></button>
  <button class="nav-item" id="navFriends"><i class="fa-solid fa-user-group"></i><span>Friends</span></button>
@@ -474,7 +481,6 @@ button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var
 </div>
 </div>
 
-<!-- PLAYER PROFILE MODAL (WITH 10 AVATARS) -->
 <div class="modal" id="profileModal">
 <div class="modalbox">
 <div class="row"><h3 style="flex:1">PLAYER PROFILE</h3><button class="btn" id="closeProfile">×</button></div>
@@ -482,7 +488,7 @@ button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var
  <div id="profileAvatar" style="width:64px;height:64px;margin:0 auto 6px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe08a,#ffad62);color:#18213e;font-size:1.8rem;border:3px solid var(--gold)"></div>
  <h2 id="profileName">ක්‍රීඩකයා</h2><small class="pro-label">PRO GAMER</small>
 </div>
-<p style="font-size:0.85rem;color:var(--dim)">ඔබේ ප්‍රියතම Avatar එක තෝරන්න (Avatars 10):</p>
+<p style="font-size:0.85rem;color:var(--dim)">ඉත්තන්ගේ මෝස්තර:</p>
 <div class="pieces-grid" id="piecesGrid"></div>
 <div class="row" style="margin-top:6px">
  <button class="btn-gold" id="saveProfile" style="flex:1">සුරකින්න (Save)</button>
@@ -512,6 +518,7 @@ button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var
 </div>
 </div>
 
+<!-- Waiting for Friend Modal (Host) -->
 <div class="modal" id="waitingHostModal">
 <div class="modalbox" style="text-align:center;gap:12px;padding:24px">
 <div style="width:40px;height:40px;margin:auto;border:4px solid rgba(255,255,255,0.2);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite"></div>
@@ -521,6 +528,7 @@ button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var
 </div>
 </div>
 
+<!-- Invite Popup Modal for Guest -->
 <div class="modal" id="invitePopupModal">
 <div class="modalbox" style="text-align:center;gap:10px">
 <h3>ක්‍රීඩා ආරාධනයක්!</h3>
@@ -572,24 +580,17 @@ button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var
 'use strict';
 const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
 const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user';
-let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,unlockedEffects:[],selectedEffect:''},board=[],turn=1,selected=null,moves=[],single=true,roomId=null,roomRef=null,roomValueHandler=null,chatAddedHandler=null,role=null,gameOver=false,aiTimer=null,processing=false,turnClockTimer=null,turnDeadline=0,forcedContinuation=null;
+let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0},board=[],turn=1,selected=null,moves=[],single=true,roomId=null,roomRef=null,roomValueHandler=null,chatAddedHandler=null,role=null,gameOver=false,aiTimer=null,processing=false,turnClockTimer=null,turnDeadline=0,forcedContinuation=null;
 let userSide=1,nextStartingSide=1,gameMode='single';
 let incomingInviteData=null;
 let invitesListenerRef=null;
 let activeInviteWatcher=null;
 
-/* AVATARS 10 TOTAL (Profile Avatar Choices) */
 const PIECE_DESIGNS=[
  {name:'මුතු සුදු',bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●'},
  {name:'රන් ඔටුන්න',bg:'linear-gradient(135deg,#ffeaa7,#fdcb6e)',border:'#e1b12c',color:'#2d3436',icon:'★'},
  {name:'රුධිර රතු',bg:'radial-gradient(circle at 30% 30%,#ff7675,#d63031)',border:'#c0392b',color:'#fff',icon:'◆'},
- {name:'මරකත කොළ',bg:'radial-gradient(circle at 30% 30%,#55efc4,#00b894)',border:'#00a8ff',color:'#fff',icon:'▲'},
- {name:'විදුලි නිල්',bg:'linear-gradient(135deg,#00f2fe,#4facfe)',border:'#00c4ff',color:'#111',icon:'⚡'},
- {name:'මැජික් දම්',bg:'linear-gradient(135deg,#a29bfe,#6c5ce7)',border:'#4834d4',color:'#fff',icon:'🔮'},
- {name:'ගිනි පුපුර',bg:'linear-gradient(135deg,#fab1a0,#e17055)',border:'#d63031',color:'#fff',icon:'🔥'},
- {name:'රෝස මැණික',bg:'linear-gradient(135deg,#ff9ff3,#f368e0)',border:'#ff5252',color:'#fff',icon:'💎'},
- {name:'කාබන් කළු',bg:'linear-gradient(135deg,#485460,#1e272c)',border:'#808e9b',color:'#ffd166',icon:'♠'},
- {name:'රන් අකුර',bg:'linear-gradient(135deg,#f1c40f,#d35400)',border:'#f39c12',color:'#fff',icon:'👑'}
+ {name:'මරකත කොළ',bg:'radial-gradient(circle at 30% 30%,#55efc4,#00b894)',border:'#00a8ff',color:'#fff',icon:'▲'}
 ];
 
 function toast(s, icon='fa-circle-info'){
@@ -637,7 +638,7 @@ catch(e){console.error('Firebase initialization failed:',e);$('connection').text
     listenForIncomingInvites();
    } else {
     if(invitesListenerRef){invitesListenerRef.off();invitesListenerRef=null;}
-    user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,unlockedEffects:[],selectedEffect:''};
+    user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0};
     updateHeader();
     modal('loadingModal',false);
     modal('authModal',true);
@@ -679,8 +680,7 @@ async function syncDatabaseIndices(oldName) {
    points: Number(user.points)||500,
    wins: Number(user.wins)||0,
    losses: Number(user.losses)||0,
-   pieceIndex: Number(user.pieceIndex)||0,
-   selectedEffect: user.selectedEffect||''
+   pieceIndex: Number(user.pieceIndex)||0
   });
  } catch(e){
   console.error('Index sync error:', e);
@@ -718,17 +718,7 @@ async function loadSignedInUser(){
    d={name:fallbackName,points:500,wins:0,losses:0,uid:fbUser.uid,pieceIndex:0,unlockedEffects:[],selectedEffect:'',lastRewardTime:0};
    await db.ref('users_v6/'+fbUser.uid).set(d);
   }
-  user={
-   name:d.name,
-   points:Number.isFinite(Number(d.points))?Number(d.points):500,
-   wins:Number(d.wins)||0,
-   losses:Number(d.losses)||0,
-   uid:fbUser.uid,
-   pieceIndex:Number(d.pieceIndex)||0,
-   unlockedEffects:Array.isArray(d.unlockedEffects)?d.unlockedEffects:[],
-   selectedEffect:typeof d.selectedEffect==='string'?d.selectedEffect:'',
-   lastRewardTime:Number(d.lastRewardTime)||0
-  };
+  user={name:d.name,points:Number.isFinite(Number(d.points))?Number(d.points):500,wins:Number(d.wins)||0,losses:Number(d.losses)||0,uid:fbUser.uid,pieceIndex:Number(d.pieceIndex)||0,unlockedEffects:Array.isArray(d.unlockedEffects)?d.unlockedEffects:[],selectedEffect:typeof d.selectedEffect==='string'?d.selectedEffect:'',lastRewardTime:Number(d.lastRewardTime)||0};
   localStorage.setItem(KEY,JSON.stringify(user));
   $('username').value=user.name;
   await syncDatabaseIndices(null);
@@ -757,6 +747,8 @@ $('login').onclick=async()=>{
   console.error('Login error:',e);
   if(e.code==='auth/user-not-found'||e.code==='auth/invalid-credential'||e.code==='auth/wrong-password'){
    toast('ගිණුම හමු නොවීය හෝ මුරපදය වැරදියි. නව ගිණුමක් නම් Register ඔබන්න.');
+  }else if(e.code==='auth/operation-not-allowed'){
+   toast('Firebase Email/Password Auth සක්‍රිය කර නැත.');
   }else{
    toast('ඇතුල්වීම අසාර්ථකයි: '+(e.message||'නැවත උත්සාහ කරන්න'));
   }
@@ -807,31 +799,16 @@ $('openProfile').onclick=()=>{
  PIECE_DESIGNS.forEach((p,idx)=>{
   const div=document.createElement('div');
   div.className='piece-option'+(idx===tempSelectedPiece?' selected':'');
-  div.innerHTML=`<div style="width:32px;height:32px;border-radius:50%;background:${p.bg};border:2px solid ${p.border};color:${p.color};display:grid;place-items:center;font-size:0.9rem">${p.icon}</div><span style="font-size:0.65rem;text-align:center">${p.name}</span>`;
-  div.onclick=()=>{
-   tempSelectedPiece=idx;
-   document.querySelectorAll('#piecesGrid .piece-option').forEach(el=>el.classList.remove('selected'));
-   div.classList.add('selected');
-   applyAvatarToPreview(idx);
-  };
+  div.innerHTML=`<div style="width:30px;height:30px;border-radius:50%;background:${p.bg};border:2px solid ${p.border};color:${p.color};display:grid;place-items:center">${p.icon}</div><span style="font-size:0.7rem">${p.name}</span>`;
+  div.onclick=()=>{tempSelectedPiece=idx;document.querySelectorAll('#piecesGrid .piece-option').forEach(el=>el.classList.remove('selected'));div.classList.add('selected');};
   grid.appendChild(div);
  });
- applyAvatarToPreview(tempSelectedPiece);
+ applyAvatarToBox('profileAvatar',user.pieceIndex||0);
  $('profileName').textContent=user.name;
  modal('profileModal',true);
 };
-
-function applyAvatarToPreview(idx){
- const design=PIECE_DESIGNS[idx]||PIECE_DESIGNS[0];
- const box=$('profileAvatar');
- box.style.background=design.bg;
- box.style.borderColor=design.border;
- box.style.color=design.color;
- box.innerHTML=design.icon;
-}
-
 $('closeProfile').onclick=()=>modal('profileModal',false);
-$('saveProfile').onclick=()=>{user.pieceIndex=tempSelectedPiece;saveUser();modal('profileModal',false);toast('ප්‍රොෆයිලය යාවත්කාලීන විය!','fa-circle-check');};
+$('saveProfile').onclick=()=>{user.pieceIndex=tempSelectedPiece;saveUser();modal('profileModal',false);toast('යාවත්කාලීන විය!','fa-circle-check');};
 $('logoutBtn').onclick=async()=>{
  if(!auth)return;
  leaveRoom();
@@ -911,15 +888,8 @@ function render(){
    if(board[r][c]){
     const val=board[r][c],p=document.createElement('div');
     const isUser=single?(Math.sign(val)===userSide):(role==='host'?Math.sign(val)===1:Math.sign(val)===-1);
-    const design=PIECE_DESIGNS[isUser?(user.pieceIndex||0):0]||PIECE_DESIGNS[0];
-    
-    // Apply shop unlocked & selected visual effect if user piece
-    let fxClass = '';
-    if(isUser && user.selectedEffect && Array.isArray(user.unlockedEffects) && user.unlockedEffects.includes(user.selectedEffect)){
-     fxClass = ' fx-'+user.selectedEffect;
-    }
-
-    p.className='piece'+(Math.abs(val)===2?' king':'')+fxClass;
+    const design=PIECE_DESIGNS[isUser?(user.pieceIndex||0):(isUser?0:2)]||PIECE_DESIGNS[0];
+    p.className='piece'+(Math.abs(val)===2?' king':'')+(isUser&&user.selectedEffect&&Array.isArray(user.unlockedEffects)&&user.unlockedEffects.includes(user.selectedEffect)?' fx-'+user.selectedEffect:'');
     p.style.background=design.bg;p.style.border=`2px solid ${design.border}`;p.style.color=design.color;p.textContent=design.icon;
     sq.appendChild(p);
    }
@@ -1044,7 +1014,7 @@ function finish(winner,message){
   saveUser();
  }
  $('overTitle').textContent=won?'VICTORY! 🎉':'DEFEAT!';
- $('overTitle'].style.color=won?'var(--neon-green)':'var(--red)';
+ $('overTitle').style.color=won?'var(--neon-green)':'var(--red)';
  $('overMessage').textContent=message;
  modal('overModal',true);
  if(roomRef) roomRef.update({status: 'finished', winner: winner, updatedAt: firebase.database.ServerValue.TIMESTAMP}).catch(()=>{});
@@ -1397,7 +1367,7 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
             d.className = 'chat-msg them';
             d.textContent = `${String(c.sender || 'Player')}: ${String(c.message || '')}`;
             $('chatMessages').appendChild(d);
-            $('chatMessages').scrollTop = $('chatMessages'].scrollHeight;
+            $('chatMessages').scrollTop = $('chatMessages').scrollHeight;
         }
     };
     roomRef.child('chats').on('child_added', chatAddedHandler);
