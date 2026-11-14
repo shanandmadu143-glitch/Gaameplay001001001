@@ -340,9 +340,10 @@ input{width:100%;padding:10px 14px;background:rgba(0,0,0,0.5);border:1px solid r
 .btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;box-shadow:0 4px 15px rgba(255,173,98,0.4)}
 .row{display:flex;gap:10px;align-items:center}
 
-.pieces-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:4px}
+.pieces-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px;max-height:220px;overflow-y:auto;padding:4px}
 .piece-option{background:rgba(255,255,255,0.04);border:2px solid rgba(255,255,255,0.1);border-radius:12px;padding:8px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer}
 .piece-option.selected{border-color:var(--gold);background:rgba(255,209,102,0.2);box-shadow:0 0 10px rgba(255,209,102,0.3)}
+.piece-option.locked{opacity:0.4;cursor:not-allowed}
 
 #toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,120px);opacity:0;background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--gold);color:#f8f9fa;border-radius:30px;padding:10px 20px;z-index:150;box-shadow:0 8px 25px rgba(0,0,0,0.6);transition:.3s;font-weight:600;display:flex;align-items:center;gap:8px;font-size:0.9rem}
 #toast.show{transform:translate(-50%,0);opacity:1}
@@ -360,18 +361,6 @@ input{width:100%;padding:10px 14px;background:rgba(0,0,0,0.5);border:1px solid r
 }
 button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var(--neon-blue);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
-
-/* Shop-unlocked piece effects */
-.piece.fx-glow{box-shadow:inset 0 0 8px #ffd166,0 0 10px #ffd166!important}
-.piece.fx-fire{box-shadow:inset 0 0 8px #ff4757,0 0 10px #ff4757!important}
-.piece.fx-rainbow{box-shadow:inset 0 0 8px #ff6b81,0 0 10px #7ee7ff!important}
-.piece.fx-lightning{box-shadow:inset 0 0 8px #4facfe,0 0 10px #00f2fe!important}
-.piece.fx-matrix{box-shadow:inset 0 0 8px #2ed573,0 0 10px #26de81!important}
-.piece.fx-pink{box-shadow:inset 0 0 8px #ff9ff3,0 0 10px #f368e0!important}
-.piece.fx-blue{box-shadow:inset 0 0 8px #74b9ff,0 0 10px #0984e3!important}
-.piece.fx-purple{box-shadow:inset 0 0 8px #a29bfe,0 0 10px #6c5ce7!important}
-.piece.fx-orange{box-shadow:inset 0 0 8px #fab1a0,0 0 10px #e17055!important}
-.piece.fx-silver{box-shadow:inset 0 0 8px #dfe6e9,0 0 10px #b2bec3!important}
 </style>
 </head>
 <body>
@@ -398,9 +387,8 @@ button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var
 <div id="connection">● Firebase සම්බන්ධ වෙමින්...</div>
 </section>
 
-<!-- FULL SCREEN ARENA BATTLE HUD (Only Players, Bet Points, Board, Timer, Chat & Close/Menu) -->
+<!-- FULL SCREEN ARENA BATTLE HUD -->
 <section class="arena" id="arena" style="display:none">
- <!-- 1. TWO PLAYERS & BET POINTS -->
  <div class="arena-top-header">
   <div class="arena-player-card active" id="p1">
    <div class="arena-avatar-box" id="p1AvatarBox"><i class="fa-solid fa-user"></i></div>
@@ -418,24 +406,19 @@ button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var
   </div>
  </div>
 
- <!-- 2. DRAUGHTS BOARD -->
  <div class="board-wrap">
   <div class="board" id="board"></div>
  </div>
 
- <!-- 3. BOTTOM CONTROLS: CHAT BUTTON, TURN TIMER & CLOSE/MENU BUTTON -->
  <div class="arena-bottom-bar">
   <button class="arena-circle-btn" id="arenaChatBtn" title="Chat"><i class="fa-solid fa-comment-dots"></i></button>
-
   <div id="clockPanel">
    <div id="clockRing" role="timer" aria-live="off"><span id="turnClock">15</span></div>
    <span id="clockCaption">ඔබගේ වාරය</span>
   </div>
-
   <button class="arena-circle-btn close-btn" id="arenaMenuBtn" title="Close / Menu"><i class="fa-solid fa-xmark"></i></button>
  </div>
 
- <!-- 4. SIDE CHAT DRAWER -->
  <div class="chat-drawer" id="chatDrawer">
   <div class="chat-header">
    <b><i class="fa-solid fa-comments"></i> In-Game Chat</b>
@@ -458,7 +441,6 @@ button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var
 </section>
 </main>
 
-<!-- GAMING BOTTOM NAVIGATION (Hidden during gameplay) -->
 <footer class="bottom-nav" id="bottomNav">
  <button class="nav-item active" id="navHome"><i class="fa-solid fa-house"></i><span>Home</span></button>
  <button class="nav-item" id="navFriends"><i class="fa-solid fa-user-group"></i><span>Friends</span></button>
@@ -488,7 +470,7 @@ button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var
  <div id="profileAvatar" style="width:64px;height:64px;margin:0 auto 6px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe08a,#ffad62);color:#18213e;font-size:1.8rem;border:3px solid var(--gold)"></div>
  <h2 id="profileName">ක්‍රීඩකයා</h2><small class="pro-label">PRO GAMER</small>
 </div>
-<p style="font-size:0.85rem;color:var(--dim)">ඉත්තන්ගේ මෝස්තර:</p>
+<p style="font-size:0.85rem;color:var(--dim);margin-top:4px;">Shop එකෙන් මිලදීගත් / Default <b>ඉත්තන්ගේ Theme (Themes 10)</b>:</p>
 <div class="pieces-grid" id="piecesGrid"></div>
 <div class="row" style="margin-top:6px">
  <button class="btn-gold" id="saveProfile" style="flex:1">සුරකින්න (Save)</button>
@@ -518,7 +500,6 @@ button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var
 </div>
 </div>
 
-<!-- Waiting for Friend Modal (Host) -->
 <div class="modal" id="waitingHostModal">
 <div class="modalbox" style="text-align:center;gap:12px;padding:24px">
 <div style="width:40px;height:40px;margin:auto;border:4px solid rgba(255,255,255,0.2);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite"></div>
@@ -528,7 +509,6 @@ button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var
 </div>
 </div>
 
-<!-- Invite Popup Modal for Guest -->
 <div class="modal" id="invitePopupModal">
 <div class="modalbox" style="text-align:center;gap:10px">
 <h3>ක්‍රීඩා ආරාධනයක්!</h3>
@@ -580,18 +560,28 @@ button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var
 'use strict';
 const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
 const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user';
-let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0},board=[],turn=1,selected=null,moves=[],single=true,roomId=null,roomRef=null,roomValueHandler=null,chatAddedHandler=null,role=null,gameOver=false,aiTimer=null,processing=false,turnClockTimer=null,turnDeadline=0,forcedContinuation=null;
+let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user'},board=[],turn=1,selected=null,moves=[],single=true,roomId=null,roomRef=null,roomValueHandler=null,chatAddedHandler=null,role=null,gameOver=false,aiTimer=null,processing=false,turnClockTimer=null,turnDeadline=0,forcedContinuation=null;
 let userSide=1,nextStartingSide=1,gameMode='single';
 let incomingInviteData=null;
 let invitesListenerRef=null;
 let activeInviteWatcher=null;
 
+/* දාම් ඉත්තන් සඳහා Themes 10 ක් (සියල්ලම සාදා ඇත) */
 const PIECE_DESIGNS=[
- {name:'මුතු සුදු',bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●'},
- {name:'රන් ඔටුන්න',bg:'linear-gradient(135deg,#ffeaa7,#fdcb6e)',border:'#e1b12c',color:'#2d3436',icon:'★'},
- {name:'රුධිර රතු',bg:'radial-gradient(circle at 30% 30%,#ff7675,#d63031)',border:'#c0392b',color:'#fff',icon:'◆'},
- {name:'මරකත කොළ',bg:'radial-gradient(circle at 30% 30%,#55efc4,#00b894)',border:'#00a8ff',color:'#fff',icon:'▲'}
+ {name:'මුතු සුදු (Default)',bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●',free:true},
+ {name:'රන් ඔටුන්න',bg:'linear-gradient(135deg,#ffeaa7,#fdcb6e)',border:'#e1b12c',color:'#2d3436',icon:'★',free:false},
+ {name:'රුධිර රතු',bg:'radial-gradient(circle at 30% 30%,#ff7675,#d63031)',border:'#c0392b',color:'#fff',icon:'◆',free:false},
+ {name:'මරකත කොළ',bg:'radial-gradient(circle at 30% 30%,#55efc4,#00b894)',border:'#00a8ff',color:'#fff',icon:'▲',free:false},
+ {name:'නියෝන් නිල්',bg:'radial-gradient(circle at 30% 30%,#74b9ff,#0984e3)',border:'#00f2fe',color:'#fff',icon:'✦',free:false},
+ {name:'शाही දම් පාට',bg:'radial-gradient(circle at 30% 30%,#a29bfe,#6c5ce7)',border:'#fd79a8',color:'#fff',icon:'❖',free:false},
+ {name:'අඳුරු කාබන්',bg:'radial-gradient(circle at 30% 30%,#636e72,#2d3436)',border:'#b2bec3',color:'#ffd166',icon:'♠',free:false},
+ {name:'සූර්ය රන්',bg:'radial-gradient(circle at 30% 30%,#fab1a0,#e17055)',border:'#d63031',color:'#fff',icon:'☀',free:false},
+ {name:'මැජෙන්ටා රෝස',bg:'radial-gradient(circle at 30% 30%,#ff7979,#eb4d4b)',border:'#ff7979',color:'#fff',icon:'✿',free:false},
+ {name:'සැහැල්ලු සිල්වර්',bg:'radial-gradient(circle at 30% 30%,#dfe6e9,#b2bec3)',border:'#636e72',color:'#2d3436',icon:'⚙',free:false}
 ];
+
+/* ප්‍රොෆයිල් Avatar සංකේත ලැයිස්තුව */
+const AVATAR_ICONS=['fa-user','fa-chess-knight','fa-dragon','fa-mask','fa-robot','fa-ghost','fa-shield-halved','fa-crown'];
 
 function toast(s, icon='fa-circle-info'){
  const t=$('toast');
@@ -638,7 +628,7 @@ catch(e){console.error('Firebase initialization failed:',e);$('connection').text
     listenForIncomingInvites();
    } else {
     if(invitesListenerRef){invitesListenerRef.off();invitesListenerRef=null;}
-    user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0};
+    user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user'};
     updateHeader();
     modal('loadingModal',false);
     modal('authModal',true);
@@ -653,16 +643,17 @@ catch(e){console.error('Firebase initialization failed:',e);$('connection').text
  }
 })();
 
-function applyAvatarToBox(elementId, designIndex){
+function applyAvatarToBox(elementId, designIndex, customIcon){
  const el=$(elementId);if(!el)return;
  const design=PIECE_DESIGNS[designIndex]||PIECE_DESIGNS[0];
- el.style.background=design.bg;el.style.borderColor=design.border;el.style.color=design.color;el.innerHTML=design.icon;
+ el.style.background=design.bg;el.style.borderColor=design.border;el.style.color=design.color;
+ el.innerHTML=customIcon ? `<i class="fa-solid ${customIcon}"></i>` : design.icon;
 }
 
 function updateHeader(){
  $('headerName').textContent=user.name||'ක්‍රීඩකයා';
  $('points').textContent=user.points!==undefined?user.points:500;
- applyAvatarToBox('headerAvatar',user.pieceIndex||0);
+ applyAvatarToBox('headerAvatar', user.pieceIndex||0, user.avatarIcon||'fa-user');
 }
 
 async function syncDatabaseIndices(oldName) {
@@ -680,7 +671,9 @@ async function syncDatabaseIndices(oldName) {
    points: Number(user.points)||500,
    wins: Number(user.wins)||0,
    losses: Number(user.losses)||0,
-   pieceIndex: Number(user.pieceIndex)||0
+   pieceIndex: Number(user.pieceIndex)||0,
+   unlockedPieces: Array.isArray(user.unlockedPieces)?user.unlockedPieces:[0],
+   avatarIcon: user.avatarIcon||'fa-user'
   });
  } catch(e){
   console.error('Index sync error:', e);
@@ -697,8 +690,8 @@ function saveUser(){
    wins:Number(user.wins)||0,
    losses:Number(user.losses)||0,
    pieceIndex:Number(user.pieceIndex)||0,
-   unlockedEffects:Array.isArray(user.unlockedEffects)?user.unlockedEffects:[],
-   selectedEffect:user.selectedEffect||'',
+   unlockedPieces:Array.isArray(user.unlockedPieces)?user.unlockedPieces:[0],
+   avatarIcon:user.avatarIcon||'fa-user',
    lastRewardTime:Number(user.lastRewardTime)||0
   }).then(()=>{
    syncDatabaseIndices(oldName);
@@ -715,10 +708,20 @@ async function loadSignedInUser(){
   let d=s.val();
   if(!d||!d.name){
    const fallbackName=(fbUser.email||'').split('@')[0]||$('username').value.trim().replace(/\s+/g,'_')||'Player_'+fbUser.uid.slice(0,5);
-   d={name:fallbackName,points:500,wins:0,losses:0,uid:fbUser.uid,pieceIndex:0,unlockedEffects:[],selectedEffect:'',lastRewardTime:0};
+   d={name:fallbackName,points:500,wins:0,losses:0,uid:fbUser.uid,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user',lastRewardTime:0};
    await db.ref('users_v6/'+fbUser.uid).set(d);
   }
-  user={name:d.name,points:Number.isFinite(Number(d.points))?Number(d.points):500,wins:Number(d.wins)||0,losses:Number(d.losses)||0,uid:fbUser.uid,pieceIndex:Number(d.pieceIndex)||0,unlockedEffects:Array.isArray(d.unlockedEffects)?d.unlockedEffects:[],selectedEffect:typeof d.selectedEffect==='string'?d.selectedEffect:'',lastRewardTime:Number(d.lastRewardTime)||0};
+  user={
+   name:d.name,
+   points:Number.isFinite(Number(d.points))?Number(d.points):500,
+   wins:Number(d.wins)||0,
+   losses:Number(d.losses)||0,
+   uid:fbUser.uid,
+   pieceIndex:Number(d.pieceIndex)||0,
+   unlockedPieces:Array.isArray(d.unlockedPieces)?d.unlockedPieces:[0],
+   avatarIcon:d.avatarIcon||'fa-user',
+   lastRewardTime:Number(d.lastRewardTime)||0
+  };
   localStorage.setItem(KEY,JSON.stringify(user));
   $('username').value=user.name;
   await syncDatabaseIndices(null);
@@ -747,8 +750,6 @@ $('login').onclick=async()=>{
   console.error('Login error:',e);
   if(e.code==='auth/user-not-found'||e.code==='auth/invalid-credential'||e.code==='auth/wrong-password'){
    toast('ගිණුම හමු නොවීය හෝ මුරපදය වැරදියි. නව ගිණුමක් නම් Register ඔබන්න.');
-  }else if(e.code==='auth/operation-not-allowed'){
-   toast('Firebase Email/Password Auth සක්‍රිය කර නැත.');
   }else{
    toast('ඇතුල්වීම අසාර්ථකයි: '+(e.message||'නැවත උත්සාහ කරන්න'));
   }
@@ -771,7 +772,7 @@ $('register').onclick=async()=>{
 
   const cred=await auth.createUserWithEmailAndPassword(name+'@sinhala-draughts.app',pass);
   fbUser=cred.user;
-  user={name:rawName,points:500,wins:0,losses:0,uid:fbUser.uid,pieceIndex:0,unlockedEffects:[],selectedEffect:'',lastRewardTime:0};
+  user={name:rawName,points:500,wins:0,losses:0,uid:fbUser.uid,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user',lastRewardTime:0};
   
   await db.ref('users_v6/'+fbUser.uid).set(user);
   await syncDatabaseIndices(null);
@@ -784,31 +785,84 @@ $('register').onclick=async()=>{
  }catch(e){
   modal('loadingModal',false);
   console.error('Register error:',e);
-  if(e.code==='auth/email-already-in-use'){
-   toast('මෙම නම දැනටමත් භාවිතයේ ඇත. ඇතුළු වීමට Login ඔබන්න.');
-  }else{
-   toast('ගිණුම සෑදීමට නොහැකි විය: '+(e.message||'නැවත උත්සාහ කරන්න'));
-  }
+  toast('ගිණුම සෑදීමට නොහැකි විය: '+(e.message||'නැවත උත්සාහ කරන්න'));
  }
 };
 
 let tempSelectedPiece=0;
+let tempSelectedAvatar='fa-user';
+
 $('openProfile').onclick=()=>{
  tempSelectedPiece=user.pieceIndex||0;
- const grid=$('piecesGrid');grid.innerHTML='';
+ tempSelectedAvatar=user.avatarIcon||'fa-user';
+ 
+ // 1. Avatar Selection List
+ const grid=$('piecesGrid');
+ grid.innerHTML='';
+
+ const avatarTitle = document.createElement('div');
+ avatarTitle.style.cssText = 'grid-column: span 3; font-size:0.8rem; color:var(--gold); font-weight:700; margin-bottom:2px;';
+ avatarTitle.textContent = 'ඔබේ Avatar එක තෝරන්න:';
+ grid.appendChild(avatarTitle);
+
+ AVATAR_ICONS.forEach(iconName => {
+  const avDiv = document.createElement('div');
+  avDiv.className = 'piece-option' + (iconName === tempSelectedAvatar ? ' selected' : '');
+  avDiv.innerHTML = `<i class="fa-solid ${iconName}" style="font-size:1.5rem;color:var(--gold);padding:8px;"></i>`;
+  avDiv.onclick = () => {
+   tempSelectedAvatar = iconName;
+   grid.querySelectorAll('.piece-option').forEach(el => {
+    if(el.dataset.type === 'avatar') el.classList.remove('selected');
+   });
+   avDiv.classList.add('selected');
+   applyAvatarToBox('profileAvatar', tempSelectedPiece, tempSelectedAvatar);
+  };
+  avDiv.dataset.type = 'avatar';
+  grid.appendChild(avDiv);
+ });
+
+ // 2. Pieces / Themes Selection List
+ const themeTitle = document.createElement('div');
+ themeTitle.style.cssText = 'grid-column: span 3; font-size:0.8rem; color:var(--gold); font-weight:700; margin-top:8px; margin-bottom:2px;';
+ themeTitle.textContent = 'Shop එකෙන් අයිති කරගත් ඉත්තන්ගේ Themes:';
+ grid.appendChild(themeTitle);
+
+ const unlocked = Array.isArray(user.unlockedPieces) ? user.unlockedPieces : [0];
+
  PIECE_DESIGNS.forEach((p,idx)=>{
+  const isUnlocked = unlocked.includes(idx);
   const div=document.createElement('div');
-  div.className='piece-option'+(idx===tempSelectedPiece?' selected':'');
-  div.innerHTML=`<div style="width:30px;height:30px;border-radius:50%;background:${p.bg};border:2px solid ${p.border};color:${p.color};display:grid;place-items:center">${p.icon}</div><span style="font-size:0.7rem">${p.name}</span>`;
-  div.onclick=()=>{tempSelectedPiece=idx;document.querySelectorAll('#piecesGrid .piece-option').forEach(el=>el.classList.remove('selected'));div.classList.add('selected');};
+  div.className='piece-option'+(idx===tempSelectedPiece?' selected':'')+(isUnlocked?'':' locked');
+  div.innerHTML=`<div style="width:30px;height:30px;border-radius:50%;background:${p.bg};border:2px solid ${p.border};color:${p.color};display:grid;place-items:center">${p.icon}</div><span style="font-size:0.65rem;text-align:center">${p.name}</span><small style="font-size:0.55rem;color:${isUnlocked?'var(--neon-green)':'var(--red)'}">${isUnlocked?'Unlocked':'Locked'}</small>`;
+  div.onclick=()=>{
+   if(!isUnlocked) {
+    return toast('මෙම Theme එක Unlock කර නැත. Shop වෙත යන්න!');
+   }
+   tempSelectedPiece=idx;
+   grid.querySelectorAll('.piece-option').forEach(el => {
+    if(el.dataset.type === 'piece') el.classList.remove('selected');
+   });
+   div.classList.add('selected');
+   applyAvatarToBox('profileAvatar', tempSelectedPiece, tempSelectedAvatar);
+  };
+  div.dataset.type = 'piece';
   grid.appendChild(div);
  });
- applyAvatarToBox('profileAvatar',user.pieceIndex||0);
+
+ applyAvatarToBox('profileAvatar', user.pieceIndex||0, user.avatarIcon||'fa-user');
  $('profileName').textContent=user.name;
  modal('profileModal',true);
 };
+
 $('closeProfile').onclick=()=>modal('profileModal',false);
-$('saveProfile').onclick=()=>{user.pieceIndex=tempSelectedPiece;saveUser();modal('profileModal',false);toast('යාවත්කාලීන විය!','fa-circle-check');};
+$('saveProfile').onclick=()=>{
+ user.pieceIndex=tempSelectedPiece;
+ user.avatarIcon=tempSelectedAvatar;
+ saveUser();
+ modal('profileModal',false);
+ toast('ප්‍රොෆයිලය සුරකින ලදී!','fa-circle-check');
+};
+
 $('logoutBtn').onclick=async()=>{
  if(!auth)return;
  leaveRoom();
@@ -887,10 +941,22 @@ function render(){
    
    if(board[r][c]){
     const val=board[r][c],p=document.createElement('div');
-    const isUser=single?(Math.sign(val)===userSide):(role==='host'?Math.sign(val)===1:Math.sign(val)===-1);
-    const design=PIECE_DESIGNS[isUser?(user.pieceIndex||0):(isUser?0:2)]||PIECE_DESIGNS[0];
-    p.className='piece'+(Math.abs(val)===2?' king':'')+(isUser&&user.selectedEffect&&Array.isArray(user.unlockedEffects)&&user.unlockedEffects.includes(user.selectedEffect)?' fx-'+user.selectedEffect:'');
-    p.style.background=design.bg;p.style.border=`2px solid ${design.border}`;p.style.color=design.color;p.textContent=design.icon;
+    const isMyPiece = single ? (Math.sign(val) === userSide) : (role === 'host' ? Math.sign(val) === 1 : Math.sign(val) === -1);
+    
+    // Multiplayer එකේදී අදාළ ක්‍රීඩකයා තෝරාගත් Theme එක ලබා ගැනීම
+    let pieceDesignIndex = 0;
+    if (isMyPiece) {
+     pieceDesignIndex = user.pieceIndex || 0;
+    } else {
+     pieceDesignIndex = window.opponentPieceIndex !== undefined ? window.opponentPieceIndex : 2;
+    }
+
+    const design = PIECE_DESIGNS[pieceDesignIndex] || PIECE_DESIGNS[0];
+    p.className = 'piece' + (Math.abs(val) === 2 ? ' king' : '');
+    p.style.background = design.bg;
+    p.style.border = `2px solid ${design.border}`;
+    p.style.color = design.color;
+    p.textContent = design.icon;
     sq.appendChild(p);
    }
 
@@ -1056,7 +1122,8 @@ $('freestyle').onclick=()=>{
  $('p1name').textContent=user.name||'ඔබ';$('p1sub').textContent='Player';
  $('p2name').textContent='AI පරිගණකය';$('p2sub').textContent='AI';
  $('arenaBetDisplay').textContent='FREE';
- applyAvatarToBox('p1AvatarBox',user.pieceIndex||0);applyAvatarToBox('p2AvatarBox',2);
+ applyAvatarToBox('p1AvatarBox', user.pieceIndex||0, user.avatarIcon||'fa-user');
+ applyAvatarToBox('p2AvatarBox', 2, 'fa-robot');
  enterFullScreenArena();
  initBoard();
 };
@@ -1068,8 +1135,8 @@ $('startSingleGame').onclick=()=>{
  $('p1name').textContent=user.name||'ඔබ';$('p1sub').textContent='Player';
  $('p2name').textContent='AI පරිගණකය';$('p2sub').textContent='AI';
  $('arenaBetDisplay').textContent=bet;
- applyAvatarToBox('p1AvatarBox',user.pieceIndex||0);
- applyAvatarToBox('p2AvatarBox',2);
+ applyAvatarToBox('p1AvatarBox', user.pieceIndex||0, user.avatarIcon||'fa-user');
+ applyAvatarToBox('p2AvatarBox', 2, 'fa-robot');
  enterFullScreenArena();
  initBoard();
 };
@@ -1146,13 +1213,11 @@ async function loadFriendResults(rawQuery) {
             }
         });
         if(!found) {
-            resultsContainer.innerHTML = queryName
-                ? 'අදාළ නමින් ක්‍රීඩකයන් හමු නොවීය.'
-                : 'යහළුවාගේ නම ලියා Search කරන්න.';
+            resultsContainer.innerHTML = queryName ? 'අදාළ නමින් ක්‍රීඩකයන් හමු නොවීය.' : 'යහළුවාගේ නම ලියා Search කරන්න.';
         }
     } catch(err) {
         console.error('Search error:', err);
-        resultsContainer.innerHTML = 'දෝෂයක් සිදු විය. Database Rules පරීක්ෂා කරන්න.';
+        resultsContainer.innerHTML = 'දෝෂයක් සිදු විය.';
     }
 }
 
@@ -1182,6 +1247,10 @@ async function sendGameInvite(friendUid, friendName) {
             guestUid: friendUid,
             hostName: user.name,
             guestName: friendName,
+            hostPieceIndex: user.pieceIndex || 0,
+            hostAvatar: user.avatarIcon || 'fa-user',
+            guestPieceIndex: 0,
+            guestAvatar: 'fa-user',
             bet: bet,
             status: 'waiting',
             updatedAt: firebase.database.ServerValue.TIMESTAMP
@@ -1208,7 +1277,8 @@ async function sendGameInvite(friendUid, friendName) {
                 activeInviteWatcher = null;
                 modal('waitingHostModal', false);
                 roomId = inviteId;
-                setupMultiplayerGame(roomId, 'host', friendName, bet);
+                window.opponentPieceIndex = roomData.guestPieceIndex !== undefined ? roomData.guestPieceIndex : 2;
+                setupMultiplayerGame(roomId, 'host', friendName, bet, roomData.guestPieceIndex, roomData.guestAvatar);
             } else if(roomData.status === 'rejected') {
                 targetRoomRef.off('value', handler);
                 activeInviteWatcher = null;
@@ -1224,7 +1294,7 @@ async function sendGameInvite(friendUid, friendName) {
     } catch(err) {
         console.error('Invite/Room setup error:', err);
         modal('waitingHostModal', false);
-        toast('ආරාධනය යැවීමට නොහැකි විය. අන්තර්ජාල සම්බන්ධතාවය පරීක්ෂා කරන්න.');
+        toast('ආරාධනය යැවීමට නොහැකි විය.');
     }
 }
 
@@ -1267,7 +1337,13 @@ $('acceptInviteBtn').onclick = async () => {
     modal('invitePopupModal', false);
 
     try {
-        await db.ref('rooms_v6/' + invite.id).update({
+        const roomRefCheck = db.ref('rooms_v6/' + invite.id);
+        const roomSnap = await roomRefCheck.once('value');
+        const roomData = roomSnap.val() || {};
+
+        await roomRefCheck.update({
+            guestPieceIndex: user.pieceIndex || 0,
+            guestAvatar: user.avatarIcon || 'fa-user',
             status: 'playing',
             updatedAt: firebase.database.ServerValue.TIMESTAMP
         });
@@ -1275,10 +1351,11 @@ $('acceptInviteBtn').onclick = async () => {
         await db.ref('invites_v6/' + fbUser.uid + '/' + invite.id).remove().catch(()=>{});
 
         roomId = invite.id;
-        setupMultiplayerGame(roomId, 'guest', invite.hostName, bet);
+        window.opponentPieceIndex = roomData.hostPieceIndex !== undefined ? roomData.hostPieceIndex : 0;
+        setupMultiplayerGame(roomId, 'guest', invite.hostName, bet, roomData.hostPieceIndex, roomData.hostAvatar);
     } catch(err) {
         console.error('Accept invite error:', err);
-        toast('ආරාධනය පිළිගැනීමට නොහැකි විය. කාමරය කල් ඉකුත් වී ඇත.');
+        toast('ආරාධනය පිළිගැනීමට නොහැකි විය.');
     }
 };
 
@@ -1291,7 +1368,7 @@ $('rejectInviteBtn').onclick = () => {
     db.ref('invites_v6/' + fbUser.uid + '/' + invite.id).remove().catch(()=>{});
 };
 
-function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
+function setupMultiplayerGame(id, assignedRole, opponentName, bet, oppPieceIdx, oppAvatar) {
     if (!fbUser || !db) return toast('Firebase සම්බන්ධතාවය නොමැත.');
     if (roomRef) {
         if(roomValueHandler) roomRef.off('value', roomValueHandler);
@@ -1310,6 +1387,8 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
     board = createFreshBoard();
     turn = 1;
     
+    if(oppPieceIdx !== undefined) window.opponentPieceIndex = oppPieceIdx;
+
     enterFullScreenArena();
     $('arenaBetDisplay').textContent = String(window.currentBetPoints);
     $('chatMessages').innerHTML = '<div class="chat-msg them">ප්‍රතිවාදියා සමඟ කතා කරන්න...</div>';
@@ -1319,15 +1398,15 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
         $('p1sub').textContent = 'Host';
         $('p2name').textContent = opponentName;
         $('p2sub').textContent = 'Guest';
-        applyAvatarToBox('p1AvatarBox', user.pieceIndex || 0);
-        applyAvatarToBox('p2AvatarBox', 2);
+        applyAvatarToBox('p1AvatarBox', user.pieceIndex || 0, user.avatarIcon || 'fa-user');
+        applyAvatarToBox('p2AvatarBox', oppPieceIdx !== undefined ? oppPieceIdx : 2, oppAvatar || 'fa-chess-knight');
     } else {
         $('p1name').textContent = opponentName;
         $('p1sub').textContent = 'Host';
         $('p2name').textContent = user.name;
         $('p2sub').textContent = 'Guest';
-        applyAvatarToBox('p1AvatarBox', 0);
-        applyAvatarToBox('p2AvatarBox', user.pieceIndex || 0);
+        applyAvatarToBox('p1AvatarBox', oppPieceIdx !== undefined ? oppPieceIdx : 0, oppAvatar || 'fa-user');
+        applyAvatarToBox('p2AvatarBox', user.pieceIndex || 0, user.avatarIcon || 'fa-user');
     }
 
     render();
@@ -1342,9 +1421,14 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
             board = data.board.map(row => Array.isArray(row) ? row.slice() : Array(8).fill(0));
         }
         turn = Number(data.turn) === -1 ? -1 : 1;
-        forcedContinuation = data.forcedContinuation &&
-            Number.isInteger(data.forcedContinuation.r) &&
-            Number.isInteger(data.forcedContinuation.c) ? data.forcedContinuation : null;
+        forcedContinuation = data.forcedContinuation && Number.isInteger(data.forcedContinuation.r) && Number.isInteger(data.forcedContinuation.c) ? data.forcedContinuation : null;
+        
+        if(role === 'host' && data.guestPieceIndex !== undefined) {
+            window.opponentPieceIndex = data.guestPieceIndex;
+        } else if(role === 'guest' && data.hostPieceIndex !== undefined) {
+            window.opponentPieceIndex = data.hostPieceIndex;
+        }
+
         selected = null; moves = [];
         render();
 
@@ -1384,7 +1468,6 @@ function syncMultiplayerState() {
             updatedAt: firebase.database.ServerValue.TIMESTAMP
         }).catch(err => {
             console.error('Room sync failed:', err);
-            toast('Move එක සම්බන්ධ කිරීමට නොහැකි විය.');
         });
     }
 }
