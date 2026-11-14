@@ -383,7 +383,7 @@ button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var
   <div class="arena-player-card active" id="p1">
    <div class="arena-avatar-box" id="p1AvatarBox"><i class="fa-solid fa-user"></i></div>
    <b id="p1name">yomal</b>
-   <small id="p1sub">0/115</small>
+   <small id="p1sub">Host</small>
   </div>
   <div class="arena-coins-center">
    <i class="fa-solid fa-coins"></i>
@@ -392,7 +392,7 @@ button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var
   <div class="arena-player-card" id="p2">
    <div class="arena-avatar-box" id="p2AvatarBox"><i class="fa-solid fa-chess-knight"></i></div>
    <b id="p2name">ප්‍රතිවාදියා</b>
-   <small id="p2sub">0/115</small>
+   <small id="p2sub">Guest</small>
   </div>
  </div>
 
@@ -403,7 +403,7 @@ button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var
  <div class="status" id="gameStatus">ඔබගේ වාරය</div>
 
  <div id="clockPanel">
-  <div id="clockRing" role="timer" aria-live="off" title="Chat සඳහා Click කරන්න"><span id="turnClock">10</span></div>
+  <div id="clockRing" role="timer" aria-live="off" title="Chat සඳහා Click කරන්න"><span id="turnClock">15</span></div>
   <span id="clockCaption">ඉතිරි කාලය</span>
  </div>
 
@@ -496,6 +496,16 @@ button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var
 </div>
 </div>
 
+<!-- Waiting for Friend Modal (Host) -->
+<div class="modal" id="waitingHostModal">
+<div class="modalbox" style="text-align:center;gap:12px;padding:24px">
+<div style="width:40px;height:40px;margin:auto;border:4px solid rgba(255,255,255,0.2);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite"></div>
+<h3 id="waitingHostTitle">ආරාධනය යවන ලදී!</h3>
+<p id="waitingHostText" style="color:var(--dim);font-size:0.9rem">ප්‍රතිවාදියා පිළිගන්නා තෙක් රැඳී සිටින්න...</p>
+<button class="btn" id="cancelInviteBtn" style="border-color:var(--red);color:var(--red)">අවලංගු කරන්න (Cancel)</button>
+</div>
+</div>
+
 <!-- Invite Popup Modal for Guest -->
 <div class="modal" id="invitePopupModal">
 <div class="modalbox" style="text-align:center;gap:10px">
@@ -505,14 +515,6 @@ button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var
 <button class="btn-gold" id="acceptInviteBtn" style="flex:1">පිළිගන්න (Accept)</button>
 <button class="btn" id="rejectInviteBtn" style="flex:1">ප්‍රතික්ෂේප කරන්න</button>
 </div>
-</div>
-</div>
-
-<div class="modal" id="customAlertModal">
-<div class="modalbox" style="text-align:center;gap:10px">
-<h3 id="customAlertTitle">පණිවිඩය</h3>
-<p id="customAlertMessage" style="color:var(--dim);font-size:0.9rem"></p>
-<div class="row" id="customAlertButtons" style="width:100%"><button class="btn-gold" id="customAlertOkBtn" style="flex:1">හරි</button></div>
 </div>
 </div>
 
@@ -526,8 +528,8 @@ button:focus-visible,.mode:focus-visible,.sq:focus-visible{outline:2px solid var
 <div class="modal" id="authModal">
 <div class="modalbox">
 <h2>ඇතුළු වන්න / ගිණුම සාදන්න</h2>
-<label>ක්‍රීඩක නම</label><input id="username" minlength="3" placeholder="Username">
-<label>මුරපදය</label><input id="password" type="password" minlength="6" placeholder="Password">
+<label>ක්‍රීඩක නම (ඉංග්‍රීසි අකුරු සහ ඉලක්කම් පමණි)</label><input id="username" minlength="3" placeholder="Username (උදා: kasun123)">
+<label>මුරපදය (අවම අකුරු 6)</label><input id="password" type="password" minlength="6" placeholder="Password">
 <div class="row">
 <button class="btn-gold" id="login" style="flex:1">ඇතුළු වන්න</button>
 <button class="btn" id="register" style="flex:1">ගිණුම සාදන්න</button>
@@ -560,6 +562,7 @@ let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:
 let userSide=1,nextStartingSide=1,gameMode='single';
 let incomingInviteData=null;
 let invitesListenerRef=null;
+let activeInviteWatcher=null;
 
 const PIECE_DESIGNS=[
  {name:'මුතු සුදු',bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●'},
@@ -660,7 +663,6 @@ function saveUser(){
    syncDatabaseIndices(oldName);
   }).catch(e=>{
    console.error('User sync failed:',e);
-   toast('දත්ත සුරැකීමට නොහැකි විය.');
   });
  }
  updateHeader();
@@ -671,7 +673,7 @@ async function loadSignedInUser(){
   const s=await db.ref('users_v6/'+fbUser.uid).once('value');
   let d=s.val();
   if(!d||!d.name){
-   const fallbackName=(fbUser.email||'').split('@')[0]||$('username').value.trim()||'Player_'+fbUser.uid.slice(0,5);
+   const fallbackName=(fbUser.email||'').split('@')[0]||$('username').value.trim().replace(/\s+/g,'_')||'Player_'+fbUser.uid.slice(0,5);
    d={name:fallbackName,points:500,wins:0,losses:0,uid:fbUser.uid,pieceIndex:0,unlockedEffects:[],selectedEffect:'',lastRewardTime:0};
    await db.ref('users_v6/'+fbUser.uid).set(d);
   }
@@ -680,20 +682,21 @@ async function loadSignedInUser(){
   $('username').value=user.name;
   await syncDatabaseIndices(null);
   updateHeader();
-  modal('loadingModal',false);modal('authModal',false);
  }catch(e){
   console.error('loadSignedInUser error:',e);
-  modal('loadingModal',false);modal('authModal',true);
   toast('පරිශීලක දත්ත ලබාගැනීමට නොහැකි විය.');
+ } finally {
+  modal('loadingModal',false);
+  modal('authModal',false);
  }
 }
 
 $('login').onclick=async()=>{
- const rawName=$('username').value.trim();
+ const rawName=$('username').value.trim().replace(/\s+/g,'_');
  const name=rawName.toLowerCase();
  const pass=$('password').value;
  if(!auth)return toast('Firebase සම්බන්ධතාවය නොමැත.');
- if(!/^[a-zA-Z0-9_]{3,20}$/.test(name)||pass.length<6)return toast('නම (අකුරු 3-20) සහ මුරපදය (අකුරු 6+) නිවැරදිව ඇතුළත් කරන්න.');
+ if(!/^[a-zA-Z0-9_]{3,20}$/.test(name)||pass.length<6)return toast('නම (ඉංග්‍රීසි අකුරු 3-20) සහ මුරපදය (අකුරු 6+) නිවැරදිව ඇතුළත් කරන්න.');
  try{
   modal('loadingModal',true);
   await auth.signInWithEmailAndPassword(name+'@sinhala-draughts.app',pass);
@@ -701,7 +704,7 @@ $('login').onclick=async()=>{
  }catch(e){
   modal('loadingModal',false);
   console.error('Login error:',e);
-  if(e.code==='auth/user-not-found'||e.code==='auth/invalid-credential'){
+  if(e.code==='auth/user-not-found'||e.code==='auth/invalid-credential'||e.code==='auth/wrong-password'){
    toast('ගිණුම හමු නොවීය හෝ මුරපදය වැරදියි. නව ගිණුමක් නම් Register ඔබන්න.');
   }else if(e.code==='auth/operation-not-allowed'){
    toast('Firebase Email/Password Auth සක්‍රිය කර නැත.');
@@ -712,15 +715,15 @@ $('login').onclick=async()=>{
 };
 
 $('register').onclick=async()=>{
- const rawName=$('username').value.trim();
+ const rawName=$('username').value.trim().replace(/\s+/g,'_');
  const name=rawName.toLowerCase();
  const pass=$('password').value;
  if(!auth||!db)return toast('Firebase සම්බන්ධතාවය නොමැත.');
- if(!/^[a-zA-Z0-9_]{3,20}$/.test(name)||pass.length<6)return toast('නම (අකුරු 3-20) සහ මුරපදය (අකුරු 6+) නිවැරදිව ඇතුළත් කරන්න.');
+ if(!/^[a-zA-Z0-9_]{3,20}$/.test(name)||pass.length<6)return toast('නම (ඉංග්‍රීසි අකුරු 3-20) සහ මුරපදය (අකුරු 6+) නිවැරදිව ඇතුළත් කරන්න.');
  try{
   modal('loadingModal',true);
-  const indexSnap = await db.ref('usernameIndex_v6/'+name).once('value');
-  if(indexSnap.exists()){
+  const indexSnap = await db.ref('usernameIndex_v6/'+name).once('value').catch(()=>null);
+  if(indexSnap && indexSnap.exists()){
    modal('loadingModal',false);
    return toast('මෙම නම දැනටමත් භාවිතයේ ඇත. වෙනත් නමක් තෝරන්න.');
   }
@@ -844,7 +847,7 @@ function render(){
    if(board[r][c]){
     const val=board[r][c],p=document.createElement('div');
     const isUser=single?(Math.sign(val)===userSide):(role==='host'?Math.sign(val)===1:Math.sign(val)===-1);
-    const design=PIECE_DESIGNS[isUser?(user.pieceIndex||0):0]||PIECE_DESIGNS[0];
+    const design=PIECE_DESIGNS[isUser?(user.pieceIndex||0):(isUser?0:2)]||PIECE_DESIGNS[0];
     p.className='piece'+(Math.abs(val)===2?' king':'')+(isUser&&user.selectedEffect&&Array.isArray(user.unlockedEffects)&&user.unlockedEffects.includes(user.selectedEffect)?' fx-'+user.selectedEffect:'');
     p.style.background=design.bg;p.style.border=`2px solid ${design.border}`;p.style.color=design.color;p.textContent=design.icon;
     sq.appendChild(p);
@@ -908,8 +911,13 @@ async function playMove(m){
 }
 
 function setTurnUI(){
- $('p1').classList.toggle('active',turn===userSide);
- $('p2').classList.toggle('active',turn!==userSide);
+ if(single){
+  $('p1').classList.toggle('active',turn===userSide);
+  $('p2').classList.toggle('active',turn!==userSide);
+ } else {
+  $('p1').classList.toggle('active',turn===1);
+  $('p2').classList.toggle('active',turn===-1);
+ }
  $('gameStatus').textContent=turn===userSide?'ඔබගේ වාරය':'ප්‍රතිවාදියාගේ වාරය';
  startTurnClock(Date.now()+15000);
 }
@@ -965,7 +973,7 @@ function finish(winner,message){
   saveUser();
  }
  $('overTitle').textContent=won?'VICTORY! 🎉':'DEFEAT!';
- $('overTitle'].style.color=won?'var(--neon-green)':'var(--red)';
+ $('overTitle').style.color=won?'var(--neon-green)':'var(--red)';
  $('overMessage').textContent=message;
  modal('overModal',true);
  if(roomRef) roomRef.update({status: 'finished', winner: winner, updatedAt: firebase.database.ServerValue.TIMESTAMP}).catch(()=>{});
@@ -1006,7 +1014,7 @@ $('closeSingleBet').onclick=()=>modal('singleBetModal',false);
 $('freestyle').onclick=()=>{
  single=true;gameMode='freestyle';role=null;roomId=null;window.currentBetPoints=0;
  $('p1name').textContent=user.name||'ඔබ';$('p2name').textContent='AI පරිගණකය';$('arenaBetDisplay').textContent='FREE';
- applyAvatarToBox('p1AvatarBox',user.pieceIndex||0);applyAvatarToBox('p2AvatarBox',0);
+ applyAvatarToBox('p1AvatarBox',user.pieceIndex||0);applyAvatarToBox('p2AvatarBox',2);
  $('lobby').style.display='none';$('arena').style.display='flex';initBoard();
 };
 $('startSingleGame').onclick=()=>{
@@ -1018,11 +1026,11 @@ $('startSingleGame').onclick=()=>{
  $('p1name').textContent=user.name||'ඔබ';$('p2name').textContent='AI පරිගණකය';
  $('arenaBetDisplay').textContent=bet;
  applyAvatarToBox('p1AvatarBox',user.pieceIndex||0);
- applyAvatarToBox('p2AvatarBox',0);
+ applyAvatarToBox('p2AvatarBox',2);
  initBoard();
 };
 
-/* --- MULTIPLAYER & FRIENDS HANDLERS --- */
+/* --- MULTIPLAYER & FRIENDS HANDLERS (FIXED DUAL JOINING) --- */
 $('multi').onclick = () => {
     if(!fbUser) return toast('කරුණාකර පළමුව ගිණුමට ඇතුළු වන්න.');
     $('maxUserPoints').textContent = user.points;
@@ -1111,12 +1119,19 @@ async function sendGameInvite(friendUid, friendName) {
     const bet = Number(window.currentBetPoints) || 50;
     if(bet > user.points) return toast('ඔබ සතුව ප්‍රමාණවත් Points නොමැත.');
 
+    if(activeInviteWatcher) {
+        activeInviteWatcher.ref.off('value', activeInviteWatcher.handler);
+        activeInviteWatcher = null;
+    }
+
     const newInviteRef = db.ref('invites_v6/' + friendUid).push();
     const inviteId = newInviteRef.key;
     const initialBoard = createFreshBoard();
+    const targetRoomRef = db.ref('rooms_v6/' + inviteId);
 
     try {
-        await db.ref('rooms_v6/' + inviteId).set({
+        // 1. Create Room FIRST so both Host and Guest have immediate access
+        await targetRoomRef.set({
             board: initialBoard,
             turn: 1,
             forcedContinuation: null,
@@ -1129,6 +1144,7 @@ async function sendGameInvite(friendUid, friendName) {
             updatedAt: firebase.database.ServerValue.TIMESTAMP
         });
 
+        // 2. Send Invite to Guest
         await newInviteRef.set({
             fromUid: fbUser.uid,
             hostName: user.name,
@@ -1137,26 +1153,50 @@ async function sendGameInvite(friendUid, friendName) {
             timestamp: Date.now()
         });
 
-        toast(`${friendName} වෙත ආරාධනය යවන ලදී! පිළිගන්නා තෙක් රැඳී සිටින්න.`);
         modal('multiModal', false);
+        $('waitingHostText').textContent = `${friendName} ආරාධනය පිළිගන්නා තෙක් රැඳී සිටින්න...`;
+        modal('waitingHostModal', true);
 
-        newInviteRef.on('value', snap => {
-            const data = snap.val();
-            if(data && data.status === 'accepted') {
-                newInviteRef.off();
+        // 3. Watch the ROOM directly for status === 'playing' or 'rejected'
+        const handler = snap => {
+            const roomData = snap.val();
+            if(!roomData) return;
+
+            if(roomData.status === 'playing') {
+                targetRoomRef.off('value', handler);
+                activeInviteWatcher = null;
+                modal('waitingHostModal', false);
                 roomId = inviteId;
                 setupMultiplayerGame(roomId, 'host', friendName, bet);
-            } else if(data && data.status === 'rejected') {
-                newInviteRef.off();
-                db.ref('rooms_v6/' + inviteId).remove().catch(()=>{});
-                toast('ආරාධනය ප්‍රතික්ෂේප කළා.');
+            } else if(roomData.status === 'rejected') {
+                targetRoomRef.off('value', handler);
+                activeInviteWatcher = null;
+                modal('waitingHostModal', false);
+                targetRoomRef.remove().catch(()=>{});
+                toast(`${friendName} ආරාධනය ප්‍රතික්ෂේප කළා.`);
             }
-        });
+        };
+
+        targetRoomRef.on('value', handler);
+        activeInviteWatcher = { ref: targetRoomRef, handler: handler, inviteRef: newInviteRef };
+
     } catch(err) {
         console.error('Invite/Room setup error:', err);
+        modal('waitingHostModal', false);
         toast('ආරාධනය යැවීමට නොහැකි විය. අන්තර්ජාල සම්බන්ධතාවය පරීක්ෂා කරන්න.');
     }
 }
+
+$('cancelInviteBtn').onclick = () => {
+    modal('waitingHostModal', false);
+    if(activeInviteWatcher) {
+        activeInviteWatcher.ref.off('value', activeInviteWatcher.handler);
+        activeInviteWatcher.ref.remove().catch(()=>{});
+        activeInviteWatcher.inviteRef.remove().catch(()=>{});
+        activeInviteWatcher = null;
+    }
+    toast('ආරාධනය අවලංගු කරන ලදී.');
+};
 
 function listenForIncomingInvites() {
     if(!db || !fbUser) return;
@@ -1186,14 +1226,14 @@ $('acceptInviteBtn').onclick = async () => {
     modal('invitePopupModal', false);
 
     try {
+        // Update Room status to 'playing' -> This immediately triggers Host to enter the game too!
         await db.ref('rooms_v6/' + invite.id).update({
             status: 'playing',
             updatedAt: firebase.database.ServerValue.TIMESTAMP
         });
 
-        await db.ref('invites_v6/' + fbUser.uid + '/' + invite.id).update({
-            status: 'accepted'
-        });
+        // Clean up the invite node
+        await db.ref('invites_v6/' + fbUser.uid + '/' + invite.id).remove().catch(()=>{});
 
         roomId = invite.id;
         setupMultiplayerGame(roomId, 'guest', invite.hostName, bet);
@@ -1205,9 +1245,11 @@ $('acceptInviteBtn').onclick = async () => {
 
 $('rejectInviteBtn').onclick = () => {
     if(!incomingInviteData) return;
-    modal('invitePopupModal', false);
-    db.ref('invites_v6/' + fbUser.uid + '/' + incomingInviteData.id).update({ status: 'rejected' }).catch(()=>{});
+    const invite = incomingInviteData;
     incomingInviteData = null;
+    modal('invitePopupModal', false);
+    db.ref('rooms_v6/' + invite.id).update({ status: 'rejected' }).catch(()=>{});
+    db.ref('invites_v6/' + fbUser.uid + '/' + invite.id).remove().catch(()=>{});
 };
 
 function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
@@ -1238,7 +1280,7 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
         $('p1name').textContent = user.name;
         $('p2name').textContent = opponentName;
         applyAvatarToBox('p1AvatarBox', user.pieceIndex || 0);
-        applyAvatarToBox('p2AvatarBox', 0);
+        applyAvatarToBox('p2AvatarBox', 2);
     } else {
         $('p1name').textContent = opponentName;
         $('p2name').textContent = user.name;
