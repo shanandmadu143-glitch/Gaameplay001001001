@@ -51,22 +51,10 @@ header:after{content:'';position:absolute;top:0;left:0;right:0;height:2px;backgr
 .item-card{background:var(--panel);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;transition:.2s;box-shadow:0 4px 12px rgba(0,0,0,0.3)}
 .item-card:hover{border-color:var(--gold);transform:translateY(-2px);background:rgba(24,32,56,0.95)}
 
-.preview-circle{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#ffeaa7,#fdcb6e);display:grid;place-items:center;font-size:1.3rem;color:#111;position:relative}
+.preview-circle{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;font-size:1.3rem;position:relative}
 
-/* 10 Strict In-Bounds Ring Effects */
-.fx-glow{box-shadow:inset 0 0 8px #ffd166, 0 0 10px #ffd166!important}
-.fx-fire{box-shadow:inset 0 0 8px #ff4757, 0 0 10px #ff4757!important}
-.fx-rainbow{box-shadow:inset 0 0 8px #ff6b81, 0 0 10px #7ee7ff!important}
-.fx-lightning{box-shadow:inset 0 0 8px #4facfe, 0 0 10px #00f2fe!important}
-.fx-matrix{box-shadow:inset 0 0 8px #2ed573, 0 0 10px #26de81!important}
-.fx-pink{box-shadow:inset 0 0 8px #ff9ff3, 0 0 10px #f368e0!important}
-.fx-blue{box-shadow:inset 0 0 8px #74b9ff, 0 0 10px #0984e3!important}
-.fx-purple{box-shadow:inset 0 0 8px #a29bfe, 0 0 10px #6c5ce7!important}
-.fx-orange{box-shadow:inset 0 0 8px #fab1a0, 0 0 10px #e17055!important}
-.fx-silver{box-shadow:inset 0 0 8px #dfe6e9, 0 0 10px #b2bec3!important}
-
-.item-name{color:var(--gold);font-size:0.95rem;font-weight:700}
-.item-desc{color:var(--dim);font-size:0.75rem;line-height:1.3}
+.item-name{color:var(--gold);font-size:0.90rem;font-weight:700}
+.item-desc{color:var(--dim);font-size:0.72rem;line-height:1.3}
 
 .btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;border:0;border-radius:8px;padding:8px 12px;font-weight:700;cursor:pointer;width:100%;transition:.2s;font-size:0.85rem}
 .btn-gold:hover{filter:brightness(1.1)}
@@ -76,29 +64,14 @@ header:after{content:'';position:absolute;top:0;left:0;right:0;height:2px;backgr
 #toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,100px);opacity:0;background:#1e293b;border:1px solid var(--gold);color:white;border-radius:25px;padding:10px 20px;z-index:100;transition:.3s;font-weight:600;font-size:0.9rem}
 #toast.show{transform:translate(-50%,0);opacity:1}
 
-/* Tablet & Mobile Media Queries */
-@media(max-width:600px){
- header{padding:14px 16px}
- .brand-title{font-size:1.25rem}
- .brand-icon{width:42px;height:42px;font-size:1.3rem}
- .grid{grid-template-columns:repeat(2,1fr);gap:10px}
- .highlight-reward{flex-direction:column;align-items:flex-start}
- .highlight-reward .btn-gold{width:100%}
-}
-
 .shop-coin-pill{display:flex;align-items:center;gap:9px;border:2px solid #9b8245;border-radius:30px;background:#101522;padding:6px 8px 6px 13px;color:#fff}
 .shop-coin-pill i{font-size:1.4rem;color:#ffd166}.shop-coin-pill b{font-size:1.25rem}
 .shop-coin-pill a{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#20c978;color:#fff;text-decoration:none;font-size:1.5rem;font-weight:800}
-@media(max-width:600px){header{gap:8px;padding:12px}.brand-title{font-size:1.15rem}.shop-coin-pill{gap:6px;padding:5px}.shop-coin-pill a{width:34px;height:34px}}
 
-
-/* Final mobile + tablet responsive refinements */
 html{width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%;}
 body{width:100%;min-height:100dvh;overflow-x:hidden;padding:clamp(8px,2.2vw,20px);padding-bottom:calc(24px + env(safe-area-inset-bottom));}
 .app{width:100%;max-width:1000px;margin-inline:auto;padding-bottom:24px;}
 button,a{touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
-.item-card{min-width:0;}
-.item-name,.item-desc{overflow-wrap:anywhere;}
 
 @media(max-width:600px){
  body{padding:10px;padding-bottom:calc(88px + env(safe-area-inset-bottom));}
@@ -107,63 +80,12 @@ button,a{touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
  .brand-wrapper{gap:9px;min-width:0;}
  .brand-icon{width:40px;height:40px;font-size:1.2rem;flex:0 0 auto;}
  .brand-title{font-size:clamp(1rem,4.8vw,1.2rem);white-space:normal;}
- .header-points-sub{font-size:.75rem;flex-wrap:wrap;}
- .shop-coin-pill{gap:6px;padding:4px 6px;flex:0 0 auto;}
- .shop-coin-pill i{font-size:1.15rem;}
- .shop-coin-pill b{font-size:1.05rem;}
- .shop-coin-pill a{width:32px;height:32px;font-size:1.25rem;}
- .cat-tabs{gap:6px;scrollbar-width:thin;padding-bottom:6px;}
- .tab-btn{padding:8px 12px;font-size:.82rem;}
- .highlight-reward{padding:13px;gap:12px;border-radius:14px;}
- .reward-left{gap:10px;min-width:0;}
- .reward-icon-wrap{width:42px;height:42px;font-size:1.2rem;flex:0 0 auto;}
- .reward-title{font-size:.98rem;line-height:1.25;}
- .reward-sub{font-size:.76rem;line-height:1.3;}
- .timer-badge{font-size:.7rem;white-space:normal;}
- .highlight-reward .btn-gold{min-height:42px;}
- .section-title{font-size:1rem;line-height:1.3;}
  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;}
  .item-card{padding:11px 8px;gap:8px;border-radius:12px;}
  .preview-circle{width:44px;height:44px;font-size:1.15rem;}
  .item-name{font-size:.9rem;line-height:1.25;}
  .item-desc{font-size:.72rem;line-height:1.3;}
  .btn-gold{padding:9px 8px;font-size:.8rem;min-height:38px;}
- #pointsPopup{left:10px;bottom:calc(10px + env(safe-area-inset-bottom));padding:8px 11px;font-size:.8rem;max-width:55vw;}
- .float-home-btn{right:10px;bottom:calc(10px + env(safe-area-inset-bottom));padding:9px 12px;font-size:.8rem;}
- #toast{max-width:calc(100vw - 24px);text-align:center;}
-}
-
-@media(max-width:360px){
- body{padding:8px;padding-bottom:calc(84px + env(safe-area-inset-bottom));}
- header{padding:9px;}
- .brand-icon{width:35px;height:35px;font-size:1rem;}
- .brand-title{font-size:1rem;}
- .header-points-sub{font-size:.68rem;}
- .shop-coin-pill{gap:4px;padding:3px 4px;}
- .shop-coin-pill i{font-size:1rem;}
- .shop-coin-pill b{font-size:.95rem;}
- .shop-coin-pill a{width:29px;height:29px;}
- .grid{gap:7px;}
- .item-card{padding:9px 6px;}
- .item-desc{font-size:.68rem;}
-}
-
-@media(min-width:601px) and (max-width:1024px){
- body{padding:18px;padding-bottom:calc(35px + env(safe-area-inset-bottom));}
- .app{max-width:900px;gap:18px;}
- header{padding:18px 22px;}
- .brand-title{font-size:1.55rem;}
- .brand-icon{width:54px;height:54px;}
- .highlight-reward{padding:20px;}
- .grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;}
- .item-card{padding:16px 12px;}
- .preview-circle{width:56px;height:56px;}
- .float-home-btn{bottom:18px;right:18px;}
- #pointsPopup{bottom:18px;left:18px;}
-}
-
-@media(min-width:1025px){
- .grid{grid-template-columns:repeat(4,minmax(0,1fr));}
 }
 </style>
 </head>
@@ -180,19 +102,16 @@ button,a{touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
 <div class="shop-coin-pill"><i class="fa-solid fa-coins"></i><b id="shopCoinValue">500</b><a href="./index.html" aria-label="Back to game">+</a></div>
 </header>
 
-<!-- Floating Home Button at Bottom Right -->
 <a href="./index.html" class="float-home-btn"><i class="fa-solid fa-house"></i> ප්‍රධාන පිටුවට</a>
 
-<!-- Floating Points Popup at Bottom Left -->
 <div id="pointsPopup">
 <i class="fa-solid fa-coins"></i> <span>Points: <b id="popupPointsVal">500</b></span>
 </div>
 
-<!-- Category Tabs -->
 <div class="cat-tabs">
 <button class="tab-btn active" onclick="filterCategory('all', this)">සියල්ල (All)</button>
 <button class="tab-btn" onclick="filterCategory('rewards', this)">Free Rewards</button>
-<button class="tab-btn" onclick="filterCategory('effects', this)">Piece Effects</button>
+<button class="tab-btn" onclick="filterCategory('themes', this)">Piece Themes (20)</button>
 </div>
 
 <!-- Highlighted Free Reward Section -->
@@ -211,9 +130,9 @@ button,a{touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
 </div>
 </div>
 
-<!-- Piece Effects Section -->
-<div class="shop-section" id="effectsSection">
-<div class="section-title"><i class="fa-solid fa-wand-magic-sparkles"></i> දාම් ඉත්තන් සඳහා Effects (250 pts බැගින්)</div>
+<!-- Piece Themes Section (20 Themes) -->
+<div class="shop-section" id="themesSection">
+<div class="section-title"><i class="fa-solid fa-chess-board"></i> දාම් ඉත්තන් සඳහා Themes (නවතම Themes 20 - ලකුණු 100 බැගින්)</div>
 <div class="grid" id="shopGrid"></div>
 </div>
 </div>
@@ -229,22 +148,33 @@ const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomai
 const $=id=>document.getElementById(id);
 const KEY='sinhala_draughts_v7_user';
 const COOLDOWN_TIME=6*60*60*1000;
-const EFFECT_PRICE=250;
+const THEME_PRICE=100;
 const REWARD_POINTS=200;
 let auth=null,db=null,fbUser=null,rewardTimer=null,popupTimer=null,toastTimer=null;
-let user={name:'',points:500,unlockedEffects:[],selectedEffect:'',lastRewardTime:0};
+let user={name:'',points:500,unlockedPieces:[0],pieceIndex:0,lastRewardTime:0};
 
-const EFFECTS=[
- {id:'glow',name:'රන් වළල්ල',desc:'දිලිසෙන රන්වන් වළල්ලකි.',class:'fx-glow',icon:'★'},
- {id:'fire',name:'ගිනි දැල් වළල්ල',desc:'උණුසුම් ගිනි පුපුරු මෝස්තරයකි.',class:'fx-fire',icon:'🔥'},
- {id:'rainbow',name:'දේදුනු වළල්ල',desc:'වර්ණ මාලා වළලු ආචරණයකි.',class:'fx-rainbow',icon:'⚡'},
- {id:'lightning',name:'විදුලි වළල්ල',desc:'නිල් පැහැති විදුලි රැස්ය.',class:'fx-lightning',icon:'🛡'},
- {id:'matrix',name:'මරකත කොළ',desc:'ශක්තිමත් කොළ මැජික් වළල්ලකි.',class:'fx-matrix',icon:'❖'},
- {id:'pink',name:'රෝස මල් වළල්ල',desc:'ආකර්ෂණීය රෝස පැහැති වළල්ලකි.',class:'fx-pink',icon:'♥'},
- {id:'blue',name:'අහස් නිල්',desc:'අහස් නිල් පැහැති ලස්සන වළල්ලකි.',class:'fx-blue',icon:'■'},
- {id:'purple',name:'දම් රැජින',desc:'රාජකීය දම් පැහැති වළල්ලකි.',class:'fx-purple',icon:'✿'},
- {id:'orange',name:'තැඹිලි සූර්යයා',desc:'ගිනියම් තැඹිලි පාට වළල්ලකි.',class:'fx-orange',icon:'☀'},
- {id:'silver',name:'රිදී කිරණ',desc:'දීප්තිමත් රිදී පාට වළල්ලකි.',class:'fx-silver',icon:'✦'}
+/* දාම් ඉත්තන් සඳහා Themes 20 ක් (දර්ශක 0 නොමිලේ වන අතර 1 සිට 19 දක්වා themes 100 බැගින් ලබාගත හැක) */
+const THEMES=[
+ {id:0,name:'මුතු සුදු (Default)',desc:'සම්මත සුදු පාට මෝස්තරයකි.',bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●',free:true},
+ {id:1,name:'රන් ඔටුන්න',desc:'දිලිසෙන රන්වන් වළල්ලකි.',bg:'linear-gradient(135deg,#ffeaa7,#fdcb6e)',border:'#e1b12c',color:'#2d3436',icon:'★'},
+ {id:2,name:'රුධිර රතු',desc:'උණුසුම් රතු පාට මෝස්තරයකි.',bg:'radial-gradient(circle at 30% 30%,#ff7675,#d63031)',border:'#c0392b',color:'#fff',icon:'◆'},
+ {id:3,name:'මරකත කොළ',desc:'ශක්තිමත් කොළ මැජික් වළල්ලකි.',bg:'radial-gradient(circle at 30% 30%,#55efc4,#00b894)',border:'#00a8ff',color:'#fff',icon:'▲'},
+ {id:4,name:'නියෝන් නිල්',desc:'නිල් පැහැති විදුලි රැස්ය.',bg:'radial-gradient(circle at 30% 30%,#74b9ff,#0984e3)',border:'#00f2fe',color:'#fff',icon:'✦'},
+ {id:5,name:'शाही දම් පාට',desc:'රාජකීය දම් පැහැති වළල්ලකි.',bg:'radial-gradient(circle at 30% 30%,#a29bfe,#6c5ce7)',border:'#fd79a8',color:'#fff',icon:'❖'},
+ {id:6,name:'අඳුරු කාබන්',desc:'අඳුරු අළු පැහැති ස්ටයිල් එකකි.',bg:'radial-gradient(circle at 30% 30%,#636e72,#2d3436)',border:'#b2bec3',color:'#ffd166',icon:'♠'},
+ {id:7,name:'සූර්ය රන්',desc:'ගිනියම් තැඹිලි පාට වළල්ලකි.',bg:'radial-gradient(circle at 30% 30%,#fab1a0,#e17055)',border:'#d63031',color:'#fff',icon:'☀'},
+ {id:8,name:'මැජෙන්ටා රෝස',desc:'ආකර්ෂණීය රෝස පාටය.',bg:'radial-gradient(circle at 30% 30%,#ff7979,#eb4d4b)',border:'#ff7979',color:'#fff',icon:'✿'},
+ {id:9,name:'සැහැල්ලු සිල්වර්',desc:'දීප්තිමත් රිදී පාට වළල්ලකි.',bg:'radial-gradient(circle at 30% 30%,#dfe6e9,#b2bec3)',border:'#636e72',color:'#2d3436',icon:'⚙'},
+ {id:10,name:'කොස්මික් වයලට්',desc:'අභ්‍යවකාශ දම් පැහැති මෝස්තරයකි.',bg:'radial-gradient(circle at 30% 30%,#8e44ad,#3498db)',border:'#9b59b6',color:'#fff',icon:'☄'},
+ {id:11,name:'නියෝන් ලෙමන්',desc:'දීප්තිමත් කහ පැහැති රැස්ය.',bg:'radial-gradient(circle at 30% 30%,#f1c40f,#f39c12)',border:'#f1c40f',color:'#111',icon:'⚡'},
+ {id:12,name:'ටර්කියුයිස්',desc:'මුහුදු නිල් පැහැති අලංකාරය.',bg:'radial-gradient(circle at 30% 30%,#1abc9c,#16a085)',border:'#1abc9c',color:'#fff',icon:'🌊'},
+ {id:13,name:'චොක්ලට් බ්‍රවුන්',desc:'දුඹුරු පැහැති සම්භාව්‍ය පෙනුම.',bg:'radial-gradient(circle at 30% 30%,#d35400,#a04000)',border:'#e67e22',color:'#fff',icon:'☕'},
+ {id:14,name:'රෝස් ගෝල්ඩ්',desc:'රෝස් රන්වන් ආකර්ෂණය.',bg:'radial-gradient(circle at 30% 30%,#f5b041,#eb984e)',border:'#f39c12',color:'#fff',icon:'♕'},
+ {id:15,name:'ගැඹුරු මිනිරන්',desc:'ශක්තිමත් මිනිරන් අළු වළල්ල.',bg:'radial-gradient(circle at 30% 30%,#34495e,#2c3e50)',border:'#7f8c8d',color:'#ffd166',icon:'🛡'},
+ {id:16,name:'අයිස් මින්ට්',desc:'සිසිල් මින්ට් කොළ පැහැය.',bg:'radial-gradient(circle at 30% 30%,#a3e4d7,#48c9b0)',border:'#17a589',color:'#111',icon:'❄'},
+ {id:17,name:'සැණකෙළි පර්පල්',desc:'වර්ණවත් දම් පැහැති සංකලනයක්.',bg:'radial-gradient(circle at 30% 30%,#d98880,#c0392b)',border:'#e74c3c',color:'#fff',icon:'🔮'},
+ {id:18,name:'විදුලි ලෙමන්',desc:'දීප්තිමත් ලෙමන් කහ පැහැය.',bg:'radial-gradient(circle at 30% 30%,#f7dc6f,#f9e79f)',border:'#f1c40f',color:'#111',icon:'✨'},
+ {id:19,name:'අමරණීය අඳුර',desc:'අපූර්ව කළු පැහැති රාජකීය ස්ටයිල් එක.',bg:'radial-gradient(circle at 30% 30%,#2c3e50,#000000)',border:'#ffd166',color:'#ffd166',icon:'♔'}
 ];
 
 function safeReadUser(){
@@ -253,17 +183,17 @@ function safeReadUser(){
   return {
    ...saved,
    points:Number.isFinite(Number(saved.points))?Math.max(0,Math.floor(Number(saved.points))):500,
-   unlockedEffects:Array.isArray(saved.unlockedEffects)?saved.unlockedEffects.filter(id=>EFFECTS.some(f=>f.id===id)):[],
-   selectedEffect:typeof saved.selectedEffect==='string'?saved.selectedEffect:'',
+   unlockedPieces:Array.isArray(saved.unlockedPieces)?saved.unlockedPieces.map(Number):[0],
+   pieceIndex:Number.isFinite(Number(saved.pieceIndex))?Number(saved.pieceIndex):0,
    lastRewardTime:Number(saved.lastRewardTime)||0
   };
- }catch(e){return {name:'',points:500,unlockedEffects:[],selectedEffect:'',lastRewardTime:0};}
+ }catch(e){return {name:'',points:500,unlockedPieces:[0],pieceIndex:0,lastRewardTime:0};}
 }
 user=safeReadUser();
 
 function persistLocal(){
  try{localStorage.setItem(KEY,JSON.stringify(user));}
- catch(e){console.error('Local save failed:',e);toast('දත්ත සුරැකීමට නොහැකි විය. Browser storage පරීක්ෂා කරන්න.');}
+ catch(e){console.error('Local save failed:',e);toast('දත්ත සුරැකීමට නොහැකි විය.');}
 }
 function toast(message){
  const el=$('toast');el.textContent=String(message);el.classList.add('show');
@@ -282,12 +212,12 @@ function normalizeCloudData(data){
  const d=data||{};
  user={...user,...d,
   points:Number.isFinite(Number(d.points))?Math.max(0,Math.floor(Number(d.points))):user.points,
-  unlockedEffects:Array.isArray(d.unlockedEffects)?d.unlockedEffects.filter(id=>EFFECTS.some(f=>f.id===id)):user.unlockedEffects,
-  selectedEffect:typeof d.selectedEffect==='string'?d.selectedEffect:user.selectedEffect,
+  unlockedPieces:Array.isArray(d.unlockedPieces)?d.unlockedPieces.map(Number):user.unlockedPieces,
+  pieceIndex:Number.isFinite(Number(d.pieceIndex))?Number(d.pieceIndex):user.pieceIndex,
   lastRewardTime:Number(d.lastRewardTime)||0,
   uid:fbUser?fbUser.uid:null
  };
- if(!user.unlockedEffects.includes(user.selectedEffect))user.selectedEffect='';
+ if(!user.unlockedPieces.includes(user.pieceIndex))user.pieceIndex=0;
  persistLocal();updatePointsUI();renderShop();updateRewardTimer();
 }
 async function saveCloudPatch(patch){
@@ -295,11 +225,11 @@ async function saveCloudPatch(patch){
  try{
   await db.ref('users_v6/'+fbUser.uid).update(patch);
   Object.assign(user,patch);persistLocal();updatePointsUI();renderShop();updateRewardTimer();return true;
- }catch(e){console.error('Cloud save failed:',e);toast('Firebase වෙත සුරැකීම අසාර්ථකයි. නැවත උත්සාහ කරන්න.');return false;}
+ }catch(e){console.error('Cloud save failed:',e);toast('Firebase වෙත සුරැකීම අසාර්ථකයි.');return false;}
 }
 async function mutateCloud(mutator){
  if(!fbUser||!db){
-  const draft={...user,unlockedEffects:[...user.unlockedEffects]};
+  const draft={...user,unlockedPieces:[...user.unlockedPieces]};
   const result=mutator(draft);
   if(!result.ok)return result;
   user=draft;persistLocal();updatePointsUI();renderShop();updateRewardTimer();showPointsPopup();return result;
@@ -309,64 +239,79 @@ async function mutateCloud(mutator){
   const tx=await ref.transaction(current=>{
    const d=current||{name:user.name||'',points:user.points,wins:0,losses:0,pieceIndex:0};
    d.points=Number.isFinite(Number(d.points))?Math.max(0,Math.floor(Number(d.points))):user.points;
-   d.unlockedEffects=Array.isArray(d.unlockedEffects)?d.unlockedEffects:[];
+   d.unlockedPieces=Array.isArray(d.unlockedPieces)?d.unlockedPieces:[0];
    d.lastRewardTime=Number(d.lastRewardTime)||0;
    const result=mutator(d);
    if(!result.ok)return;
-   d.unlockedEffects=[...new Set(d.unlockedEffects.filter(id=>EFFECTS.some(f=>f.id===id)))];
+   d.unlockedPieces=[...new Set(d.unlockedPieces.map(Number))];
    return d;
   },undefined,false);
   if(!tx.committed){toast('දත්ත යාවත්කාලීන නොවීය. නැවත උත්සාහ කරන්න.');return {ok:false};}
   normalizeCloudData(tx.snapshot.val());
   showPointsPopup();return {ok:true};
- }catch(e){console.error('Firebase transaction failed:',e);toast('Firebase සම්බන්ධතාවය පරීක්ෂා කර නැවත උත්සාහ කරන්න.');return {ok:false};}
+ }catch(e){console.error('Firebase transaction failed:',e);toast('Firebase සම්බන්ධතාවය පරීක්ෂා කරන්න.');return {ok:false};}
 }
 
 function filterCategory(category,button){
  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
  if(button)button.classList.add('active');
  $('rewardSection').style.display=(category==='all'||category==='rewards')?'grid':'none';
- $('effectsSection').style.display=(category==='all'||category==='effects')?'grid':'none';
+ $('themesSection').style.display=(category==='all'||category==='themes')?'grid':'none';
 }
 
 function renderShop(){
  const grid=$('shopGrid');grid.replaceChildren();
- EFFECTS.forEach(effect=>{
-  const unlocked=user.unlockedEffects.includes(effect.id);
-  const selected=user.selectedEffect===effect.id;
+ THEMES.forEach(theme=>{
+  const unlocked=user.unlockedPieces.includes(theme.id);
+  const selected=user.pieceIndex===theme.id;
   const card=document.createElement('article');card.className='item-card';
-  const preview=document.createElement('div');preview.className='preview-circle '+effect.class;preview.textContent=effect.icon;
-  const name=document.createElement('div');name.className='item-name';name.textContent=effect.name;
-  const desc=document.createElement('div');desc.className='item-desc';desc.textContent=effect.desc;
+  const preview=document.createElement('div');
+  preview.className='preview-circle';
+  preview.style.background=theme.bg;
+  preview.style.border=`2px solid ${theme.border}`;
+  preview.style.color=theme.color;
+  preview.textContent=theme.icon;
+
+  const name=document.createElement('div');name.className='item-name';name.textContent=theme.name;
+  const desc=document.createElement('div');desc.className='item-desc';desc.textContent=theme.desc;
   const action=document.createElement('button');action.className='btn-gold';
+
   if(!unlocked){
-   action.textContent='Buy ('+EFFECT_PRICE+' pts)';action.disabled=user.points<EFFECT_PRICE;
-   action.addEventListener('click',()=>buyEffect(effect.id));
+   action.textContent=`Buy (${THEME_PRICE} pts)`;
+   action.disabled=user.points<THEME_PRICE;
+   action.addEventListener('click',()=>buyTheme(theme.id));
   }else if(selected){
-   action.textContent='✓ භාවිතා කරමින් පවතී';action.disabled=true;action.style.background='#2ecc71';action.style.color='#fff';
+   action.textContent='✓ භාවිතා කරමින් පවතී';
+   action.disabled=true;
+   action.style.background='#2ecc71';
+   action.style.color='#fff';
   }else{
-   action.textContent='භාවිතා කරන්න';action.addEventListener('click',()=>selectEffect(effect.id));
+   action.textContent='භාවිතා කරන්න';
+   action.addEventListener('click',()=>selectTheme(theme.id));
   }
   card.append(preview,name,desc,action);grid.appendChild(card);
  });
 }
-async function buyEffect(id){
- const effect=EFFECTS.find(f=>f.id===id);if(!effect)return;
+
+async function buyTheme(id){
+ const theme=THEMES.find(f=>f.id===id);if(!theme)return;
  const result=await mutateCloud(d=>{
-  if(!Array.isArray(d.unlockedEffects))d.unlockedEffects=[];
-  if(d.unlockedEffects.includes(id))return {ok:false,message:'මෙම Effect එක දැනටමත් ඔබ සතුයි.'};
-  if(Number(d.points)<EFFECT_PRICE)return {ok:false,message:'මිලදී ගැනීමට Points ප්‍රමාණවත් නැත.'};
-  d.points=Number(d.points)-EFFECT_PRICE;d.unlockedEffects.push(id);
-  if(!d.selectedEffect)d.selectedEffect=id;
+  if(!Array.isArray(d.unlockedPieces))d.unlockedPieces=[0];
+  if(d.unlockedPieces.map(Number).includes(id))return {ok:false,message:'මෙම Theme එක දැනටමත් ඔබ සතුයි.'};
+  if(Number(d.points)<THEME_PRICE)return {ok:false,message:'මිලදී ගැනීමට Points 100ක් ප්‍රමාණවත් නැත.'};
+  d.points=Number(d.points)-THEME_PRICE;
+  d.unlockedPieces.push(id);
+  d.pieceIndex=id;
   return {ok:true};
  });
  if(!result.ok){if(result.message)toast(result.message);else if(!fbUser)toast('මිලදී ගැනීම අසාර්ථකයි.');return;}
- toast('Effect එක සාර්ථකව ලබාගත්තා! දැන් එය ක්‍රීඩාවේ භාවිතා කළ හැක.');
+ toast('Theme එක සාර්ථකව මිලදී ගත්තා! 🎉');
 }
-async function selectEffect(id){
- if(!EFFECTS.some(f=>f.id===id)||!user.unlockedEffects.includes(id))return toast('මෙම Effect එක මුලින් ලබාගන්න.');
- const ok=await saveCloudPatch({selectedEffect:id});
- if(ok)toast('Effect එක ක්‍රීඩාවට යෙදුවා!','fa-circle-check');
+
+async function selectTheme(id){
+ if(!THEMES.some(f=>f.id===id)||!user.unlockedPieces.includes(id))return toast('මෙම Theme එක මුලින් ලබාගන්න.');
+ const ok=await saveCloudPatch({pieceIndex:id});
+ if(ok)toast('Theme එක ක්‍රීඩාවට යෙදුවා!','fa-circle-check');
 }
 
 function updateRewardTimer(){
@@ -411,13 +356,13 @@ async function init(){
      user.uid=account.uid;persistLocal();
      await db.ref('users_v6/'+account.uid).update({
       name:user.name||account.displayName||'ක්‍රීඩකයා',points:user.points,
-      unlockedEffects:user.unlockedEffects,selectedEffect:user.selectedEffect,
+      unlockedPieces:user.unlockedPieces,pieceIndex:user.pieceIndex,
       lastRewardTime:user.lastRewardTime
      });
     }
    }catch(e){console.error('Could not load shop account:',e);toast('ගිණුම් දත්ත ලබාගැනීමට නොහැකි විය.');}
   });
- }catch(e){console.error('Firebase setup error:',e);toast('Firebase සම්බන්ධතාවය නොමැති බැවින් Local දත්ත පමණක් භාවිතා වේ.');}
+ }catch(e){console.error('Firebase setup error:',e);toast('Firebase සම්බන්ධතාවය නොමැත.');}
 }
 init();
 </script>
