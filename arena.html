@@ -15,7 +15,6 @@ body{
   flex-direction:column;
   justify-content:center;
   align-items:center;
-  /* Draughts/Checkers Wooden Table Theme Background Image with Dark Overlay */
   background: linear-gradient(rgba(9, 4, 2, 0.82), rgba(15, 8, 5, 0.90)), 
               url('https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?q=80&w=1920&auto=format&fit=crop') no-repeat center center/cover;
   color:#f8f9fa;
@@ -63,7 +62,6 @@ body{
 .arena-coins-center i { font-size: 1.4rem; color: #ffca45; }
 .arena-coins-center b { font-size: 1.05rem; color: #fff; }
 
-/* Thought/Chat Bubble under Opponent Profile */
 .thought-bubble {
   position: absolute; top: 78px; left: 50%; transform: translateX(-50%) scale(0);
   background: rgba(14, 20, 38, 0.95); border: 2px solid var(--neon-blue); color: #fff;
@@ -77,7 +75,6 @@ body{
   border-width: 0 6px 6px 6px; border-style: solid; border-color: transparent transparent var(--neon-blue) transparent;
 }
 
-/* Ultra Gaming RGB Glowing Border Animation */
 @keyframes rgbGlow {
   0% { border-color: #ff4757; box-shadow: 0 0 25px rgba(255, 71, 87, 0.8), inset 0 0 15px rgba(255, 71, 87, 0.5); }
   25% { border-color: #ff9f43; box-shadow: 0 0 25px rgba(255, 159, 67, 0.8), inset 0 0 15px rgba(255, 159, 67, 0.5); }
@@ -214,7 +211,11 @@ body{
  </div>
 </section>
 
+<!-- Remote Peer Voice Audio -->
 <audio id="remoteAudio" autoplay style="display:none;"></audio>
+
+<!-- Forest Relaxing Ambient Background Sound (Loop Enabled) -->
+<audio id="forestAmbient" src="https://cdn.pixabay.com/download/audio/2022/05/16/audio_db32c1b913.mp3?filename=forest-with-birds-and-wind-111456.mp3" preload="auto" loop style="display:none;"></audio>
 
 <div class="modal" id="overModal">
  <div class="modalbox" style="text-align:center">
@@ -272,18 +273,19 @@ const PIECE_DESIGNS=[
  {id:19,name:'අමරණීය අඳුර',bg:'radial-gradient(circle at 30% 30%,#2c3e50,#000000)',border:'#ffd166',color:'#ffd166',icon:'♔'}
 ];
 
+// Deep Gaming Robot Voice (English)
 function playVoice(text) {
  if (!soundEnabled || !('speechSynthesis' in window)) return;
  window.speechSynthesis.cancel();
  const utterance = new SpeechSynthesisUtterance(text);
- utterance.lang = 'si-LK';
- utterance.pitch = 1.5;
- utterance.rate = 1.15;
+ utterance.lang = 'en-US';
+ utterance.pitch = 0.3;  // Extremely low bass robotic pitch
+ utterance.rate = 0.95;  // Steady mechanical tempo
  utterance.volume = 1.0;
 
  const voices = window.speechSynthesis.getVoices();
- const femaleVoice = voices.find(v => v.lang.includes('si') && (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('google') || v.name.toLowerCase().includes('zira')));
- if (femaleVoice) utterance.voice = femaleVoice;
+ const robotVoice = voices.find(v => v.name.toLowerCase().includes('google us english') || v.name.toLowerCase().includes('david') || v.name.toLowerCase().includes('zira') || v.name.toLowerCase().includes('robot'));
+ if (robotVoice) utterance.voice = robotVoice;
 
  window.speechSynthesis.speak(utterance);
 }
@@ -292,17 +294,32 @@ if ('speechSynthesis' in window) {
  window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
 }
 
+// Start Forest Ambient Sound on first user interaction or load
+function startForestAmbient() {
+ const forestAudio = $('forestAmbient');
+ if (forestAudio && soundEnabled) {
+  forestAudio.volume = 0.4; // Relaxing background level
+  forestAudio.play().catch(e => {
+   // Autoplay policy fallback: play on first click/touch
+   window.addEventListener('click', () => { forestAudio.play(); }, { once: true });
+  });
+ }
+}
+
 $('mySoundBtn').onclick = () => {
  soundEnabled = !soundEnabled;
  const btn = $('mySoundBtn');
+ const forestAudio = $('forestAmbient');
  if (soundEnabled) {
   btn.className = 'ctrl-icon-btn';
   btn.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
-  toast('Sound Enabled', 'fa-volume-high');
+  if(forestAudio) forestAudio.play();
+  toast('Sound & Ambient Enabled', 'fa-volume-high');
  } else {
   btn.className = 'ctrl-icon-btn off';
   btn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
   window.speechSynthesis.cancel();
+  if(forestAudio) forestAudio.pause();
   toast('Sound Muted', 'fa-volume-xmark');
  }
 };
@@ -494,9 +511,12 @@ function initBoard(){
  if(single){userSide=nextStartingSide;}
  render();setTurnUI();
  
+ // Start Forest Ambient Relaxing Background Audio
+ startForestAmbient();
+
  setTimeout(() => {
-  playVoice("ආයුබෝවන්! දාම් ක්‍රීඩාවට ඔබව සාදරයෙන් පිළිගන්නවා!");
- }, 600);
+  playVoice("System online. Welcome to the Draughts Arena. Good luck!");
+ }, 800);
 
  if(single&&turn!==userSide)aiTimer=setTimeout(aiMove,600);
 }
@@ -693,13 +713,13 @@ function finish(winner,message){
  }
 
  if(won){
-  playVoice("සුබ පැතුම්! මගෙන් ඔබට අගනා ජයග්‍රහණයක් හිමි වුණා!");
- } else {
-  playVoice("දුක් වෙන්න එපා! ඊළඟ වතාවේ දිනන්න පුළුවන්, නැවත උත්සාහ කරන්න!");
- }
+  playVoice("Victory achieved. Outstanding performance!");
+} else {
+  playVoice("Mission failed. Better luck next time.");
+}
 
  $('overTitle').textContent=won?'VICTORY! 🎉':'DEFEAT!';
- $('overTitle').style.color=won?'var(--neon-green)':'var(--red)';
+ $('overTitle'].style.color=won?'var(--neon-green)':'var(--red)';
  $('overMessage').textContent=message;
  modal('overModal',true);
  if(roomRef) roomRef.update({status: 'finished', winner: winner}).catch(()=>{});
@@ -714,7 +734,7 @@ function sendQuickChat(msg){
   roomRef.child('chats').push({sender: user.name||'Player', message: msg}).catch(()=>{});
  } else {
   setTimeout(()=>{
-   const r=["හොඳයි 👍","නියමයි 🔥","Well played! 😊"];
+   const r=["Good game! 👍","Epic move! 🔥","Well played! 😊"];
    const text = r[Math.floor(Math.random()*r.length)];
    const d=document.createElement('div');d.className='chat-msg them';d.textContent=text;
    $('chatMessages').appendChild(d);$('chatMessages').scrollTop=$('chatMessages').scrollHeight;
@@ -770,7 +790,7 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
   if(data.status === 'playing' && !gameOver) setTurnUI();
  };
  roomRef.on('value', roomValueHandler);
-
+ 
  chatAddedHandler = snap => {
   const c = snap.val();
   if(c && c.sender !== user.name) {
@@ -799,6 +819,8 @@ function syncMultiplayerState() {
 
 function leaveArena(){
  clearInterval(turnClockTimer);clearTimeout(aiTimer);
+ const forestAudio = $('forestAmbient');
+ if(forestAudio) { forestAudio.pause(); }
  if(localStream) { localStream.getTracks().forEach(t => t.stop()); }
  if(peerConnection) { peerConnection.close(); }
  if(roomRef){
