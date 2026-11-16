@@ -15,7 +15,6 @@ body{
   flex-direction:column;
   justify-content:center;
   align-items:center;
-  /* Relaxing Deep Forest Theme Background Image with a soothing dark overlay */
   background: linear-gradient(rgba(10, 25, 15, 0.75), rgba(5, 15, 10, 0.85)), 
               url('https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?q=80&w=1920&auto=format&fit=crop') no-repeat center center/cover;
   color:#f8f9fa;
@@ -293,12 +292,19 @@ if ('speechSynthesis' in window) {
  window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
 }
 
+// Fixed Autoplay Policy Handling for Ambient Sound
 function startForestAmbient() {
  const forestAudio = $('forestAmbient');
  if (forestAudio && soundEnabled) {
-  forestAudio.volume = 0.35; // Soft relaxing background volume level
+  forestAudio.volume = 0.35;
   forestAudio.play().catch(() => {
-   window.addEventListener('click', () => { forestAudio.play(); }, { once: true });
+   const unlockAudio = () => {
+    forestAudio.play().catch(()=>{});
+    window.removeEventListener('click', unlockAudio);
+    window.removeEventListener('touchstart', unlockAudio);
+   };
+   window.addEventListener('click', unlockAudio, { once: true });
+   window.addEventListener('touchstart', unlockAudio, { once: true });
   });
  }
 }
@@ -310,7 +316,7 @@ $('mySoundBtn').onclick = () => {
  if (soundEnabled) {
   btn.className = 'ctrl-icon-btn';
   btn.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
-  if(forestAudio) forestAudio.play();
+  if(forestAudio) forestAudio.play().catch(()=>{});
   toast('Sound & Forest Ambient Enabled', 'fa-volume-high');
  } else {
   btn.className = 'ctrl-icon-btn off';
@@ -383,7 +389,7 @@ function setupWebRTC() {
   roomRef.child('webrtc/guest/answer').on('value', snapshot => {
    const data = snapshot.val();
    if(data && !peerConnection.currentRemoteDescription) {
-    peerConnection.setRemoteDescription(new RTCSessionDescription(JSON.parse(data)));
+    peerConnection.setRemoteDescription(new RTCSessionDescription(JSON.parse(data))).catch(()=>{});
    }
   });
  } else {
@@ -396,7 +402,7 @@ function setupWebRTC() {
      return peerConnection.setLocalDescription(answer);
     }).then(() => {
      roomRef.child('webrtc/guest/answer').set(JSON.stringify(peerConnection.localDescription));
-    });
+    }).catch(()=>{});
    }
   });
  }
@@ -508,7 +514,6 @@ function initBoard(){
  if(single){userSide=nextStartingSide;}
  render();setTurnUI();
  
- // Start Relaxing Forest Ambient Sound automatically
  startForestAmbient();
 
  setTimeout(() => {
