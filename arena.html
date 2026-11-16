@@ -166,7 +166,7 @@ const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user';
 let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,avatarIcon:'fa-user'};
 let board=[],turn=1,selected=null,moves=[],single=true,roomId=null,roomRef=null,roomValueHandler=null,chatAddedHandler=null,role=null,gameOver=false,aiTimer=null,processing=false,turnClockTimer=null,turnDeadline=0,forcedContinuation=null;
 let userSide=1,nextStartingSide=1,gameMode='single';
-let lastMove = null; // ප්‍රතිවාදියාගේ හෝ තමන්ගේ අන්තිම Move එක ගබඩා කිරීමට
+let lastMove = null;
 
 const PIECE_DESIGNS=[
  {id:0,name:'මුතු සුදු (Default)',bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●',free:true},
@@ -190,6 +190,18 @@ const PIECE_DESIGNS=[
  {id:18,name:'විදුලි ලෙමන්',bg:'radial-gradient(circle at 30% 30%,#f7dc6f,#f9e79f)',border:'#f1c40f',color:'#111',icon:'✨'},
  {id:19,name:'අමරණීය අඳුර',bg:'radial-gradient(circle at 30% 30%,#2c3e50,#000000)',border:'#ffd166',color:'#ffd166',icon:'♔'}
 ];
+
+// Game Girl Voice Function (Web Speech API)
+function playVoice(text) {
+ if ('speechSynthesis' in window) {
+  window.speechSynthesis.cancel(); // Stop any ongoing speech
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'si-LK'; // Sinhala language support
+  utterance.pitch = 1.35;   // Higher pitch to sound like a game girl voice
+  utterance.rate = 1.05;    // Dynamic game speed rate
+  window.speechSynthesis.speak(utterance);
+ }
+}
 
 function toast(s, icon='fa-circle-info'){
  const t=$('toast');
@@ -267,6 +279,12 @@ function initBoard(){
  lastMove=null;
  if(single){userSide=nextStartingSide;}
  render();setTurnUI();
+ 
+ // Game Start Voice Prompt (Game Girl Voice)
+ setTimeout(() => {
+  playVoice("දාම් ක්‍රීඩාවට ඔබව සාදරයෙන් පිළිගන්නවා!");
+ }, 500);
+
  if(single&&turn!==userSide)aiTimer=setTimeout(aiMove,600);
 }
 
@@ -323,7 +341,6 @@ function render(){
    const m=moves.find(x=>x.toR===r&&x.toC===c);
    if(m)sq.classList.add(m.capture?'capture':'target');
    
-   // Highlight Last Move
    if(lastMove){
     if(lastMove.fromR === r && lastMove.fromC === c) sq.classList.add('last-move-from');
     if(lastMove.toR === r && lastMove.toC === c) sq.classList.add('last-move-to');
@@ -376,7 +393,6 @@ function applyMove(b,m){
 async function playMove(m){
  if(processing||gameOver)return;
  processing=true;
- 
  lastMove = { fromR: m.fromR, fromC: m.fromC, toR: m.toR, toC: m.toC };
 
  const moving=board[m.fromR][m.fromC];
@@ -436,7 +452,6 @@ function aiMove(){
  if(forcedContinuation)legal=pieceMoves(forcedContinuation.r,forcedContinuation.c).filter(m=>m.capture);
  if(!legal.length){forcedContinuation=null;legal=allMoves(aiSide);}
  const m=legal[Math.floor(Math.random()*legal.length)];
- 
  lastMove = { fromR: m.fromR, fromC: m.fromC, toR: m.toR, toC: m.toC };
 
  const moving=board[m.fromR][m.fromC];
@@ -452,12 +467,25 @@ function finish(winner,message){
  if(gameOver)return;gameOver=true;clearInterval(aiTimer);clearInterval(turnClockTimer);
  const won=(winner===userSide);
  const bet=Number(window.currentBetPoints)||0;
- if(gameMode==='freestyle')$('overPoints').textContent='පුහුණු තරඟය - Points වෙනස් නොවේ';
- else if(fbUser&&db) {
-  if(won){user.points+=bet;user.wins++;$('overPoints').textContent='+'+bet+' Points (Win!)';}
-  else{user.points=Math.max(0,user.points-bet);user.losses++;$('overPoints').textContent='-'+bet+' Points';}
+ 
+ if(gameMode==='freestyle'){
+  $('overPoints').textContent='පුහුණු තරඟය - Points වෙනස් නොවේ';
+ } else if(fbUser&&db) {
+  if(won){
+   user.points+=bet;user.wins++;$('overPoints').textContent='+'+bet+' Points (Win!)';
+  } else {
+   user.points=Math.max(0,user.points-bet);user.losses++;$('overPoints').textContent='-'+bet+' Points';
+  }
   db.ref('users_v6/'+fbUser.uid).update({points:user.points,wins:user.wins,losses:user.losses}).catch(()=>{});
  }
+
+ // Voice Announcement for Win/Loss
+ if(won){
+  playVoice("සුබ පැතුම්! මගෙන් ඔබට ජයග්‍රහණයක්!");
+ } else {
+  playVoice("දුක් වෙන්න එපා, නැවත උත්සාහ කරන්න!");
+ }
+
  $('overTitle').textContent=won?'VICTORY! 🎉':'DEFEAT!';
  $('overTitle').style.color=won?'var(--neon-green)':'var(--red)';
  $('overMessage').textContent=message;
@@ -544,7 +572,7 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
 
 function syncMultiplayerState() {
  if(roomRef) {
-  roomRef.update({
+  roomRef.nowRef?.update ? null : roomRef.update({
    board: board,
    turn: turn,
    forcedContinuation: forcedContinuation || null,
