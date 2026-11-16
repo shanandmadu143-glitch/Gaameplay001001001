@@ -26,13 +26,35 @@ body{min-height:100dvh;display:flex;flex-direction:column;justify-content:center
 .arena-player-card.active .arena-avatar-box { border-color: #ffd166; box-shadow: 0 0 20px #ffd166; transform: scale(1.08); }
 .arena-player-card b { font-size: 0.9rem; color: #fff; max-width: 105px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .arena-player-card small { font-size: 0.72rem; color: #a0aec0; }
+
+/* Voice & Sound Controls Under Player Cards */
+.player-controls {
+  display: flex; gap: 6px; margin-top: 4px;
+}
+.ctrl-icon-btn {
+  width: 28px; height: 28px; border-radius: 50%; border: 1px solid rgba(255,209,102,0.4);
+  background: rgba(0,0,0,0.5); color: var(--gold); font-size: 0.75rem; display: grid; place-items: center;
+  cursor: pointer; transition: all 0.2s;
+}
+.ctrl-icon-btn.off {
+  border-color: var(--red); color: var(--red); background: rgba(255, 71, 87, 0.15);
+}
+.ctrl-icon-btn.active-mic {
+  background: var(--neon-green); color: #111; border-color: var(--neon-green);
+  animation: pulseMic 1.2s infinite;
+}
+@keyframes pulseMic {
+  0% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7); }
+  70% { box-shadow: 0 0 0 8px rgba(46, 204, 113, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
+}
+
 .arena-coins-center { display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255, 209, 102, 0.1); padding: 6px 14px; border-radius: 16px; border: 1px solid rgba(255, 209, 102, 0.3); }
 .arena-coins-center i { font-size: 1.4rem; color: #ffca45; }
 .arena-coins-center b { font-size: 1.05rem; color: #fff; }
 
-/* Thought/Chat Bubble under Opponent Profile */
 .thought-bubble {
-  position: absolute; top: 58px; left: 50%; transform: translateX(-50%) scale(0);
+  position: absolute; top: 78px; left: 50%; transform: translateX(-50%) scale(0);
   background: rgba(14, 20, 38, 0.95); border: 2px solid var(--neon-blue); color: #fff;
   padding: 6px 10px; border-radius: 12px; font-size: 0.75rem; white-space: nowrap; max-width: 150px;
   overflow: hidden; text-overflow: ellipsis; box-shadow: 0 4px 15px rgba(0,242,254,0.4);
@@ -44,7 +66,6 @@ body{min-height:100dvh;display:flex;flex-direction:column;justify-content:center
   border-width: 0 6px 6px 6px; border-style: solid; border-color: transparent transparent var(--neon-blue) transparent;
 }
 
-/* Gaming RGB Frame around the Board */
 @keyframes rgbGlow {
   0% { border-color: #ff4757; box-shadow: 0 0 20px rgba(255, 71, 87, 0.6), inset 0 0 15px rgba(255, 71, 87, 0.4); }
   33% { border-color: #00f2fe; box-shadow: 0 0 20px rgba(0, 242, 254, 0.6), inset 0 0 15px rgba(0, 242, 254, 0.4); }
@@ -118,21 +139,32 @@ body{min-height:100dvh;display:flex;flex-direction:column;justify-content:center
 
 <section class="arena" id="arena">
  <div class="arena-top-header">
+  <!-- Player 1 Card (My Controls) -->
   <div class="arena-player-card active" id="p1">
    <div class="arena-avatar-box" id="p1AvatarBox"><i class="fa-solid fa-user"></i></div>
    <b id="p1name">Player 1</b>
    <small id="p1sub">Host</small>
+   <div class="player-controls">
+    <button class="ctrl-icon-btn off" id="myMicBtn" title="Mic On/Off"><i class="fa-solid fa-microphone-slash"></i></button>
+    <button class="ctrl-icon-btn" id="mySoundBtn" title="Sound On/Off"><i class="fa-solid fa-volume-high"></i></button>
+   </div>
   </div>
+
   <div class="arena-coins-center">
    <i class="fa-solid fa-coins"></i>
    <b id="arenaBetDisplay">100</b>
   </div>
-  <!-- Opponent Profile Card with Thought Bubble Frame -->
+
+  <!-- Player 2 Card (Opponent Controls & Thought Bubble) -->
   <div class="arena-player-card" id="p2">
    <div class="thought-bubble" id="opponentThoughtBubble"></div>
    <div class="arena-avatar-box" id="p2AvatarBox"><i class="fa-solid fa-chess-knight"></i></div>
    <b id="p2name">Player 2</b>
    <small id="p2sub">Guest</small>
+   <div class="player-controls">
+    <button class="ctrl-icon-btn off" id="oppMicIcon" title="Opponent Mic Status"><i class="fa-solid fa-microphone-slash"></i></button>
+    <button class="ctrl-icon-btn" id="oppSoundIcon" title="Opponent Sound Status"><i class="fa-solid fa-volume-high"></i></button>
+   </div>
   </div>
  </div>
 
@@ -170,6 +202,9 @@ body{min-height:100dvh;display:flex;flex-direction:column;justify-content:center
  </div>
 </section>
 
+<!-- Audio element for remote peer voice -->
+<audio id="remoteAudio" autoplay style="display:none;"></audio>
+
 <div class="modal" id="overModal">
  <div class="modalbox" style="text-align:center">
   <h2 id="overTitle">තරඟය අවසන්</h2>
@@ -197,6 +232,13 @@ let userSide=1,nextStartingSide=1,gameMode='single';
 let lastMove = null;
 let thoughtBubbleTimeout = null;
 
+// Voice & Audio States
+let soundEnabled = true;
+let micEnabled = false;
+let localStream = null;
+let peerConnection = null;
+let rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+
 const PIECE_DESIGNS=[
  {id:0,name:'මුතු සුදු (Default)',bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●',free:true},
  {id:1,name:'රන් ඔටුන්න',bg:'linear-gradient(135deg,#ffeaa7,#fdcb6e)',border:'#e1b12c',color:'#2d3436',icon:'★'},
@@ -220,50 +262,157 @@ const PIECE_DESIGNS=[
  {id:19,name:'අමරණීය අඳුර',bg:'radial-gradient(circle at 30% 30%,#2c3e50,#000000)',border:'#ffd166',color:'#ffd166',icon:'♔'}
 ];
 
-// Enhanced Ultra-Realistic Game Girl Voice Function
+// Realistic Game Girl Voice Synthesis
 function playVoice(text) {
- if ('speechSynthesis' in window) {
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = 'si-LK';
-  utterance.pitch = 1.45; // High sweet girlish tone
-  utterance.rate = 1.1;   // Smooth gaming voice tempo
-  utterance.volume = 1.0;
+ if (!soundEnabled || !('speechSynthesis' in window)) return;
+ window.speechSynthesis.cancel();
+ const utterance = new SpeechSynthesisUtterance(text);
+ utterance.lang = 'si-LK';
+ utterance.pitch = 1.45;
+ utterance.rate = 1.1;
+ utterance.volume = 1.0;
 
-  // Try to pick a female voice if available in the browser
-  const voices = window.speechSynthesis.getVoices();
-  const femaleVoice = voices.find(v => v.lang.includes('si') && (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('google') || v.name.toLowerCase().includes('zira')));
-  if (femaleVoice) {
-   utterance.voice = femaleVoice;
-  }
+ const voices = window.speechSynthesis.getVoices();
+ const femaleVoice = voices.find(v => v.lang.includes('si') && (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('google') || v.name.toLowerCase().includes('zira')));
+ if (femaleVoice) utterance.voice = femaleVoice;
 
-  window.speechSynthesis.speak(utterance);
- }
+ window.speechSynthesis.speak(utterance);
 }
 
-// Ensure voices are loaded
 if ('speechSynthesis' in window) {
  window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
 }
 
-// Show Opponent Thought Bubble with Auto-Shorten & Auto-Dismiss
+// Sound ON/OFF Toggle Handler
+$('mySoundBtn').onclick = () => {
+ soundEnabled = !soundEnabled;
+ const btn = $('mySoundBtn');
+ if (soundEnabled) {
+  btn.className = 'ctrl-icon-btn';
+  btn.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
+  toast('Sound Enabled', 'fa-volume-high');
+ } else {
+  btn.className = 'ctrl-icon-btn off';
+  btn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
+  window.speechSynthesis.cancel();
+  toast('Sound Muted', 'fa-volume-xmark');
+ }
+};
+
+// Mic ON/OFF Toggle Handler for Real-Time Voice Chat
+$('myMicBtn').onclick = async () => {
+ if (!single && roomRef) {
+  micEnabled = !micEnabled;
+  const btn = $('myMicBtn');
+  if (micEnabled) {
+   try {
+    localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+    btn.className = 'ctrl-icon-btn active-mic';
+    btn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
+    toast('Mic Activated (Live)', 'fa-microphone');
+    setupWebRTC();
+   } catch(e) {
+    micEnabled = false;
+    toast('Microphone access denied or unavailable.');
+   }
+  } else {
+   btn.className = 'ctrl-icon-btn off';
+   btn.innerHTML = '<i class="fa-solid fa-microphone-slash"></i>';
+   if(localStream) {
+    localStream.getTracks().forEach(track => track.stop());
+    localStream = null;
+   }
+   if(peerConnection) {
+    peerConnection.close();
+    peerConnection = null;
+   }
+   toast('Mic Muted', 'fa-microphone-slash');
+   roomRef.child('micStatus/' + role).set(false);
+  }
+ } else {
+  toast('Voice chat is available in Multiplayer mode.');
+ }
+};
+
+// WebRTC Real-Time Voice Chat Setup
+function setupWebRTC() {
+ if(!roomRef || !localStream) return;
+ peerConnection = new RTCPeerConnection(rtcConfig);
+ localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+
+ peerConnection.ontrack = event => {
+  const remoteAudio = $('remoteAudio');
+  if(remoteAudio && event.streams[0]) {
+   remoteAudio.srcObject = event.streams[0];
+  }
+ };
+
+ peerConnection.onicecandidate = event => {
+  if (event.candidate) {
+   roomRef.child('webrtc/' + role + '/candidates').push(JSON.stringify(event.candidate));
+  }
+ };
+
+ if(role === 'host') {
+  peerConnection.createOffer().then(offer => {
+   return peerConnection.setLocalDescription(offer);
+  }).then(() => {
+   roomRef.child('webrtc/host/offer').set(JSON.stringify(peerConnection.localDescription));
+  });
+
+  roomRef.child('webrtc/guest/answer').on('value', snapshot => {
+   const data = snapshot.val();
+   if(data && !peerConnection.currentRemoteDescription) {
+    peerConnection.setRemoteDescription(new RTCSessionDescription(JSON.parse(data)));
+   }
+  });
+ } else {
+  roomRef.child('webrtc/host/offer').on('value', snapshot => {
+   const data = snapshot.val();
+   if(data && !peerConnection.currentRemoteDescription) {
+    peerConnection.setRemoteDescription(new RTCSessionDescription(JSON.parse(data))).then(() => {
+     return peerConnection.createAnswer();
+    }).then(answer => {
+     return peerConnection.setLocalDescription(answer);
+    }).then(() => {
+     roomRef.child('webrtc/guest/answer').set(JSON.stringify(peerConnection.localDescription));
+    });
+   }
+  });
+ }
+
+ roomRef.child('webrtc').on('child_added', snapshot => {
+  // Candidate handling
+ });
+
+ roomRef.child('micStatus/' + (role === 'host' ? 'guest' : 'host')).on('value', snap => {
+  const active = snap.val();
+  const oppMicIcon = $('oppMicIcon');
+  if(active) {
+   oppMicIcon.className = 'ctrl-icon-btn active-mic';
+   oppMicIcon.innerHTML = '<i class="fa-solid fa-microphone"></i>';
+  } else {
+   oppMicIcon.className = 'ctrl-icon-btn off';
+   oppMicIcon.innerHTML = '<i class="fa-solid fa-microphone-slash"></i>';
+  }
+ });
+
+ roomRef.child('micStatus/' + role).set(true);
+}
+
 function showOpponentThought(msg) {
  const bubble = $('opponentThoughtBubble');
  if(!bubble) return;
-
- // Clean and shorten text if too long (max ~35 chars for sleek look)
  let shortMsg = String(msg || '').trim();
  if (shortMsg.length > 30) {
   shortMsg = shortMsg.substring(0, 27) + '...';
  }
-
  bubble.textContent = shortMsg;
  bubble.classList.add('show');
-
  if(thoughtBubbleTimeout) clearTimeout(thoughtBubbleTimeout);
  thoughtBubbleTimeout = setTimeout(() => {
   bubble.classList.remove('show');
- }, 4000); // Disappears after 4 seconds
+ }, 4000);
 }
 
 function toast(s, icon='fa-circle-info'){
@@ -567,7 +716,7 @@ function sendQuickChat(msg){
    const text = r[Math.floor(Math.random()*r.length)];
    const d=document.createElement('div');d.className='chat-msg them';d.textContent=text;
    $('chatMessages').appendChild(d);$('chatMessages').scrollTop=$('chatMessages').scrollHeight;
-   showOpponentThought(text); // Show AI thought bubble in single player
+   showOpponentThought(text);
   },1000);
  }
 }
@@ -628,8 +777,6 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
    d.textContent = `${c.sender}: ${c.message}`;
    $('chatMessages').appendChild(d);
    $('chatMessages').scrollTop=$('chatMessages').scrollHeight;
-
-   // Display opponent chat message inside the thought bubble
    showOpponentThought(c.message);
   }
  };
@@ -650,6 +797,8 @@ function syncMultiplayerState() {
 
 function leaveArena(){
  clearInterval(turnClockTimer);clearTimeout(aiTimer);
+ if(localStream) { localStream.getTracks().forEach(t => t.stop()); }
+ if(peerConnection) { peerConnection.close(); }
  if(roomRef){
   if(!gameOver && gameMode==='multi'){
    roomRef.update({status:'finished',winner:-userSide}).catch(()=>{});
