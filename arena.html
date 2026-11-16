@@ -21,7 +21,7 @@ body{min-height:100dvh;display:flex;flex-direction:column;justify-content:center
   display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; width: 100%; max-width: 520px;
   background: rgba(15, 8, 5, 0.85); padding: 10px 14px; border-radius: 20px; border: 1.5px solid rgba(255, 209, 102, 0.35); box-shadow: 0 6px 20px rgba(0,0,0,0.6); margin-top: 6px;
 }
-.arena-player-card { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 3px; }
+.arena-player-card { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 3px; position: relative; }
 .arena-avatar-box { width: 48px; height: 48px; border-radius: 50%; border: 2px solid #ff9f43; background: #2b1107; display: grid; place-items: center; font-size: 1.3rem; color: #ff9f43; overflow: hidden; }
 .arena-player-card.active .arena-avatar-box { border-color: #ffd166; box-shadow: 0 0 20px #ffd166; transform: scale(1.08); }
 .arena-player-card b { font-size: 0.9rem; color: #fff; max-width: 105px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -30,7 +30,34 @@ body{min-height:100dvh;display:flex;flex-direction:column;justify-content:center
 .arena-coins-center i { font-size: 1.4rem; color: #ffca45; }
 .arena-coins-center b { font-size: 1.05rem; color: #fff; }
 
-.board-wrap { width: min(92vw, 56vh, 440px); aspect-ratio: 1; position: relative; margin: auto; background: linear-gradient(135deg, #3d220f, #221207); padding: 10px; border-radius: 22px; border: 4px solid #1a0e05; }
+/* Thought/Chat Bubble under Opponent Profile */
+.thought-bubble {
+  position: absolute; top: 58px; left: 50%; transform: translateX(-50%) scale(0);
+  background: rgba(14, 20, 38, 0.95); border: 2px solid var(--neon-blue); color: #fff;
+  padding: 6px 10px; border-radius: 12px; font-size: 0.75rem; white-space: nowrap; max-width: 150px;
+  overflow: hidden; text-overflow: ellipsis; box-shadow: 0 4px 15px rgba(0,242,254,0.4);
+  z-index: 50; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none;
+}
+.thought-bubble.show { transform: translateX(-50%) scale(1); }
+.thought-bubble:after {
+  content: ''; position: absolute; top: -6px; left: 50%; transform: translateX(-50%);
+  border-width: 0 6px 6px 6px; border-style: solid; border-color: transparent transparent var(--neon-blue) transparent;
+}
+
+/* Gaming RGB Frame around the Board */
+@keyframes rgbGlow {
+  0% { border-color: #ff4757; box-shadow: 0 0 20px rgba(255, 71, 87, 0.6), inset 0 0 15px rgba(255, 71, 87, 0.4); }
+  33% { border-color: #00f2fe; box-shadow: 0 0 20px rgba(0, 242, 254, 0.6), inset 0 0 15px rgba(0, 242, 254, 0.4); }
+  66% { border-color: #2ecc71; box-shadow: 0 0 20px rgba(46, 204, 113, 0.6), inset 0 0 15px rgba(46, 204, 113, 0.4); }
+  100% { border-color: #ff4757; box-shadow: 0 0 20px rgba(255, 71, 87, 0.6), inset 0 0 15px rgba(255, 71, 87, 0.4); }
+}
+
+.board-wrap { 
+  width: min(92vw, 56vh, 440px); aspect-ratio: 1; position: relative; margin: auto; 
+  background: linear-gradient(135deg, #3d220f, #221207); padding: 10px; border-radius: 22px; 
+  border: 4px solid #ff4757; animation: rgbGlow 6s linear infinite;
+}
+
 .board { width: 100%; height: 100%; display: grid; grid-template-columns: repeat(8,1fr); grid-template-rows: repeat(8,1fr); border-radius: 12px; overflow: hidden; border: 2px solid #110502; }
 .sq { display: grid; place-items: center; position: relative; cursor: pointer; touch-action: manipulation; }
 .sq.light { background: #ecdacb; }
@@ -39,7 +66,6 @@ body{min-height:100dvh;display:flex;flex-direction:column;justify-content:center
 .sq.target:after { content:''; width:32%; height:32%; border-radius:50%; background:#2ecc71; }
 .sq.capture:after { content:''; width:42%; height:42%; border-radius:50%; background:#ff4757; }
 
-/* Last Move Highlight Styles */
 .sq.last-move-from {
   background: rgba(255, 165, 2, 0.35) !important;
   box-shadow: inset 0 0 10px rgba(255, 165, 2, 0.6);
@@ -101,7 +127,9 @@ body{min-height:100dvh;display:flex;flex-direction:column;justify-content:center
    <i class="fa-solid fa-coins"></i>
    <b id="arenaBetDisplay">100</b>
   </div>
+  <!-- Opponent Profile Card with Thought Bubble Frame -->
   <div class="arena-player-card" id="p2">
+   <div class="thought-bubble" id="opponentThoughtBubble"></div>
    <div class="arena-avatar-box" id="p2AvatarBox"><i class="fa-solid fa-chess-knight"></i></div>
    <b id="p2name">Player 2</b>
    <small id="p2sub">Guest</small>
@@ -167,6 +195,7 @@ let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:
 let board=[],turn=1,selected=null,moves=[],single=true,roomId=null,roomRef=null,roomValueHandler=null,chatAddedHandler=null,role=null,gameOver=false,aiTimer=null,processing=false,turnClockTimer=null,turnDeadline=0,forcedContinuation=null;
 let userSide=1,nextStartingSide=1,gameMode='single';
 let lastMove = null;
+let thoughtBubbleTimeout = null;
 
 const PIECE_DESIGNS=[
  {id:0,name:'මුතු සුදු (Default)',bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●',free:true},
@@ -191,16 +220,50 @@ const PIECE_DESIGNS=[
  {id:19,name:'අමරණීය අඳුර',bg:'radial-gradient(circle at 30% 30%,#2c3e50,#000000)',border:'#ffd166',color:'#ffd166',icon:'♔'}
 ];
 
-// Game Girl Voice Function (Web Speech API)
+// Enhanced Ultra-Realistic Game Girl Voice Function
 function playVoice(text) {
  if ('speechSynthesis' in window) {
-  window.speechSynthesis.cancel(); // Stop any ongoing speech
+  window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = 'si-LK'; // Sinhala language support
-  utterance.pitch = 1.35;   // Higher pitch to sound like a game girl voice
-  utterance.rate = 1.05;    // Dynamic game speed rate
+  utterance.lang = 'si-LK';
+  utterance.pitch = 1.45; // High sweet girlish tone
+  utterance.rate = 1.1;   // Smooth gaming voice tempo
+  utterance.volume = 1.0;
+
+  // Try to pick a female voice if available in the browser
+  const voices = window.speechSynthesis.getVoices();
+  const femaleVoice = voices.find(v => v.lang.includes('si') && (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('google') || v.name.toLowerCase().includes('zira')));
+  if (femaleVoice) {
+   utterance.voice = femaleVoice;
+  }
+
   window.speechSynthesis.speak(utterance);
  }
+}
+
+// Ensure voices are loaded
+if ('speechSynthesis' in window) {
+ window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
+}
+
+// Show Opponent Thought Bubble with Auto-Shorten & Auto-Dismiss
+function showOpponentThought(msg) {
+ const bubble = $('opponentThoughtBubble');
+ if(!bubble) return;
+
+ // Clean and shorten text if too long (max ~35 chars for sleek look)
+ let shortMsg = String(msg || '').trim();
+ if (shortMsg.length > 30) {
+  shortMsg = shortMsg.substring(0, 27) + '...';
+ }
+
+ bubble.textContent = shortMsg;
+ bubble.classList.add('show');
+
+ if(thoughtBubbleTimeout) clearTimeout(thoughtBubbleTimeout);
+ thoughtBubbleTimeout = setTimeout(() => {
+  bubble.classList.remove('show');
+ }, 4000); // Disappears after 4 seconds
 }
 
 function toast(s, icon='fa-circle-info'){
@@ -280,10 +343,9 @@ function initBoard(){
  if(single){userSide=nextStartingSide;}
  render();setTurnUI();
  
- // Game Start Voice Prompt (Game Girl Voice)
  setTimeout(() => {
   playVoice("දාම් ක්‍රීඩාවට ඔබව සාදරයෙන් පිළිගන්නවා!");
- }, 500);
+ }, 600);
 
  if(single&&turn!==userSide)aiTimer=setTimeout(aiMove,600);
 }
@@ -351,7 +413,7 @@ function render(){
     const isMyPiece = single ? (Math.sign(val) === userSide) : (role === 'host' ? Math.sign(val) === 1 : Math.sign(val) === -1);
     let pieceDesignIndex = isMyPiece ? (user.pieceIndex || 0) : (window.opponentPieceIndex !== undefined ? window.opponentPieceIndex : 2);
 
-    const design = PIECE_DESIGNS[pieceDesignIndex] || PIECE_DESIGNS[0];
+    const design = PIECE_DESIGNS[pieceDesignIndex]||PIECE_DESIGNS[0];
     p.className = 'piece' + (Math.abs(val) === 2 ? ' king' : '');
     p.style.background = design.bg;
     p.style.border = `2px solid ${design.border}`;
@@ -479,11 +541,10 @@ function finish(winner,message){
   db.ref('users_v6/'+fbUser.uid).update({points:user.points,wins:user.wins,losses:user.losses}).catch(()=>{});
  }
 
- // Voice Announcement for Win/Loss
  if(won){
-  playVoice("සුබ පැතුම්! මගෙන් ඔබට ජයග්‍රහණයක්!");
+  playVoice("සුබ පැතුම්! මගෙන් ඔබට අපූරු ජයග්‍රහණයක්!");
  } else {
-  playVoice("දුක් වෙන්න එපා, නැවත උත්සාහ කරන්න!");
+  playVoice("දුක් වෙන්න එපා නැවත උත්සාහ කරන්න!");
  }
 
  $('overTitle').textContent=won?'VICTORY! 🎉':'DEFEAT!';
@@ -503,8 +564,10 @@ function sendQuickChat(msg){
  } else {
   setTimeout(()=>{
    const r=["හොඳයි 👍","නියමයි 🔥","Well played! 😊"];
-   const d=document.createElement('div');d.className='chat-msg them';d.textContent=r[Math.floor(Math.random()*r.length)];
+   const text = r[Math.floor(Math.random()*r.length)];
+   const d=document.createElement('div');d.className='chat-msg them';d.textContent=text;
    $('chatMessages').appendChild(d);$('chatMessages').scrollTop=$('chatMessages').scrollHeight;
+   showOpponentThought(text); // Show AI thought bubble in single player
   },1000);
  }
 }
@@ -565,6 +628,9 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
    d.textContent = `${c.sender}: ${c.message}`;
    $('chatMessages').appendChild(d);
    $('chatMessages').scrollTop=$('chatMessages').scrollHeight;
+
+   // Display opponent chat message inside the thought bubble
+   showOpponentThought(c.message);
   }
  };
  roomRef.child('chats').on('child_added', chatAddedHandler);
@@ -572,7 +638,7 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
 
 function syncMultiplayerState() {
  if(roomRef) {
-  roomRef.nowRef?.update ? null : roomRef.update({
+  roomRef.update({
    board: board,
    turn: turn,
    forcedContinuation: forcedContinuation || null,
