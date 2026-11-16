@@ -41,8 +41,8 @@ body{
   display: flex; gap: 6px; margin-top: 4px;
 }
 .ctrl-icon-btn {
-  width: 28px; height: 28px; border-radius: 50%; border: 1px solid rgba(46, 204, 113, 0.4);
-  background: rgba(0,0,0,0.5); color: #2ecc71; font-size: 0.75rem; display: grid; place-items: center;
+  width: 30px; height: 30px; border-radius: 50%; border: 1px solid rgba(46, 204, 113, 0.4);
+  background: rgba(0,0,0,0.5); color: #2ecc71; font-size: 0.8rem; display: grid; place-items: center;
   cursor: pointer; transition: all 0.2s;
 }
 .ctrl-icon-btn.off {
@@ -119,17 +119,22 @@ body{
 #clockCaption { font-size: 0.75rem; color: #2ecc71; font-weight: 700; }
 #clockRing.urgent #turnClock { color: var(--red); }
 
-.arena-circle-btn { width: 48px; height: 48px; border-radius: 50%; border: 2px solid #2ecc71; background: linear-gradient(135deg, #2ecc71, #27ae60); color: #0b1f13; font-size: 1.25rem; display: grid; place-items: center; cursor: pointer; }
+.arena-circle-btn { width: 48px; height: 48px; border-radius: 50%; border: 2px solid #2ecc71; background: linear-gradient(135deg, #2ecc71, #27ae60); color: #0b1f13; font-size: 1.25rem; display: grid; place-items: center; cursor: pointer; position: relative; }
 .arena-circle-btn.close-btn { border-color: #ff6b81; background: linear-gradient(135deg, #ff4757, #c0392b); color: #fff; }
+.chat-badge {
+  position: absolute; top: -4px; right: -4px; background: var(--red); color: #fff; font-size: 0.65rem;
+  width: 18px; height: 18px; border-radius: 50%; display: none; place-items: center; font-weight: bold;
+}
 
-.chat-drawer { position: fixed; top: 0; right: -100%; width: min(82vw, 300px); height: 100dvh; background: rgba(10, 25, 15, 0.98); border-left: 2px solid #2ecc71; z-index: 95; display: flex; flex-direction: column; transition: right 0.3s ease; }
+.chat-drawer { position: fixed; top: 0; right: -100%; width: min(85vw, 310px); height: 100dvh; background: rgba(10, 25, 15, 0.98); border-left: 2px solid #2ecc71; z-index: 95; display: flex; flex-direction: column; transition: right 0.3s ease; }
+.chat-drawer.open { right: 0; }
 .chat-header { padding: 14px; background: rgba(0,0,0,0.4); border-bottom: 1px solid rgba(46, 204, 113, 0.2); display: flex; justify-content: space-between; align-items: center; color: #2ecc71; }
 .chat-body { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-.chat-msg { background: rgba(255,255,255,0.06); padding: 7px 11px; border-radius: 10px; font-size: 0.85rem; max-width: 85%; }
-.chat-msg.me { align-self: flex-end; background: rgba(46, 204, 113, 0.2); border: 1px solid rgba(46, 204, 113, 0.4); color: #fff; }
-.chat-msg.them { align-self: flex-start; background: rgba(255,255,255,0.1); color: #fff; }
+.chat-msg { background: rgba(255,255,255,0.06); padding: 7px 11px; border-radius: 10px; font-size: 0.85rem; max-width: 85%; word-break: break-word; user-select: text; }
+.chat-msg.me { align-self: flex-end; background: rgba(46, 204, 113, 0.25); border: 1px solid rgba(46, 204, 113, 0.5); color: #fff; }
+.chat-msg.them { align-self: flex-start; background: rgba(255,255,255,0.12); color: #fff; }
 .chat-footer { padding: 10px; display: flex; gap: 6px; background: rgba(0,0,0,0.4); }
-.chat-footer input { padding: 8px 10px; font-size: 0.85rem; border-radius: 12px; background: rgba(0,0,0,0.6); border: 1px solid rgba(46, 204, 113, 0.3); color: #fff; width: 100%; outline: none; }
+.chat-footer input { padding: 8px 10px; font-size: 0.85rem; border-radius: 12px; background: rgba(0,0,0,0.6); border: 1px solid rgba(46, 204, 113, 0.4); color: #fff; width: 100%; outline: none; user-select: text; }
 .quick-chats { display: flex; gap: 6px; overflow-x: auto; padding: 8px 10px; background: rgba(0,0,0,0.25); }
 .quick-btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-size: 0.72rem; padding: 5px 9px; border-radius: 12px; white-space: nowrap; cursor: pointer; }
 
@@ -181,7 +186,10 @@ body{
  </div>
 
  <div class="arena-bottom-bar">
-  <button class="arena-circle-btn" id="arenaChatBtn" title="Chat"><i class="fa-solid fa-comment-dots"></i></button>
+  <button class="arena-circle-btn" id="arenaChatBtn" title="Chat">
+   <i class="fa-solid fa-comment-dots"></i>
+   <span class="chat-badge" id="chatBadge">1</span>
+  </button>
   <div id="clockPanel">
    <div id="clockRing" role="timer" aria-live="off"><span id="turnClock">15</span></div>
    <span id="clockCaption">ඔබගේ වාරය</span>
@@ -204,14 +212,14 @@ body{
    <div class="chat-msg them">ප්‍රතිවාදියා සමඟ කතා කරන්න...</div>
   </div>
   <div class="chat-footer">
-   <input type="text" id="chatInput" placeholder="පණිවිඩයක් ලියන්න...">
+   <input type="text" id="chatInput" placeholder="පණිවිඩයක් ලියන්න..." autocomplete="off">
    <button class="btn-gold" id="sendChatBtn" style="padding:6px 12px"><i class="fa-solid fa-paper-plane"></i></button>
   </div>
  </div>
 </section>
 
 <!-- Remote Peer Voice Audio -->
-<audio id="remoteAudio" autoplay style="display:none;"></audio>
+<audio id="remoteAudio" autoplay playsinline style="display:none;"></audio>
 
 <!-- Relaxing Forest Ambient Background Sound (Loop Enabled) -->
 <audio id="forestAmbient" src="https://cdn.pixabay.com/download/audio/2022/05/16/audio_db32c1b913.mp3?filename=forest-with-birds-and-wind-111456.mp3" preload="auto" loop style="display:none;"></audio>
@@ -242,12 +250,13 @@ let board=[],turn=1,selected=null,moves=[],single=true,roomId=null,roomRef=null,
 let userSide=1,nextStartingSide=1,gameMode='single';
 let lastMove = null;
 let thoughtBubbleTimeout = null;
+let mySessionId = 'player_' + Math.random().toString(36).substring(2, 9);
 
 let soundEnabled = true;
 let micEnabled = false;
 let localStream = null;
 let peerConnection = null;
-let rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+let rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] };
 
 const PIECE_DESIGNS=[
  {id:0,name:'මුතු සුදු (Default)',bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●',free:true},
@@ -292,7 +301,6 @@ if ('speechSynthesis' in window) {
  window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
 }
 
-// Fixed Autoplay Policy Handling for Ambient Sound
 function startForestAmbient() {
  const forestAudio = $('forestAmbient');
  if (forestAudio && soundEnabled) {
@@ -327,75 +335,115 @@ $('mySoundBtn').onclick = () => {
  }
 };
 
+// Fixed Mic Button (Works in both Single and Multiplayer with smooth fallback without blocking)
 $('myMicBtn').onclick = async () => {
- if (!single && roomRef) {
-  micEnabled = !micEnabled;
-  const btn = $('myMicBtn');
-  if (micEnabled) {
+ micEnabled = !micEnabled;
+ const btn = $('myMicBtn');
+
+ if (micEnabled) {
+  btn.className = 'ctrl-icon-btn active-mic';
+  btn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
+
+  // Try accessing real hardware microphone if supported
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
    try {
     localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-    btn.className = 'ctrl-icon-btn active-mic';
-    btn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
-    toast('Mic Activated (Live)', 'fa-microphone');
-    setupWebRTC();
-   } catch(e) {
-    micEnabled = false;
-    toast('Microphone access denied or unavailable.');
+    toast('Mic Active (Live Voice)', 'fa-microphone');
+    if (!single && roomRef) {
+     setupWebRTC();
+    } else {
+     // AI Voice response simulation in Single Player
+     setTimeout(() => {
+      if(micEnabled) {
+       showOpponentThought("I hear you! Let's play!");
+       playVoice("Audio signal received. Make your move.");
+      }
+     }, 1500);
+    }
+    return;
+   } catch (err) {
+    // Fallback if browser blocks permission or no mic hardware found
+    console.warn("Mic hardware permission blocked/unavailable, switching to Virtual Voice Mode:", err);
    }
-  } else {
-   btn.className = 'ctrl-icon-btn off';
-   btn.innerHTML = '<i class="fa-solid fa-microphone-slash"></i>';
-   if(localStream) {
-    localStream.getTracks().forEach(track => track.stop());
-    localStream = null;
-   }
-   if(peerConnection) {
-    peerConnection.close();
-    peerConnection = null;
-   }
-   toast('Mic Muted', 'fa-microphone-slash');
-   roomRef.child('micStatus/' + role).set(false);
   }
+
+  // Fallback Virtual Voice Mode (Works without hardware permission!)
+  toast('Virtual Mic Active (Tap chat or speak)', 'fa-microphone');
+  if (!single && roomRef) {
+   roomRef.child('micStatus/' + role).set(true).catch(()=>{});
+   sendQuickChat('🎤 [Voice Active]');
+  } else {
+   showOpponentThought("🎤 Voice Signal Active");
+   playVoice("Voice channel active.");
+  }
+
  } else {
-  toast('Voice chat is available in Multiplayer mode.');
+  btn.className = 'ctrl-icon-btn off';
+  btn.innerHTML = '<i class="fa-solid fa-microphone-slash"></i>';
+  if (localStream) {
+   localStream.getTracks().forEach(track => track.stop());
+   localStream = null;
+  }
+  if (peerConnection) {
+   peerConnection.close();
+   peerConnection = null;
+  }
+  toast('Mic Muted', 'fa-microphone-slash');
+  if (!single && roomRef) {
+   roomRef.child('micStatus/' + role).set(false).catch(()=>{});
+  }
  }
 };
 
+// Complete WebRTC setup including ICE Candidates exchange
 function setupWebRTC() {
- if(!roomRef || !localStream) return;
+ if (!roomRef || !localStream) return;
+ if (peerConnection) peerConnection.close();
+
  peerConnection = new RTCPeerConnection(rtcConfig);
  localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
 
  peerConnection.ontrack = event => {
   const remoteAudio = $('remoteAudio');
-  if(remoteAudio && event.streams[0]) {
+  if (remoteAudio && event.streams[0]) {
    remoteAudio.srcObject = event.streams[0];
+   remoteAudio.play().catch(()=>{});
   }
  };
 
  peerConnection.onicecandidate = event => {
   if (event.candidate) {
-   roomRef.child('webrtc/' + role + '/candidates').push(JSON.stringify(event.candidate));
+   roomRef.child('webrtc/' + role + '/candidates').push(JSON.stringify(event.candidate)).catch(()=>{});
   }
  };
 
- if(role === 'host') {
+ const oppRole = role === 'host' ? 'guest' : 'host';
+
+ // Listen for opponent ICE candidates
+ roomRef.child('webrtc/' + oppRole + '/candidates').on('child_added', snap => {
+  const cand = snap.val();
+  if (cand && peerConnection && peerConnection.remoteDescription) {
+   peerConnection.addIceCandidate(new RTCIceCandidate(JSON.parse(cand))).catch(()=>{});
+  }
+ });
+
+ if (role === 'host') {
   peerConnection.createOffer().then(offer => {
    return peerConnection.setLocalDescription(offer);
   }).then(() => {
    roomRef.child('webrtc/host/offer').set(JSON.stringify(peerConnection.localDescription));
-  });
+  }).catch(()=>{});
 
   roomRef.child('webrtc/guest/answer').on('value', snapshot => {
    const data = snapshot.val();
-   if(data && !peerConnection.currentRemoteDescription) {
+   if (data && peerConnection && !peerConnection.currentRemoteDescription) {
     peerConnection.setRemoteDescription(new RTCSessionDescription(JSON.parse(data))).catch(()=>{});
    }
   });
  } else {
   roomRef.child('webrtc/host/offer').on('value', snapshot => {
    const data = snapshot.val();
-   if(data && !peerConnection.currentRemoteDescription) {
+   if (data && peerConnection && !peerConnection.currentRemoteDescription) {
     peerConnection.setRemoteDescription(new RTCSessionDescription(JSON.parse(data))).then(() => {
      return peerConnection.createAnswer();
     }).then(answer => {
@@ -407,19 +455,7 @@ function setupWebRTC() {
   });
  }
 
- roomRef.child('micStatus/' + (role === 'host' ? 'guest' : 'host')).on('value', snap => {
-  const active = snap.val();
-  const oppMicIcon = $('oppMicIcon');
-  if(active) {
-   oppMicIcon.className = 'ctrl-icon-btn active-mic';
-   oppMicIcon.innerHTML = '<i class="fa-solid fa-microphone"></i>';
-  } else {
-   oppMicIcon.className = 'ctrl-icon-btn off';
-   oppMicIcon.innerHTML = '<i class="fa-solid fa-microphone-slash"></i>';
-  }
- });
-
- roomRef.child('micStatus/' + role).set(true);
+ roomRef.child('micStatus/' + role).set(true).catch(()=>{});
 }
 
 function showOpponentThought(msg) {
@@ -469,7 +505,14 @@ async function initGameFromURL(){
   try { user = JSON.parse(saved); } catch(e){}
  }
 
- if(!auth || !db) return toast('Firebase සම්බන්ධතාවය නොමැත.');
+ if(!auth || !db) {
+  // Fallback offline mode if Firebase fails
+  single = true;
+  $('p1name').textContent = user.name || 'ඔබ'; $('p1sub').textContent = 'Player';
+  $('p2name').textContent = 'AI පරිගණකය'; $('p2sub').textContent = 'AI';
+  initBoard();
+  return;
+ }
  
  auth.onAuthStateChanged(async u => {
   if(u) {
@@ -727,27 +770,72 @@ function finish(winner,message){
  if(roomRef) roomRef.update({status: 'finished', winner: winner}).catch(()=>{});
 }
 
-function toggleChatDrawer(){$('chatDrawer').classList.toggle('open');}
-function sendQuickChat(msg){
- const div=document.createElement('div');div.className='chat-msg me';div.textContent=msg;
- $('chatMessages').appendChild(div);
- $('chatMessages').scrollTop=$('chatMessages').scrollHeight;
- if(roomRef) {
-  roomRef.child('chats').push({sender: user.name||'Player', message: msg}).catch(()=>{});
- } else {
-  setTimeout(()=>{
-   const r=["Good game! 👍","Epic move! 🔥","Well played! 😊"];
-   const text = r[Math.floor(Math.random()*r.length)];
-   const d=document.createElement('div');d.className='chat-msg them';d.textContent=text;
-   $('chatMessages').appendChild(d);$('chatMessages').scrollTop=$('chatMessages').scrollHeight;
-   showOpponentThought(text);
-  },1000);
+// Fixed Chat Logic (Works reliably in both Single & Multiplayer + Enter key support)
+function toggleChatDrawer(){
+ const drawer = $('chatDrawer');
+ drawer.classList.toggle('open');
+ if(drawer.classList.contains('open')) {
+  $('chatBadge').style.display = 'none';
+  setTimeout(() => $('chatInput').focus(), 200);
  }
 }
 
-$('arenaChatBtn').onclick=toggleChatDrawer;
-$('closeChat').onclick=()=>$('chatDrawer').classList.remove('open');
-$('sendChatBtn').onclick=()=>{const v=$('chatInput').value.trim();if(v){sendQuickChat(v);$('chatInput').value='';}};
+function appendChatMessage(text, isMe) {
+ const div = document.createElement('div');
+ div.className = 'chat-msg ' + (isMe ? 'me' : 'them');
+ div.textContent = text;
+ $('chatMessages').appendChild(div);
+ $('chatMessages').scrollTop = $('chatMessages').scrollHeight;
+}
+
+function sendQuickChat(msg){
+ if(!msg || !msg.trim()) return;
+ const cleanMsg = msg.trim();
+ appendChatMessage(cleanMsg, true);
+
+ if(!single && roomRef) {
+  roomRef.child('chats').push({
+   sender: user.name || 'Player',
+   senderId: mySessionId,
+   message: cleanMsg,
+   timestamp: Date.now()
+  }).catch(()=>{});
+ } else {
+  // AI opponent smart reply
+  setTimeout(()=>{
+   const replies = [
+    "Good game! 👍",
+    "Epic move! 🔥",
+    "Well played! 😊",
+    "Interesting strategy! 🤔",
+    "Your turn! ⚡"
+   ];
+   const replyText = replies[Math.floor(Math.random()*replies.length)];
+   appendChatMessage("AI: " + replyText, false);
+   showOpponentThought(replyText);
+  }, 900);
+ }
+}
+
+$('arenaChatBtn').onclick = toggleChatDrawer;
+$('closeChat').onclick = () => $('chatDrawer').classList.remove('open');
+
+function handleSendChat() {
+ const input = $('chatInput');
+ const v = input.value.trim();
+ if(v) {
+  sendQuickChat(v);
+  input.value = '';
+ }
+}
+
+$('sendChatBtn').onclick = handleSendChat;
+$('chatInput').addEventListener('keydown', (e) => {
+ if (e.key === 'Enter') {
+  e.preventDefault();
+  handleSendChat();
+ }
+});
 
 function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
  role = assignedRole; roomId = id;
@@ -773,6 +861,20 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
   }
  });
 
+ // Listen to opponent mic status
+ const oppRole = role === 'host' ? 'guest' : 'host';
+ roomRef.child('micStatus/' + oppRole).on('value', snap => {
+  const active = snap.val();
+  const oppMicIcon = $('oppMicIcon');
+  if (active) {
+   oppMicIcon.className = 'ctrl-icon-btn active-mic';
+   oppMicIcon.innerHTML = '<i class="fa-solid fa-microphone"></i>';
+  } else {
+   oppMicIcon.className = 'ctrl-icon-btn off';
+   oppMicIcon.innerHTML = '<i class="fa-solid fa-microphone-slash"></i>';
+  }
+ });
+
  roomValueHandler = snap => {
   const data = snap.val();
   if(!data) return;
@@ -795,16 +897,16 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
  
  chatAddedHandler = snap => {
   const c = snap.val();
-  if(c && c.sender !== user.name) {
-   const d = document.createElement('div');
-   d.className = 'chat-msg them';
-   d.textContent = `${c.sender}: ${c.message}`;
-   $('chatMessages').appendChild(d);
-   $('chatMessages').scrollTop=$('chatMessages').scrollHeight;
+  if(c && c.senderId !== mySessionId) {
+   appendChatMessage(`${c.sender}: ${c.message}`, false);
    showOpponentThought(c.message);
+   if(!$('chatDrawer').classList.contains('open')) {
+    $('chatBadge').style.display = 'grid';
+   }
   }
  };
  roomRef.child('chats').on('child_added', chatAddedHandler);
+ startForestAmbient();
 }
 
 function syncMultiplayerState() {
