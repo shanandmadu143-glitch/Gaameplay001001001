@@ -133,10 +133,40 @@ body{
 .chat-msg { background: rgba(255,255,255,0.06); padding: 7px 11px; border-radius: 10px; font-size: 0.85rem; max-width: 85%; word-break: break-word; user-select: text; }
 .chat-msg.me { align-self: flex-end; background: rgba(46, 204, 113, 0.25); border: 1px solid rgba(46, 204, 113, 0.5); color: #fff; }
 .chat-msg.them { align-self: flex-start; background: rgba(255,255,255,0.12); color: #fff; }
-.chat-footer { padding: 10px; display: flex; gap: 6px; background: rgba(0,0,0,0.4); }
+.chat-footer { padding: 10px; display: flex; gap: 6px; background: rgba(0,0,0,0.4); align-items: center; }
 .chat-footer input { padding: 8px 10px; font-size: 0.85rem; border-radius: 12px; background: rgba(0,0,0,0.6); border: 1px solid rgba(46, 204, 113, 0.4); color: #fff; width: 100%; outline: none; user-select: text; }
 .quick-chats { display: flex; gap: 6px; overflow-x: auto; padding: 8px 10px; background: rgba(0,0,0,0.25); }
 .quick-btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-size: 0.72rem; padding: 5px 9px; border-radius: 12px; white-space: nowrap; cursor: pointer; }
+
+/* Long Press Voice Record Button Styles */
+.voice-record-btn {
+  background: rgba(255, 71, 87, 0.2);
+  border: 1px solid var(--red);
+  color: var(--red);
+  border-radius: 50%;
+  width: 38px; height: 38px;
+  min-width: 38px;
+  display: grid; place-items: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.voice-record-btn.recording {
+  background: var(--red);
+  color: #fff;
+  animation: pulseRec 1s infinite;
+}
+@keyframes pulseRec {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7); }
+  70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(255, 71, 87, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
+}
+.voice-msg-bubble {
+  display: flex; align-items: center; gap: 8px; background: rgba(46, 204, 113, 0.15) !important;
+  border: 1px solid rgba(46, 204, 113, 0.4); padding: 6px 10px; border-radius: 12px;
+}
+.voice-msg-bubble audio {
+  height: 30px; width: 140px;
+}
 
 .modal{position:fixed;inset:0;background:rgba(3,5,12,0.85);backdrop-filter:blur(8px);display:none;place-items:center;z-index:100;padding:15px}
 .modal.show{display:grid}
@@ -212,6 +242,9 @@ body{
    <div class="chat-msg them">ප්‍රතිවාදියා සමඟ කතා කරන්න...</div>
   </div>
   <div class="chat-footer">
+   <button class="voice-record-btn" id="voiceRecBtn" title="Long Press to Record Voice Message">
+     <i class="fa-solid fa-microphone"></i>
+   </button>
    <input type="text" id="chatInput" placeholder="පණිවිඩයක් ලියන්න..." autocomplete="off">
    <button class="btn-gold" id="sendChatBtn" style="padding:6px 12px"><i class="fa-solid fa-paper-plane"></i></button>
   </div>
@@ -281,6 +314,7 @@ const PIECE_DESIGNS=[
  {id:19,name:'අමරණීය අඳුර',bg:'radial-gradient(circle at 30% 30%,#2c3e50,#000000)',border:'#ffd166',color:'#ffd166',icon:'♔'}
 ];
 
+// Deep Gaming Robot Voice (English)
 function playVoice(text) {
  if (!soundEnabled || !('speechSynthesis' in window)) return;
  window.speechSynthesis.cancel();
@@ -301,6 +335,7 @@ if ('speechSynthesis' in window) {
  window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
 }
 
+// Forest Ambient Sound with Auto-Unlock Policy
 function startForestAmbient() {
  const forestAudio = $('forestAmbient');
  if (forestAudio && soundEnabled) {
@@ -335,7 +370,7 @@ $('mySoundBtn').onclick = () => {
  }
 };
 
-// Fixed Mic Button (Works in both Single and Multiplayer with smooth fallback without blocking)
+// Header Mic Button Toggle
 $('myMicBtn').onclick = async () => {
  micEnabled = !micEnabled;
  const btn = $('myMicBtn');
@@ -344,7 +379,6 @@ $('myMicBtn').onclick = async () => {
   btn.className = 'ctrl-icon-btn active-mic';
   btn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
 
-  // Try accessing real hardware microphone if supported
   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
    try {
     localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
@@ -352,7 +386,6 @@ $('myMicBtn').onclick = async () => {
     if (!single && roomRef) {
      setupWebRTC();
     } else {
-     // AI Voice response simulation in Single Player
      setTimeout(() => {
       if(micEnabled) {
        showOpponentThought("I hear you! Let's play!");
@@ -362,21 +395,14 @@ $('myMicBtn').onclick = async () => {
     }
     return;
    } catch (err) {
-    // Fallback if browser blocks permission or no mic hardware found
-    console.warn("Mic hardware permission blocked/unavailable, switching to Virtual Voice Mode:", err);
+    console.warn("Mic hardware permission blocked/unavailable:", err);
    }
   }
 
-  // Fallback Virtual Voice Mode (Works without hardware permission!)
-  toast('Virtual Mic Active (Tap chat or speak)', 'fa-microphone');
+  toast('Virtual Mic Active', 'fa-microphone');
   if (!single && roomRef) {
    roomRef.child('micStatus/' + role).set(true).catch(()=>{});
-   sendQuickChat('🎤 [Voice Active]');
-  } else {
-   showOpponentThought("🎤 Voice Signal Active");
-   playVoice("Voice channel active.");
   }
-
  } else {
   btn.className = 'ctrl-icon-btn off';
   btn.innerHTML = '<i class="fa-solid fa-microphone-slash"></i>';
@@ -395,7 +421,89 @@ $('myMicBtn').onclick = async () => {
  }
 };
 
-// Complete WebRTC setup including ICE Candidates exchange
+// Long Press Voice Message Recording
+let mediaRecorder = null;
+let audioChunks = [];
+let isRecording = false;
+const voiceBtn = $('voiceRecBtn');
+
+if (voiceBtn) {
+ const startRec = async (e) => {
+  e.preventDefault();
+  if (isRecording) return;
+  try {
+   const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+   mediaRecorder = new MediaRecorder(stream);
+   audioChunks = [];
+
+   mediaRecorder.ondataavailable = event => {
+    if (event.data.size > 0) audioChunks.push(event.data);
+   };
+
+   mediaRecorder.onstop = () => {
+    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+    const audioUrl = URL.createObjectURL(audioBlob);
+    sendVoiceMessage(audioUrl);
+    stream.getTracks().forEach(track => track.stop());
+   };
+
+   mediaRecorder.start();
+   isRecording = true;
+   voiceBtn.classList.add('recording');
+   toast('🎙️ Recording... (අතහරින්න යවන්න)', 'fa-microphone');
+  } catch (err) {
+   toast('Microphone අවසරය අවශ්‍යයි.');
+  }
+ };
+
+ const stopRec = (e) => {
+  e.preventDefault();
+  if (!isRecording || !mediaRecorder) return;
+  mediaRecorder.stop();
+  isRecording = false;
+  voiceBtn.classList.remove('recording');
+  toast('🎤 Voice Message යවන ලදී', 'fa-paper-plane');
+ };
+
+ voiceBtn.addEventListener('mousedown', startRec);
+ voiceBtn.addEventListener('mouseup', stopRec);
+ voiceBtn.addEventListener('mouseleave', () => { if(isRecording) stopRec({preventDefault:()=>{}}); });
+ voiceBtn.addEventListener('touchstart', startRec);
+ voiceBtn.addEventListener('touchend', stopRec);
+}
+
+function sendVoiceMessage(audioUrl) {
+ const div = document.createElement('div');
+ div.className = 'chat-msg me voice-msg-bubble';
+ 
+ const audioEl = document.createElement('audio');
+ audioEl.controls = true;
+ audioEl.src = audioUrl;
+
+ const iconEl = document.createElement('i');
+ iconEl.className = 'fa-solid fa-microphone-lines';
+ iconEl.style.color = '#2ecc71';
+
+ div.append(iconEl, audioEl);
+ $('chatMessages').appendChild(div);
+ $('chatMessages').scrollTop = $('chatMessages').scrollHeight;
+
+ if (!single && roomRef) {
+  roomRef.child('chats').push({
+   sender: user.name || 'Player',
+   senderId: mySessionId,
+   message: '[Voice Message]',
+   audioUrl: audioUrl,
+   timestamp: Date.now()
+  }).catch(()=>{});
+ } else {
+  setTimeout(() => {
+   showOpponentThought("🎙️ Listened to voice note");
+   playVoice("Voice message received.");
+  }, 1000);
+ }
+}
+
 function setupWebRTC() {
  if (!roomRef || !localStream) return;
  if (peerConnection) peerConnection.close();
@@ -418,8 +526,6 @@ function setupWebRTC() {
  };
 
  const oppRole = role === 'host' ? 'guest' : 'host';
-
- // Listen for opponent ICE candidates
  roomRef.child('webrtc/' + oppRole + '/candidates').on('child_added', snap => {
   const cand = snap.val();
   if (cand && peerConnection && peerConnection.remoteDescription) {
@@ -462,15 +568,11 @@ function showOpponentThought(msg) {
  const bubble = $('opponentThoughtBubble');
  if(!bubble) return;
  let shortMsg = String(msg || '').trim();
- if (shortMsg.length > 25) {
-  shortMsg = shortMsg.substring(0, 22) + '...';
- }
+ if (shortMsg.length > 25) shortMsg = shortMsg.substring(0, 22) + '...';
  bubble.textContent = shortMsg;
  bubble.classList.add('show');
  if(thoughtBubbleTimeout) clearTimeout(thoughtBubbleTimeout);
- thoughtBubbleTimeout = setTimeout(() => {
-  bubble.classList.remove('show');
- }, 4000);
+ thoughtBubbleTimeout = setTimeout(() => { bubble.classList.remove('show'); }, 4000);
 }
 
 function toast(s, icon='fa-circle-info'){
@@ -501,12 +603,9 @@ async function initGameFromURL(){
  $('arenaBetDisplay').textContent = gameMode === 'freestyle' ? 'FREE' : bet;
 
  const saved = localStorage.getItem(KEY);
- if(saved) {
-  try { user = JSON.parse(saved); } catch(e){}
- }
+ if(saved) { try { user = JSON.parse(saved); } catch(e){} }
 
  if(!auth || !db) {
-  // Fallback offline mode if Firebase fails
   single = true;
   $('p1name').textContent = user.name || 'ඔබ'; $('p1sub').textContent = 'Player';
   $('p2name').textContent = 'AI පරිගණකය'; $('p2sub').textContent = 'AI';
@@ -554,8 +653,8 @@ function initBoard(){
  board=createFreshBoard();
  turn=1;selected=null;moves=[];gameOver=false;processing=false;forcedContinuation=null;
  lastMove=null;
- if(single){userSide=nextStartingSide;}
- render();setTurnUI();
+ if(single) userSide = nextStartingSide;
+ render(); setTurnUI();
  
  startForestAmbient();
 
@@ -563,7 +662,7 @@ function initBoard(){
   playVoice("System online. Forest ambient active. Good luck!");
  }, 800);
 
- if(single&&turn!==userSide)aiTimer=setTimeout(aiMove,600);
+ if(single && turn !== userSide) aiTimer = setTimeout(aiMove, 600);
 }
 
 const inside=(r,c)=>r>=0&&r<8&&c>=0&&c<8;
@@ -770,7 +869,6 @@ function finish(winner,message){
  if(roomRef) roomRef.update({status: 'finished', winner: winner}).catch(()=>{});
 }
 
-// Fixed Chat Logic (Works reliably in both Single & Multiplayer + Enter key support)
 function toggleChatDrawer(){
  const drawer = $('chatDrawer');
  drawer.classList.toggle('open');
@@ -801,15 +899,8 @@ function sendQuickChat(msg){
    timestamp: Date.now()
   }).catch(()=>{});
  } else {
-  // AI opponent smart reply
   setTimeout(()=>{
-   const replies = [
-    "Good game! 👍",
-    "Epic move! 🔥",
-    "Well played! 😊",
-    "Interesting strategy! 🤔",
-    "Your turn! ⚡"
-   ];
+   const replies = ["Good game! 👍", "Epic move! 🔥", "Well played! 😊", "Interesting strategy! 🤔", "Your turn! ⚡"];
    const replyText = replies[Math.floor(Math.random()*replies.length)];
    appendChatMessage("AI: " + replyText, false);
    showOpponentThought(replyText);
@@ -861,7 +952,6 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
   }
  });
 
- // Listen to opponent mic status
  const oppRole = role === 'host' ? 'guest' : 'host';
  roomRef.child('micStatus/' + oppRole).on('value', snap => {
   const active = snap.val();
@@ -881,10 +971,7 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
   if(Array.isArray(data.board)) board = data.board;
   turn = Number(data.turn) === -1 ? -1 : 1;
   forcedContinuation = data.forcedContinuation || null;
-  
-  if(data.lastMove) {
-   lastMove = data.lastMove;
-  }
+  if(data.lastMove) lastMove = data.lastMove;
 
   render();
   if(data.status === 'finished') {
@@ -898,8 +985,22 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
  chatAddedHandler = snap => {
   const c = snap.val();
   if(c && c.senderId !== mySessionId) {
-   appendChatMessage(`${c.sender}: ${c.message}`, false);
-   showOpponentThought(c.message);
+   if(c.audioUrl) {
+    const div = document.createElement('div');
+    div.className = 'chat-msg them voice-msg-bubble';
+    const audioEl = document.createElement('audio');
+    audioEl.controls = true;
+    audioEl.src = c.audioUrl;
+    const iconEl = document.createElement('i');
+    iconEl.className = 'fa-solid fa-microphone-lines';
+    iconEl.style.color = '#2ecc71';
+    div.append(iconEl, audioEl);
+    $('chatMessages').appendChild(div);
+    $('chatMessages').scrollTop = $('chatMessages').scrollHeight;
+   } else {
+    appendChatMessage(`${c.sender}: ${c.message}`, false);
+   }
+   showOpponentThought(c.message || '[Voice]');
    if(!$('chatDrawer').classList.contains('open')) {
     $('chatBadge').style.display = 'grid';
    }
@@ -924,13 +1025,11 @@ function syncMultiplayerState() {
 function leaveArena(){
  clearInterval(turnClockTimer);clearTimeout(aiTimer);
  const forestAudio = $('forestAmbient');
- if(forestAudio) { forestAudio.pause(); }
- if(localStream) { localStream.getTracks().forEach(t => t.stop()); }
- if(peerConnection) { peerConnection.close(); }
+ if(forestAudio) forestAudio.pause();
+ if(localStream) localStream.getTracks().forEach(t => t.stop());
+ if(peerConnection) peerConnection.close();
  if(roomRef){
-  if(!gameOver && gameMode==='multi'){
-   roomRef.update({status:'finished',winner:-userSide}).catch(()=>{});
-  }
+  if(!gameOver && gameMode==='multi') roomRef.update({status:'finished',winner:-userSide}).catch(()=>{});
   if(roomValueHandler) roomRef.off('value', roomValueHandler);
   if(chatAddedHandler) roomRef.child('chats').off('child_added', chatAddedHandler);
  }
