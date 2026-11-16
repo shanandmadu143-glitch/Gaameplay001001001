@@ -298,9 +298,8 @@ if ('speechSynthesis' in window) {
 function startForestAmbient() {
  const forestAudio = $('forestAmbient');
  if (forestAudio && soundEnabled) {
-  forestAudio.volume = 0.4; // Relaxing background level
-  forestAudio.play().catch(e => {
-   // Autoplay policy fallback: play on first click/touch
+  forestAudio.volume = 0.4;
+  forestAudio.play().catch(() => {
    window.addEventListener('click', () => { forestAudio.play(); }, { once: true });
   });
  }
@@ -511,7 +510,6 @@ function initBoard(){
  if(single){userSide=nextStartingSide;}
  render();setTurnUI();
  
- // Start Forest Ambient Relaxing Background Audio
  startForestAmbient();
 
  setTimeout(() => {
@@ -714,12 +712,12 @@ function finish(winner,message){
 
  if(won){
   playVoice("Victory achieved. Outstanding performance!");
-} else {
+ } else {
   playVoice("Mission failed. Better luck next time.");
-}
+ }
 
  $('overTitle').textContent=won?'VICTORY! 🎉':'DEFEAT!';
- $('overTitle'].style.color=won?'var(--neon-green)':'var(--red)';
+ $('overTitle').style.color=won?'var(--neon-green)':'var(--red)'; // නිවැරදි කරන ලදී (fixed closing quote issue)
  $('overMessage').textContent=message;
  modal('overModal',true);
  if(roomRef) roomRef.update({status: 'finished', winner: winner}).catch(()=>{});
