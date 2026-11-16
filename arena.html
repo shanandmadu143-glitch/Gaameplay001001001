@@ -39,6 +39,17 @@ body{min-height:100dvh;display:flex;flex-direction:column;justify-content:center
 .sq.target:after { content:''; width:32%; height:32%; border-radius:50%; background:#2ecc71; }
 .sq.capture:after { content:''; width:42%; height:42%; border-radius:50%; background:#ff4757; }
 
+/* Last Move Highlight Styles */
+.sq.last-move-from {
+  background: rgba(255, 165, 2, 0.35) !important;
+  box-shadow: inset 0 0 10px rgba(255, 165, 2, 0.6);
+}
+.sq.last-move-to {
+  background: rgba(0, 242, 254, 0.35) !important;
+  box-shadow: inset 0 0 12px rgba(0, 242, 254, 0.8);
+  border: 2px dashed var(--neon-blue);
+}
+
 .piece { width: 82%; height: 82%; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.7); display: grid; place-items: center; font-size: 1.15rem; position: relative; }
 .king:after { content:'♛'; font-size: clamp(13px,3.2vw,19px); position: absolute; bottom: 2px; right: 2px; color: #ffd166; }
 
@@ -155,6 +166,7 @@ const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user';
 let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,avatarIcon:'fa-user'};
 let board=[],turn=1,selected=null,moves=[],single=true,roomId=null,roomRef=null,roomValueHandler=null,chatAddedHandler=null,role=null,gameOver=false,aiTimer=null,processing=false,turnClockTimer=null,turnDeadline=0,forcedContinuation=null;
 let userSide=1,nextStartingSide=1,gameMode='single';
+let lastMove = null; // ප්‍රතිවාදියාගේ හෝ තමන්ගේ අන්තිම Move එක ගබඩා කිරීමට
 
 const PIECE_DESIGNS=[
  {id:0,name:'මුතු සුදු (Default)',bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●',free:true},
@@ -252,6 +264,7 @@ function initBoard(){
  clearInterval(turnClockTimer);
  board=createFreshBoard();
  turn=1;selected=null;moves=[];gameOver=false;processing=false;forcedContinuation=null;
+ lastMove=null;
  if(single){userSide=nextStartingSide;}
  render();setTurnUI();
  if(single&&turn!==userSide)aiTimer=setTimeout(aiMove,600);
@@ -310,6 +323,12 @@ function render(){
    const m=moves.find(x=>x.toR===r&&x.toC===c);
    if(m)sq.classList.add(m.capture?'capture':'target');
    
+   // Highlight Last Move
+   if(lastMove){
+    if(lastMove.fromR === r && lastMove.fromC === c) sq.classList.add('last-move-from');
+    if(lastMove.toR === r && lastMove.toC === c) sq.classList.add('last-move-to');
+   }
+
    if(board[r][c]){
     const val=board[r][c],p=document.createElement('div');
     const isMyPiece = single ? (Math.sign(val) === userSide) : (role === 'host' ? Math.sign(val) === 1 : Math.sign(val) === -1);
@@ -357,6 +376,9 @@ function applyMove(b,m){
 async function playMove(m){
  if(processing||gameOver)return;
  processing=true;
+ 
+ lastMove = { fromR: m.fromR, fromC: m.fromC, toR: m.toR, toC: m.toC };
+
  const moving=board[m.fromR][m.fromC];
  applyMove(board,m);selected=null;moves=[];
  const landed=board[m.toR][m.toC];
@@ -413,7 +435,11 @@ function aiMove(){
  if(!legal.length)return finish(userSide,'AI පරිගණකයට Move නොමැත.');
  if(forcedContinuation)legal=pieceMoves(forcedContinuation.r,forcedContinuation.c).filter(m=>m.capture);
  if(!legal.length){forcedContinuation=null;legal=allMoves(aiSide);}
- const m=legal[Math.floor(Math.random()*legal.length)],moving=board[m.fromR][m.fromC];
+ const m=legal[Math.floor(Math.random()*legal.length)];
+ 
+ lastMove = { fromR: m.fromR, fromC: m.fromC, toR: m.toR, toC: m.toC };
+
+ const moving=board[m.fromR][m.fromC];
  applyMove(board,m);
  const landed=board[m.toR][m.toC];
  const followUps=m.capture&&Math.abs(landed)===Math.abs(moving)?pieceMoves(m.toR,m.toC).filter(x=>x.capture):[];
@@ -489,6 +515,11 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
   if(Array.isArray(data.board)) board = data.board;
   turn = Number(data.turn) === -1 ? -1 : 1;
   forcedContinuation = data.forcedContinuation || null;
+  
+  if(data.lastMove) {
+   lastMove = data.lastMove;
+  }
+
   render();
   if(data.status === 'finished') {
    if(!gameOver) finish(Number(data.winner), 'තරඟය අවසන් විය.');
@@ -505,7 +536,7 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
    d.className = 'chat-msg them';
    d.textContent = `${c.sender}: ${c.message}`;
    $('chatMessages').appendChild(d);
-   $('chatMessages').scrollTop = $('chatMessages').scrollHeight;
+   $('chatMessages').scrollTop=$('chatMessages').scrollHeight;
   }
  };
  roomRef.child('chats').on('child_added', chatAddedHandler);
@@ -517,6 +548,7 @@ function syncMultiplayerState() {
    board: board,
    turn: turn,
    forcedContinuation: forcedContinuation || null,
+   lastMove: lastMove || null,
    updatedAt: firebase.database.ServerValue.TIMESTAMP
   }).catch(()=>{});
  }
