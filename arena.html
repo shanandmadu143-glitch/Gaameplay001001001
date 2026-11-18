@@ -242,7 +242,7 @@ body{
    <div class="chat-msg them">ප්‍රතිවාදියා සමඟ කතා කරන්න...</div>
   </div>
   <div class="chat-footer">
-   <button class="voice-record-btn" id="voiceRecBtn" title="Long Press to Record Voice Message">
+   <button class="voice-record-btn" id="voiceRecBtn" title="Press & Hold to Send Live Voice Note">
      <i class="fa-solid fa-microphone"></i>
    </button>
    <input type="text" id="chatInput" placeholder="පණිවිඩයක් ලියන්න..." autocomplete="off">
@@ -251,7 +251,7 @@ body{
  </div>
 </section>
 
-<!-- Remote Peer Voice Audio -->
+<!-- Audio playback element for incoming voice messages -->
 <audio id="remoteAudio" autoplay playsinline style="display:none;"></audio>
 
 <!-- Relaxing Forest Ambient Background Sound (Loop Enabled) -->
@@ -287,9 +287,8 @@ let mySessionId = 'player_' + Math.random().toString(36).substring(2, 9);
 
 let soundEnabled = true;
 let micEnabled = false;
-let localStream = null;
-let peerConnection = null;
-let rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] };
+let liveRecorder = null;
+let audioChunks = [];
 
 const PIECE_DESIGNS=[
  {id:0,name:'මුතු සුදු (Default)',bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●',free:true},
@@ -368,51 +367,38 @@ $('mySoundBtn').onclick = () => {
  }
 };
 
-// Fixed Live WebRTC Audio Chat Toggle
+// Mic Button Toggle (Instant Walkie-Talkie Live Voice Chat)
 $('myMicBtn').onclick = async () => {
  micEnabled = !micEnabled;
  const btn = $('myMicBtn');
 
  if (micEnabled) {
   try {
-   localStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true }, video: false });
+   const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
    btn.className = 'ctrl-icon-btn active-mic';
    btn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
-   toast('Mic Active (Live Voice)', 'fa-microphone');
-   
-   if (!single && roomRef) {
-    setupWebRTC();
-   } else {
-    playVoice("Microphone online. Audio link active.");
+   toast('Mic Active (Tap & Hold Record to Speak)', 'fa-microphone');
+   if(!single && roomRef) {
+    roomRef.child('micStatus/' + role).set(true).catch(()=>{});
    }
   } catch (err) {
    micEnabled = false;
    btn.className = 'ctrl-icon-btn off';
    btn.innerHTML = '<i class="fa-solid fa-microphone-slash"></i>';
-   toast('Microphone permission denied or unavailable.');
+   toast('Microphone permission denied.');
   }
  } else {
   btn.className = 'ctrl-icon-btn off';
   btn.innerHTML = '<i class="fa-solid fa-microphone-slash"></i>';
-  if (localStream) {
-   localStream.getTracks().forEach(track => track.stop());
-   localStream = null;
-  }
-  if (peerConnection) {
-   peerConnection.close();
-   peerConnection = null;
-  }
   toast('Mic Muted', 'fa-microphone-slash');
-  if (!single && roomRef) {
+  if(!single && roomRef) {
    roomRef.child('micStatus/' + role).set(false).catch(()=>{});
-   roomRef.child('webrtc/' + role).remove().catch(()=>{});
   }
  }
 };
 
-// Long Press Voice Message Recording
+// Long Press Voice Message / Walkie-Talkie Audio Note Recorder
 let mediaRecorder = null;
-let audioChunks = [];
 let isRecording = false;
 const voiceBtn = $('voiceRecBtn');
 
@@ -443,7 +429,7 @@ if (voiceBtn) {
    mediaRecorder.start();
    isRecording = true;
    voiceBtn.classList.add('recording');
-   toast('🎙️ Recording... (අතහරින්න යවන්න)', 'fa-microphone');
+   toast('🎙️ Recording Live Audio...', 'fa-microphone');
   } catch (err) {
    toast('Microphone අවසරය අවශ්‍යයි.');
   }
@@ -455,7 +441,7 @@ if (voiceBtn) {
   mediaRecorder.stop();
   isRecording = false;
   voiceBtn.classList.remove('recording');
-  toast('🎤 Voice Message යවන ලදී', 'fa-paper-plane');
+  toast('🎤 Voice Note යවන ලදී', 'fa-paper-plane');
  };
 
  voiceBtn.addEventListener('mousedown', startRec);
@@ -499,76 +485,11 @@ function appendVoiceMessage(audioUrl, isMe) {
  div.append(iconEl, audioEl);
  $('chatMessages').appendChild(div);
  $('chatMessages').scrollTop = $('chatMessages').scrollHeight;
-}
 
-// Fixed Robust WebRTC Audio Setup
-function setupWebRTC() {
- if (!roomRef || !localStream) return;
- if (peerConnection) {
-  peerConnection.close();
-  peerConnection = null;
+ // Automatically play incoming voice message from opponent
+ if (!isMe && soundEnabled) {
+  audioEl.play().catch(e => console.log("Auto-play prevented:", e));
  }
-
- peerConnection = new RTCPeerConnection(rtcConfig);
- 
- // Add local tracks to peer connection
- localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
-
- // Handle incoming remote audio stream
- peerConnection.ontrack = event => {
-  const remoteAudio = $('remoteAudio');
-  if (remoteAudio && event.streams[0]) {
-   remoteAudio.srcObject = event.streams[0];
-   remoteAudio.play().catch(e => console.log("Remote audio play error:", e));
-  }
- };
-
- // Send ICE candidates to Firebase
- peerConnection.onicecandidate = event => {
-  if (event.candidate) {
-   roomRef.child('webrtc/' + role + '/candidates').push(JSON.stringify(event.candidate)).catch(()=>{});
-  }
- };
-
- const oppRole = role === 'host' ? 'guest' : 'host';
-
- // Listen for opponent ICE candidates
- roomRef.child('webrtc/' + oppRole + '/candidates').on('child_added', snap => {
-  const cand = snap.val();
-  if (cand && peerConnection) {
-   peerConnection.addIceCandidate(new RTCIceCandidate(JSON.parse(cand))).catch(e => console.log("ICE add error:", e));
-  }
- });
-
- if (role === 'host') {
-  peerConnection.createOffer().then(offer => {
-   return peerConnection.setLocalDescription(offer);
-  }).then(() => {
-   roomRef.child('webrtc/host/offer').set(JSON.stringify(peerConnection.localDescription));
-  }).catch(e => console.log("Offer creation error:", e));
-
-  roomRef.child('webrtc/guest/answer').on('value', snapshot => {
-   const data = snapshot.val();
-   if (data && peerConnection && !peerConnection.currentRemoteDescription) {
-    peerConnection.setRemoteDescription(new RTCSessionDescription(JSON.parse(data))).catch(e => console.log("Answer set error:", e));
-   }
-  });
- } else {
-  roomRef.child('webrtc/host/offer').on('value', snapshot => {
-   const data = snapshot.val();
-   if (data && peerConnection && !peerConnection.currentRemoteDescription) {
-    peerConnection.setRemoteDescription(new RTCSessionDescription(JSON.parse(data))).then(() => {
-     return peerConnection.createAnswer();
-    }).then(answer => {
-     return peerConnection.setLocalDescription(answer);
-    }).then(() => {
-     roomRef.child('webrtc/guest/answer').set(JSON.stringify(peerConnection.localDescription));
-    }).catch(e => console.log("Answer creation error:", e));
-   }
-  });
- }
-
- roomRef.child('micStatus/' + role).set(true).catch(()=>{});
 }
 
 function showOpponentThought(msg) {
@@ -877,7 +798,6 @@ function finish(winner,message){
  if(roomRef) {
   roomRef.update({status: 'finished', winner: winner}).catch(()=>{});
   roomRef.child('chats').remove().catch(()=>{});
-  roomRef.child('webrtc').remove().catch(()=>{});
  }
 }
 
@@ -1029,19 +949,10 @@ function leaveArena(){
  clearInterval(turnClockTimer);clearTimeout(aiTimer);
  const forestAudio = $('forestAmbient');
  if(forestAudio) forestAudio.pause();
- if(localStream) {
-  localStream.getTracks().forEach(t => t.stop());
-  localStream = null;
- }
- if(peerConnection) {
-  peerConnection.close();
-  peerConnection = null;
- }
  if(roomRef){
   if(!gameOver && gameMode==='multi') {
    roomRef.update({status:'finished',winner:-userSide}).catch(()=>{});
    roomRef.child('chats').remove().catch(()=>{});
-   roomRef.child('webrtc/' + role).remove().catch(()=>{});
   }
   if(roomValueHandler) roomRef.off('value', roomValueHandler);
   if(chatAddedHandler) roomRef.child('chats').off('child_added', chatAddedHandler);
