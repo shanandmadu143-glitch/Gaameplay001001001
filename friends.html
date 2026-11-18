@@ -163,7 +163,7 @@ auth.onAuthStateChanged(async u=>{
     user.uid = u.uid;
    }
    
-   // Sync both users_v6 and publicProfiles_v6 to ensure data consistency
+   // Sync profile to database immediately on load
    const profileData = {
     name: user.name,
     points: user.points,
@@ -171,6 +171,7 @@ auth.onAuthStateChanged(async u=>{
     avatarIcon: user.avatarIcon
    };
    await db.ref('publicProfiles_v6/'+u.uid).set(profileData);
+   await db.ref('users_v6/'+u.uid).update(profileData);
 
    // Setup online presence
    const userStatusDatabaseRef = db.ref('status_v6/' + u.uid);
@@ -201,17 +202,22 @@ async function loadAllPlayers(rawQuery) {
  resultsContainer.innerHTML = 'ක්‍රීඩකයන් පූරණය වෙමින්...';
 
  try {
-  // Fetch from users_v6 and publicProfiles_v6, fallback to users_v6 if publicProfiles is empty
   const [profilesSnap, usersSnap, statusSnap] = await Promise.all([
       db.ref('publicProfiles_v6').once('value'),
       db.ref('users_v6').once('value'),
       db.ref('status_v6').once('value')
   ]);
 
+  // Combine data sources so no user is missed
   let profiles = profilesSnap.val() || {};
-  if(Object.keys(profiles).length === 0 && usersSnap.exists()) {
-      profiles = usersSnap.val();
-  }
+  const users = usersSnap.val() || {};
+  
+  // Merge users into profiles if any missing
+  Object.keys(users).forEach(uid => {
+      if(!profiles[uid]) {
+          profiles[uid] = users[uid];
+      }
+  });
 
   if (!profiles || Object.keys(profiles).length === 0) {
    resultsContainer.innerHTML = 'ක්‍රීඩකයන් හමු නොවීය.';
@@ -226,7 +232,7 @@ async function loadAllPlayers(rawQuery) {
    const pData = profiles[uid];
    const candidateName = pData && pData.name ? String(pData.name) : '';
    
-   // Exclude current user from the list
+   // Exclude current user from list
    if(fbUser && uid === fbUser.uid) return;
 
    if(candidateName && (!queryName || candidateName.toLowerCase().includes(queryName))) {
