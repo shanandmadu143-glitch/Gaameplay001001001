@@ -163,15 +163,15 @@ auth.onAuthStateChanged(async u=>{
     user.uid = u.uid;
    }
    
-   // Ensure current user's public profile is up to date so it can be fetched
-   await db.ref('publicProfiles_v6/'+u.uid).update({
+   // Sync public profile
+   await db.ref('publicProfiles_v6/'+u.uid).set({
     name: user.name,
     points: user.points,
     pieceIndex: user.pieceIndex,
     avatarIcon: user.avatarIcon
    });
 
-   // Set User Presence (Online Status)
+   // Setup online presence
    const userStatusDatabaseRef = db.ref('status_v6/' + u.uid);
    const isOfflineForDatabase = { state: 'offline', last_changed: firebase.database.ServerValue.TIMESTAMP };
    const isOnlineForDatabase = { state: 'online', last_changed: firebase.database.ServerValue.TIMESTAMP };
@@ -219,7 +219,7 @@ async function loadAllPlayers(rawQuery) {
    const pData = profiles[uid];
    const candidateName = pData && pData.name ? String(pData.name) : '';
    
-   // Exclude current user from the list if desired, or keep all
+   // තමන් හැර අනෙක් සියලුම ක්‍රීඩකයන් (Online සහ Offline) පෙන්වීම
    if(fbUser && uid === fbUser.uid) return;
 
    if(candidateName && (!queryName || candidateName.toLowerCase().includes(queryName))) {
@@ -422,7 +422,7 @@ $('acceptInviteBtn').onclick = async () => {
  }
 };
 
-$('rejectInviteBtn').onclick = () => {
+$('rejectInvite`Btn').onclick = () => {
  if(!incomingInviteData) return;
  const invite = incomingInviteData;
  incomingInviteData = null;
