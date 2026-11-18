@@ -79,7 +79,7 @@ input{width:100%;padding:10px 14px;background:rgba(0,0,0,0.5);border:1px solid r
    <button class="reward-banner" id="collectRewards"><i class="fa-solid fa-shield-halved"></i> දෛනික ත්‍යාග ලබාගන්න</button>
    <div class="mode-grid">
     <div class="mode mode-single" id="single" role="button" tabindex="0"><b>SINGLE PLAYER</b><p>AI පරිගණකය සමඟ තරඟ කරන්න</p></div>
-    <div class="mode mode-multi" id="multi" role="button" tabindex="0"><b>MULTIPLAYER</b><p>ඔන්ලයින් යහළුවන් සමඟ සෙල්ලම් කරන්න</p></div>
+    <div class="mode mode-multi" id="multi" role="button" tabindex="0"><b>MULTIPLAYER</b><p>ඔන් لائن යහළුවන් සමඟ සෙල්ලම් කරන්න</p></div>
     <div class="mode mode-free" id="freestyle" role="button" tabindex="0"><b>PLAY FREESTYLE</b><p>ඔට්ටු රහිත පුහුණු ක්‍රීඩාව</p></div>
    </div>
    <div id="connection">● Firebase සම්බන්ධ වෙමින්...</div>
@@ -87,8 +87,8 @@ input{width:100%;padding:10px 14px;background:rgba(0,0,0,0.5);border:1px solid r
  </main>
 
  <footer class="bottom-nav" id="bottomNav">
-  <button class="nav-item active" id="navHome"><i class="fa-solid fa-house"></i><span>Home</span></button>
-  <button class="nav-item" id="navFriends"><i class="fa-solid fa-user-group"></i><span>Friends</span></button>
+  <a class="nav-item active" href="index.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
+  <a class="nav-item" href="friends.html"><i class="fa-solid fa-user-group"></i><span>Friends</span></a>
   <button class="nav-item" id="navProfile"><i class="fa-solid fa-circle-user"></i><span>Profile</span></button>
   <a class="nav-item" href="shopandreward.html"><i class="fa-solid fa-trophy"></i><span>Events</span></a>
   <a class="nav-item" href="shopandreward.html"><i class="fa-solid fa-cart-shopping"></i><span>Shop</span></a>
@@ -138,35 +138,6 @@ input{width:100%;padding:10px 14px;background:rgba(0,0,0,0.5);border:1px solid r
  </div>
 </div>
 
-<div class="modal" id="multiModal">
- <div class="modalbox">
-  <div class="row"><h3 style="flex:1">ඔන්ලයින් යහළුවන්</h3><button class="btn" id="closeMulti">×</button></div>
-  <p style="font-size:0.8rem;color:var(--gold)">තෝරාගත් ඔට්ටුව: <b id="activeBetDisplay">50</b> pts</p>
-  <div class="row"><input id="search" placeholder="යහළුවාගේ නම ලියන්න..."><button class="btn-gold" id="searchBtn">Search</button></div>
-  <div class="list" id="results" style="max-height:180px;overflow-y:auto;margin-top:6px;display:flex;flex-direction:column;gap:6px;">Online ක්‍රීඩකයන් සොයන්න.</div>
- </div>
-</div>
-
-<div class="modal" id="waitingHostModal">
- <div class="modalbox" style="text-align:center;gap:12px;padding:24px">
-  <div style="width:40px;height:40px;margin:auto;border:4px solid rgba(255,255,255,0.2);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite"></div>
-  <h3 id="waitingHostTitle">ආරාධනය යවන ලදී!</h3>
-  <p id="waitingHostText" style="color:var(--dim);font-size:0.9rem">ප්‍රතිවාදියා පිළිගන්නා තෙක් රැඳී සිටින්න...</p>
-  <button class="btn" id="cancelInviteBtn" style="border-color:var(--red);color:var(--red)">අවලංගු කරන්න (Cancel)</button>
- </div>
-</div>
-
-<div class="modal" id="invitePopupModal">
- <div class="modalbox" style="text-align:center;gap:10px">
-  <h3>ක්‍රීඩා ආරාධනයක්!</h3>
-  <p id="invitePopupText" style="color:var(--dim);font-size:0.9rem"></p>
-  <div class="row" style="width:100%">
-   <button class="btn-gold" id="acceptInviteBtn" style="flex:1">පිළිගන්න (Accept)</button>
-   <button class="btn" id="rejectInviteBtn" style="flex:1">ප්‍රතික්ෂේප කරන්න</button>
-  </div>
- </div>
-</div>
-
 <div class="modal show" id="loadingModal">
  <div class="modalbox" style="text-align:center;display:grid;place-items:center;gap:12px;padding:24px">
   <div style="width:40px;height:40px;border:4px solid rgba(255,255,255,0.2);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite"></div>
@@ -196,7 +167,6 @@ input{width:100%;padding:10px 14px;background:rgba(0,0,0,0.5);border:1px solid r
 const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
 const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user';
 let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user',unlockedAvatars:['fa-user']};
-let incomingInviteData=null,invitesListenerRef=null,activeInviteWatcher=null;
 
 const PIECE_DESIGNS=[
  {id:0,name:'මුතු සුදු (Default)',bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●',free:true},
@@ -267,9 +237,7 @@ catch(e){console.error('Firebase initialization failed:',e);$('connection').text
    fbUser=u;
    if(u) {
     await loadSignedInUser();
-    listenForIncomingInvites();
    } else {
-    if(invitesListenerRef){invitesListenerRef.off();invitesListenerRef=null;}
     user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user',unlockedAvatars:['fa-user']};
     updateHeader();
     modal('loadingModal',false);
@@ -495,7 +463,6 @@ $('logoutBtn').onclick=async()=>{
  toast('ගිණුමෙන් ඉවත් විය.');
 };
 
-// Launch Game Arena helper
 function launchArena(params) {
  const query = new URLSearchParams(params).toString();
  window.location.href = `arena.html?${query}`;
@@ -524,219 +491,15 @@ $('multi').onclick = () => {
     modal('betModal', true);
 };
 
-$('navFriends').onclick = () => {
-    if(!fbUser) return toast('කරුණාකර පළමුව ගිණුමට ඇතුළු වන්න.');
-    modal('multiModal', true);
-    loadFriendResults('');
-};
-
 $('closeBetModal').onclick = () => modal('betModal', false);
 
 $('proceedToInvite').onclick = () => {
     const bet = Number($('betAmountInput').value);
     if(!Number.isInteger(bet) || bet < 10 || bet > user.points) return toast('Points 10 සිට ඔබ සතු උපරිම Points දක්වා ඇතුළත් කරන්න.');
-    $('activeBetDisplay').textContent = bet;
-    modal('betModal', false);
-    modal('multiModal', true);
-    loadFriendResults('');
-};
-
-$('closeMulti').onclick = () => modal('multiModal', false);
-
-async function loadFriendResults(rawQuery) {
-    const queryName = String(rawQuery || '').trim().toLowerCase();
-    const resultsContainer = $('results');
-    resultsContainer.innerHTML = 'සොයමින් පවතී...';
-
-    try {
-        const snap = await db.ref('publicProfiles_v6').once('value');
-        if (!snap.exists()) {
-            resultsContainer.innerHTML = 'ක්‍රීඩකයන් හමු නොවීය.';
-            return;
-        }
-
-        const profiles = snap.val();
-        resultsContainer.innerHTML = '';
-        let found = false;
-
-        Object.keys(profiles).forEach(uid => {
-            const pData = profiles[uid];
-            const candidateName = pData && pData.name ? String(pData.name) : '';
-            if(uid !== fbUser.uid && candidateName && (!queryName || candidateName.toLowerCase().includes(queryName))) {
-                found = true;
-                const item = document.createElement('div');
-                item.style.cssText = 'display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.05);padding:8px 12px;border-radius:10px;margin-bottom:6px;';
-                const info = document.createElement('div');
-                const playerName = document.createElement('b');
-                playerName.textContent = candidateName;
-                const playerMeta = document.createElement('small');
-                playerMeta.style.color = 'var(--dim)';
-                playerMeta.textContent = `Points: ${Number(pData.points) || 0}`;
-                info.append(playerName, document.createElement('br'), playerMeta);
-                item.appendChild(info);
-                
-                const inviteBtn = document.createElement('button');
-                inviteBtn.className = 'btn-gold';
-                inviteBtn.style.padding = '5px 12px';
-                inviteBtn.style.fontSize = '0.8rem';
-                inviteBtn.textContent = 'Invite';
-                inviteBtn.onclick = () => sendGameInvite(uid, candidateName);
-                
-                item.appendChild(inviteBtn);
-                resultsContainer.appendChild(item);
-            }
-        });
-        if(!found) {
-            resultsContainer.innerHTML = queryName ? 'අදාළ නමින් ක්‍රීඩකයන් හමු නොවීය.' : 'යහළුවාගේ නම ලියා Search කරන්න.';
-        }
-    } catch(err) {
-        console.error('Search error:', err);
-        resultsContainer.innerHTML = 'දෝෂයක් සිදු විය.';
-    }
-}
-
-$('searchBtn').onclick = () => loadFriendResults($('search').value);
-$('search').addEventListener('input', () => loadFriendResults($('search').value));
-
-async function sendGameInvite(friendUid, friendName) {
-    const bet = Number($('betAmountInput').value) || 50;
-    if(bet > user.points) return toast('ඔබ සතුව ප්‍රමාණවත් Points නොමැත.');
-
-    if(activeInviteWatcher) {
-        activeInviteWatcher.ref.off('value', activeInviteWatcher.handler);
-        activeInviteWatcher = null;
-    }
-
-    const newInviteRef = db.ref('invites_v6/' + friendUid).push();
-    const inviteId = newInviteRef.key;
-    const initialBoard = Array.from({length:8},()=>Array(8).fill(0));
-    for(let r=0;r<8;r++)for(let c=0;c<8;c++)if((r+c)%2){if(r<3)initialBoard[r][c]=-1;else if(r>4)initialBoard[r][c]=1}
     
-    const targetRoomRef = db.ref('rooms_v6/' + inviteId);
-
-    try {
-        await targetRoomRef.set({
-            board: initialBoard,
-            turn: 1,
-            forcedContinuation: null,
-            hostUid: fbUser.uid,
-            guestUid: friendUid,
-            hostName: user.name,
-            guestName: friendName,
-            hostPieceIndex: user.pieceIndex || 0,
-            hostAvatar: user.avatarIcon || 'fa-user',
-            guestPieceIndex: 0,
-            guestAvatar: 'fa-user',
-            bet: bet,
-            status: 'waiting',
-            updatedAt: firebase.database.ServerValue.TIMESTAMP
-        });
-
-        await newInviteRef.set({
-            fromUid: fbUser.uid,
-            hostName: user.name,
-            bet: bet,
-            status: 'pending',
-            timestamp: Date.now()
-        });
-
-        modal('multiModal', false);
-        $('waitingHostText').textContent = `${friendName} ආරාධනය පිළිගන්නා තෙක් රැඳී සිටින්න...`;
-        modal('waitingHostModal', true);
-
-        const handler = snap => {
-            const roomData = snap.val();
-            if(!roomData) return;
-
-            if(roomData.status === 'playing') {
-                targetRoomRef.off('value', handler);
-                activeInviteWatcher = null;
-                modal('waitingHostModal', false);
-                launchArena({ mode: 'multi', roomId: inviteId, role: 'host', bet: bet, oppName: friendName });
-            } else if(roomData.status === 'rejected') {
-                targetRoomRef.off('value', handler);
-                activeInviteWatcher = null;
-                modal('waitingHostModal', false);
-                targetRoomRef.remove().catch(()=>{});
-                toast(`${friendName} ආරාධනය ප්‍රතික්ෂේප කළා.`);
-            }
-        };
-
-        targetRoomRef.on('value', handler);
-        activeInviteWatcher = { ref: targetRoomRef, handler: handler, inviteRef: newInviteRef };
-
-    } catch(err) {
-        console.error('Invite/Room setup error:', err);
-        modal('waitingHostModal', false);
-        toast('ආරාධනය යැවීමට නොහැකි විය.');
-    }
-}
-
-$('cancelInviteBtn').onclick = () => {
-    modal('waitingHostModal', false);
-    if(activeInviteWatcher) {
-        activeInviteWatcher.ref.off('value', activeInviteWatcher.handler);
-        activeInviteWatcher.ref.remove().catch(()=>{});
-        activeInviteWatcher.inviteRef.remove().catch(()=>{});
-        activeInviteWatcher = null;
-    }
-    toast('ආරාධනය අවලංගු කරන ලදී.');
-};
-
-function listenForIncomingInvites() {
-    if(!db || !fbUser) return;
-    if(invitesListenerRef) invitesListenerRef.off();
-    invitesListenerRef = db.ref('invites_v6/' + fbUser.uid);
-    invitesListenerRef.on('child_added', snap => {
-        const invite = snap.val();
-        if(invite && invite.status === 'pending' && (Date.now() - Number(invite.timestamp || 0) < 300000)) {
-            incomingInviteData = { id: snap.key, fromUid: invite.fromUid, ...invite };
-            $('invitePopupText').textContent = `${invite.hostName} විසින් ඔට්ටුව ${invite.bet} ක් සමඟ ඔබට ආරාධනා කරයි!`;
-            modal('invitePopupModal', true);
-        }
-    });
-}
-
-$('acceptInviteBtn').onclick = async () => {
-    if(!incomingInviteData) return;
-    const invite = incomingInviteData;
-    const bet = Number(invite.bet) || 0;
-
-    if(bet > user.points) {
-        toast('මෙම ඔට්ටුව සඳහා ඔබ සතුව ප්‍රමාණවත් Points නොමැත.');
-        return;
-    }
-
-    incomingInviteData = null;
-    modal('invitePopupModal', false);
-
-    try {
-        const roomRefCheck = db.ref('rooms_v6/' + invite.id);
-        const roomSnap = await roomRefCheck.once('value');
-        const roomData = roomSnap.val() || {};
-
-        await roomRefCheck.update({
-            guestPieceIndex: user.pieceIndex || 0,
-            guestAvatar: user.avatarIcon || 'fa-user',
-            status: 'playing',
-            updatedAt: firebase.database.ServerValue.TIMESTAMP
-        });
-
-        await db.ref('invites_v6/' + fbUser.uid + '/' + invite.id).remove().catch(()=>{});
-        launchArena({ mode: 'multi', roomId: invite.id, role: 'guest', bet: bet, oppName: roomData.hostName || 'Host' });
-    } catch(err) {
-        console.error('Accept invite error:', err);
-        toast('ආරාධනය පිළිගැනීමට නොහැකි විය.');
-    }
-};
-
-$('rejectInviteBtn').onclick = () => {
-    if(!incomingInviteData) return;
-    const invite = incomingInviteData;
-    incomingInviteData = null;
-    modal('invitePopupModal', false);
-    db.ref('rooms_v6/' + invite.id).update({ status: 'rejected' }).catch(()=>{});
-    db.ref('invites_v6/' + fbUser.uid + '/' + invite.id).remove().catch(()=>{});
+    // Save bet amount to sessionStorage to read in friends.html
+    sessionStorage.setItem('sinhala_draughts_bet', bet);
+    window.location.href = 'friends.html';
 };
 
 $('collectRewards').onclick=()=>location.href='shopandreward.html';
