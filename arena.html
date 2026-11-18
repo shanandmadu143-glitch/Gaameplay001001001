@@ -368,7 +368,7 @@ $('mySoundBtn').onclick = () => {
  }
 };
 
-// Fixed Live WebRTC Audio Chat
+// Fixed Live WebRTC Audio Chat Toggle
 $('myMicBtn').onclick = async () => {
  micEnabled = !micEnabled;
  const btn = $('myMicBtn');
@@ -405,6 +405,7 @@ $('myMicBtn').onclick = async () => {
   toast('Mic Muted', 'fa-microphone-slash');
   if (!single && roomRef) {
    roomRef.child('micStatus/' + role).set(false).catch(()=>{});
+   roomRef.child('webrtc/' + role).remove().catch(()=>{});
   }
  }
 };
@@ -500,21 +501,29 @@ function appendVoiceMessage(audioUrl, isMe) {
  $('chatMessages').scrollTop = $('chatMessages').scrollHeight;
 }
 
+// Fixed Robust WebRTC Audio Setup
 function setupWebRTC() {
  if (!roomRef || !localStream) return;
- if (peerConnection) peerConnection.close();
+ if (peerConnection) {
+  peerConnection.close();
+  peerConnection = null;
+ }
 
  peerConnection = new RTCPeerConnection(rtcConfig);
+ 
+ // Add local tracks to peer connection
  localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
 
+ // Handle incoming remote audio stream
  peerConnection.ontrack = event => {
   const remoteAudio = $('remoteAudio');
   if (remoteAudio && event.streams[0]) {
    remoteAudio.srcObject = event.streams[0];
-   remoteAudio.play().catch(()=>{});
+   remoteAudio.play().catch(e => console.log("Remote audio play error:", e));
   }
  };
 
+ // Send ICE candidates to Firebase
  peerConnection.onicecandidate = event => {
   if (event.candidate) {
    roomRef.child('webrtc/' + role + '/candidates').push(JSON.stringify(event.candidate)).catch(()=>{});
@@ -522,10 +531,12 @@ function setupWebRTC() {
  };
 
  const oppRole = role === 'host' ? 'guest' : 'host';
+
+ // Listen for opponent ICE candidates
  roomRef.child('webrtc/' + oppRole + '/candidates').on('child_added', snap => {
   const cand = snap.val();
-  if (cand && peerConnection && peerConnection.remoteDescription) {
-   peerConnection.addIceCandidate(new RTCIceCandidate(JSON.parse(cand))).catch(()=>{});
+  if (cand && peerConnection) {
+   peerConnection.addIceCandidate(new RTCIceCandidate(JSON.parse(cand))).catch(e => console.log("ICE add error:", e));
   }
  });
 
@@ -534,12 +545,12 @@ function setupWebRTC() {
    return peerConnection.setLocalDescription(offer);
   }).then(() => {
    roomRef.child('webrtc/host/offer').set(JSON.stringify(peerConnection.localDescription));
-  }).catch(()=>{});
+  }).catch(e => console.log("Offer creation error:", e));
 
   roomRef.child('webrtc/guest/answer').on('value', snapshot => {
    const data = snapshot.val();
    if (data && peerConnection && !peerConnection.currentRemoteDescription) {
-    peerConnection.setRemoteDescription(new RTCSessionDescription(JSON.parse(data))).catch(()=>{});
+    peerConnection.setRemoteDescription(new RTCSessionDescription(JSON.parse(data))).catch(e => console.log("Answer set error:", e));
    }
   });
  } else {
@@ -552,7 +563,7 @@ function setupWebRTC() {
      return peerConnection.setLocalDescription(answer);
     }).then(() => {
      roomRef.child('webrtc/guest/answer').set(JSON.stringify(peerConnection.localDescription));
-    }).catch(()=>{});
+    }).catch(e => console.log("Answer creation error:", e));
    }
   });
  }
@@ -866,6 +877,7 @@ function finish(winner,message){
  if(roomRef) {
   roomRef.update({status: 'finished', winner: winner}).catch(()=>{});
   roomRef.child('chats').remove().catch(()=>{});
+  roomRef.child('webrtc').remove().catch(()=>{});
  }
 }
 
@@ -1017,12 +1029,19 @@ function leaveArena(){
  clearInterval(turnClockTimer);clearTimeout(aiTimer);
  const forestAudio = $('forestAmbient');
  if(forestAudio) forestAudio.pause();
- if(localStream) localStream.getTracks().forEach(t => t.stop());
- if(peerConnection) peerConnection.close();
+ if(localStream) {
+  localStream.getTracks().forEach(t => t.stop());
+  localStream = null;
+ }
+ if(peerConnection) {
+  peerConnection.close();
+  peerConnection = null;
+ }
  if(roomRef){
   if(!gameOver && gameMode==='multi') {
    roomRef.update({status:'finished',winner:-userSide}).catch(()=>{});
    roomRef.child('chats').remove().catch(()=>{});
+   roomRef.child('webrtc/' + role).remove().catch(()=>{});
   }
   if(roomValueHandler) roomRef.off('value', roomValueHandler);
   if(chatAddedHandler) roomRef.child('chats').off('child_added', chatAddedHandler);
