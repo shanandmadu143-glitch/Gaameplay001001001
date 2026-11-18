@@ -58,9 +58,23 @@ body{
   100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
 }
 
-.arena-coins-center { display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(46, 204, 113, 0.1); padding: 6px 14px; border-radius: 16px; border: 1px solid rgba(46, 204, 113, 0.3); }
-.arena-coins-center i { font-size: 1.4rem; color: #2ecc71; }
-.arena-coins-center b { font-size: 1.05rem; color: #fff; }
+/* Arena Center Column with Coins & Moved Voice Mic Button */
+.arena-center-col { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
+
+.arena-coins-center { display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(46, 204, 113, 0.1); padding: 4px 12px; border-radius: 14px; border: 1px solid rgba(46, 204, 113, 0.3); }
+.arena-coins-center i { font-size: 1.1rem; color: #2ecc71; }
+.arena-coins-center b { font-size: 0.95rem; color: #fff; }
+
+/* Moved Arena Voice Mic Button */
+.arena-voice-mic-btn {
+  width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid var(--red);
+  background: rgba(255, 71, 87, 0.2); color: var(--red); font-size: 1rem;
+  display: grid; place-items: center; cursor: pointer; transition: all 0.2s;
+}
+.arena-voice-mic-btn.active-mic {
+  background: var(--neon-green); color: #111; border-color: var(--neon-green);
+  animation: pulseMic 1.2s infinite;
+}
 
 .thought-bubble {
   position: absolute; top: 78px; left: 50%; transform: translateX(-50%) scale(0);
@@ -138,28 +152,6 @@ body{
 .quick-chats { display: flex; gap: 6px; overflow-x: auto; padding: 8px 10px; background: rgba(0,0,0,0.25); }
 .quick-btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-size: 0.72rem; padding: 5px 9px; border-radius: 12px; white-space: nowrap; cursor: pointer; }
 
-/* Long Press Voice Record Button Styles */
-.voice-record-btn {
-  background: rgba(255, 71, 87, 0.2);
-  border: 1px solid var(--red);
-  color: var(--red);
-  border-radius: 50%;
-  width: 38px; height: 38px;
-  min-width: 38px;
-  display: grid; place-items: center;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.voice-record-btn.recording {
-  background: var(--red);
-  color: #fff;
-  animation: pulseRec 1s infinite;
-}
-@keyframes pulseRec {
-  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7); }
-  70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(255, 71, 87, 0); }
-  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
-}
 .voice-msg-bubble {
   display: flex; align-items: center; gap: 8px; background: rgba(46, 204, 113, 0.15) !important;
   border: 1px solid rgba(46, 204, 113, 0.4); padding: 6px 10px; border-radius: 12px;
@@ -194,9 +186,15 @@ body{
    </div>
   </div>
 
-  <div class="arena-coins-center">
-   <i class="fa-solid fa-coins"></i>
-   <b id="arenaBetDisplay">100</b>
+  <!-- Moved Voice Mic Button and Coins in Center Header -->
+  <div class="arena-center-col">
+   <div class="arena-coins-center">
+    <i class="fa-solid fa-coins"></i>
+    <b id="arenaBetDisplay">100</b>
+   </div>
+   <button class="arena-voice-mic-btn" id="arenaVoiceRecordBtn" title="Press & Hold to Record Live Voice Note">
+    <i class="fa-solid fa-microphone"></i>
+   </button>
   </div>
 
   <div class="arena-player-card" id="p2">
@@ -242,9 +240,7 @@ body{
    <div class="chat-msg them">ප්‍රතිවාදියා සමඟ කතා කරන්න...</div>
   </div>
   <div class="chat-footer">
-   <button class="voice-record-btn" id="voiceRecBtn" title="Press & Hold to Send Live Voice Note">
-     <i class="fa-solid fa-microphone"></i>
-   </button>
+   <!-- Voice Button removed from chat footer -->
    <input type="text" id="chatInput" placeholder="පණිවිඩයක් ලියන්න..." autocomplete="off">
    <button class="btn-gold" id="sendChatBtn" style="padding:6px 12px"><i class="fa-solid fa-paper-plane"></i></button>
   </div>
@@ -287,8 +283,9 @@ let mySessionId = 'player_' + Math.random().toString(36).substring(2, 9);
 
 let soundEnabled = true;
 let micEnabled = false;
-let liveRecorder = null;
+let mediaRecorder = null;
 let audioChunks = [];
+let isRecording = false;
 
 const PIECE_DESIGNS=[
  {id:0,name:'මුතු සුදු (Default)',bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●',free:true},
@@ -367,17 +364,16 @@ $('mySoundBtn').onclick = () => {
  }
 };
 
-// Mic Button Toggle (Instant Walkie-Talkie Live Voice Chat)
 $('myMicBtn').onclick = async () => {
  micEnabled = !micEnabled;
  const btn = $('myMicBtn');
 
  if (micEnabled) {
   try {
-   const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+   await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
    btn.className = 'ctrl-icon-btn active-mic';
    btn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
-   toast('Mic Active (Tap & Hold Record to Speak)', 'fa-microphone');
+   toast('Mic Active', 'fa-microphone');
    if(!single && roomRef) {
     roomRef.child('micStatus/' + role).set(true).catch(()=>{});
    }
@@ -397,12 +393,9 @@ $('myMicBtn').onclick = async () => {
  }
 };
 
-// Long Press Voice Message / Walkie-Talkie Audio Note Recorder
-let mediaRecorder = null;
-let isRecording = false;
-const voiceBtn = $('voiceRecBtn');
-
-if (voiceBtn) {
+// Moved Arena Voice Button (Press & Hold to Record & Send Voice Note)
+const voiceRecordBtn = $('arenaVoiceRecordBtn');
+if (voiceRecordBtn) {
  const startRec = async (e) => {
   e.preventDefault();
   if (isRecording) return;
@@ -428,8 +421,8 @@ if (voiceBtn) {
 
    mediaRecorder.start();
    isRecording = true;
-   voiceBtn.classList.add('recording');
-   toast('🎙️ Recording Live Audio...', 'fa-microphone');
+   voiceRecordBtn.classList.add('active-mic');
+   toast('🎙️ Recording Voice Note...', 'fa-microphone');
   } catch (err) {
    toast('Microphone අවසරය අවශ්‍යයි.');
   }
@@ -440,15 +433,15 @@ if (voiceBtn) {
   if (!isRecording || !mediaRecorder) return;
   mediaRecorder.stop();
   isRecording = false;
-  voiceBtn.classList.remove('recording');
+  voiceRecordBtn.classList.remove('active-mic');
   toast('🎤 Voice Note යවන ලදී', 'fa-paper-plane');
  };
 
- voiceBtn.addEventListener('mousedown', startRec);
- voiceBtn.addEventListener('mouseup', stopRec);
- voiceBtn.addEventListener('mouseleave', () => { if(isRecording) stopRec({preventDefault:()=>{}}); });
- voiceBtn.addEventListener('touchstart', startRec);
- voiceBtn.addEventListener('touchend', stopRec);
+ voiceRecordBtn.addEventListener('mousedown', startRec);
+ voiceRecordBtn.addEventListener('mouseup', stopRec);
+ voiceRecordBtn.addEventListener('mouseleave', () => { if(isRecording) stopRec({preventDefault:()=>{}}); });
+ voiceRecordBtn.addEventListener('touchstart', startRec);
+ voiceRecordBtn.addEventListener('touchend', stopRec);
 }
 
 function sendVoiceMessage(audioDataUrl) {
@@ -486,7 +479,6 @@ function appendVoiceMessage(audioUrl, isMe) {
  $('chatMessages').appendChild(div);
  $('chatMessages').scrollTop = $('chatMessages').scrollHeight;
 
- // Automatically play incoming voice message from opponent
  if (!isMe && soundEnabled) {
   audioEl.play().catch(e => console.log("Auto-play prevented:", e));
  }
@@ -791,7 +783,7 @@ function finish(winner,message){
  }
 
  $('overTitle').textContent=won?'VICTORY! 🎉':'DEFEAT!';
- $('overTitle').style.color=won?'var(--neon-green)':'var(--red)';
+ $('overTitle'].style.color=won?'var(--neon-green)':'var(--red)';
  $('overMessage').textContent=message;
  modal('overModal',true);
  
