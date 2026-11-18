@@ -10,7 +10,7 @@
 :root{
   --bg-primary: #050811;
   --bg-secondary: #0e1424;
-  --card-bg: rgba(17, 24, 42, 0.85);
+  --card-bg: rgba(17, 24, 42, 0.88);
   --card-border: rgba(255, 255, 255, 0.08);
   --gold: #ffd166;
   --gold-gradient: linear-gradient(135deg, #ffd166 0%, #f39c12 100%);
@@ -43,21 +43,20 @@ html, body {
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 16px;
 }
 
-/* Header Styling - Perfectly Spaced */
+/* Header Styling - Centered Title, Date & Coins aligned below */
 header {
   background: var(--card-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--card-border);
   border-radius: 22px;
-  padding: 16px 20px;
+  padding: 18px 20px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  flex-direction: column;
+  gap: 12px;
   box-shadow: var(--shadow);
   position: relative;
   overflow: hidden;
@@ -70,88 +69,83 @@ header::before {
   background: var(--gold-gradient);
 }
 
-.brand-wrapper {
+.header-top-row {
   display: flex;
   align-items: center;
-  gap: 14px;
-  min-width: 0;
+  justify-content: center;
+  position: relative;
+  width: 100%;
 }
 
-.brand-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
-  background: var(--gold-gradient);
-  color: #0b0f19;
-  display: grid;
-  place-items: center;
-  font-size: 1.4rem;
-  box-shadow: 0 0 15px var(--gold-glow);
-  flex-shrink: 0;
-}
-
-.brand-title {
-  font-size: 1.35rem;
+.brand-title-center {
+  font-size: 1.5rem;
   color: var(--gold);
   font-weight: 800;
-  letter-spacing: 0.5px;
-  line-height: 1.2;
+  letter-spacing: 1px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.header-points-sub {
-  font-size: 0.82rem;
+.header-sub-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding-top: 10px;
+  margin-top: 2px;
+}
+
+.header-date-display {
+  font-size: 0.88rem;
   color: var(--text-dim);
   font-weight: 600;
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-top: 2px;
 }
-
-.header-points-sub span {
-  color: var(--gold);
-  font-weight: 700;
-}
+.header-date-display span { color: var(--text-main); font-weight: 700; }
 
 .shop-coin-pill {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   border: 1px solid rgba(255, 209, 102, 0.35);
-  border-radius: 35px;
+  border-radius: 30px;
   background: rgba(11, 15, 25, 0.9);
-  padding: 6px 10px 6px 14px;
+  padding: 5px 10px 5px 12px;
   color: #fff;
   box-shadow: inset 0 2px 5px rgba(0,0,0,0.4);
-  flex-shrink: 0;
 }
 
 .shop-coin-pill i {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   color: var(--gold);
 }
 
 .shop-coin-pill b {
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   font-weight: 700;
 }
 
 .shop-coin-pill a {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   display: grid;
   place-items: center;
   background: var(--accent-green);
   color: #fff;
   text-decoration: none;
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   font-weight: 800;
   transition: transform 0.2s;
 }
 .shop-coin-pill a:active { transform: scale(0.9); }
 
-/* Category Navigation Filter Buttons */
+/* Category / Item Toggle Buttons Bar */
 .cat-filter-container {
   display: flex;
   gap: 10px;
@@ -176,6 +170,9 @@ header::before {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  flex: 1;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
 .filter-btn.active {
@@ -433,34 +430,29 @@ header::before {
 <body>
 <div class="app">
 
-<!-- Header Section -->
+<!-- Header Section: Centered Title, Date & Coins aligned below -->
 <header>
-<div class="brand-wrapper">
-<div class="brand-icon"><i class="fa-solid fa-store"></i></div>
-<div>
-<div class="brand-title">Shop & Reward</div>
-<div class="header-points-sub"><i class="fa-solid fa-coins" style="color:var(--gold)"></i> ඉතිරි Points: <span id="userPoints">500</span></div>
-</div>
-</div>
-<div class="shop-coin-pill">
-  <i class="fa-solid fa-coins"></i>
-  <b id="shopCoinValue">500</b>
-  <a href="./index.html" aria-label="Back to game">+</a>
-</div>
+  <div class="header-top-row">
+    <div class="brand-title-center">
+      <i class="fa-solid fa-store" style="font-size: 1.3rem;"></i> Shop & Reward
+    </div>
+  </div>
+  <div class="header-sub-row">
+    <div class="header-date-display">
+      <i class="fa-regular fa-calendar-days" style="color:var(--gold);"></i> දිනය: <span id="currentDateText">නොදන්නා දිනයකි</span>
+    </div>
+    <div class="shop-coin-pill">
+      <i class="fa-solid fa-coins"></i>
+      <b id="shopCoinValue">500</b>
+      <a href="./index.html" aria-label="Back to game">+</a>
+    </div>
+  </div>
 </header>
 
 <a href="./index.html" class="float-home-btn"><i class="fa-solid fa-house"></i> ප්‍රධාන පිටුවට</a>
 
 <div id="pointsPopup">
 <i class="fa-solid fa-coins"></i> <span>Points: <b id="popupPointsVal">500</b></span>
-</div>
-
-<!-- Category Filter Buttons -->
-<div class="cat-filter-container">
-<button class="filter-btn active" onclick="filterCategory('all', this)"><i class="fa-solid fa-border-all"></i> සියල්ල (All)</button>
-<button class="filter-btn" onclick="filterCategory('rewards', this)"><i class="fa-solid fa-gift"></i> Free Rewards</button>
-<button class="filter-btn" onclick="filterCategory('themes', this)"><i class="fa-solid fa-chess-board"></i> දාම් Themes</button>
-<button class="filter-btn" onclick="filterCategory('avatars', this)"><i class="fa-solid fa-circle-user"></i> Profile Avatars</button>
 </div>
 
 <!-- Highlighted Free Reward Section -->
@@ -479,17 +471,24 @@ header::before {
 </div>
 </div>
 
+<!-- Toggle Buttons for Themes and Avatars -->
+<div class="cat-filter-container">
+<button class="filter-btn active" onclick="switchTab('themes', this)"><i class="fa-solid fa-chess-board"></i> දාම් Themes (20)</button>
+<button class="filter-btn" onclick="switchTab('avatars', this)"><i class="fa-solid fa-circle-user"></i> Profile Avatars (20)</button>
+</div>
+
 <!-- Piece Themes Section (20 Themes) -->
 <div class="shop-section" id="themesSection">
-<div class="section-title"><i class="fa-solid fa-chess-board"></i> දාම් ඉත්තන් සඳහා Themes (නවතම Themes 20)</div>
+<div class="section-title"><i class="fa-solid fa-chess-board"></i> දාම් ඉත්තන් සඳහා Themes</div>
 <div class="grid" id="themesGrid"></div>
 </div>
 
 <!-- Profile Avatars Section (20 Avatars) -->
-<div class="shop-section" id="avatarsSection">
-<div class="section-title"><i class="fa-solid fa-circle-user"></i> ප්‍රොෆයිල් Avatars (නවතම Avatars 20)</div>
+<div class="shop-section" id="avatarsSection" style="display: none;">
+<div class="section-title"><i class="fa-solid fa-circle-user"></i> ප්‍රොෆයිල් Avatars</div>
 <div class="grid" id="avatarsGrid"></div>
 </div>
+
 </div>
 
 <div id="toast"></div>
@@ -507,6 +506,13 @@ const ITEM_PRICE=100;
 const REWARD_POINTS=200;
 let auth=null,db=null,fbUser=null,rewardTimer=null,popupTimer=null,toastTimer=null;
 let user={name:'',points:500,unlockedPieces:[0],pieceIndex:0,unlockedAvatars:['fa-user'],avatarIcon:'fa-user',lastRewardTime:0};
+
+/* වත්මන් දිනය Sinhala භාෂාවෙන් හෝ Format කර පෙන්වීම */
+function updateDateDisplay(){
+  const now = new Date();
+  const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' };
+  $('currentDateText').textContent = now.toLocaleDateString('si-LK', options);
+}
 
 /* දාම් ඉත්තන් සඳහා Themes 20 ක් */
 const THEMES=[
@@ -587,7 +593,7 @@ function showPointsPopup(){
 }
 function updatePointsUI(){
  const points=String(user.points);
- $('userPoints').textContent=points;$('shopCoinValue').textContent=points;
+ $('shopCoinValue').textContent=points;
 }
 function normalizeCloudData(data){
  const d=data||{};
@@ -638,14 +644,18 @@ async function mutateCloud(mutator){
  }catch(e){console.error('Firebase transaction failed:',e);toast('Firebase සම්බන්ධතාවය පරීක්ෂා කරන්න.');return {ok:false};}
 }
 
-/* Category Filter Logic */
-function filterCategory(category,button){
+/* Switch between Themes and Avatars sections via buttons */
+function switchTab(type, button){
  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
  if(button)button.classList.add('active');
 
- $('rewardSection').style.display=(category==='all'||category==='rewards')?'flex':'none';
- $('themesSection').style.display=(category==='all'||category==='themes')?'flex':'none';
- $('avatarsSection').style.display=(category==='all'||category==='avatars')?'flex':'none';
+ if(type==='themes'){
+  $('themesSection').style.display='flex';
+  $('avatarsSection').style.display='none';
+ }else if(type==='avatars'){
+  $('themesSection').style.display='none';
+  $('avatarsSection').style.display='flex';
+ }
 }
 
 function renderShop(){
@@ -786,7 +796,10 @@ async function claimFreeReward(){
 }
 
 async function init(){
- updatePointsUI();renderShop();startRewardTimer();
+ updateDateDisplay();
+ updatePointsUI();
+ renderShop();
+ startRewardTimer();
  try{
   if(!window.firebase)throw new Error('Firebase SDK unavailable');
   if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
