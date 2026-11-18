@@ -17,8 +17,7 @@ body{min-height:100dvh;display:flex;flex-direction:column;justify-content:center
 .home-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 20px;background:linear-gradient(135deg,rgba(22,30,56,0.95),rgba(10,14,28,0.95));border:2px solid rgba(255,209,102,0.4);border-radius:22px;box-shadow:0 8px 25px rgba(0,0,0,0.6);backdrop-filter:blur(10px)}
 .profile-float{display:flex;align-items:center;gap:12px;cursor:pointer}
 .avatar{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe08a,#ffb52e);color:#18213e;font-size:1.4rem;border:2px solid #ffd166;box-shadow:0 0 12px rgba(255,209,102,0.5);flex-shrink:0}
-#headerName{font-size:1.1rem;color:#fff;font-weight:800;line-height:1.1}
-.pro-label{color:var(--gold);font-size:0.75rem;font-weight:800;letter-spacing:1px;text-transform:uppercase}
+#headerName{font-size:1.15rem;color:#fff;font-weight:800;line-height:1.2}
 
 .coin-pill{display:flex;align-items:center;gap:8px;border:2px solid rgba(255,209,102,0.4);border-radius:30px;background:rgba(5,8,18,0.85);padding:6px 14px;box-shadow:inset 0 2px 5px rgba(0,0,0,0.8)}
 .coin-pill>i{font-size:1.3rem;color:var(--gold);filter:drop-shadow(0 0 5px rgba(255,209,102,0.6))}
@@ -44,8 +43,6 @@ main{flex:1;display:flex;flex-direction:column;justify-content:center;align-item
 .mode-single{background:linear-gradient(135deg,#1b4f91,#1252b5)}.mode-single:after{content:'🤖'}
 .mode-multi{background:linear-gradient(135deg,#0d7c48,#08a85c)}.mode-multi:after{content:'⚔️'}
 .mode-free{background:linear-gradient(135deg,#b36b00,#f19a00)}.mode-free:after{content:'🎯'}
-
-#connection{text-align:center;font-size:0.75rem;color:var(--dim);margin-top:2px}
 
 /* Professional Bottom Navigation */
 .bottom-nav{width:100%;min-height:66px;background:rgba(14,20,38,0.95);border:2px solid rgba(255,209,102,0.3);border-radius:24px;display:flex;align-items:center;justify-content:space-around;padding:6px 4px;backdrop-filter:blur(10px);box-shadow:0 10px 30px rgba(0,0,0,0.8)}
@@ -90,7 +87,7 @@ input:focus{border-color:var(--gold)}
  <div class="home-top" id="homeTop">
   <div class="profile-float" id="openProfile" title="ප්‍රොෆයිලය">
    <span class="avatar" id="headerAvatar"><i class="fa-solid fa-user"></i></span>
-   <div><b id="headerName">ක්‍රීඩකයා</b><br><small class="pro-label">PRO GAMER</small></div>
+   <div><b id="headerName">ක්‍රීඩකයා</b></div>
   </div>
   <div class="coin-pill"><i class="fa-solid fa-coins"></i><b><span id="points">500</span></b><button id="coinShop" aria-label="Shop">+</button></div>
  </div>
@@ -103,7 +100,6 @@ input:focus{border-color:var(--gold)}
     <div class="mode mode-multi" id="multi" role="button" tabindex="0"><b>MULTIPLAYER</b><p>ඔන්ලයින් යහළුවන් සමඟ සෙල්ලම් කරන්න</p></div>
     <div class="mode mode-free" id="freestyle" role="button" tabindex="0"><b>PLAY FREESTYLE</b><p>ඔට්ටු රහිත පුහුණු ක්‍රීඩාව</p></div>
    </div>
-   <div id="connection">● Firebase සම්බන්ධ වෙමින්...</div>
   </section>
  </main>
 
@@ -134,7 +130,7 @@ input:focus{border-color:var(--gold)}
   <div class="row"><h3 style="flex:1">PLAYER PROFILE</h3><button class="btn" id="closeProfile">×</button></div>
   <div style="text-align:center;padding:10px;background:rgba(0,0,0,0.3);border-radius:14px">
    <div id="profileAvatar" style="width:64px;height:64px;margin:0 auto 6px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe08a,#ffad62);color:#18213e;font-size:1.8rem;border:3px solid var(--gold)"></div>
-   <h2 id="profileName">ක්‍රීඩකයා</h2><small class="pro-label">PRO GAMER</small>
+   <h2 id="profileName">ක්‍රීඩකයා</h2>
   </div>
   <p style="font-size:0.85rem;color:var(--dim);margin-top:4px;">ප්‍රොෆයිල් Avatars (20):</p>
   <div class="pieces-grid" id="avatarGrid"></div>
@@ -247,7 +243,7 @@ function toast(s, icon='fa-circle-info'){
 function modal(id,on){$(id).classList.toggle('show',on);}
 
 try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);auth=firebase.auth();db=firebase.database();}
-catch(e){console.error('Firebase initialization failed:',e);$('connection').textContent='Firebase සම්බන්ධතාවය අසාර්ථකයි';}
+catch(e){console.error('Firebase initialization failed:',e);}
 
 (async()=>{
  try{
@@ -265,10 +261,8 @@ catch(e){console.error('Firebase initialization failed:',e);$('connection').text
     modal('authModal',true);
    }
   });
-  $('connection').textContent='● Firebase සේවාව සූදානම්';
  }catch(e){
   console.error('Authentication initialization failed:',e);
-  $('connection').textContent='Firebase සම්බන්ධතාවය පරීක්ෂා කරන්න';
   modal('loadingModal',false);modal('authModal',true);
   toast('Firebase සම්බන්ධතාවය සකසා නැත.');
  }
@@ -518,7 +512,6 @@ $('proceedToInvite').onclick = () => {
     const bet = Number($('betAmountInput').value);
     if(!Number.isInteger(bet) || bet < 10 || bet > user.points) return toast('Points 10 සිට ඔබ සතු උපරිම Points දක්වා ඇතුළත් කරන්න.');
     
-    // Save bet amount to sessionStorage to read in friends.html
     sessionStorage.setItem('sinhala_draughts_bet', bet);
     window.location.href = 'friends.html';
 };
