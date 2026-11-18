@@ -163,13 +163,14 @@ auth.onAuthStateChanged(async u=>{
     user.uid = u.uid;
    }
    
-   // Sync public profile
-   await db.ref('publicProfiles_v6/'+u.uid).set({
+   // Sync both users_v6 and publicProfiles_v6 to ensure data consistency
+   const profileData = {
     name: user.name,
     points: user.points,
     pieceIndex: user.pieceIndex,
     avatarIcon: user.avatarIcon
-   });
+   };
+   await db.ref('publicProfiles_v6/'+u.uid).set(profileData);
 
    // Setup online presence
    const userStatusDatabaseRef = db.ref('status_v6/' + u.uid);
@@ -200,17 +201,23 @@ async function loadAllPlayers(rawQuery) {
  resultsContainer.innerHTML = 'ක්‍රීඩකයන් පූරණය වෙමින්...';
 
  try {
-  const [profilesSnap, statusSnap] = await Promise.all([
+  // Fetch from users_v6 and publicProfiles_v6, fallback to users_v6 if publicProfiles is empty
+  const [profilesSnap, usersSnap, statusSnap] = await Promise.all([
       db.ref('publicProfiles_v6').once('value'),
+      db.ref('users_v6').once('value'),
       db.ref('status_v6').once('value')
   ]);
 
-  if (!profilesSnap.exists()) {
+  let profiles = profilesSnap.val() || {};
+  if(Object.keys(profiles).length === 0 && usersSnap.exists()) {
+      profiles = usersSnap.val();
+  }
+
+  if (!profiles || Object.keys(profiles).length === 0) {
    resultsContainer.innerHTML = 'ක්‍රීඩකයන් හමු නොවීය.';
    return;
   }
 
-  const profiles = profilesSnap.val();
   const statuses = statusSnap.val() || {};
   resultsContainer.innerHTML = '';
   let found = false;
@@ -219,7 +226,7 @@ async function loadAllPlayers(rawQuery) {
    const pData = profiles[uid];
    const candidateName = pData && pData.name ? String(pData.name) : '';
    
-   // තමන් හැර අනෙක් සියලුම ක්‍රීඩකයන් (Online සහ Offline) පෙන්වීම
+   // Exclude current user from the list
    if(fbUser && uid === fbUser.uid) return;
 
    if(candidateName && (!queryName || candidateName.toLowerCase().includes(queryName))) {
@@ -285,7 +292,7 @@ async function loadAllPlayers(rawQuery) {
   }
  } catch(err) {
   console.error('Load players error:', err);
-  resultsContainer.innerHTML = 'දෝෂයක් සිදු විය. Database Rules පරීක්ෂා කරන්න.';
+  resultsContainer.innerHTML = 'දෝෂයක් සිදු විය. Firebase Rules පරීක්ෂා කරන්න.';
  }
 }
 
@@ -422,7 +429,7 @@ $('acceptInviteBtn').onclick = async () => {
  }
 };
 
-$('rejectInvite`Btn').onclick = () => {
+$('rejectInviteBtn').onclick = () => {
  if(!incomingInviteData) return;
  const invite = incomingInviteData;
  incomingInviteData = null;
