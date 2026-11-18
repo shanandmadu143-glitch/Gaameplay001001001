@@ -8,18 +8,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Gemunu+Libre:wght@400;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg-primary: #060913;
-  --bg-secondary: #0f1629;
-  --card-bg: rgba(18, 26, 48, 0.75);
+  --bg-primary: #050811;
+  --bg-secondary: #0e1424;
+  --card-bg: rgba(17, 24, 42, 0.85);
   --card-border: rgba(255, 255, 255, 0.08);
-  --gold: #f6d365;
-  --gold-gradient: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
-  --gold-glow: rgba(246, 211, 101, 0.25);
+  --gold: #ffd166;
+  --gold-gradient: linear-gradient(135deg, #ffd166 0%, #f39c12 100%);
+  --gold-glow: rgba(255, 209, 102, 0.2);
   --text-main: #f8fafc;
   --text-dim: #94a3b8;
-  --accent-green: #10b981;
-  --accent-blue: #3b82f6;
-  --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --accent-green: #2ecc71;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Gemunu Libre','Poppins',sans-serif;-webkit-tap-highlight-color:transparent;}
@@ -29,35 +28,36 @@ html, body {
   min-height: 100dvh;
   background: var(--bg-primary);
   background-image: 
-    radial-gradient(circle at 10% 10%, rgba(59, 130, 246, 0.08) 0%, transparent 40%),
-    radial-gradient(circle at 90% 90%, rgba(246, 211, 101, 0.06) 0%, transparent 40%),
-    linear-gradient(135deg, #060913 0%, #0c1222 100%);
+    radial-gradient(circle at 15% 15%, rgba(79, 172, 254, 0.07) 0%, transparent 45%),
+    radial-gradient(circle at 85% 85%, rgba(255, 209, 102, 0.06) 0%, transparent 45%),
+    linear-gradient(145deg, #050811 0%, #0c1222 100%);
   color: var(--text-main);
   overflow-x: hidden;
-  padding: clamp(10px, 2vw, 20px);
+  padding: clamp(12px, 2.5vw, 24px);
   padding-bottom: calc(90px + env(safe-area-inset-bottom));
 }
 
 .app {
   width: 100%;
-  max-width: 900px;
+  max-width: 960px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
 }
 
-/* Header Styling */
+/* Header Styling - Perfectly Spaced */
 header {
   background: var(--card-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--card-border);
-  border-radius: 20px;
-  padding: 14px 18px;
+  border-radius: 22px;
+  padding: 16px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
   box-shadow: var(--shadow);
   position: relative;
   overflow: hidden;
@@ -66,46 +66,46 @@ header {
 header::before {
   content: '';
   position: absolute;
-  top: 0; left: 0; right: 0; height: 2px;
+  top: 0; left: 0; right: 0; height: 3px;
   background: var(--gold-gradient);
 }
 
 .brand-wrapper {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   min-width: 0;
 }
 
 .brand-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
   background: var(--gold-gradient);
   color: #0b0f19;
   display: grid;
   place-items: center;
-  font-size: 1.3rem;
+  font-size: 1.4rem;
   box-shadow: 0 0 15px var(--gold-glow);
   flex-shrink: 0;
 }
 
 .brand-title {
-  font-size: 1.25rem;
+  font-size: 1.35rem;
   color: var(--gold);
   font-weight: 800;
   letter-spacing: 0.5px;
-  line-height: 1.1;
+  line-height: 1.2;
 }
 
 .header-points-sub {
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   color: var(--text-dim);
   font-weight: 600;
   display: flex;
   align-items: center;
-  gap: 5px;
-  margin-top: 3px;
+  gap: 6px;
+  margin-top: 2px;
 }
 
 .header-points-sub span {
@@ -116,82 +116,86 @@ header::before {
 .shop-coin-pill {
   display: flex;
   align-items: center;
-  gap: 8px;
-  border: 1px solid rgba(246, 211, 101, 0.3);
-  border-radius: 30px;
-  background: rgba(11, 15, 25, 0.8);
-  padding: 5px 10px 5px 12px;
+  gap: 10px;
+  border: 1px solid rgba(255, 209, 102, 0.35);
+  border-radius: 35px;
+  background: rgba(11, 15, 25, 0.9);
+  padding: 6px 10px 6px 14px;
   color: #fff;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.4);
+  flex-shrink: 0;
 }
 
 .shop-coin-pill i {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   color: var(--gold);
 }
 
 .shop-coin-pill b {
-  font-size: 1.05rem;
+  font-size: 1.15rem;
   font-weight: 700;
 }
 
 .shop-coin-pill a {
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   display: grid;
   place-items: center;
   background: var(--accent-green);
   color: #fff;
   text-decoration: none;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   font-weight: 800;
   transition: transform 0.2s;
 }
 .shop-coin-pill a:active { transform: scale(0.9); }
 
-/* Navigation Tabs */
-.cat-tabs {
+/* Category Navigation Filter Buttons */
+.cat-filter-container {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   overflow-x: auto;
   padding: 4px 2px;
   scrollbar-width: none;
 }
-.cat-tabs::-webkit-scrollbar { display: none; }
+.cat-filter-container::-webkit-scrollbar { display: none; }
 
-.tab-btn {
+.filter-btn {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
   color: var(--text-dim);
-  padding: 9px 16px;
-  border-radius: 12px;
+  padding: 10px 18px;
+  border-radius: 14px;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.25s ease;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   backdrop-filter: blur(10px);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.tab-btn.active {
+.filter-btn.active {
   background: var(--gold-gradient);
   color: #0b0f19;
   border-color: transparent;
   font-weight: 700;
-  box-shadow: 0 4px 15px var(--gold-glow);
+  box-shadow: 0 4px 18px var(--gold-glow);
 }
 
 /* Free Reward Banner */
 .highlight-reward {
-  background: linear-gradient(135deg, rgba(18, 26, 48, 0.9), rgba(16, 185, 129, 0.15));
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  border-radius: 18px;
-  padding: 16px;
+  background: linear-gradient(135deg, rgba(17, 24, 42, 0.9), rgba(46, 204, 113, 0.12));
+  border: 1px solid rgba(46, 204, 113, 0.3);
+  border-radius: 20px;
+  padding: 18px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 14px;
   position: relative;
   overflow: hidden;
   box-shadow: var(--shadow);
@@ -205,15 +209,15 @@ header::before {
 }
 
 .reward-icon-wrap {
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, #10b981, #059669);
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
   color: #fff;
   display: grid;
   place-items: center;
-  font-size: 1.3rem;
-  box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+  font-size: 1.4rem;
+  box-shadow: 0 0 15px rgba(46, 204, 113, 0.4);
   flex-shrink: 0;
   animation: pulseIcon 2s infinite ease-in-out;
 }
@@ -225,50 +229,51 @@ header::before {
 
 .reward-title {
   color: #fff;
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 700;
   line-height: 1.2;
 }
 
 .reward-sub {
   color: var(--text-dim);
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   margin-top: 2px;
 }
 
 .timer-badge {
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.35);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 3px 8px;
-  border-radius: 6px;
-  font-size: 0.7rem;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.75rem;
   color: var(--gold);
   display: inline-block;
-  margin-top: 5px;
+  margin-top: 6px;
   font-variant-numeric: tabular-nums;
 }
 
-/* Sections & Grid */
+/* Sections & Grid Layouts */
 .shop-section {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .section-title {
   color: var(--gold);
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 700;
   display: flex;
   align-items: center;
   gap: 8px;
-  padding-bottom: 2px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  gap: 12px;
 }
 
 @media(min-width: 640px) {
@@ -289,44 +294,44 @@ header::before {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--card-border);
-  border-radius: 16px;
-  padding: 14px 10px;
+  border-radius: 18px;
+  padding: 16px 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   text-align: center;
   transition: transform 0.2s, border-color 0.2s, background 0.2s;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
 }
 
 .item-card:hover {
-  border-color: rgba(246, 211, 101, 0.4);
-  transform: translateY(-2px);
-  background: rgba(24, 32, 58, 0.85);
+  border-color: rgba(255, 209, 102, 0.45);
+  transform: translateY(-3px);
+  background: rgba(22, 30, 52, 0.9);
 }
 
 .preview-circle {
-  width: 48px;
-  height: 48px;
+  width: 54px;
+  height: 54px;
   border-radius: 50%;
   display: grid;
   place-items: center;
-  font-size: 1.2rem;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  font-size: 1.3rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
 }
 
 .item-name {
   color: var(--text-main);
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 700;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 .item-desc {
   color: var(--text-dim);
-  font-size: 0.68rem;
-  line-height: 1.3;
+  font-size: 0.72rem;
+  line-height: 1.35;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -338,13 +343,13 @@ header::before {
   color: #0b0f19;
   border: 0;
   border-radius: 10px;
-  padding: 8px 10px;
+  padding: 9px 12px;
   font-weight: 700;
   cursor: pointer;
   width: 100%;
   transition: filter 0.2s, transform 0.1s;
-  font-size: 0.78rem;
-  box-shadow: 0 4px 12px var(--gold-glow);
+  font-size: 0.82rem;
+  box-shadow: 0 4px 15px var(--gold-glow);
   margin-top: auto;
 }
 .btn-gold:hover { filter: brightness(1.1); }
@@ -423,16 +428,12 @@ header::before {
   white-space: nowrap;
 }
 #toast.show { transform: translate(-50%, 0); opacity: 1; }
-
-@media(max-width: 400px) {
-  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-  .item-card { padding: 10px 6px; }
-  .brand-title { font-size: 1.1rem; }
-}
 </style>
 </head>
 <body>
 <div class="app">
+
+<!-- Header Section -->
 <header>
 <div class="brand-wrapper">
 <div class="brand-icon"><i class="fa-solid fa-store"></i></div>
@@ -454,11 +455,12 @@ header::before {
 <i class="fa-solid fa-coins"></i> <span>Points: <b id="popupPointsVal">500</b></span>
 </div>
 
-<div class="cat-tabs">
-<button class="tab-btn active" onclick="filterCategory('all', this)">සියල්ල (All)</button>
-<button class="tab-btn" onclick="filterCategory('rewards', this)">Free Rewards</button>
-<button class="tab-btn" onclick="filterCategory('themes', this)">Piece Themes (20)</button>
-<button class="tab-btn" onclick="filterCategory('avatars', this)">Profile Avatars (20)</button>
+<!-- Category Filter Buttons -->
+<div class="cat-filter-container">
+<button class="filter-btn active" onclick="filterCategory('all', this)"><i class="fa-solid fa-border-all"></i> සියල්ල (All)</button>
+<button class="filter-btn" onclick="filterCategory('rewards', this)"><i class="fa-solid fa-gift"></i> Free Rewards</button>
+<button class="filter-btn" onclick="filterCategory('themes', this)"><i class="fa-solid fa-chess-board"></i> දාම් Themes</button>
+<button class="filter-btn" onclick="filterCategory('avatars', this)"><i class="fa-solid fa-circle-user"></i> Profile Avatars</button>
 </div>
 
 <!-- Highlighted Free Reward Section -->
@@ -636,9 +638,11 @@ async function mutateCloud(mutator){
  }catch(e){console.error('Firebase transaction failed:',e);toast('Firebase සම්බන්ධතාවය පරීක්ෂා කරන්න.');return {ok:false};}
 }
 
+/* Category Filter Logic */
 function filterCategory(category,button){
- document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+ document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
  if(button)button.classList.add('active');
+
  $('rewardSection').style.display=(category==='all'||category==='rewards')?'flex':'none';
  $('themesSection').style.display=(category==='all'||category==='themes')?'flex':'none';
  $('avatarsSection').style.display=(category==='all'||category==='avatars')?'flex':'none';
@@ -669,7 +673,7 @@ function renderShop(){
   }else if(selected){
    action.textContent='✓ සක්‍රීයයි';
    action.disabled=true;
-   action.style.background='#10b981';
+   action.style.background='#2ecc71';
    action.style.color='#fff';
    action.style.boxShadow='none';
   }else{
@@ -688,7 +692,7 @@ function renderShop(){
   const preview=document.createElement('div');
   preview.className='preview-circle';
   preview.style.background='var(--gold-gradient)';
-  preview.style.border='2px solid #f6d365';
+  preview.style.border='2px solid #ffd166';
   preview.style.color='#0b0f19';
   preview.innerHTML=`<i class="fa-solid ${avatar.icon}"></i>`;
 
@@ -703,7 +707,7 @@ function renderShop(){
   }else if(selected){
    action.textContent='✓ සක්‍රීයයි';
    action.disabled=true;
-   action.style.background='#10b981';
+   action.style.background='#2ecc71';
    action.style.color='#fff';
    action.style.boxShadow='none';
   }else{
