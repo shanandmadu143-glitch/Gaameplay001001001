@@ -31,32 +31,11 @@ body{
   background: rgba(10, 25, 15, 0.85); padding: 10px 14px; border-radius: 20px; border: 1.5px solid rgba(46, 204, 113, 0.4); box-shadow: 0 6px 20px rgba(0,0,0,0.6); margin-top: 6px;
   backdrop-filter: blur(6px);
 }
-.arena-player-card { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 3px; position: relative; }
+.arena-player-card { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; position: relative; }
 .arena-avatar-box { width: 48px; height: 48px; border-radius: 50%; border: 2px solid #2ecc71; background: #0f2b1c; display: grid; place-items: center; font-size: 1.3rem; color: #2ecc71; overflow: hidden; }
 .arena-player-card.active .arena-avatar-box { border-color: #ffd166; box-shadow: 0 0 20px rgba(255, 209, 102, 0.8); transform: scale(1.08); }
 .arena-player-card b { font-size: 0.9rem; color: #fff; max-width: 105px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .arena-player-card small { font-size: 0.72rem; color: #a0aec0; }
-
-.player-controls {
-  display: flex; gap: 6px; margin-top: 4px;
-}
-.ctrl-icon-btn {
-  width: 30px; height: 30px; border-radius: 50%; border: 1px solid rgba(46, 204, 113, 0.4);
-  background: rgba(0,0,0,0.5); color: #2ecc71; font-size: 0.8rem; display: grid; place-items: center;
-  cursor: pointer; transition: all 0.2s;
-}
-.ctrl-icon-btn.off {
-  border-color: var(--red); color: var(--red); background: rgba(255, 71, 87, 0.15);
-}
-.ctrl-icon-btn.active-mic {
-  background: var(--neon-green); color: #111; border-color: var(--neon-green);
-  animation: pulseMic 1.2s infinite;
-}
-@keyframes pulseMic {
-  0% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7); }
-  70% { box-shadow: 0 0 0 8px rgba(46, 204, 113, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
-}
 
 .arena-coins-center { display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(46, 204, 113, 0.1); padding: 6px 16px; border-radius: 16px; border: 1px solid rgba(46, 204, 113, 0.3); }
 .arena-coins-center i { font-size: 1.3rem; color: #2ecc71; }
@@ -199,10 +178,6 @@ body{
    <div class="arena-avatar-box" id="p1AvatarBox"><i class="fa-solid fa-user"></i></div>
    <b id="p1name">Player 1</b>
    <small id="p1sub">Host</small>
-   <div class="player-controls">
-    <button class="ctrl-icon-btn off" id="myMicBtn" title="Mic On/Off"><i class="fa-solid fa-microphone-slash"></i></button>
-    <button class="ctrl-icon-btn" id="mySoundBtn" title="Sound On/Off"><i class="fa-solid fa-volume-high"></i></button>
-   </div>
   </div>
 
   <div class="arena-coins-center">
@@ -215,14 +190,10 @@ body{
    <div class="arena-avatar-box" id="p2AvatarBox"><i class="fa-solid fa-chess-knight"></i></div>
    <b id="p2name">Player 2</b>
    <small id="p2sub">Guest</small>
-   <div class="player-controls">
-    <button class="ctrl-icon-btn off" id="oppMicIcon" title="Opponent Mic Status"><i class="fa-solid fa-microphone-slash"></i></button>
-    <button class="ctrl-icon-btn" id="oppSoundIcon" title="Opponent Sound Status"><i class="fa-solid fa-volume-high"></i></button>
-   </div>
   </div>
  </div>
 
- <!-- Placed Voice Record Bar precisely in the middle between Profile Header and Board -->
+ <!-- Mid-Area Voice Record Bar -->
  <div class="mid-voice-bar">
   <button class="arena-voice-mic-btn" id="arenaVoiceRecordBtn" title="Press & Hold to Record Voice Note">
    <i class="fa-solid fa-microphone"></i>
@@ -302,7 +273,6 @@ let thoughtBubbleTimeout = null;
 let mySessionId = 'player_' + Math.random().toString(36).substring(2, 9);
 
 let soundEnabled = true;
-let micEnabled = false;
 let mediaRecorder = null;
 let audioChunks = [];
 let isRecording = false;
@@ -365,53 +335,6 @@ function startForestAmbient() {
   });
  }
 }
-
-$('mySoundBtn').onclick = () => {
- soundEnabled = !soundEnabled;
- const btn = $('mySoundBtn');
- const forestAudio = $('forestAmbient');
- if (soundEnabled) {
-  btn.className = 'ctrl-icon-btn';
-  btn.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
-  if(forestAudio) forestAudio.play().catch(()=>{});
-  toast('Sound & Forest Ambient Enabled', 'fa-volume-high');
- } else {
-  btn.className = 'ctrl-icon-btn off';
-  btn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
-  window.speechSynthesis.cancel();
-  if(forestAudio) forestAudio.pause();
-  toast('Sound Muted', 'fa-volume-xmark');
- }
-};
-
-$('myMicBtn').onclick = async () => {
- micEnabled = !micEnabled;
- const btn = $('myMicBtn');
-
- if (micEnabled) {
-  try {
-   await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-   btn.className = 'ctrl-icon-btn active-mic';
-   btn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
-   toast('Mic Active', 'fa-microphone');
-   if(!single && roomRef) {
-    roomRef.child('micStatus/' + role).set(true).catch(()=>{});
-   }
-  } catch (err) {
-   micEnabled = false;
-   btn.className = 'ctrl-icon-btn off';
-   btn.innerHTML = '<i class="fa-solid fa-microphone-slash"></i>';
-   toast('Microphone permission denied.');
-  }
- } else {
-  btn.className = 'ctrl-icon-btn off';
-  btn.innerHTML = '<i class="fa-solid fa-microphone-slash"></i>';
-  toast('Mic Muted', 'fa-microphone-slash');
-  if(!single && roomRef) {
-   roomRef.child('micStatus/' + role).set(false).catch(()=>{});
-  }
- }
-};
 
 // Middle Voice Record Button Handling (Press & Hold)
 const voiceRecordBtn = $('arenaVoiceRecordBtn');
@@ -894,19 +817,6 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
     applyAvatarToBox('p1AvatarBox', data.hostPieceIndex||0, data.hostAvatar||'fa-user');
     applyAvatarToBox('p2AvatarBox', user.pieceIndex||0, user.avatarIcon||'fa-user');
    }
-  }
- });
-
- const oppRole = role === 'host' ? 'guest' : 'host';
- roomRef.child('micStatus/' + oppRole).on('value', snap => {
-  const active = snap.val();
-  const oppMicIcon = $('oppMicIcon');
-  if (active) {
-   oppMicIcon.className = 'ctrl-icon-btn active-mic';
-   oppMicIcon.innerHTML = '<i class="fa-solid fa-microphone"></i>';
-  } else {
-   oppMicIcon.className = 'ctrl-icon-btn off';
-   oppMicIcon.innerHTML = '<i class="fa-solid fa-microphone-slash"></i>';
   }
  });
 
