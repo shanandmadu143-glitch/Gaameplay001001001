@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>යහළුවන් - Sinhala Draughts Pro Gaming</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Gemunu+Libre:wght@400;600;700;800&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#05070e;--panel:rgba(14,20,38,.92);--gold:#ffd166;--neon-blue:#00f2fe;--neon-green:#2ecc71;--red:#ff4757;--dim:#a0aec0}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Gemunu Libre','Poppins',sans-serif;user-select:none;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;background:radial-gradient(circle at 50% 20%,#1a103c 0%,#080b18 60%,#03050a 100%);color:#f8f9fa;overflow:hidden}
+body{min-height:100dvh;display:flex;flex-direction:column;justify-content:center;align-items:center}
+
+.app{width:100vw;height:100dvh;max-width:100vw;max-height:100dvh;margin:0;padding:16px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+.top-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;background:linear-gradient(135deg,rgba(22,30,56,0.95),rgba(10,14,28,0.95));border:2px solid rgba(255,209,102,0.4);border-radius:24px;box-shadow:0 8px 25px rgba(0,0,0,0.6)}
+.top-bar h2{color:var(--gold);font-size:1.2rem;font-weight:700}
+
+main{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;width:100%;position:relative;margin:6px 0}
+.friends-container{width:100%;max-width:600px;height:100%;display:flex;flex-direction:column;gap:12px;padding:10px;background:rgba(14,20,38,0.7);border:2px solid rgba(255,255,255,0.1);border-radius:24px;backdrop-filter:blur(10px)}
+
+input{width:100%;padding:10px 14px;background:rgba(0,0,0,0.5);border:1px solid rgba(255,209,102,0.4);border-radius:12px;color:white;font-size:0.95rem;outline:none}
+.btn-gold{border:0;border-radius:12px;padding:8px 14px;cursor:pointer;font-weight:700;display:inline-flex;align-items:center;gap:6px;justify-content:center;background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;box-shadow:0 4px 15px rgba(255,173,98,0.4)}
+.row{display:flex;gap:10px;align-items:center}
+.list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-right:4px}
+
+.bottom-nav{width:100%;max-width:600px;min-height:70px;background:rgba(14,20,38,0.95);border:2px solid rgba(255,209,102,0.3);border-radius:24px;display:flex;align-items:center;justify-content:space-around;padding:6px 4px;backdrop-filter:blur(10px)}
+.nav-item{background:none;border:0;color:#aab4c7;text-decoration:none;display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:0.75rem;font-weight:700;cursor:pointer}
+.nav-item i{font-size:1.4rem}
+.nav-item.active{color:var(--gold)}
+.nav-item span{line-height:1}
+
+.modal{position:fixed;inset:0;background:rgba(3,5,12,0.85);backdrop-filter:blur(8px);display:none;place-items:center;z-index:100;padding:15px}
+.modal.show{display:grid}
+.modalbox{width:min(100%,420px);background:linear-gradient(145deg,#121828,#1b243f);border:2px solid var(--gold);border-radius:24px;padding:20px;display:grid;gap:12px;max-height:85vh;overflow-y:auto;box-shadow:0 20px 40px rgba(0,0,0,0.8)}
+.modalbox h3{text-align:center;color:var(--gold);font-weight:700}
+.btn{border:0;border-radius:12px;padding:10px 14px;cursor:pointer;font-weight:700;display:inline-flex;align-items:center;gap:6px;justify-content:center;background:rgba(255,255,255,0.1);color:white;border:1px solid rgba(255,255,255,0.2)}
+
+#toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,120px);opacity:0;background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--gold);color:#f8f9fa;border-radius:30px;padding:10px 20px;z-index:150;transition:.3s;font-weight:600;display:flex;align-items:center;gap:8px;font-size:0.9rem}
+#toast.show{transform:translate(-50%,0);opacity:1}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="app">
+ <div class="top-bar">
+  <h2>ඔන්ලයින් යහළුවන්</h2>
+  <div style="font-size:0.85rem;color:var(--gold)">ඔට්ටුව: <b id="activeBetDisplay">50</b> pts</div>
+ </div>
+
+ <main>
+  <div class="friends-container">
+   <div class="row">
+    <input id="search" placeholder="යහළුවාගේ නම ලියන්න...">
+    <button class="btn-gold" id="searchBtn">Search</button>
+   </div>
+   <div class="list" id="results">Online ක්‍රීඩකයන් සොයමින්...</div>
+  </div>
+ </main>
+
+ <footer class="bottom-nav">
+  <a class="nav-item" href="index.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
+  <a class="nav-item active" href="friends.html"><i class="fa-solid fa-user-group"></i><span>Friends</span></a>
+  <a class="nav-item" href="shopandreward.html"><i class="fa-solid fa-trophy"></i><span>Events</span></a>
+  <a class="nav-item" href="shopandreward.html"><i class="fa-solid fa-cart-shopping"></i><span>Shop</span></a>
+ </footer>
+</div>
+
+<!-- Modals for waiting / invites -->
+<div class="modal" id="waitingHostModal">
+ <div class="modalbox" style="text-align:center;gap:12px;padding:24px">
+  <div style="width:40px;height:40px;margin:auto;border:4px solid rgba(255,255,255,0.2);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite"></div>
+  <h3 id="waitingHostTitle">ආරාධනය යවන ලදී!</h3>
+  <p id="waitingHostText" style="color:var(--dim);font-size:0.9rem">ප්‍රතිවාදියා පිළිගන්නා තෙක් රැඳී සිටින්න...</p>
+  <button class="btn" id="cancelInviteBtn" style="border-color:var(--red);color:var(--red)">අවලංගු කරන්න (Cancel)</button>
+ </div>
+</div>
+
+<div class="modal" id="invitePopupModal">
+ <div class="modalbox" style="text-align:center;gap:10px">
+  <h3>ක්‍රීඩා ආරාධනයක්!</h3>
+  <p id="invitePopupText" style="color:var(--dim);font-size:0.9rem"></p>
+  <div class="row" style="width:100%">
+   <button class="btn-gold" id="acceptInviteBtn" style="flex:1">පිළිගන්න (Accept)</button>
+   <button class="btn" id="rejectInviteBtn" style="flex:1">ප්‍රතික්ෂේප කරන්න</button>
+  </div>
+ </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script>
+'use strict';
+const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
+const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user';
+let auth,db,fbUser,user={name:'',points:500,uid:null,pieceIndex:0,avatarIcon:'fa-user'};
+let currentBet = Number(sessionStorage.getItem('sinhala_draughts_bet')) || 50;
+let incomingInviteData=null,invitesListenerRef=null,activeInviteWatcher=null;
+
+$('activeBetDisplay').textContent = currentBet;
+
+function toast(s, icon='fa-circle-info'){
+ const t=$('toast');
+ t.replaceChildren();
+ const iconEl=document.createElement('i');iconEl.className=`fa-solid ${icon}`;iconEl.style.color='var(--gold)';
+ const textEl=document.createElement('span');textEl.textContent=String(s);
+ t.append(iconEl,textEl);
+ t.classList.add('show');
+ setTimeout(()=>t.classList.remove('show'),3000);
+}
+function modal(id,on){$(id).classList.toggle('show',on);}
+
+try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);auth=firebase.auth();db=firebase.database();}
+catch(e){console.error('Firebase error:',e);}
+
+auth.onAuthStateChanged(async u=>{
+ if(u) {
+  fbUser=u;
+  const snap=await db.ref('users_v6/'+u.uid).once('value');
+  const d=snap.val();
+  if(d) {
+   user={name:d.name,points:Number(d.points)||500,uid:u.uid,pieceIndex:Number(d.pieceIndex)||0,avatarIcon:d.avatarIcon||'fa-user'};
+  }
+  loadFriendResults('');
+  listenForIncomingInvites();
+ } else {
+  window.location.href = 'index.html';
+ }
+});
+
+async function loadFriendResults(rawQuery) {
+ const queryName = String(rawQuery || '').trim().toLowerCase();
+ const resultsContainer = $('results');
+ resultsContainer.innerHTML = 'සොයමින් පවතී...';
+
+ try {
+  const snap = await db.ref('publicProfiles_v6').once('value');
+  if (!snap.exists()) {
+   resultsContainer.innerHTML = 'ක්‍රීඩකයන් හමු නොවීය.';
+   return;
+  }
+
+  const profiles = snap.val();
+  resultsContainer.innerHTML = '';
+  let found = false;
+
+  Object.keys(profiles).forEach(uid => {
+   const pData = profiles[uid];
+   const candidateName = pData && pData.name ? String(pData.name) : '';
+   if(uid !== fbUser.uid && candidateName && (!queryName || candidateName.toLowerCase().includes(queryName))) {
+    found = true;
+    const item = document.createElement('div');
+    item.style.cssText = 'display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.05);padding:10px 14px;border-radius:12px;margin-bottom:6px;';
+    const info = document.createElement('div');
+    const playerName = document.createElement('b');
+    playerName.textContent = candidateName;
+    const playerMeta = document.createElement('small');
+    playerMeta.style.color = 'var(--dim)';
+    playerMeta.textContent = `Points: ${Number(pData.points) || 0}`;
+    info.append(playerName, document.createElement('br'), playerMeta);
+    item.appendChild(info);
+    
+    const inviteBtn = document.createElement('button');
+    inviteBtn.className = 'btn-gold';
+    inviteBtn.style.padding = '6px 14px';
+    inviteBtn.style.fontSize = '0.85rem';
+    inviteBtn.textContent = 'Invite';
+    inviteBtn.onclick = () => sendGameInvite(uid, candidateName);
+    
+    item.appendChild(inviteBtn);
+    resultsContainer.appendChild(item);
+   }
+  });
+  if(!found) {
+   resultsContainer.innerHTML = queryName ? 'අදාළ නමින් ක්‍රීඩකයන් හමු නොවීය.' : 'ऑनलाइन ක්‍රීඩකයන් නැත.';
+  }
+ } catch(err) {
+  console.error('Search error:', err);
+  resultsContainer.innerHTML = 'දෝෂයක් සිදු විය.';
+ }
+}
+
+$('searchBtn').onclick = () => loadFriendResults($('search').value);
+$('search').addEventListener('input', () => loadFriendResults($('search').value));
+
+async function sendGameInvite(friendUid, friendName) {
+ if(currentBet > user.points) return toast('ඔබ සතුව ප්‍රමාණවත් Points නොමැත.');
+
+ if(activeInviteWatcher) {
+  activeInviteWatcher.ref.off('value', activeInviteWatcher.handler);
+  activeInviteWatcher = null;
+ }
+
+ const newInviteRef = db.ref('invites_v6/' + friendUid).push();
+ const inviteId = newInviteRef.key;
+ const initialBoard = Array.from({length:8},()=>Array(8).fill(0));
+ for(let r=0;r<8;r++)for(let c=0;c<8;c++)if((r+c)%2){if(r<3)initialBoard[r][c]=-1;else if(r>4)initialBoard[r][c]=1}
+ 
+ const targetRoomRef = db.ref('rooms_v6/' + inviteId);
+
+ try {
+  await targetRoomRef.set({
+   board: initialBoard,
+   turn: 1,
+   forcedContinuation: null,
+   hostUid: fbUser.uid,
+   guestUid: friendUid,
+   hostName: user.name,
+   guestName: friendName,
+   hostPieceIndex: user.pieceIndex || 0,
+   hostAvatar: user.avatarIcon || 'fa-user',
+   guestPieceIndex: 0,
+   guestAvatar: 'fa-user',
+   bet: currentBet,
+   status: 'waiting',
+   updatedAt: firebase.database.ServerValue.TIMESTAMP
+  });
+
+  await newInviteRef.set({
+   fromUid: fbUser.uid,
+   hostName: user.name,
+   bet: currentBet,
+   status: 'pending',
+   timestamp: Date.now()
+  });
+
+  $('waitingHostText').textContent = `${friendName} ආරාධනය පිළිගන්නා තෙක් රැඳී සිටින්න...`;
+  modal('waitingHostModal', true);
+
+  const handler = snap => {
+   const roomData = snap.val();
+   if(!roomData) return;
+
+   if(roomData.status === 'playing') {
+    targetRoomRef.off('value', handler);
+    activeInviteWatcher = null;
+    modal('waitingHostModal', false);
+    window.location.href = `arena.html?mode=multi&roomId=${inviteId}&role=host&bet=${currentBet}&oppName=${encodeURIComponent(friendName)}`;
+   } else if(roomData.status === 'rejected') {
+    targetRoomRef.off('value', handler);
+    activeInviteWatcher = null;
+    modal('waitingHostModal', false);
+    targetRoomRef.remove().catch(()=>{});
+    toast(`${friendName} ආරාධනය ප්‍රතික්ෂේප කළා.`);
+   }
+  };
+
+  targetRoomRef.on('value', handler);
+  activeInviteWatcher = { ref: targetRoomRef, handler: handler, inviteRef: newInviteRef };
+
+ } catch(err) {
+  console.error('Invite error:', err);
+  modal('waitingHostModal', false);
+  toast('ආරාධනය යැවීමට නොහැකි විය.');
+ }
+}
+
+$('cancelInviteBtn').onclick = () => {
+ modal('waitingHostModal', false);
+ if(activeInviteWatcher) {
+  activeInviteWatcher.ref.off('value', activeInviteWatcher.handler);
+  activeInviteWatcher.ref.remove().catch(()=>{});
+  activeInviteWatcher.inviteRef.remove().catch(()=>{});
+  activeInviteWatcher = null;
+ }
+ toast('ආරාධනය අවලංගු කරන ලදී.');
+};
+
+function listenForIncomingInvites() {
+ if(!db || !fbUser) return;
+ if(invitesListenerRef) invitesListenerRef.off();
+ invitesListenerRef = db.ref('invites_v6/' + fbUser.uid);
+ invitesListenerRef.on('child_added', snap => {
+  const invite = snap.val();
+  if(invite && invite.status === 'pending' && (Date.now() - Number(invite.timestamp || 0) < 300000)) {
+   incomingInviteData = { id: snap.key, fromUid: invite.fromUid, ...invite };
+   $('invitePopupText').textContent = `${invite.hostName} විසින් ඔට්ටුව ${invite.bet} ක් සමඟ ඔබට ආරාධනා කරයි!`;
+   modal('invitePopupModal', true);
+  }
+ });
+}
+
+$('acceptInviteBtn').onclick = async () => {
+ if(!incomingInviteData) return;
+ const invite = incomingInviteData;
+ const bet = Number(invite.bet) || 0;
+
+ if(bet > user.points) {
+  toast('මෙම ඔට්ටුව සඳහා ඔබ සතුව ප්‍රමාණවත් Points නොමැත.');
+  return;
+}
+
+ incomingInviteData = null;
+ modal('invitePopupModal', false);
+
+ try {
+  const roomRefCheck = db.ref('rooms_v6/' + invite.id);
+  const roomSnap = await roomRefCheck.once('value');
+  const roomData = roomSnap.val() || {};
+
+  await roomRefCheck.update({
+   guestPieceIndex: user.pieceIndex || 0,
+   guestAvatar: user.avatarIcon || 'fa-user',
+   status: 'playing',
+   updatedAt: firebase.database.ServerValue.TIMESTAMP
+  });
+
+  await db.ref('invites_v6/' + fbUser.uid + '/' + invite.id).remove().catch(()=>{});
+  window.location.href = `arena.html?mode=multi&roomId=${invite.id}&role=guest&bet=${bet}&oppName=${encodeURIComponent(roomData.hostName || 'Host')}`;
+ } catch(err) {
+  console.error('Accept error:', err);
+  toast('ආරාධනය පිළිගැනීමට නොහැකි විය.');
+ }
+};
+
+$('rejectInviteBtn').onclick = () => {
+ if(!incomingInviteData) return;
+ const invite = incomingInviteData;
+ incomingInviteData = null;
+ modal('invitePopupModal', false);
+ db.ref('rooms_v6/' + invite.id).update({ status: 'rejected' }).catch(()=>{});
+ db.ref('invites_v6/' + fbUser.uid + '/' + invite.id).remove().catch(()=>{});
+};
+</script>
+</body>
+</html>
