@@ -52,8 +52,8 @@ input{width:100%;padding:10px 14px;background:rgba(0,0,0,0.5);border:1px solid r
 <body>
 <div class="app">
  <div class="top-bar">
-  <h2>සියලුම ක්‍රීඩකයන්</h2>
-  <div style="font-size:0.85rem;color:var(--gold)">ඔට්ටුව: <b id="activeBetDisplay">50</b> pts</div>
+  <h2>සියලුම ක්‍රීඩකයන්[span_1](start_span)[span_1](end_span)</h2>
+  <div style="font-size:0.85rem;color:var(--gold)">ඔට්ටුව: <b id="activeBetDisplay">50</b> pts[span_2](start_span)[span_2](end_span)</div>
  </div>
 
  <main>
@@ -163,26 +163,22 @@ auth.onAuthStateChanged(async u=>{
     user.uid = u.uid;
    }
    
-   // Sync profile to database immediately on load
+   // Sync profile safely
    const profileData = {
     name: user.name,
     points: user.points,
     pieceIndex: user.pieceIndex,
     avatarIcon: user.avatarIcon
    };
-   await db.ref('publicProfiles_v6/'+u.uid).set(profileData);
-   await db.ref('users_v6/'+u.uid).update(profileData);
+   await db.ref('publicProfiles_v6/'+u.uid).set(profileData).catch(()=>{});
+   await db.ref('users_v6/'+u.uid).update(profileData).catch(()=>{});
 
-   // Setup online presence
+   // Setup online presence safely
    const userStatusDatabaseRef = db.ref('status_v6/' + u.uid);
-   const isOfflineForDatabase = { state: 'offline', last_changed: firebase.database.ServerValue.TIMESTAMP };
-   const isOnlineForDatabase = { state: 'online', last_changed: firebase.database.ServerValue.TIMESTAMP };
-
    db.ref('.info/connected').on('value', snapshot => {
        if (snapshot.val() === false) return;
-       userStatusDatabaseRef.onDisconnect().set(isOfflineForDatabase).then(() => {
-           userStatusDatabaseRef.set(isOnlineForDatabase);
-       });
+       userStatusDatabaseRef.onDisconnect().set({ state: 'offline', last_changed: firebase.database.ServerValue.TIMESTAMP });
+       userStatusDatabaseRef.set({ state: 'online', last_changed: firebase.database.ServerValue.TIMESTAMP });
    });
 
    loadAllPlayers('');
@@ -202,15 +198,12 @@ async function loadAllPlayers(rawQuery) {
  resultsContainer.innerHTML = 'ක්‍රීඩකයන් පූරණය වෙමින්...';
 
  try {
-  const [profilesSnap, usersSnap, statusSnap] = await Promise.all([
-      db.ref('publicProfiles_v6').once('value'),
-      db.ref('users_v6').once('value'),
-      db.ref('status_v6').once('value')
-  ]);
+  const usersSnap = await db.ref('users_v6').once('value').catch(()=>null);
+  const profilesSnap = await db.ref('publicProfiles_v6').once('value').catch(()=>null);
+  const statusSnap = await db.ref('status_v6').once('value').catch(()=>null);
 
-  // Combine data sources so no user is missed
-  let profiles = profilesSnap.val() || {};
-  const users = usersSnap.val() || {};
+  let profiles = profilesSnap && profilesSnap.exists() ? profilesSnap.val() : {};
+  const users = usersSnap && usersSnap.exists() ? usersSnap.val() : {};
   
   // Merge users into profiles if any missing
   Object.keys(users).forEach(uid => {
@@ -224,7 +217,7 @@ async function loadAllPlayers(rawQuery) {
    return;
   }
 
-  const statuses = statusSnap.val() || {};
+  const statuses = statusSnap && statusSnap.exists() ? statusSnap.val() : {};
   resultsContainer.innerHTML = '';
   let found = false;
 
