@@ -16,12 +16,22 @@ body{min-height:100dvh;display:flex;flex-direction:column;justify-content:center
 .top-bar h2{color:var(--gold);font-size:1.2rem;font-weight:700}
 
 main{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;width:100%;position:relative;margin:6px 0}
-.friends-container{width:100%;max-width:600px;height:100%;display:flex;flex-direction:column;gap:12px;padding:10px;background:rgba(14,20,38,0.7);border:2px solid rgba(255,255,255,0.1);border-radius:24px;backdrop-filter:blur(10px)}
+.friends-container{width:100%;max-width:600px;height:100%;display:flex;flex-direction:column;gap:12px;padding:12px;background:rgba(14,20,38,0.7);border:2px solid rgba(255,255,255,0.1);border-radius:24px;backdrop-filter:blur(10px)}
 
 input{width:100%;padding:10px 14px;background:rgba(0,0,0,0.5);border:1px solid rgba(255,209,102,0.4);border-radius:12px;color:white;font-size:0.95rem;outline:none}
 .btn-gold{border:0;border-radius:12px;padding:8px 14px;cursor:pointer;font-weight:700;display:inline-flex;align-items:center;gap:6px;justify-content:center;background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;box-shadow:0 4px 15px rgba(255,173,98,0.4)}
 .row{display:flex;gap:10px;align-items:center}
 .list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-right:4px}
+
+/* Friend Item Card Styles */
+.friend-card{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:10px 14px;border-radius:16px;transition:all 0.2s}
+.friend-card:hover{border-color:rgba(255,209,102,0.3);background:rgba(255,255,255,0.07)}
+.friend-info{display:flex;align-items:center;gap:12px}
+.avatar-wrapper{position:relative;width:44px;height:44px}
+.friend-avatar{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-size:1.2rem;border:2px solid var(--gold);box-shadow:0 0 10px rgba(0,0,0,0.5)}
+.status-dot{position:absolute;bottom:2px;right:2px;width:12px;height:12px;border-radius:50%;border:2px solid #121828}
+.status-dot.online{background:var(--neon-green);box-shadow:0 0 8px var(--neon-green)}
+.status-dot.offline{background:var(--dim)}
 
 .bottom-nav{width:100%;max-width:600px;min-height:70px;background:rgba(14,20,38,0.95);border:2px solid rgba(255,209,102,0.3);border-radius:24px;display:flex;align-items:center;justify-content:space-around;padding:6px 4px;backdrop-filter:blur(10px)}
 .nav-item{background:none;border:0;color:#aab4c7;text-decoration:none;display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:0.75rem;font-weight:700;cursor:pointer}
@@ -43,17 +53,17 @@ input{width:100%;padding:10px 14px;background:rgba(0,0,0,0.5);border:1px solid r
 <body>
 <div class="app">
  <div class="top-bar">
-  <h2>ඔන්ලයින් යහළුවන්</h2>
+  <h2>සියලුම ක්‍රීඩකයන්</h2>
   <div style="font-size:0.85rem;color:var(--gold)">ඔට්ටුව: <b id="activeBetDisplay">50</b> pts</div>
  </div>
 
  <main>
   <div class="friends-container">
    <div class="row">
-    <input id="search" placeholder="යහළුවාගේ නම ලියන්න...">
+    <input id="search" placeholder="ක්‍රීඩකයාගේ නම ලියන්න...">
     <button class="btn-gold" id="searchBtn">Search</button>
    </div>
-   <div class="list" id="results">Online ක්‍රීඩකයන් සොයමින්...</div>
+   <div class="list" id="results">ක්‍රීඩකයන් පූරණය වෙමින්...</div>
   </div>
  </main>
 
@@ -94,12 +104,35 @@ input{width:100%;padding:10px 14px;background:rgba(0,0,0,0.5);border:1px solid r
 <script>
 'use strict';
 const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
-const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user';
+const $=id=>document.getElementById(id);
 let auth,db,fbUser,user={name:'',points:500,uid:null,pieceIndex:0,avatarIcon:'fa-user'};
 let currentBet = Number(sessionStorage.getItem('sinhala_draughts_bet')) || 50;
 let incomingInviteData=null,invitesListenerRef=null,activeInviteWatcher=null;
 
 $('activeBetDisplay').textContent = currentBet;
+
+const PIECE_DESIGNS=[
+ {id:0,name:'මුතු සුදු (Default)',bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●'},
+ {id:1,name:'රන් ඔටුන්න',bg:'linear-gradient(135deg,#ffeaa7,#fdcb6e)',border:'#e1b12c',color:'#2d3436',icon:'★'},
+ {id:2,name:'රුධිර රතු',bg:'radial-gradient(circle at 30% 30%,#ff7675,#d63031)',border:'#c0392b',color:'#fff',icon:'◆'},
+ {id:3,name:'මරකත කොළ',bg:'radial-gradient(circle at 30% 30%,#55efc4,#00b894)',border:'#00a8ff',color:'#fff',icon:'▲'},
+ {id:4,name:'නියෝන් නිල්',bg:'radial-gradient(circle at 30% 30%,#74b9ff,#0984e3)',border:'#00f2fe',color:'#fff',icon:'✦'},
+ {id:5,name:'शाही දම් පාට',bg:'radial-gradient(circle at 30% 30%,#a29bfe,#6c5ce7)',border:'#fd79a8',color:'#fff',icon:'❖'},
+ {id:6,name:'අඳුරු කාබන්',bg:'radial-gradient(circle at 30% 30%,#636e72,#2d3436)',border:'#b2bec3',color:'#ffd166',icon:'♠'},
+ {id:7,name:'සූර්ය රන්',bg:'radial-gradient(circle at 30% 30%,#fab1a0,#e17055)',border:'#d63031',color:'#fff',icon:'☀'},
+ {id:8,name:'මැජෙන්ටා රෝස',bg:'radial-gradient(circle at 30% 30%,#ff7979,#eb4d4b)',border:'#ff7979',color:'#fff',icon:'✿'},
+ {id:9,name:'සැහැල්ලු සිල්වර්',bg:'radial-gradient(circle at 30% 30%,#dfe6e9,#b2bec3)',border:'#636e72',color:'#2d3436',icon:'⚙'},
+ {id:10,name:'කොස්මික් වයලට්',bg:'radial-gradient(circle at 30% 30%,#8e44ad,#3498db)',border:'#9b59b6',color:'#fff',icon:'☄'},
+ {id:11,name:'නියෝන් ලෙමන්',bg:'radial-gradient(circle at 30% 30%,#f1c40f,#f39c12)',border:'#f1c40f',color:'#111',icon:'⚡'},
+ {id:12,name:'ටර්කියුයිස්',bg:'radial-gradient(circle at 30% 30%,#1abc9c,#16a085)',border:'#1abc9c',color:'#fff',icon:'🌊'},
+ {id:13,name:'චොක්ලට් බ්‍රවුන්',bg:'radial-gradient(circle at 30% 30%,#d35400,#a04000)',border:'#e67e22',color:'#fff',icon:'☕'},
+ {id:14,name:'රෝස් ගෝල්ඩ්',bg:'radial-gradient(circle at 30% 30%,#f5b041,#eb984e)',border:'#f39c12',color:'#fff',icon:'♕'},
+ {id:15,name:'ගැඹුරු මිනිරන්',bg:'radial-gradient(circle at 30% 30%,#34495e,#2c3e50)',border:'#7f8c8d',color:'#ffd166',icon:'🛡'},
+ {id:16,name:'අයිස් මින්ට්',bg:'radial-gradient(circle at 30% 30%,#a3e4d7,#48c9b0)',border:'#17a589',color:'#111',icon:'❄'},
+ {id:17,name:'සැණකෙළි පර්පල්',bg:'radial-gradient(circle at 30% 30%,#d98880,#c0392b)',border:'#e74c3c',color:'#fff',icon:'🔮'},
+ {id:18,name:'විදුලි ලෙමන්',bg:'radial-gradient(circle at 30% 30%,#f7dc6f,#f9e79f)',border:'#f1c40f',color:'#111',icon:'✨'},
+ {id:19,name:'අමරණීය අඳුර',bg:'radial-gradient(circle at 30% 30%,#2c3e50,#000000)',border:'#ffd166',color:'#ffd166',icon:'♔'}
+];
 
 function toast(s, icon='fa-circle-info'){
  const t=$('toast');
@@ -123,67 +156,125 @@ auth.onAuthStateChanged(async u=>{
   if(d) {
    user={name:d.name,points:Number(d.points)||500,uid:u.uid,pieceIndex:Number(d.pieceIndex)||0,avatarIcon:d.avatarIcon||'fa-user'};
   }
-  loadFriendResults('');
+  
+  // Set User Presence (Online Status) in Firebase Realtime Database
+  const userStatusDatabaseRef = db.ref('status_v6/' + u.uid);
+  const isOfflineForDatabase = { state: 'offline', last_changed: firebase.database.ServerValue.TIMESTAMP };
+  const isOnlineForDatabase = { state: 'online', last_changed: firebase.database.ServerValue.TIMESTAMP };
+
+  db.ref('.info/connected').on('value', snapshot => {
+      if (snapshot.val() === false) return;
+      userStatusDatabaseRef.onDisconnect().set(isOfflineForDatabase).then(() => {
+          userStatusDatabaseRef.set(isOnlineForDatabase);
+      });
+  });
+
+  loadAllPlayers('');
   listenForIncomingInvites();
  } else {
   window.location.href = 'index.html';
  }
 });
 
-async function loadFriendResults(rawQuery) {
+async function loadAllPlayers(rawQuery) {
  const queryName = String(rawQuery || '').trim().toLowerCase();
  const resultsContainer = $('results');
- resultsContainer.innerHTML = 'සොයමින් පවතී...';
+ resultsContainer.innerHTML = 'ක්‍රීඩකයන් පූරණය වෙමින්...';
 
  try {
-  const snap = await db.ref('publicProfiles_v6').once('value');
-  if (!snap.exists()) {
+  // Fetch profiles and statuses simultaneously
+  const [profilesSnap, statusSnap] = await Promise.all([
+      db.ref('publicProfiles_v6').once('value'),
+      db.ref('status_v6').once('value')
+  ]);
+
+  if (!profilesSnap.exists()) {
    resultsContainer.innerHTML = 'ක්‍රීඩකයන් හමු නොවීය.';
    return;
   }
 
-  const profiles = snap.val();
+  const profiles = profilesSnap.val();
+  const statuses = statusSnap.val() || {};
   resultsContainer.innerHTML = '';
   let found = false;
 
   Object.keys(profiles).forEach(uid => {
    const pData = profiles[uid];
    const candidateName = pData && pData.name ? String(pData.name) : '';
+   
    if(uid !== fbUser.uid && candidateName && (!queryName || candidateName.toLowerCase().includes(queryName))) {
     found = true;
-    const item = document.createElement('div');
-    item.style.cssText = 'display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.05);padding:10px 14px;border-radius:12px;margin-bottom:6px;';
-    const info = document.createElement('div');
+    
+    // Check online status
+    const userStatus = statuses[uid];
+    const isOnline = userStatus && userStatus.state === 'online';
+
+    // Get custom design & avatar
+    const designIndex = Number(pData.pieceIndex) || 0;
+    const design = PIECE_DESIGNS[designIndex] || PIECE_DESIGNS[0];
+    const avatarIcon = pData.avatarIcon || 'fa-user';
+
+    const card = document.createElement('div');
+    card.className = 'friend-card';
+
+    // Left info (Avatar + Name + Points)
+    const infoDiv = document.createElement('div');
+    infoDiv.className = 'friend-info';
+
+    const avatarWrapper = document.createElement('div');
+    avatarWrapper.className = 'avatar-wrapper';
+
+    const avatarEl = document.createElement('div');
+    avatarEl.className = 'friend-avatar';
+    avatarEl.style.background = design.bg;
+    avatarEl.style.borderColor = design.border;
+    avatarEl.style.color = design.color;
+    avatarEl.innerHTML = `<i class="fa-solid ${avatarIcon}"></i>`;
+
+    const statusDot = document.createElement('div');
+    statusDot.className = `status-dot ${isOnline ? 'online' : 'offline'}`;
+    statusDot.title = isOnline ? 'Online' : 'Offline';
+
+    avatarWrapper.append(avatarEl, statusDot);
+
+    const textWrap = document.createElement('div');
     const playerName = document.createElement('b');
     playerName.textContent = candidateName;
-    const playerMeta = document.createElement('small');
-    playerMeta.style.color = 'var(--dim)';
-    playerMeta.textContent = `Points: ${Number(pData.points) || 0}`;
-    info.append(playerName, document.createElement('br'), playerMeta);
-    item.appendChild(info);
-    
+    playerName.style.color = '#fff';
+    playerName.style.fontSize = '1rem';
+
+    const playerMeta = document.createElement('div');
+    playerMeta.style.cssText = 'font-size:0.75rem;color:var(--dim);display:flex;align-items:center;gap:6px;';
+    playerMeta.innerHTML = `<i class="fa-solid fa-coins" style="color:var(--gold)"></i> ${Number(pData.points) || 0} pts <span style="opacity:0.4">•</span> <span style="color:${isOnline ? 'var(--neon-green)' : 'var(--dim)'}">${isOnline ? 'Online' : 'Offline'}</span>`;
+
+    textWrap.append(playerName, playerMeta);
+    infoDiv.append(avatarWrapper, textWrap);
+    card.appendChild(infoDiv);
+
+    // Invite Button
     const inviteBtn = document.createElement('button');
     inviteBtn.className = 'btn-gold';
     inviteBtn.style.padding = '6px 14px';
     inviteBtn.style.fontSize = '0.85rem';
-    inviteBtn.textContent = 'Invite';
+    inviteBtn.innerHTML = '<i class="fa-solid fa-gamepad"></i> Invite';
     inviteBtn.onclick = () => sendGameInvite(uid, candidateName);
     
-    item.appendChild(inviteBtn);
-    resultsContainer.appendChild(item);
+    card.appendChild(inviteBtn);
+    resultsContainer.appendChild(card);
    }
   });
+
   if(!found) {
-   resultsContainer.innerHTML = queryName ? 'අදාළ නමින් ක්‍රීඩකයන් හමු නොවීය.' : 'ऑनलाइन ක්‍රීඩකයන් නැත.';
+   resultsContainer.innerHTML = queryName ? 'අදාළ නමින් ක්‍රීඩකයන් හමු නොවීය.' : 'වෙනත් ක්‍රීඩකයන් තවම ලියාපදිංචි වී නැත.';
   }
  } catch(err) {
-  console.error('Search error:', err);
+  console.error('Load players error:', err);
   resultsContainer.innerHTML = 'දෝෂයක් සිදු විය.';
  }
 }
 
-$('searchBtn').onclick = () => loadFriendResults($('search').value);
-$('search').addEventListener('input', () => loadFriendResults($('search').value));
+$('searchBtn').onclick = () => loadAllPlayers($('search').value);
+$('search').addEventListener('input', () => loadAllPlayers($('search').value));
 
 async function sendGameInvite(friendUid, friendName) {
  if(currentBet > user.points) return toast('ඔබ සතුව ප්‍රමාණවත් Points නොමැත.');
@@ -254,7 +345,7 @@ async function sendGameInvite(friendUid, friendName) {
   console.error('Invite error:', err);
   modal('waitingHostModal', false);
   toast('ආරාධනය යැවීමට නොහැකි විය.');
- }
+}
 }
 
 $('cancelInviteBtn').onclick = () => {
