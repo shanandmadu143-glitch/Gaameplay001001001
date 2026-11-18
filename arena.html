@@ -58,22 +58,25 @@ body{
   100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
 }
 
-/* Arena Center Column with Coins & Moved Voice Mic Button */
 .arena-center-col { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
 
 .arena-coins-center { display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(46, 204, 113, 0.1); padding: 4px 12px; border-radius: 14px; border: 1px solid rgba(46, 204, 113, 0.3); }
 .arena-coins-center i { font-size: 1.1rem; color: #2ecc71; }
 .arena-coins-center b { font-size: 0.95rem; color: #fff; }
 
-/* Moved Arena Voice Mic Button */
 .arena-voice-mic-btn {
   width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid var(--red);
   background: rgba(255, 71, 87, 0.2); color: var(--red); font-size: 1rem;
   display: grid; place-items: center; cursor: pointer; transition: all 0.2s;
 }
-.arena-voice-mic-btn.active-mic {
-  background: var(--neon-green); color: #111; border-color: var(--neon-green);
-  animation: pulseMic 1.2s infinite;
+.arena-voice-mic-btn.active-rec {
+  background: var(--red); color: #fff; border-color: var(--red);
+  animation: pulseRec 1s infinite;
+}
+@keyframes pulseRec {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7); }
+  70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(255, 71, 87, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
 }
 
 .thought-bubble {
@@ -186,13 +189,13 @@ body{
    </div>
   </div>
 
-  <!-- Moved Voice Mic Button and Coins in Center Header -->
+  <!-- Central Header: Coins + Voice Mic Button -->
   <div class="arena-center-col">
    <div class="arena-coins-center">
     <i class="fa-solid fa-coins"></i>
     <b id="arenaBetDisplay">100</b>
    </div>
-   <button class="arena-voice-mic-btn" id="arenaVoiceRecordBtn" title="Press & Hold to Record Live Voice Note">
+   <button class="arena-voice-mic-btn" id="arenaVoiceRecordBtn" title="Press & Hold to Record Voice Note">
     <i class="fa-solid fa-microphone"></i>
    </button>
   </div>
@@ -240,17 +243,16 @@ body{
    <div class="chat-msg them">ප්‍රතිවාදියා සමඟ කතා කරන්න...</div>
   </div>
   <div class="chat-footer">
-   <!-- Voice Button removed from chat footer -->
    <input type="text" id="chatInput" placeholder="පණිවිඩයක් ලියන්න..." autocomplete="off">
    <button class="btn-gold" id="sendChatBtn" style="padding:6px 12px"><i class="fa-solid fa-paper-plane"></i></button>
   </div>
  </div>
 </section>
 
-<!-- Audio playback element for incoming voice messages -->
+<!-- Audio element for playing voice notes -->
 <audio id="remoteAudio" autoplay playsinline style="display:none;"></audio>
 
-<!-- Relaxing Forest Ambient Background Sound (Loop Enabled) -->
+<!-- Relaxing Forest Ambient Background Sound -->
 <audio id="forestAmbient" src="https://cdn.pixabay.com/download/audio/2022/05/16/audio_db32c1b913.mp3?filename=forest-with-birds-and-wind-111456.mp3" preload="auto" loop style="display:none;"></audio>
 
 <div class="modal" id="overModal">
@@ -393,7 +395,7 @@ $('myMicBtn').onclick = async () => {
  }
 };
 
-// Moved Arena Voice Button (Press & Hold to Record & Send Voice Note)
+// Moved Voice Record Button Handling (Press & Hold)
 const voiceRecordBtn = $('arenaVoiceRecordBtn');
 if (voiceRecordBtn) {
  const startRec = async (e) => {
@@ -421,7 +423,7 @@ if (voiceRecordBtn) {
 
    mediaRecorder.start();
    isRecording = true;
-   voiceRecordBtn.classList.add('active-mic');
+   voiceRecordBtn.classList.add('active-rec');
    toast('🎙️ Recording Voice Note...', 'fa-microphone');
   } catch (err) {
    toast('Microphone අවසරය අවශ්‍යයි.');
@@ -433,7 +435,7 @@ if (voiceRecordBtn) {
   if (!isRecording || !mediaRecorder) return;
   mediaRecorder.stop();
   isRecording = false;
-  voiceRecordBtn.classList.remove('active-mic');
+  voiceRecordBtn.classList.remove('active-rec');
   toast('🎤 Voice Note යවන ලදී', 'fa-paper-plane');
  };
 
@@ -783,7 +785,7 @@ function finish(winner,message){
  }
 
  $('overTitle').textContent=won?'VICTORY! 🎉':'DEFEAT!';
- $('overTitle'].style.color=won?'var(--neon-green)':'var(--red)';
+ $('overTitle').style.color=won?'var(--neon-green)':'var(--red)';
  $('overMessage').textContent=message;
  modal('overModal',true);
  
