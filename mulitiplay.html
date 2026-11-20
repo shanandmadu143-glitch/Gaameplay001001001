@@ -36,7 +36,7 @@ input:focus{border-color:var(--gold)}
 
 .btn,.btn-gold,.btn-danger{border:0;border-radius:12px;padding:9px 13px;cursor:pointer;font-weight:700;font-size:0.84rem;display:inline-flex;align-items:center;gap:6px;justify-content:center;transition:transform 0.12s ease}
 .btn:active,.btn-gold:active,.btn-danger:active{transform:scale(0.97)}
-.btn{background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2)}
+.btn{background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,209,102,0.2)}
 .btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;box-shadow:0 4px 15px rgba(255,173,98,0.35)}
 .btn-danger{background:linear-gradient(135deg,#ff4757,#c0392b);color:#fff}
 
@@ -121,7 +121,37 @@ function go(url){
  if(roomRef){try{roomRef.off();}catch(_){}}
  const app=$('mpRoot');
  if(app)app.classList.add('page-leaving');
- setTimeout(()=>{window.location.href=url;},110);
+ setTimeout(()=>{window.location.replace(url);},110);
+}
+
+function launchArenaNow(rId, rBet, role, roomObj){
+ if(isNavigating)return;
+ isNavigating=true;
+ if(roomRef){try{roomRef.off();}catch(_){}}
+ window.SinhalaDraughtsInviteBridge?.clearHostRoom();
+
+ const safeBet=Math.max(10,Number(rBet)||bet);
+ sessionStorage.setItem('sinhala_draughts_bet',String(safeBet));
+ sessionStorage.setItem('sinhala_draughts_multi_room',JSON.stringify({
+  roomId:rId||'',
+  bet:safeBet,
+  role:role||'host',
+  uid:fbUser?fbUser.uid:null,
+  hostUid:roomObj&&roomObj.hostUid?roomObj.hostUid:(role==='host'&&fbUser?fbUser.uid:null),
+  guestUid:roomObj&&roomObj.guestUid?roomObj.guestUid:null,
+  hostName:roomObj&&roomObj.hostName?roomObj.hostName:myProfile.name,
+  guestName:roomObj&&roomObj.guestName?roomObj.guestName:null,
+  startedAt:Date.now()
+ }));
+
+ const q=new URLSearchParams({
+  mode:'multi',
+  bet:String(safeBet),
+  roomId:String(rId||''),
+  role:String(role||'host')
+ }).toString();
+
+ window.location.replace(`arena.html?${q}`);
 }
 
 try{
@@ -224,7 +254,7 @@ $('cancelWaitBtn').onclick=async()=>{
 
 function watchRoom(rId){
  if(!db||!rId)return;
- clearWaitUI();
+ if(roomRef){try{roomRef.off();}catch(_){}roomRef=null;}
  pendingRoomId=rId;
  $('waitingStatus').classList.add('show');
  $('waitingText').textContent='Invite යවන ලදී — ප්‍රතිවාදියා Accept කරන තෙක් රැඳී සිටී...';
@@ -239,9 +269,9 @@ function watchRoom(rId){
    toast('තරඟ ආරාධනාව අවලංගු / ප්‍රතික්ෂේප විය.','fa-circle-xmark');
    return;
   }
-  if(room.status==='accepted'||room.status==='active'){
-   clearWaitUI();
-   window.SinhalaDraughtsInviteBridge?.goArena(rId,room.bet||bet,'host');
+  if(room.status==='accepted'||room.status==='active'||room.matchStarted===true){
+   $('waitingText').textContent='ප්‍රතිවාදියා සම්බන්ධ විය! Arena වෙත පිවිසෙමින්...';
+   launchArenaNow(rId,room.bet||bet,'host',room);
   }
  });
 }
@@ -266,6 +296,7 @@ async function sendInvite(targetPlayer,btn){
    guestName:targetPlayer.name,
    bet:bet,
    status:'waiting',
+   matchStarted:false,
    createdAt:Date.now()
   });
 
