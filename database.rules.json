@@ -1,10 +1,54 @@
-"fcmTokens_v6": {
-  "$uid": {
-    ".read": "auth != null && auth.uid === $uid",
-    ".write": "auth != null && auth.uid === $uid"
+{
+  "rules": {
+    "users_v6": {
+      "$uid": {
+        ".read": "auth != null",
+        ".write": "auth != null && (auth.uid === $uid || root.child('users_v6').child(auth.uid).child('role').val() === 'admin')"
+      }
+    },
+    "publicProfiles_v6": {
+      ".read": "auth != null",
+      "$uid": {
+        ".write": "auth != null"
+      }
+    },
+    "usernameIndex_v6": {
+      ".read": "auth != null",
+      "$uname": {
+        ".write": "auth != null"
+      }
+    },
+    "status_v6": {
+      ".read": "auth != null",
+      "$uid": {
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    },
+    "invites_v6": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null"
+      }
+    },
+    "rooms_v6": {
+      "$roomId": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    "shopConfig_v6": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "fcmTokens_v6": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    },
+    "fcmPushQueue_v6": {
+      ".read": false,
+      ".write": "auth != null"
+    }
   }
-},
-"fcmPushQueue_v6": {
-  ".read": false,
-  ".write": "auth != null"
 }
