@@ -19,17 +19,33 @@ body{min-height:100dvh;display:flex;flex-direction:column;align-items:center}
 .title-group h1{font-size:1.15rem;color:var(--gold);font-weight:800}
 .bet-badge{background:rgba(46,204,113,0.16);border:1.5px solid rgba(46,204,113,0.5);color:var(--neon-green);padding:5px 12px;border-radius:16px;font-weight:700;font-size:0.9rem}
 
-.box{flex:1;overflow-y:auto;padding:18px;background:linear-gradient(145deg,rgba(18,24,40,0.88),rgba(12,16,28,0.92));border:2px solid rgba(255,209,102,0.22);border-radius:24px;display:flex;flex-direction:column;justify-content:space-between;gap:16px;box-shadow:0 10px 30px rgba(0,0,0,0.5)}
+.box{flex:1;overflow-y:auto;padding:16px;background:linear-gradient(145deg,rgba(18,24,40,0.88),rgba(12,16,28,0.92));border:2px solid rgba(255,209,102,0.22);border-radius:24px;display:flex;flex-direction:column;gap:12px;box-shadow:0 10px 30px rgba(0,0,0,0.5)}
 
-.card-option{padding:16px;border-radius:18px;background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,209,102,0.25);display:flex;flex-direction:column;gap:8px}
-.card-option b{font-size:1.05rem;color:var(--gold)}
-.card-option p{font-size:0.85rem;color:var(--dim)}
+.search-row{display:flex;gap:8px;align-items:center}
+input{width:100%;padding:10px 13px;background:rgba(0,0,0,0.55);border:1.5px solid rgba(255,209,102,0.35);border-radius:12px;color:#fff;font-size:0.9rem;outline:none}
+input:focus{border-color:var(--gold)}
 
-.btn,.btn-gold{border:0;border-radius:14px;padding:12px 16px;cursor:pointer;font-weight:700;font-size:1rem;display:inline-flex;align-items:center;gap:8px;justify-content:center;transition:transform 0.12s ease}
-.btn:active,.btn-gold:active{transform:scale(0.97)}
+.player-item{background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,209,102,0.2);border-radius:16px;padding:11px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.player-meta{display:flex;align-items:center;gap:10px;min-width:0}
+.av-circle{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:rgba(255,209,102,0.14);border:1.5px solid var(--gold);color:var(--gold);flex-shrink:0}
+.player-meta b{display:block;font-size:0.98rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.player-meta small{display:block;font-size:0.74rem;color:var(--dim)}
+
+.btn,.btn-gold,.btn-green,.btn-danger{border:0;border-radius:12px;padding:9px 13px;cursor:pointer;font-weight:700;font-size:0.84rem;display:inline-flex;align-items:center;gap:6px;justify-content:center;transition:transform 0.12s ease}
+.btn:active,.btn-gold:active,.btn-green:active,.btn-danger:active{transform:scale(0.97)}
 .btn{background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2)}
 .btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;box-shadow:0 4px 15px rgba(255,173,98,0.35)}
-.row{display:flex;gap:10px}
+.btn-green{background:linear-gradient(135deg,#2ecc71,#20b863);color:#0b1910}
+.btn-danger{background:linear-gradient(135deg,#ff4757,#c0392b);color:#fff}
+
+.invite-banner{position:fixed;top:16px;left:50%;transform:translate(-50%,-150%);width:min(94%,440px);background:linear-gradient(135deg,#18223d,#0d1324);border:2px solid var(--gold);border-radius:20px;padding:14px 16px;z-index:200;box-shadow:0 14px 35px rgba(0,0,0,0.75);transition:transform 0.25s ease;display:flex;flex-direction:column;gap:10px}
+.invite-banner.show{transform:translate(-50%,0)}
+.invite-banner b{color:var(--gold);font-size:1rem}
+.invite-banner p{font-size:0.84rem;color:#e2e8f0}
+.invite-actions{display:flex;gap:8px;justify-content:flex-end}
+
+#toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,120px);opacity:0;background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--gold);color:#f8f9fa;border-radius:30px;padding:10px 20px;z-index:210;transition:.25s ease;font-weight:600;display:flex;align-items:center;gap:8px;font-size:0.9rem}
+#toast.show{transform:translate(-50%,0);opacity:1}
 </style>
 </head>
 <body>
@@ -37,47 +53,377 @@ body{min-height:100dvh;display:flex;flex-direction:column;align-items:center}
  <div class="top-bar">
   <div class="title-group">
    <i class="fa-solid fa-swords" style="color:var(--neon-green);font-size:1.3rem"></i>
-   <h1>MULTIPLAYER</h1>
+   <h1>MULTIPLAYER INVITE</h1>
   </div>
   <div class="bet-badge"><i class="fa-solid fa-coins"></i> Bet: <span id="betVal">50</span></div>
  </div>
 
  <div class="box">
-  <div style="display:flex;flex-direction:column;gap:12px">
-   <div class="card-option">
-    <b><i class="fa-solid fa-user-group"></i> යහළුවන් සමඟ තරඟ කරන්න</b>
-    <p>ඔබගේ Friends ලැයිස්තුවෙන් ක්‍රීඩකයෙකුට ආරාධනා කර Room එකක් සාදන්න.</p>
-    <button class="btn-gold" id="findFriendsBtn"><i class="fa-solid fa-users"></i> Friends වෙත යන්න</button>
-   </div>
-
-   <div class="card-option">
-    <b><i class="fa-solid fa-bolt"></i> කෙලින්ම Arena වෙත</b>
-    <p>සූදානම් Multiplayer Room එකට පිවිසෙන්න.</p>
-    <button class="btn" id="directArenaBtn"><i class="fa-solid fa-gamepad"></i> Arena Open</button>
-   </div>
+  <div class="search-row">
+   <input type="text" id="searchPlayer" placeholder="සෙල්ලම් කිරීමට ක්‍රීඩකයාගේ නම සොයන්න...">
+   <button class="btn" id="notifPermBtn" title="Enable Mobile Notifications"><i class="fa-solid fa-bell"></i></button>
   </div>
 
-  <button class="btn" id="backBtn"><i class="fa-solid fa-arrow-left"></i> Lobby</button>
+  <div id="playersContainer" style="display:flex;flex-direction:column;gap:8px;flex:1">
+   <p style="text-align:center;color:var(--dim);padding:20px">ක්‍රීඩකයන් සොයමින් පවතී...</p>
+  </div>
+
+  <div style="display:flex;gap:8px">
+   <button class="btn" id="backBtn" style="flex:1"><i class="fa-solid fa-arrow-left"></i> Lobby</button>
+  </div>
  </div>
 </div>
 
+<!-- Incoming Invite In-App Card -->
+<div class="invite-banner" id="inviteBanner">
+ <div>
+  <b><i class="fa-solid fa-gamepad"></i> Multiplayer Game Invite!</b>
+  <p id="inviteText">ක්‍රීඩකයෙකු ඔබට තරඟයකට ආරාධනා කර ඇත.</p>
+ </div>
+ <div class="invite-actions">
+  <button class="btn-green" id="acceptInviteBtn"><i class="fa-solid fa-check"></i> Accept</button>
+  <button class="btn-danger" id="declineInviteBtn"><i class="fa-solid fa-xmark"></i> Decline</button>
+ </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 <script>
 'use strict';
-const $=id=>document.getElementById(id);
-const params=new URLSearchParams(window.location.search);
-const bet=Number(params.get('bet'))||Number(sessionStorage.getItem('sinhala_draughts_bet'))||50;
+const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
+const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user';
 
+const params=new URLSearchParams(window.location.search);
+const bet=Math.max(10,Number(params.get('bet'))||Number(sessionStorage.getItem('sinhala_draughts_bet'))||50);
 $('betVal').textContent=bet;
 sessionStorage.setItem('sinhala_draughts_bet',String(bet));
 
+let auth,db,fbUser;
+let myProfile={name:'ක්‍රීඩකයා',points:500};
+let publicPlayers=[];
+let activeIncomingInvite=null;
+let currentRoomListenerRef=null;
+let isNavigating=false;
+let swRegistration=null;
+
+function toast(s, icon='fa-circle-info'){
+ const t=$('toast');
+ t.replaceChildren();
+ const iconEl=document.createElement('i');iconEl.className=`fa-solid ${icon}`;iconEl.style.color='var(--gold)';
+ const textEl=document.createElement('span');textEl.textContent=String(s);
+ t.append(iconEl,textEl);
+ t.classList.add('show');
+ setTimeout(()=>t.classList.remove('show'),3000);
+}
+
 function go(url){
+ if(isNavigating)return;
+ isNavigating=true;
  const root=$('mpRoot');
  if(root)root.classList.add('page-leaving');
  setTimeout(()=>{window.location.href=url;},110);
 }
 
-$('findFriendsBtn').onclick=()=>go('friends.html');
-$('directArenaBtn').onclick=()=>go(`arena.html?mode=multi&bet=${encodeURIComponent(bet)}`);
+try{
+ const cached=localStorage.getItem(KEY);
+ if(cached){
+  const parsed=JSON.parse(cached);
+  if(parsed&&parsed.name)myProfile.name=parsed.name;
+ }
+}catch(e){}
+
+try{
+ if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
+ auth=firebase.auth();
+ db=firebase.database();
+}catch(e){
+ console.error('Firebase init failed:',e);
+}
+
+// Register lightweight inline Service Worker for Mobile Notification Bar support
+async function initServiceWorker(){
+ if(!('serviceWorker' in navigator))return;
+ try{
+  const swCode=`
+   self.addEventListener('notificationclick', event => {
+    event.notification.close();
+    const targetUrl = (event.notification.data && event.notification.data.url) || './mulitiplay.html';
+    event.waitUntil(
+     clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
+      for (const client of clientList) {
+       if ('navigate' in client) {
+        return client.navigate(targetUrl).then(c => c.focus());
+       }
+      }
+      if (clients.openWindow) {
+       return clients.openWindow(targetUrl);
+      }
+     })
+    );
+   });
+  `;
+  const blob=new Blob([swCode],{type:'application/javascript'});
+  const swUrl=URL.createObjectURL(blob);
+  swRegistration=await navigator.serviceWorker.register(swUrl);
+ }catch(e){
+  console.warn('ServiceWorker registration skipped:',e);
+ }
+}
+initServiceWorker();
+
+async function ensureNotificationPermission(){
+ if(!('Notification' in window))return false;
+ if(Notification.permission==='granted')return true;
+ if(Notification.permission==='denied')return false;
+ try{
+  const perm=await Notification.requestPermission();
+  return perm==='granted';
+ }catch(e){
+  return false;
+ }
+}
+
+async function showMobileStatusBarNotification(title, body, url){
+ if(!('Notification' in window))return;
+ if(Notification.permission!=='granted')return;
+
+ const options={
+  body,
+  vibrate:[200,100,200],
+  tag:'sinhala-draughts-invite',
+  renotify:true,
+  data:{url}
+ };
+
+ try{
+  if(swRegistration && swRegistration.showNotification){
+   await swRegistration.showNotification(title, options);
+   return;
+  }
+  const reg=await navigator.serviceWorker?.getRegistration();
+  if(reg && reg.showNotification){
+   await reg.showNotification(title, options);
+   return;
+  }
+  new Notification(title, {body});
+ }catch(e){
+  try{ new Notification(title, {body}); }catch(_){}
+ }
+}
+
+$('notifPermBtn').onclick=async()=>{
+ const granted=await ensureNotificationPermission();
+ toast(
+  granted
+   ? 'Mobile Notification Bar අවසරය සක්‍රීයයි!'
+   : 'Browser Settings හරහා Notifications Allow කරන්න.',
+  granted ? 'fa-bell' : 'fa-triangle-exclamation'
+ );
+};
+
+function renderPlayersList(){
+ const q=($('searchPlayer').value||'').trim().toLowerCase();
+ const container=$('playersContainer');
+ container.replaceChildren();
+
+ const others=publicPlayers.filter(p=>{
+  if(fbUser && p.uid===fbUser.uid)return false;
+  if(!q)return true;
+  return p.name.toLowerCase().includes(q);
+ });
+
+ if(!others.length){
+  const p=document.createElement('p');
+  p.style.cssText='text-align:center;color:var(--dim);padding:20px';
+  p.textContent='ඔන්ලයින් ක්‍රීඩකයන් හමු නොවීය.';
+  container.appendChild(p);
+  return;
+ }
+
+ others.forEach(p=>{
+  const row=document.createElement('div');
+  row.className='player-item';
+
+  const meta=document.createElement('div');
+  meta.className='player-meta';
+
+  const av=document.createElement('div');
+  av.className='av-circle';
+  av.innerHTML=`<i class="fa-solid ${/^fa-[a-z0-9-]+$/i.test(p.avatarIcon)?p.avatarIcon:'fa-user'}"></i>`;
+
+  const txt=document.createElement('div');
+  const b=document.createElement('b');
+  b.textContent=p.name;
+  const sm=document.createElement('small');
+  sm.textContent=`Coins: ${p.points} • Wins: ${p.wins}`;
+  txt.append(b,sm);
+  meta.append(av,txt);
+
+  const btn=document.createElement('button');
+  btn.className='btn-gold';
+  btn.innerHTML='<i class="fa-solid fa-paper-plane"></i> Invite';
+  btn.onclick=()=>sendGameInvite(p,btn);
+
+  row.append(meta,btn);
+  container.appendChild(row);
+ });
+}
+
+function listenForRoomStart(roomId, roomBet){
+ if(!db||!roomId)return;
+ if(currentRoomListenerRef)currentRoomListenerRef.off();
+ currentRoomListenerRef=db.ref(`rooms_v6/${roomId}`);
+ currentRoomListenerRef.on('value',snap=>{
+  const room=snap.val();
+  if(room && (room.status==='accepted' || room.status==='active' || room.guestUid)){
+   currentRoomListenerRef.off();
+   go(`arena.html?mode=multi&bet=${encodeURIComponent(room.bet||roomBet)}&roomId=${encodeURIComponent(roomId)}`);
+  }
+ });
+}
+
+async function sendGameInvite(targetPlayer, btnEl){
+ if(!db||!fbUser){
+  return toast('Invite යැවීමට පළමුව ගිණුමට ඇතුළු වන්න.');
+ }
+ await ensureNotificationPermission();
+
+ btnEl.disabled=true;
+ const originalHtml=btnEl.innerHTML;
+ btnEl.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Sending';
+
+ const roomId=`room_${fbUser.uid}_${targetPlayer.uid}_${Date.now()}`;
+ const inviteId=`inv_${fbUser.uid}_${Date.now()}`;
+
+ try{
+  await db.ref(`rooms_v6/${roomId}`).set({
+   hostUid:fbUser.uid,
+   hostName:myProfile.name,
+   guestUid:targetPlayer.uid,
+   guestName:targetPlayer.name,
+   bet:bet,
+   status:'waiting',
+   createdAt:Date.now()
+  });
+
+  await db.ref(`invites_v6/${targetPlayer.uid}/${inviteId}`).set({
+   fromUid:fbUser.uid,
+   fromName:myProfile.name,
+   bet:bet,
+   roomId:roomId,
+   status:'pending',
+   createdAt:Date.now()
+  });
+
+  toast(`${targetPlayer.name} වෙත Invite Notification එක යවන ලදී!`,'fa-circle-check');
+  await showMobileStatusBarNotification(
+   'ශ්‍රී ලංකීය දාම් - Invite Sent',
+   `${targetPlayer.name} වෙත ${bet} Coins ඔට්ටුවකට Multiplayer Invite එක යවන ලදී.`,
+   `mulitiplay.html?bet=${encodeURIComponent(bet)}`
+  );
+
+  listenForRoomStart(roomId, bet);
+ }catch(err){
+  console.error('Send invite error:',err);
+  toast('Invite යැවීමට නොහැකි විය: '+(err.message||''));
+ }finally{
+  setTimeout(()=>{
+   btnEl.disabled=false;
+   btnEl.innerHTML=originalHtml;
+  },1500);
+ }
+}
+
+function showIncomingInvite(inviteId, inv){
+ activeIncomingInvite={inviteId,...inv};
+ const fromName=inv.fromName||'ක්‍රීඩකයෙකු';
+ const invBet=inv.bet||bet;
+ const roomUrl=`arena.html?mode=multi&bet=${encodeURIComponent(invBet)}&roomId=${encodeURIComponent(inv.roomId||'')}`;
+
+ $('inviteText').textContent=`${fromName} ඔබට ${invBet} Coins ඔට්ටුවකට Multiplayer තරඟයකට ආරාධනා කරයි!`;
+ $('inviteBanner').classList.add('show');
+
+ showMobileStatusBarNotification(
+  'ශ්‍රී ලංකීය දාම් - Game Invite',
+  `${fromName} ඔබට ${invBet} Coins ඔට්ටුවකට ආරාධනා කරයි! Tap to open.`,
+  roomUrl
+ );
+}
+
+function hideIncomingInvite(){
+ $('inviteBanner').classList.remove('show');
+ activeIncomingInvite=null;
+}
+
+$('acceptInviteBtn').onclick=async()=>{
+ if(!activeIncomingInvite||!fbUser||!db)return;
+ const {inviteId,roomId,bet:invBet}=activeIncomingInvite;
+ hideIncomingInvite();
+ try{
+  await db.ref(`invites_v6/${fbUser.uid}/${inviteId}`).update({status:'accepted'}).catch(()=>{});
+  if(roomId){
+   await db.ref(`rooms_v6/${roomId}`).update({status:'accepted',guestUid:fbUser.uid}).catch(()=>{});
+   go(`arena.html?mode=multi&bet=${encodeURIComponent(invBet||bet)}&roomId=${encodeURIComponent(roomId)}`);
+  }else{
+   go(`arena.html?mode=multi&bet=${encodeURIComponent(invBet||bet)}`);
+  }
+ }catch(err){
+  console.error(err);
+  toast('Invite එක Accept කිරීමට නොහැකි විය.');
+ }
+};
+
+$('declineInviteBtn').onclick=async()=>{
+ if(!activeIncomingInvite||!fbUser||!db)return;
+ const {inviteId}=activeIncomingInvite;
+ hideIncomingInvite();
+ await db.ref(`invites_v6/${fbUser.uid}/${inviteId}`).update({status:'declined'}).catch(()=>{});
+ toast('ආරාධනාව ප්‍රතික්ෂේප කරන ලදී.');
+};
+
+function startListeners(){
+ if(!db)return;
+
+ db.ref('publicProfiles_v6').on('value',snap=>{
+  const val=snap.val()||{};
+  publicPlayers=Object.entries(val).map(([uid,d])=>({
+   uid,
+   name:d&&d.name?String(d.name):'Player',
+   points:Number(d&&d.points)||0,
+   wins:Number(d&&d.wins)||0,
+   avatarIcon:d&&d.avatarIcon?String(d.avatarIcon):'fa-user'
+  }));
+  if(fbUser && val[fbUser.uid] && val[fbUser.uid].name){
+   myProfile.name=val[fbUser.uid].name;
+  }
+  renderPlayersList();
+ },err=>{
+  console.error('publicProfiles_v6 listener error:',err);
+ });
+
+ if(fbUser){
+  db.ref(`invites_v6/${fbUser.uid}`).on('child_added',snap=>{
+   const inv=snap.val();
+   if(!inv||inv.status!=='pending')return;
+   if(Date.now()-(Number(inv.createdAt)||0)>120000)return;
+   showIncomingInvite(snap.key,inv);
+  });
+ }
+}
+
+if(auth){
+ auth.onAuthStateChanged(u=>{
+  fbUser=u;
+  startListeners();
+ });
+}else{
+ startListeners();
+}
+
+$('searchPlayer').addEventListener('input',renderPlayersList);
 $('backBtn').onclick=()=>go('index.html');
 </script>
 </body>
