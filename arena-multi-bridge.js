@@ -53,23 +53,6 @@
         }
       });
     });
-
-    const startTriggers = [
-      '#startMultiBtn',
-      '#startGameBtn',
-      '#beginMatchBtn',
-      '[data-start-multi]'
-    ];
-    for (const sel of startTriggers) {
-      const btn = document.querySelector(sel);
-      if (btn && !btn.dataset.autoClicked) {
-        btn.dataset.autoClicked = '1';
-        setTimeout(() => {
-          try { btn.click(); } catch (_) {}
-        }, 120);
-        break;
-      }
-    }
   }
 
   function initArenaMultiplayerBridge() {
@@ -111,6 +94,7 @@
               updatePayload.guestUid = u.uid;
               updatePayload.guestJoinedAt = Date.now();
               updatePayload.status = 'active';
+              updatePayload.matchStarted = true;
             } else {
               updatePayload.hostUid = u.uid;
               updatePayload.hostJoinedAt = Date.now();
