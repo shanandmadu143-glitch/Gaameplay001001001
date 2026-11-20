@@ -1,129 +1,132 @@
 <!DOCTYPE html>
 <html lang="si">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#080d18">
-<title>Shop & Reward - ශ්‍රී ලංකා දාම්</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Gemunu+Libre:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ශ්‍රී ලංකීය දාම් - Shop & Rewards</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Gemunu+Libre:wght@400;600;700;800&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-:root{
- --bg:#080d18;--panel:#111a2b;--panel2:#172238;--line:rgba(255,255,255,.08);
- --gold:#ffd166;--gold2:#f4a62a;--green:#35d39a;--muted:#91a0b8;--white:#f5f7fb;
- --shadow:0 18px 45px rgba(0,0,0,.28);
+:root{--bg:#05070e;--panel:rgba(14,20,38,.92);--gold:#ffd166;--neon-blue:#00f2fe;--neon-green:#2ecc71;--red:#ff4757;--dim:#a0aec0}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Gemunu Libre','Poppins',sans-serif;user-select:none;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;background:radial-gradient(circle at 50% 20%,#1a103c 0%,#080b18 60%,#03050a 100%);color:#f8f9fa;overflow:hidden}
+body{min-height:100dvh;display:flex;flex-direction:column;justify-content:center;align-items:center}
+
+.app{width:100%;height:100dvh;max-width:768px;margin:0 auto;padding:14px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;opacity:1;transform:scale(1);transition:opacity 0.16s ease-out,transform 0.16s ease-out;will-change:opacity,transform}
+.app.page-leaving{opacity:0;transform:scale(0.985)}
+
+.home-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 18px;background:linear-gradient(135deg,rgba(22,30,56,0.95),rgba(10,14,28,0.95));border:2px solid rgba(255,209,102,0.4);border-radius:22px;box-shadow:0 8px 25px rgba(0,0,0,0.6);backdrop-filter:blur(10px)}
+.header-left{display:flex;align-items:center;gap:10px}
+.back-btn{width:40px;height:40px;border-radius:50%;border:1.5px solid rgba(255,209,102,0.45);background:rgba(255,255,255,0.06);color:var(--gold);font-size:1rem;display:grid;place-items:center;cursor:pointer;transition:transform 0.12s ease}
+.back-btn:active{transform:scale(0.94)}
+.page-title b{font-size:1.1rem;color:#fff;display:block;line-height:1.15}
+.page-title small{font-size:0.72rem;color:var(--dim)}
+
+.coin-pill{display:flex;align-items:center;gap:6px;border:1.5px solid rgba(255,209,102,0.4);border-radius:20px;background:rgba(5,8,18,0.85);padding:5px 12px;box-shadow:inset 0 2px 4px rgba(0,0,0,0.8)}
+.coin-pill>i{font-size:1.05rem;color:var(--gold);filter:drop-shadow(0 0 4px rgba(255,209,102,0.6))}
+.coin-pill b{font-size:1rem;letter-spacing:0.5px;color:#fff}
+
+main{flex:1;display:flex;flex-direction:column;width:100%;position:relative;margin:8px 0;overflow:hidden;gap:10px}
+
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;background:rgba(14,20,38,0.92);padding:6px;border-radius:18px;border:1.5px solid rgba(255,209,102,0.25)}
+.tab-btn{border:0;border-radius:13px;padding:9px 6px;background:transparent;color:var(--dim);font-weight:700;font-size:0.82rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:all 0.16s ease}
+.tab-btn.active{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;box-shadow:0 4px 14px rgba(255,173,98,0.35)}
+
+.scroll-panel{flex:1;overflow-y:auto;padding:14px;background:linear-gradient(145deg,rgba(18,24,40,0.88),rgba(12,16,28,0.92));border:2px solid rgba(255,209,102,0.2);border-radius:24px;box-shadow:0 10px 30px rgba(0,0,0,0.5);display:none;flex-direction:column;gap:14px}
+.scroll-panel.active{display:flex}
+
+/* Daily Reward Card */
+.reward-card{background:linear-gradient(135deg,rgba(243,154,8,0.18),rgba(255,209,102,0.08));border:2px solid rgba(255,209,102,0.45);border-radius:20px;padding:18px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}
+.reward-icon{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe08a,#f39a08);color:#111;font-size:1.8rem;box-shadow:0 0 20px rgba(255,209,102,0.45)}
+.reward-card h3{color:var(--gold);font-size:1.25rem}
+.reward-card p{color:var(--dim);font-size:0.85rem;max-width:360px}
+
+.btn-gold,.btn-green,.btn-owned{border:0;border-radius:12px;padding:9px 14px;cursor:pointer;font-weight:700;font-size:0.82rem;display:inline-flex;align-items:center;gap:6px;justify-content:center;transition:transform 0.12s ease}
+.btn-gold:active,.btn-green:active{transform:scale(0.96)}
+.btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;box-shadow:0 4px 14px rgba(255,173,98,0.35)}
+.btn-green{background:linear-gradient(135deg,#2ecc71,#20b863);color:#0b1910}
+.btn-owned{background:rgba(46,204,113,0.18);color:var(--neon-green);border:1px solid rgba(46,204,113,0.4);cursor:default}
+.btn-gold:disabled{opacity:0.45;cursor:not-allowed}
+
+/* Shop Grid */
+.shop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:10px}
+.shop-card{background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,209,102,0.2);border-radius:16px;padding:12px 10px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:8px;text-align:center;transition:border-color 0.15s ease,transform 0.15s ease}
+.shop-card:hover{border-color:rgba(255,209,102,0.5);transform:translateY(-2px)}
+.shop-card.custom-badge-card{border-color:rgba(0,242,254,0.4)}
+.piece-preview{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-size:1.25rem;box-shadow:0 4px 12px rgba(0,0,0,0.55)}
+.avatar-preview{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:rgba(255,209,102,0.14);border:2px solid var(--gold);color:var(--gold);font-size:1.35rem}
+.item-name{font-size:0.82rem;font-weight:700;color:#fff;line-height:1.2}
+.item-tag{font-size:0.65rem;color:var(--neon-blue);font-weight:700}
+.item-price{font-size:0.82rem;color:var(--gold);font-weight:700}
+
+/* Bottom Nav */
+.bottom-nav{width:100%;min-height:66px;background:rgba(14,20,38,0.95);border:2px solid rgba(255,209,102,0.3);border-radius:24px;display:flex;align-items:center;justify-content:space-around;padding:6px 4px;backdrop-filter:blur(10px);box-shadow:0 10px 30px rgba(0,0,0,0.8)}
+.nav-item{background:none;border:0;color:#aab4c7;text-decoration:none;display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:0.72rem;font-weight:700;cursor:pointer;transition:color 0.15s ease,transform 0.15s ease}
+.nav-item:active{transform:scale(0.93)}
+.nav-item i{font-size:1.3rem}
+.nav-item.active{color:var(--gold)}
+.nav-item span{line-height:1}
+
+#toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,120px);opacity:0;background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--gold);color:#f8f9fa;border-radius:30px;padding:10px 20px;z-index:150;transition:.25s ease;font-weight:600;display:flex;align-items:center;gap:8px;font-size:0.9rem}
+#toast.show{transform:translate(-50%,0);opacity:1}
+
+@media (min-width: 600px) {
+  .app { max-width: 680px; padding: 18px; }
+  .shop-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; }
 }
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html{min-height:100%;background:var(--bg);scroll-behavior:smooth}
-body{min-height:100dvh;color:var(--white);font-family:'Gemunu Libre',sans-serif;background:radial-gradient(ellipse at 10% 0%,rgba(41,91,150,.18),transparent 38%),radial-gradient(ellipse at 100% 30%,rgba(244,166,42,.09),transparent 34%),var(--bg);padding:14px 14px calc(96px + env(safe-area-inset-bottom))}
-button,a{font:inherit}
-button{cursor:pointer}
-.app{width:min(100%,1000px);margin:auto;display:flex;flex-direction:column;gap:17px}
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:8px 2px}
-.brand{display:flex;align-items:center;gap:11px}
-.brand-mark{width:43px;height:43px;border-radius:15px;display:grid;place-items:center;color:#17120a;background:linear-gradient(145deg,#ffe7a0,#e9a52b);box-shadow:0 7px 22px #f4a62a30;font-size:20px}
-.brand h1{font-size:23px;line-height:1.05;font-weight:800;letter-spacing:.2px}
-.brand small{display:block;color:var(--muted);font:10px Poppins,sans-serif;letter-spacing:1.5px;margin-top:4px}
-.date-chip{color:var(--muted);font-size:13px;display:flex;align-items:center;gap:7px}
-.date-chip i{color:var(--gold)}
-.wallet{position:relative;overflow:hidden;border:1px solid #f4c45c40;border-radius:23px;padding:20px;background:linear-gradient(120deg,#282b35,#172238 58%,#332817);box-shadow:var(--shadow)}
-.wallet:before{content:"";position:absolute;width:190px;height:190px;border:1px solid #ffd16618;border-radius:50%;right:-60px;top:-95px;box-shadow:0 0 0 22px #ffd16608,0 0 0 44px #ffd16605}
-.wallet-top{display:flex;justify-content:space-between;align-items:center;gap:12px;position:relative}
-.wallet-label{color:#d1d5df;font-size:14px;display:flex;align-items:center;gap:8px}
-.wallet-label i{color:var(--gold)}
-.wallet-tag{font:10px Poppins,sans-serif;color:#ffe6a3;border:1px solid #ffd16655;background:#ffd16612;padding:5px 9px;border-radius:20px}
-.balance{display:flex;align-items:center;gap:10px;margin-top:9px;position:relative}
-.balance-icon{width:39px;height:39px;border-radius:13px;background:linear-gradient(145deg,#ffe9a7,#e9a52b);color:#30200a;display:grid;place-items:center;font-size:20px}
-.balance strong{font:800 35px Poppins,sans-serif;letter-spacing:-1px}
-.balance small{font-size:13px;color:#f5d99c}
-.wallet-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:17px;padding-top:13px;border-top:1px solid #ffffff16;position:relative}
-.wallet-bottom span{font-size:12px;color:#b7c0d0}
-.add-coins{display:inline-flex;align-items:center;gap:7px;text-decoration:none;background:var(--gold);color:#211805;padding:8px 13px;border-radius:12px;font-weight:800;font-size:13px}
-.reward-card{border:1px solid #35d39a45;border-radius:22px;padding:17px;background:linear-gradient(120deg,#102b2b,#132235 72%);box-shadow:var(--shadow);position:relative;overflow:hidden}
-.reward-card:after{content:"";position:absolute;width:140px;height:140px;border-radius:50%;background:#35d39a0c;right:-50px;top:-55px}
-.reward-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.reward-title{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:800}
-.reward-icon{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(145deg,#43e6a9,#149b71);color:#06251a;font-size:19px;box-shadow:0 6px 20px #35d39a30}
-.free-pill{font:10px Poppins,sans-serif;color:#75f0bd;background:#35d39a15;border:1px solid #35d39a50;padding:5px 9px;border-radius:20px}
-.reward-desc{color:#9fb6b5;font-size:13px;margin:10px 0 13px 52px}
-.reward-bottom{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-left:52px}
-.timer{font:600 12px Poppins,sans-serif;color:#a9f4d5;display:flex;align-items:center;gap:7px}
-.claim-btn{border:0;border-radius:12px;padding:10px 15px;background:linear-gradient(135deg,#6cf0b9,#2bbd88);color:#06291c;font-weight:800;font-size:13px;white-space:nowrap;box-shadow:0 5px 16px #35d39a25}
-.claim-btn:disabled{opacity:.42;filter:grayscale(.5);cursor:not-allowed;box-shadow:none}
-.section-head{display:flex;align-items:end;justify-content:space-between;gap:10px;margin:2px 2px 0}
-.section-head h2{font-size:21px;font-weight:800}
-.section-head p{font:10px Poppins,sans-serif;color:var(--muted)}
-.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:6px;background:#0d1524;border:1px solid var(--line);border-radius:16px}
-.tab{border:0;background:transparent;color:#9aa8bd;border-radius:12px;padding:11px 8px;font-size:15px;font-weight:700;display:flex;justify-content:center;align-items:center;gap:8px;transition:.2s}
-.tab.active{color:#211805;background:linear-gradient(135deg,#ffe39a,#e9a52b);box-shadow:0 5px 15px #f4a62a25}
-.tab-count{font:10px Poppins,sans-serif;opacity:.7}
-.catalog-title{display:flex;align-items:center;justify-content:space-between;margin:2px 2px 0}
-.catalog-title h3{font-size:19px}
-.catalog-title span{font:10px Poppins,sans-serif;color:var(--muted)}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
-.item-card{min-width:0;position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:15px 11px 12px;background:linear-gradient(155deg,#172238,#101827);border:1px solid var(--line);border-radius:19px;box-shadow:0 8px 22px #0002;transition:transform .18s,border-color .18s}
-.item-card:active{transform:scale(.98)}
-.item-card.selected{border-color:#35d39a75;background:linear-gradient(155deg,#18332f,#111d2b)}
-.preview-circle{width:62px;height:62px;border-radius:19px;display:grid;place-items:center;font-size:25px;box-shadow:0 7px 18px #0004;flex-shrink:0}
-.avatar-preview{background:linear-gradient(145deg,#ffe39a,#e9a52b);color:#30200a;border:1px solid #fff3}
-.item-name{font-size:15px;font-weight:800;line-height:1.2;min-height:19px}
-.item-desc{font-size:11px;color:var(--muted);line-height:1.3;min-height:28px;max-width:190px}
-.item-status{font:9px Poppins,sans-serif;color:#9eacc0;letter-spacing:.3px}
-.item-card.selected .item-status{color:#63e7b2}
-.item-card.owned:not(.selected) .item-status{color:#f4d58d}
-.btn-item{width:100%;border:0;border-radius:10px;padding:9px 6px;margin-top:3px;background:linear-gradient(135deg,#ffe39a,#e9a52b);color:#241a08;font-size:12px;font-weight:800}
-.btn-item:disabled{cursor:default;opacity:.75}
-.btn-item.active-btn{background:#1eaa79;color:white}
-.btn-item.owned-btn{background:#26354b;color:#f2d58e;border:1px solid #f4c45c35}
-.empty-note{grid-column:1/-1;text-align:center;color:var(--muted);padding:25px}
-.bottom-bar{position:fixed;z-index:20;left:50%;bottom:calc(12px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(calc(100% - 28px),460px);display:flex;justify-content:center;padding:7px;background:#111b2cdd;border:1px solid #ffffff17;border-radius:18px;backdrop-filter:blur(18px);box-shadow:0 10px 35px #0008}
-.home-link{width:100%;display:flex;justify-content:center;align-items:center;gap:10px;padding:11px;text-decoration:none;color:#1e1708;background:linear-gradient(135deg,#ffe39a,#e9a52b);border-radius:12px;font-size:15px;font-weight:800}
-.toast{position:fixed;z-index:50;left:50%;bottom:90px;transform:translate(-50%,18px);opacity:0;pointer-events:none;max-width:calc(100% - 30px);padding:11px 17px;border-radius:13px;background:#202d42;border:1px solid #ffd16688;color:#fff;font-size:14px;box-shadow:var(--shadow);transition:.25s;text-align:center}
-.toast.show{opacity:1;transform:translate(-50%,0)}
-@media(min-width:600px){body{padding:22px 22px 110px}.app{gap:20px}.grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.item-card{padding:19px 14px}.preview-circle{width:70px;height:70px}.wallet{padding:24px}.reward-card{padding:21px}}
-@media(min-width:850px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}.app{gap:22px}.brand h1{font-size:26px}}
-@media(max-width:360px){body{padding-left:10px;padding-right:10px}.reward-desc,.reward-bottom{margin-left:0}.reward-desc{margin-top:12px}.reward-bottom{align-items:flex-start;flex-direction:column}.claim-btn{width:100%}.date-chip{font-size:11px}.brand h1{font-size:20px}.balance strong{font-size:30px}}
 </style>
 </head>
 <body>
-<main class="app">
- <header class="topbar">
-  <div class="brand"><div class="brand-mark"><i class="fa-solid fa-store"></i></div><div><h1>Shop & Reward</h1><small>SRI LANKA DRAUGHTS</small></div></div>
-  <div class="date-chip"><i class="fa-regular fa-calendar"></i><span id="currentDateText">දිනය</span></div>
- </header>
+<div class="app" id="appRoot">
+ <div class="home-top">
+  <div class="header-left">
+   <button class="back-btn" id="backBtn" aria-label="Back"><i class="fa-solid fa-arrow-left"></i></button>
+   <div class="page-title">
+    <b>SHOP & REWARDS</b>
+    <small id="playerStatusLabel">ක්‍රීඩකයා</small>
+   </div>
+  </div>
+  <div class="coin-pill"><i class="fa-solid fa-coins"></i><b><span id="points">500</span></b></div>
+ </div>
 
- <section class="wallet">
-  <div class="wallet-top"><div class="wallet-label"><i class="fa-solid fa-wallet"></i> ඔබේ Points Balance</div><span class="wallet-tag">PREMIUM WALLET</span></div>
-  <div class="balance"><div class="balance-icon"><i class="fa-solid fa-coins"></i></div><div><strong id="shopCoinValue">500</strong><small> pts</small></div></div>
-  <div class="wallet-bottom"><span>දාම් ක්‍රීඩාවෙන් තවත් ත්‍යාග දිනාගන්න</span><a class="add-coins" href="./index.html"><i class="fa-solid fa-plus"></i> Points ලබාගන්න</a></div>
- </section>
+ <main>
+  <div class="tabs">
+   <button class="tab-btn active" data-tab="rewardsTab"><i class="fa-solid fa-gift"></i><span>Daily Reward</span></button>
+   <button class="tab-btn" data-tab="themesTab"><i class="fa-solid fa-chess-board"></i><span>Piece Themes</span></button>
+   <button class="tab-btn" data-tab="avatarsTab"><i class="fa-solid fa-user-astronaut"></i><span>Avatars</span></button>
+  </div>
 
- <section class="reward-card" id="rewardSection">
-  <div class="reward-head"><div class="reward-title"><div class="reward-icon"><i class="fa-solid fa-gift"></i></div><span>දෛනික නොමිලේ ත්‍යාග</span></div><span class="free-pill">FREE REWARD</span></div>
-  <p class="reward-desc">පැය 6කට වරක් නොමිලේ Points 200ක් ලබාගන්න.</p>
-  <div class="reward-bottom"><div class="timer" id="timerDisplay"><i class="fa-regular fa-clock"></i> ඉල්ලීමට සූදානම්!</div><button class="claim-btn" id="claimRewardBtn" onclick="claimFreeReward()">ලබාගන්න +200 <i class="fa-solid fa-arrow-right"></i></button></div>
- </section>
+  <!-- Rewards Tab -->
+  <section class="scroll-panel active" id="rewardsTab">
+   <div class="reward-card">
+    <div class="reward-icon"><i class="fa-solid fa-coins"></i></div>
+    <h3>දෛනික ත්‍යාගය (+150 Coins)</h3>
+    <p>සෑම පැය 24කට වරක් නොමිලේ Coins 150ක් ලබාගෙන තරඟ සඳහා සූදානම් වන්න.</p>
+    <button class="btn-gold" id="claimDailyBtn" style="padding:11px 22px;font-size:0.95rem"><i class="fa-solid fa-shield-halved"></i> ත්‍යාගය ලබාගන්න</button>
+    <small id="rewardTimerText" style="color:var(--gold);font-weight:700"></small>
+   </div>
+  </section>
 
- <section>
-  <div class="section-head"><div><h2>Game Collection</h2><p>ඔබේ ක්‍රීඩාව ඔබටම ගැළපෙන ලෙස සකසන්න</p></div></div>
- </section>
- <nav class="tabs" aria-label="Shop categories">
-  <button class="tab active" id="themesTab" onclick="switchTab('themes',this)"><i class="fa-solid fa-chess-board"></i> Themes <span class="tab-count">20</span></button>
-  <button class="tab" id="avatarsTab" onclick="switchTab('avatars',this)"><i class="fa-solid fa-user-astronaut"></i> Avatars <span class="tab-count">20</span></button>
- </nav>
+  <!-- Piece Themes Tab -->
+  <section class="scroll-panel" id="themesTab">
+   <div class="shop-grid" id="themesShopGrid"></div>
+  </section>
 
- <section class="shop-section" id="themesSection">
-  <div class="catalog-title"><h3><i class="fa-solid fa-palette" style="color:var(--gold)"></i> දාම් ඉත්තන්ගේ Themes</h3><span>100 pts / item</span></div>
-  <div class="grid" id="themesGrid"></div>
- </section>
- <section class="shop-section" id="avatarsSection" style="display:none">
-  <div class="catalog-title"><h3><i class="fa-solid fa-face-smile" style="color:var(--gold)"></i> Profile Avatars</h3><span>100 pts / item</span></div>
-  <div class="grid" id="avatarsGrid"></div>
- </section>
-</main>
-<div class="bottom-bar"><a href="./index.html" class="home-link"><i class="fa-solid fa-house"></i> ප්‍රධාන පිටුවට යන්න</a></div>
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <!-- Avatars Tab -->
+  <section class="scroll-panel" id="avatarsTab">
+   <div class="shop-grid" id="avatarsShopGrid"></div>
+  </section>
+ </main>
+
+ <footer class="bottom-nav">
+  <a class="nav-item" href="index.html" data-nav="index.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
+  <a class="nav-item" href="friends.html" data-nav="friends.html"><i class="fa-solid fa-user-group"></i><span>Friends</span></a>
+  <a class="nav-item" href="index.html" data-nav="index.html"><i class="fa-solid fa-circle-user"></i><span>Profile</span></a>
+  <button class="nav-item active" id="navEvents"><i class="fa-solid fa-trophy"></i><span>Events</span></button>
+  <button class="nav-item active" id="navShop"><i class="fa-solid fa-cart-shopping"></i><span>Shop</span></button>
+ </footer>
+</div>
+
+<div id="toast"></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
@@ -131,134 +134,358 @@ button{cursor:pointer}
 <script>
 'use strict';
 const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
-const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user',COOLDOWN_TIME=6*60*60*1000,ITEM_PRICE=100,REWARD_POINTS=200;
-let auth=null,db=null,fbUser=null,rewardTimer=null,toastTimer=null;
-let user={name:'',points:500,unlockedPieces:[0],pieceIndex:0,unlockedAvatars:['fa-user'],avatarIcon:'fa-user',lastRewardTime:0};
+const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user';
 
-const THEMES=[
-['මුතු සුදු (Default)','සම්මත සුදු මෝස්තරය','#ffffff','#dfe6e9','#b2bec3','#2d3436','●'],
-['රන් ඔටුන්න','දිලිසෙන රන්වන් වළල්ල','#ffeaa7','#fdcb6e','#e1b12c','#2d3436','★'],
-['රුධිර රතු','උණුසුම් රතු පැහැය','#ff7675','#d63031','#c0392b','#fff','◆'],
-['මරකත කොළ','ශක්තිමත් කොළ පැහැය','#55efc4','#00b894','#00a8ff','#fff','▲'],
-['නියෝන් නිල්','නිල් විදුලි රැස්','#74b9ff','#0984e3','#00f2fe','#fff','✦'],
-['රාජකීය දම්','රාජකීය දම් පැහැය','#a29bfe','#6c5ce7','#fd79a8','#fff','❖'],
-['අඳුරු කාබන්','අඳුරු අළු පැහැය','#636e72','#2d3436','#b2bec3','#ffd166','♠'],
-['සූර්ය රන්','ගිනියම් තැඹිලි පැහැය','#fab1a0','#e17055','#d63031','#fff','☀'],
-['මැජෙන්ටා රෝස','ආකර්ෂණීය රෝස පාටය','#ff7979','#eb4d4b','#ff7979','#fff','✿'],
-['සැහැල්ලු සිල්වර්','දීප්තිමත් රිදී පැහැය','#dfe6e9','#b2bec3','#636e72','#2d3436','⚙'],
-['කොස්මික් වයලට්','අභ්‍යවකාශ වයලට්','#8e44ad','#3498db','#9b59b6','#fff','☄'],
-['නියෝන් ලෙමන්','දීප්තිමත් කහ පැහැය','#f1c40f','#f39c12','#f1c40f','#111','⚡'],
-['ටර්කියුයිස්','මුහුදු නිල් පැහැය','#1abc9c','#16a085','#1abc9c','#fff','🌊'],
-['චොක්ලට් බ්‍රවුන්','සම්භාව්‍ය දුඹුරු පැහැය','#d35400','#a04000','#e67e22','#fff','☕'],
-['රෝස් ගෝල්ඩ්','රෝස් රන්වන් පැහැය','#f5b041','#eb984e','#f39c12','#fff','♕'],
-['ගැඹුරු මිනිරන්','මිනිරන් අළු වළල්ල','#34495e','#2c3e50','#7f8c8d','#ffd166','🛡'],
-['අයිස් මින්ට්','සිසිල් මින්ට් කොළ','#a3e4d7','#48c9b0','#17a589','#111','❄'],
-['සැණකෙළි පර්පල්','වර්ණවත් දම් සංකලනය','#d98880','#c0392b','#e74c3c','#fff','🔮'],
-['විදුලි ලෙමන්','දීප්තිමත් ලෙමන් කහ','#f7dc6f','#f9e79f','#f1c40f','#111','✨'],
-['අමරණීය අඳුර','කළු රාජකීය ස්ටයිල් එක','#2c3e50','#000000','#ffd166','#ffd166','♔']
-].map((x,id)=>({id,name:x[0],desc:x[1],bg:`radial-gradient(circle at 30% 30%,${x[2]},${x[3]})`,border:x[4],color:x[5],icon:x[6],free:id===0}));
+let auth,db,fbUser;
+let user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user',unlockedAvatars:['fa-user'],lastRewardTime:0};
+let customPieces=[];
+let customAvatars=[];
+let isNavigating=false;
 
-const AVATARS=[
-['fa-user','සම්මත පරිශීලක','මූලික ප්‍රොෆයිල් රූපය'],['fa-chess-knight','චෙස් නයිට්','සටන්කාමී පෙනුම'],['fa-dragon','ගිනියම් ඩ්‍රැගන්','මකර සංකේතය'],['fa-mask','රහසිගත මුහුණ','රහස් ඒජන්ට් පෙනුම'],['fa-robot','රොබෝ යන්ත්‍රය','තාක්ෂණික බුද්ධිය'],['fa-ghost','අපූර්ව හොල්මන','අභිරහස් චරිතය'],['fa-shield-halved','රාජකීය පලිහ','ආරක්ෂිත පලිහ'],['fa-crown','රාජකීය ඔටුන්න','ජයග්‍රාහකයා'],['fa-fire','මහා ගින්න','දැඩි උද්යෝගය'],['fa-bolt','අකුණු සැණැල්ල','වේගවත් ක්‍රීඩකයා'],['fa-skull','හිස්කබල','භයානක ප්‍රතිවාදියා'],['fa-star','රන් තරුව','දීප්තිමත් තාරකාව'],['fa-gem','දියමන්ති මැණික','වටිනාකම සහ ධනය'],['fa-fighter-jet','යුධ ජෙට් යානය','වේගය සහ බලය'],['fa-meteor','උල්කාපාතය','අහසින් පතිත බලය'],['fa-cat','කූට බළලා','කපටි ක්‍රීඩකයා'],['fa-dog','විශ්වාසවන්ත බල්ලා','ස්ථිර සටන් සගයා'],['fa-paw','සිංහ පාදය','මෘග බලය'],['fa-crosshairs','ඉලක්ක ලක්ෂ්‍යය','නිවැරදි ඉලක්කය'],['fa-hat-wizard','මායාකාර තොප්පිය','උපක්‍රමශීලී ක්‍රීඩාව']
-].map((x,id)=>({id:x[0],name:x[1],desc:x[2],icon:x[0],free:id===0}));
+const DEFAULT_PIECE_DESIGNS=[
+ {id:0,name:'මුතු සුදු (Default)',price:0,bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●',free:true},
+ {id:1,name:'රන් ඔටුන්න',price:120,bg:'linear-gradient(135deg,#ffeaa7,#fdcb6e)',border:'#e1b12c',color:'#2d3436',icon:'★'},
+ {id:2,name:'රුධිර රතු',price:150,bg:'radial-gradient(circle at 30% 30%,#ff7675,#d63031)',border:'#c0392b',color:'#fff',icon:'◆'},
+ {id:3,name:'මරකත කොළ',price:150,bg:'radial-gradient(circle at 30% 30%,#55efc4,#00b894)',border:'#00a8ff',color:'#fff',icon:'▲'},
+ {id:4,name:'නියෝන් නිල්',price:180,bg:'radial-gradient(circle at 30% 30%,#74b9ff,#0984e3)',border:'#00f2fe',color:'#fff',icon:'✦'},
+ {id:5,name:'රාජකීය දම්',price:180,bg:'radial-gradient(circle at 30% 30%,#a29bfe,#6c5ce7)',border:'#fd79a8',color:'#fff',icon:'❖'},
+ {id:6,name:'අඳුරු කාබන්',price:200,bg:'radial-gradient(circle at 30% 30%,#636e72,#2d3436)',border:'#b2bec3',color:'#ffd166',icon:'♠'},
+ {id:7,name:'සූර්ය රන්',price:200,bg:'radial-gradient(circle at 30% 30%,#fab1a0,#e17055)',border:'#d63031',color:'#fff',icon:'☀'},
+ {id:8,name:'මැජෙන්ටා රෝස',price:220,bg:'radial-gradient(circle at 30% 30%,#ff7979,#eb4d4b)',border:'#ff7979',color:'#fff',icon:'✿'},
+ {id:9,name:'සිල්වර් ලෝහය',price:220,bg:'radial-gradient(circle at 30% 30%,#dfe6e9,#b2bec3)',border:'#636e72',color:'#2d3436',icon:'⚙'},
+ {id:10,name:'කොස්මික් වයලට්',price:250,bg:'radial-gradient(circle at 30% 30%,#8e44ad,#3498db)',border:'#9b59b6',color:'#fff',icon:'☄'},
+ {id:11,name:'නියෝන් ලෙමන්',price:250,bg:'radial-gradient(circle at 30% 30%,#f1c40f,#f39c12)',border:'#f1c40f',color:'#111',icon:'⚡'},
+ {id:12,name:'ටර්කියුයිස්',price:280,bg:'radial-gradient(circle at 30% 30%,#1abc9c,#16a085)',border:'#1abc9c',color:'#fff',icon:'🌊'},
+ {id:13,name:'චොක්ලට් බ්‍රවුන්',price:280,bg:'radial-gradient(circle at 30% 30%,#d35400,#a04000)',border:'#e67e22',color:'#fff',icon:'☕'},
+ {id:14,name:'රෝස් ගෝල්ඩ්',price:300,bg:'radial-gradient(circle at 30% 30%,#f5b041,#eb984e)',border:'#f39c12',color:'#fff',icon:'♕'},
+ {id:15,name:'ගැඹුරු මිනිරන්',price:300,bg:'radial-gradient(circle at 30% 30%,#34495e,#2c3e50)',border:'#7f8c8d',color:'#ffd166',icon:'🛡'},
+ {id:16,name:'අයිස් මින්ට්',price:320,bg:'radial-gradient(circle at 30% 30%,#a3e4d7,#48c9b0)',border:'#17a589',color:'#111',icon:'❄'},
+ {id:17,name:'සැණකෙළි පර්පල්',price:340,bg:'radial-gradient(circle at 30% 30%,#d98880,#c0392b)',border:'#e74c3c',color:'#fff',icon:'🔮'},
+ {id:18,name:'විදුලි ලෙමන්',price:360,bg:'radial-gradient(circle at 30% 30%,#f7dc6f,#f9e79f)',border:'#f1c40f',color:'#111',icon:'✨'},
+ {id:19,name:'අමරණීය අඳුර',price:400,bg:'radial-gradient(circle at 30% 30%,#2c3e50,#000000)',border:'#ffd166',color:'#ffd166',icon:'♔'}
+];
 
-function safeReadUser(){
- try{const s=JSON.parse(localStorage.getItem(KEY)||'{}');return {...user,...s,points:Number.isFinite(Number(s.points))?Math.max(0,Math.floor(Number(s.points))):500,unlockedPieces:Array.isArray(s.unlockedPieces)?s.unlockedPieces.map(Number):[0],pieceIndex:Number.isFinite(Number(s.pieceIndex))?Number(s.pieceIndex):0,unlockedAvatars:Array.isArray(s.unlockedAvatars)?s.unlockedAvatars:['fa-user'],avatarIcon:s.avatarIcon||'fa-user',lastRewardTime:Number(s.lastRewardTime)||0};}
- catch(e){return {name:'',points:500,unlockedPieces:[0],pieceIndex:0,unlockedAvatars:['fa-user'],avatarIcon:'fa-user',lastRewardTime:0};}
+const DEFAULT_AVATARS=[
+ {id:'fa-user',name:'සම්මත (Default)',price:0,icon:'fa-user'},
+ {id:'fa-chess-knight',name:'චෙස් නයිට්',price:100,icon:'fa-chess-knight'},
+ {id:'fa-dragon',name:'ගිනියම් ඩ්‍රැගන්',price:150,icon:'fa-dragon'},
+ {id:13,name:'මුහුණු ආවරණය',price:150,icon:'fa-mask'},
+ {id:'fa-robot',name:'රොබෝ යන්ත්‍රය',price:180,icon:'fa-robot'},
+ {id:'fa-ghost',name:'අපූර්ව හොල්මන',price:180,icon:'fa-ghost'},
+ {id:'fa-shield-halved',name:'රජකීය පලිහ',price:200,icon:'fa-shield-halved'},
+ {id:14,name:'රජකීය ඔටුන්න',price:220,icon:'fa-crown'},
+ {id:'fa-fire',name:'මහා ගින්න',price:220,icon:'fa-fire'},
+ {id:'fa-bolt',name:'අකුණු සැණැල්ල',price:240,icon:'fa-bolt'},
+ {id:'fa-skull',name:'හිස්කබල',price:250,icon:'fa-skull'},
+ {id:'fa-star',name:'රන් තරුව',price:260,icon:'fa-star'},
+ {id:'fa-gem',name:'දියමන්ති මැණික',price:280,icon:'fa-gem'},
+ {id:'fa-fighter-jet',name:'ජෙට් යානය',price:300,icon:'fa-fighter-jet'},
+ {id:'fa-meteor',name:'උල්කාපාතය',price:300,icon:'fa-meteor'},
+ {id:'fa-cat',name:'කූට බළලා',price:320,icon:'fa-cat'},
+ {id:'fa-dog',name:'බල්ලා',price:320,icon:'fa-dog'},
+ {id:'fa-paw',name:'සිංහ පාදය',price:340,icon:'fa-paw'},
+ {id:'fa-crosshairs',name:'ඉලක්කය',price:360,icon:'fa-crosshairs'},
+ {id:'fa-hat-wizard',name:'මායාකාරයා',price:400,icon:'fa-hat-wizard'}
+];
+DEFAULT_AVATARS[3].id='fa-mask';
+DEFAULT_AVATARS[7].id='fa-crown';
+
+function toast(s, icon='fa-circle-info'){
+ const t=$('toast');
+ t.replaceChildren();
+ const iconEl=document.createElement('i');iconEl.className=`fa-solid ${icon}`;iconEl.style.color='var(--gold)';
+ const textEl=document.createElement('span');textEl.textContent=String(s);
+ t.append(iconEl,textEl);
+ t.classList.add('show');
+ setTimeout(()=>t.classList.remove('show'),3000);
 }
-user=safeReadUser();
-function persistLocal(){try{localStorage.setItem(KEY,JSON.stringify(user));}catch(e){console.error(e);toast('දත්ත සුරැකීමට නොහැකි විය.');}}
-function toast(msg){const el=$('toast');el.textContent=String(msg);el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2600);}
-function updatePointsUI(){$('shopCoinValue').textContent=String(user.points);}
-function normalizeCloudData(data){
- const d=data||{};user={...user,...d,points:Number.isFinite(Number(d.points))?Math.max(0,Math.floor(Number(d.points))):user.points,unlockedPieces:Array.isArray(d.unlockedPieces)?d.unlockedPieces.map(Number):user.unlockedPieces,pieceIndex:Number.isFinite(Number(d.pieceIndex))?Number(d.pieceIndex):user.pieceIndex,unlockedAvatars:Array.isArray(d.unlockedAvatars)?d.unlockedAvatars:user.unlockedAvatars,avatarIcon:d.avatarIcon||user.avatarIcon,lastRewardTime:Number(d.lastRewardTime)||0,uid:fbUser?fbUser.uid:null};
- if(!user.unlockedPieces.includes(user.pieceIndex))user.pieceIndex=0;if(!user.unlockedAvatars.includes(user.avatarIcon))user.avatarIcon='fa-user';
- persistLocal();updatePointsUI();renderShop();updateRewardTimer();
+
+function smoothNavigate(url){
+ if(isNavigating)return;
+ isNavigating=true;
+ const app=$('appRoot');
+ if(app)app.classList.add('page-leaving');
+ setTimeout(()=>{window.location.href=url;},110);
 }
-async function saveCloudPatch(patch){
- if(!fbUser||!db){Object.assign(user,patch);persistLocal();updatePointsUI();renderShop();updateRewardTimer();return true;}
- try{await db.ref('users_v6/'+fbUser.uid).update(patch);Object.assign(user,patch);persistLocal();updatePointsUI();renderShop();updateRewardTimer();return true;}
- catch(e){console.error(e);toast('Firebase වෙත සුරැකීම අසාර්ථකයි.');return false;}
+
+function escapeHtml(str){
+ return String(str).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 }
-async function mutateCloud(mutator){
- if(!fbUser||!db){const d={...user,unlockedPieces:[...user.unlockedPieces],unlockedAvatars:[...user.unlockedAvatars]},r=mutator(d);if(!r.ok)return r;user=d;persistLocal();updatePointsUI();renderShop();updateRewardTimer();return r;}
- try{
-  const ref=db.ref('users_v6/'+fbUser.uid);
-  const tx=await ref.transaction(current=>{
-   const d=current||{name:user.name||'',points:user.points,wins:0,losses:0,pieceIndex:0,avatarIcon:'fa-user'};
-   d.points=Number.isFinite(Number(d.points))?Math.max(0,Math.floor(Number(d.points))):user.points;
-   d.unlockedPieces=Array.isArray(d.unlockedPieces)?d.unlockedPieces:[0];d.unlockedAvatars=Array.isArray(d.unlockedAvatars)?d.unlockedAvatars:['fa-user'];d.lastRewardTime=Number(d.lastRewardTime)||0;
-   const r=mutator(d);if(!r.ok)return;d.unlockedPieces=[...new Set(d.unlockedPieces.map(Number))];d.unlockedAvatars=[...new Set(d.unlockedAvatars)];return d;
-  },undefined,false);
-  if(!tx.committed){toast('දත්ත යාවත්කාලීන නොවීය. නැවත උත්සාහ කරන්න.');return {ok:false};}
-  normalizeCloudData(tx.snapshot.val());return {ok:true};
- }catch(e){console.error(e);toast('Firebase සම්බන්ධතාවය පරීක්ෂා කරන්න.');return {ok:false};}
+
+// Instant cache hydrate
+try{
+ const cached=localStorage.getItem(KEY);
+ if(cached){
+  const parsed=JSON.parse(cached);
+  if(parsed&&typeof parsed==='object')user={...user,...parsed};
+ }
+}catch(e){}
+
+try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);auth=firebase.auth();db=firebase.database();}
+catch(e){console.error('Firebase init failed:',e);}
+
+function updateUI(){
+ $('points').textContent=Number(user.points)||0;
+ $('playerStatusLabel').textContent=user.name ? `${user.name} • Shop & Rewards` : 'ක්‍රීඩකයා • Shop & Rewards';
+ updateRewardStatus();
+ renderShopItems();
 }
-function switchTab(type,button){
- document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));button.classList.add('active');
- $('themesSection').style.display=type==='themes'?'flex':'none';$('avatarsSection').style.display=type==='avatars'?'flex':'none';
+
+function saveUserData(){
+ user.unlockedPieces=Array.from(new Set(Array.isArray(user.unlockedPieces)?user.unlockedPieces:[0]));
+ user.unlockedAvatars=Array.from(new Set(Array.isArray(user.unlockedAvatars)?user.unlockedAvatars:['fa-user']));
+ localStorage.setItem(KEY,JSON.stringify(user));
+ updateUI();
+
+ if(db && fbUser){
+  db.ref('users_v6/'+fbUser.uid).update({
+   points:Number(user.points)||0,
+   pieceIndex:Number(user.pieceIndex)||0,
+   unlockedPieces:user.unlockedPieces,
+   avatarIcon:user.avatarIcon||'fa-user',
+   unlockedAvatars:user.unlockedAvatars,
+   lastRewardTime:Number(user.lastRewardTime)||0
+  }).catch(()=>{});
+
+  db.ref('publicProfiles_v6/'+fbUser.uid).update({
+   points:Number(user.points)||0,
+   pieceIndex:Number(user.pieceIndex)||0,
+   unlockedPieces:user.unlockedPieces,
+   avatarIcon:user.avatarIcon||'fa-user',
+   unlockedAvatars:user.unlockedAvatars
+  }).catch(()=>{});
+ }
 }
-function makeCard(name,desc,preview,kind,id,unlocked,selected){
- const card=document.createElement('article');card.className='item-card'+(selected?' selected':'')+(unlocked?' owned':'');
- const icon=document.createElement('div');icon.className='preview-circle'+(kind==='avatar'?' avatar-preview':'');
- if(kind==='theme'){icon.style.background=preview.bg;icon.style.border=`2px solid ${preview.border}`;icon.style.color=preview.color;icon.textContent=preview.icon;}
- else{const i=document.createElement('i');i.className='fa-solid '+preview.icon;icon.appendChild(i);}
- const title=document.createElement('div');title.className='item-name';title.textContent=name;
- const description=document.createElement('div');description.className='item-desc';description.textContent=desc;
- const status=document.createElement('div');status.className='item-status';status.textContent=selected?'● සක්‍රීයයි':unlocked?'✓ ඔබ සතුයි':'PREMIUM ITEM';
- const btn=document.createElement('button');btn.className='btn-item';
- if(!unlocked){btn.textContent=`මිලදී ගන්න · ${ITEM_PRICE} pts`;btn.disabled=user.points<ITEM_PRICE;btn.addEventListener('click',()=>kind==='theme'?buyTheme(id):buyAvatar(id));}
- else if(selected){btn.textContent='✓ සක්‍රීයයි';btn.disabled=true;btn.classList.add('active-btn');}
- else{btn.textContent='භාවිතා කරන්න';btn.classList.add('owned-btn');btn.addEventListener('click',()=>kind==='theme'?selectTheme(id):selectAvatar(id));}
- card.append(icon,title,description,status,btn);return card;
+
+// Daily Reward Logic (24h)
+const REWARD_COOLDOWN=24*60*60*1000;
+const REWARD_AMOUNT=150;
+
+function updateRewardStatus(){
+ const btn=$('claimDailyBtn');
+ const txt=$('rewardTimerText');
+ if(!btn||!txt)return;
+ const now=Date.now();
+ const last=Number(user.lastRewardTime)||0;
+ const diff=now-last;
+
+ if(diff>=REWARD_COOLDOWN){
+  btn.disabled=false;
+  txt.textContent='දැන්ම ත්‍යාගය ලබාගත හැක!';
+ }else{
+  btn.disabled=true;
+  const rem=REWARD_COOLDOWN-diff;
+  const hrs=Math.floor(rem/3600000);
+  const mins=Math.floor((rem%3600000)/60000);
+  txt.textContent=`ඊළඟ ත්‍යාගයට තව පැය ${hrs} සහ මිනිත්තු ${mins}`;
+ }
 }
-function renderShop(){
- const tg=$('themesGrid');tg.replaceChildren();
- THEMES.forEach(t=>tg.appendChild(makeCard(t.name,t.desc,t,'theme',t.id,user.unlockedPieces.includes(t.id),user.pieceIndex===t.id)));
- const ag=$('avatarsGrid');ag.replaceChildren();
- AVATARS.forEach(a=>ag.appendChild(makeCard(a.name,a.desc,a,'avatar',a.id,user.unlockedAvatars.includes(a.id),user.avatarIcon===a.id)));
+
+$('claimDailyBtn').onclick=()=>{
+ const now=Date.now();
+ const last=Number(user.lastRewardTime)||0;
+ if(now-last<REWARD_COOLDOWN)return toast('දෛනික ත්‍යාගය දැනටමත් ලබාගෙන ඇත.');
+ user.points=(Number(user.points)||0)+REWARD_AMOUNT;
+ user.lastRewardTime=now;
+ saveUserData();
+ toast(`+${REWARD_AMOUNT} Coins දෛනික ත්‍යාගය ලැබුණි!`,'fa-gift');
+};
+
+setInterval(updateRewardStatus,30000);
+
+// Render Piece Themes & Avatars (Default + Admin Custom)
+function renderShopItems(){
+ const allPieces=[
+  ...DEFAULT_PIECE_DESIGNS.map((p,idx)=>({...p,storeIndex:idx,isCustom:false})),
+  ...customPieces.map((p,cIdx)=>({...p,storeIndex:DEFAULT_PIECE_DESIGNS.length+cIdx,isCustom:true,price:Number(p.price)||100}))
+ ];
+
+ const themesGrid=$('themesShopGrid');
+ themesGrid.innerHTML='';
+ const unlockedPieces=Array.isArray(user.unlockedPieces)?user.unlockedPieces:[0];
+
+ allPieces.forEach(item=>{
+  const isUnlocked=unlockedPieces.includes(item.storeIndex)||item.free;
+  const isEquipped=(Number(user.pieceIndex)===item.storeIndex);
+  const price=Number(item.price)||0;
+
+  const card=document.createElement('div');
+  card.className='shop-card'+(item.isCustom?' custom-badge-card':'');
+
+  const prev=document.createElement('div');
+  prev.className='piece-preview';
+  prev.style.background=item.bg||'#fff';
+  prev.style.border=`2px solid ${item.border||'#ffd166'}`;
+  prev.style.color=item.color||'#111';
+  prev.textContent=item.icon||'●';
+
+  const nameEl=document.createElement('div');
+  nameEl.className='item-name';
+  nameEl.textContent=item.name||'Theme';
+
+  const priceEl=document.createElement('div');
+  priceEl.className='item-price';
+  priceEl.innerHTML=item.isCustom
+   ? `<span class="item-tag">NEW ADMIN</span> • <i class="fa-solid fa-coins"></i> ${price}`
+   : `<i class="fa-solid fa-coins"></i> ${price}`;
+
+  const btn=document.createElement('button');
+  if(isEquipped){
+   btn.className='btn-owned';
+   btn.innerHTML='<i class="fa-solid fa-check"></i> Equipped';
+  }else if(isUnlocked){
+   btn.className='btn-green';
+   btn.innerHTML='<i class="fa-solid fa-wand-magic-sparkles"></i> Equip';
+   btn.onclick=()=>{
+    user.pieceIndex=item.storeIndex;
+    saveUserData();
+    toast(`"${item.name}" Theme එක තෝරාගන්නා ලදී!`,'fa-circle-check');
+   };
+  }else{
+   btn.className='btn-gold';
+   btn.innerHTML='<i class="fa-solid fa-lock-open"></i> Unlock';
+   btn.onclick=()=>{
+    if((Number(user.points)||0)<price)return toast('ඔබ සතුව ප්‍රමාණවත් Coins නොමැත!');
+    user.points=(Number(user.points)||0)-price;
+    user.unlockedPieces=[...unlockedPieces,item.storeIndex];
+    user.pieceIndex=item.storeIndex;
+    saveUserData();
+    toast(`"${item.name}" Unlock කර Equip කරන ලදී!`,'fa-circle-check');
+   };
+  }
+
+  card.append(prev,nameEl,priceEl,btn);
+  themesGrid.appendChild(card);
+ });
+
+ const allAvatars=[
+  ...DEFAULT_AVATARS.map(a=>({...a,isCustom:false,price:Number(a.price)||0})),
+  ...customAvatars.map(a=>({...a,isCustom:true,price:Number(a.price)||100}))
+ ];
+
+ const avatarsGrid=$('avatarsShopGrid');
+ avatarsGrid.innerHTML='';
+ const unlockedAvatars=Array.isArray(user.unlockedAvatars)?user.unlockedAvatars:['fa-user'];
+
+ allAvatars.forEach(av=>{
+  const avId=av.id||av.icon||'fa-user';
+  const iconClass=(av.icon||avId||'fa-user').replace(/^fa-solid\s+/,'');
+  const isUnlocked=unlockedAvatars.includes(avId)||avId==='fa-user';
+  const isEquipped=(user.avatarIcon===avId);
+  const price=Number(av.price)||0;
+
+  const card=document.createElement('div');
+  card.className='shop-card'+(av.isCustom?' custom-badge-card':'');
+
+  const prev=document.createElement('div');
+  prev.className='avatar-preview';
+  prev.innerHTML=`<i class="fa-solid ${escapeHtml(iconClass)}"></i>`;
+
+  const nameEl=document.createElement('div');
+  nameEl.className='item-name';
+  nameEl.textContent=av.name||'Avatar';
+
+  const priceEl=document.createElement('div');
+  priceEl.className='item-price';
+  priceEl.innerHTML=av.isCustom
+   ? `<span class="item-tag">NEW ADMIN</span> • <i class="fa-solid fa-coins"></i> ${price}`
+   : `<i class="fa-solid fa-coins"></i> ${price}`;
+
+  const btn=document.createElement('button');
+  if(isEquipped){
+   btn.className='btn-owned';
+   btn.innerHTML='<i class="fa-solid fa-check"></i> Equipped';
+  }else if(isUnlocked){
+   btn.className='btn-green';
+   btn.innerHTML='<i class="fa-solid fa-user-check"></i> Equip';
+   btn.onclick=()=>{
+    user.avatarIcon=avId;
+    saveUserData();
+    toast(`"${av.name}" Avatar එක තෝරාගන්නා ලදී!`,'fa-circle-check');
+   };
+  }else{
+   btn.className='btn-gold';
+   btn.innerHTML='<i class="fa-solid fa-lock-open"></i> Unlock';
+   btn.onclick=()=>{
+    if((Number(user.points)||0)<price)return toast('ඔබ සතුව ප්‍රමාණවත් Coins නොමැත!');
+    user.points=(Number(user.points)||0)-price;
+    user.unlockedAvatars=[...unlockedAvatars,avId];
+    user.avatarIcon=avId;
+    saveUserData();
+    toast(`"${av.name}" Avatar එක Unlock කරන ලදී!`,'fa-circle-check');
+   };
+  }
+
+  card.append(prev,nameEl,priceEl,btn);
+  avatarsGrid.appendChild(card);
+ });
 }
-async function buyTheme(id){
- const t=THEMES.find(x=>x.id===id);if(!t)return;
- const r=await mutateCloud(d=>{if(d.unlockedPieces.map(Number).includes(id))return {ok:false,message:'මෙම Theme එක දැනටමත් ඔබ සතුයි.'};if(Number(d.points)<ITEM_PRICE)return {ok:false,message:'Points 100ක් ප්‍රමාණවත් නැත.'};d.points=Number(d.points)-ITEM_PRICE;d.unlockedPieces.push(id);d.pieceIndex=id;return {ok:true};});
- if(!r.ok){if(r.message)toast(r.message);return;}toast('Theme එක සාර්ථකව මිලදී ගත්තා! 🎉');
+
+// Tabs
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+ btn.onclick=()=>{
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.scroll-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  $(btn.dataset.tab).classList.add('active');
+ };
+});
+
+// Firebase listeners
+if(db){
+ db.ref('shopConfig_v6/customPieces').on('value',snap=>{
+  const val=snap.val();
+  customPieces=Array.isArray(val)?val.filter(Boolean):(val&&typeof val==='object'?Object.values(val):[]);
+  renderShopItems();
+ });
+
+ db.ref('shopConfig_v6/customAvatars').on('value',snap=>{
+  const val=snap.val();
+  customAvatars=Array.isArray(val)?val.filter(Boolean):(val&&typeof val==='object'?Object.values(val):[]);
+  renderShopItems();
+ });
 }
-async function selectTheme(id){if(!THEMES.some(x=>x.id===id)||!user.unlockedPieces.includes(id))return toast('මෙම Theme එක මුලින් ලබාගන්න.');if(await saveCloudPatch({pieceIndex:id}))toast('Theme එක ක්‍රීඩාවට යෙදුවා!');}
-async function buyAvatar(id){
- if(!AVATARS.some(x=>x.id===id))return;
- const r=await mutateCloud(d=>{if(d.unlockedAvatars.includes(id))return {ok:false,message:'මෙම Avatar එක දැනටමත් ඔබ සතුයි.'};if(Number(d.points)<ITEM_PRICE)return {ok:false,message:'Points 100ක් ප්‍රමාණවත් නැත.'};d.points=Number(d.points)-ITEM_PRICE;d.unlockedAvatars.push(id);d.avatarIcon=id;return {ok:true};});
- if(!r.ok){if(r.message)toast(r.message);return;}toast('Avatar එක සාර්ථකව මිලදී ගත්තා! 🎉');
-}
-async function selectAvatar(id){if(!AVATARS.some(x=>x.id===id)||!user.unlockedAvatars.includes(id))return toast('මෙම Avatar එක මුලින් ලබාගන්න.');if(await saveCloudPatch({avatarIcon:id}))toast('Avatar එක ප්‍රොෆයිලයට යෙදුවා!');}
-function updateRewardTimer(){
- const last=Number(user.lastRewardTime)||0,remaining=COOLDOWN_TIME-(Date.now()-last),btn=$('claimRewardBtn'),label=$('timerDisplay');
- if(remaining>0){const h=Math.floor(remaining/3600000),m=Math.floor(remaining%3600000/60000),s=Math.floor(remaining%60000/1000);label.innerHTML=`<i class="fa-regular fa-clock"></i> ඉතිරි කාලය ${h}h ${m}m ${s}s`;btn.disabled=true;}
- else{label.innerHTML='<i class="fa-solid fa-circle-check"></i> ත්‍යාගය ලබාගැනීමට සූදානම්';btn.disabled=false;}
-}
-function startRewardTimer(){if(rewardTimer)clearInterval(rewardTimer);updateRewardTimer();rewardTimer=setInterval(updateRewardTimer,1000);}
-async function claimFreeReward(){
- const now=Date.now(),r=await mutateCloud(d=>{if(now-(Number(d.lastRewardTime)||0)<COOLDOWN_TIME)return {ok:false,message:'නැවත ලබාගැනීමට පැය 6ක් සම්පූර්ණ විය යුතුයි.'};d.points=(Number(d.points)||0)+REWARD_POINTS;d.lastRewardTime=now;return {ok:true};});
- if(!r.ok){if(r.message)toast(r.message);return;}toast('ඔබට Free Points 200ක් ලැබුණා! 🎉');
-}
-function init(){
- $('currentDateText').textContent=new Date().toLocaleDateString('si-LK',{year:'numeric',month:'short',day:'numeric'});
- updatePointsUI();renderShop();startRewardTimer();
- try{
-  if(!window.firebase)throw new Error('Firebase SDK unavailable');
-  if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
-  auth=firebase.auth();db=firebase.database();
-  auth.onAuthStateChanged(async account=>{
-   fbUser=account||null;
-   if(!account){user=safeReadUser();updatePointsUI();renderShop();updateRewardTimer();return;}
+
+if(auth && db){
+ auth.onAuthStateChanged(async u=>{
+  fbUser=u;
+  if(u){
    try{
-    const snap=await db.ref('users_v6/'+account.uid).once('value'),cloud=snap.val();
-    if(cloud)normalizeCloudData(cloud);
-    else{user.uid=account.uid;persistLocal();await db.ref('users_v6/'+account.uid).update({name:user.name||account.displayName||'ක්‍රීඩකයා',points:user.points,unlockedPieces:user.unlockedPieces,pieceIndex:user.pieceIndex,unlockedAvatars:user.unlockedAvatars,avatarIcon:user.avatarIcon,lastRewardTime:user.lastRewardTime});}
-   }catch(e){console.error(e);toast('ගිණුම් දත්ත ලබාගැනීමට නොහැකි විය.');}
-  });
- }catch(e){console.error(e);toast('Firebase සම්බන්ධතාවය නොමැත.');}
+    const s=await db.ref('users_v6/'+u.uid).once('value');
+    const d=s.val();
+    if(d){
+     user={
+      ...user,
+      name:d.name||user.name,
+      points:Number.isFinite(Number(d.points))?Number(d.points):user.points,
+      wins:Number(d.wins)||0,
+      losses:Number(d.losses)||0,
+      uid:u.uid,
+      pieceIndex:Number(d.pieceIndex)||0,
+      unlockedPieces:Array.isArray(d.unlockedPieces)?d.unlockedPieces:[0],
+      avatarIcon:d.avatarIcon||'fa-user',
+      unlockedAvatars:Array.isArray(d.unlockedAvatars)?d.unlockedAvatars:['fa-user'],
+      lastRewardTime:Number(d.lastRewardTime)||0
+     };
+     localStorage.setItem(KEY,JSON.stringify(user));
+     updateUI();
+    }
+   }catch(e){console.error(e);}
+  }
+ });
 }
-init();
+
+updateUI();
+
+$('backBtn').onclick=()=>smoothNavigate('index.html');
+document.querySelectorAll('a.nav-item[href]').forEach(link=>{
+ link.addEventListener('click',e=>{
+  const href=link.getAttribute('href');
+  if(!href||href.startsWith('#'))return;
+  e.preventDefault();
+  smoothNavigate(href);
+ });
+});
 </script>
 </body>
 </html>
