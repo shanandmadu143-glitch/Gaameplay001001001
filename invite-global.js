@@ -34,6 +34,19 @@
     return p.endsWith('/arena.html') || p.endsWith('arena.html');
   }
 
+  function createInitialBoard() {
+    const b = Array.from({ length: 8 }, () => Array(8).fill(0));
+    for (let r = 0; r < 8; r++) {
+      for (let c = 0; c < 8; c++) {
+        if ((r + c) % 2) {
+          if (r < 3) b[r][c] = -1;
+          else if (r > 4) b[r][c] = 1;
+        }
+      }
+    }
+    return b;
+  }
+
   function loadCachedUser() {
     try {
       const raw = localStorage.getItem(USER_CACHE_KEY);
@@ -204,7 +217,7 @@
         const roomSnap = await db.ref(`rooms_v6/${roomId}`).once('value').catch(() => null);
         latestRoom = roomSnap && roomSnap.exists() ? roomSnap.val() : null;
 
-        await db.ref(`rooms_v6/${roomId}`).update({
+        const roomPatch = {
           status: 'active',
           matchStarted: true,
           guestUid: fbUser.uid,
@@ -212,7 +225,14 @@
           guestPieceIndex: myPieceIndex,
           guestAvatar: myAvatarIcon,
           startedAt: Date.now()
-        });
+        };
+
+        if (!latestRoom || !Array.isArray(latestRoom.board)) {
+          roomPatch.board = createInitialBoard();
+          roomPatch.turn = 1;
+        }
+
+        await db.ref(`rooms_v6/${roomId}`).update(roomPatch);
       }
 
       const mergedRoom = {
