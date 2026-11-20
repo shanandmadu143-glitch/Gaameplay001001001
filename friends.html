@@ -13,27 +13,22 @@ body{min-height:100dvh;display:flex;flex-direction:column;justify-content:center
 
 .app{width:100%;height:100dvh;max-width:768px;margin:0 auto;padding:12px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
 
-/* Top Header Bar */
 .top-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 20px;background:linear-gradient(135deg,rgba(22,30,56,0.95),rgba(10,14,28,0.95));border:2px solid rgba(255,209,102,0.4);border-radius:22px;box-shadow:0 8px 25px rgba(0,0,0,0.6);backdrop-filter:blur(10px)}
 .top-bar h2{color:var(--gold);font-size:1.15rem;font-weight:700;display:flex;align-items:center;gap:8px}
 .bet-badge{background:rgba(255,209,102,0.1);border:1px solid rgba(255,209,102,0.3);padding:6px 12px;border-radius:20px;color:var(--gold);font-size:0.8rem;font-weight:700;white-space:nowrap}
 
-/* Main Content Area */
 main{flex:1;display:flex;flex-direction:column;width:100%;position:relative;margin:10px 0;overflow:hidden}
 .friends-container{width:100%;height:100%;display:flex;flex-direction:column;gap:12px;padding:14px;background:linear-gradient(145deg,rgba(18,24,40,0.85),rgba(12,16,28,0.9));border:2px solid rgba(255,209,102,0.2);border-radius:24px;backdrop-filter:blur(12px);box-shadow:0 10px 30px rgba(0,0,0,0.5);overflow:hidden}
 
-/* Search Row */
 .search-box{display:flex;gap:8px;align-items:center;width:100%}
 .search-box input{flex:1;width:100%;padding:12px 16px;background:rgba(0,0,0,0.4);border:1.5px solid rgba(255,209,102,0.3);border-radius:14px;color:white;font-size:0.95rem;outline:none;transition:all 0.3s}
 .search-box input:focus{border-color:var(--gold);box-shadow:0 0 10px rgba(255,209,102,0.2)}
 .search-box button{padding:12px 18px;border-radius:14px;font-size:0.9rem;white-space:nowrap}
 
-/* Scrollable List */
 .list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding-right:4px}
 .list::-webkit-scrollbar{width:4px}
 .list::-webkit-scrollbar-thumb{background:rgba(255,209,102,0.3);border-radius:4px}
 
-/* Friend Card UI */
 .friend-card{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.03);border:1.5px solid rgba(255,255,255,0.08);padding:10px 14px;border-radius:16px;transition:all 0.25s ease;gap:10px}
 .friend-card:hover{border-color:rgba(255,209,102,0.4);background:rgba(255,255,255,0.06)}
 .friend-info{display:flex;align-items:center;gap:12px;flex:1;min-width:0}
@@ -51,14 +46,12 @@ main{flex:1;display:flex;flex-direction:column;width:100%;position:relative;marg
 .btn-invite{border:0;border-radius:12px;padding:8px 14px;cursor:pointer;font-weight:700;display:inline-flex;align-items:center;gap:6px;justify-content:center;background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;box-shadow:0 4px 15px rgba(255,173,98,0.3);transition:all 0.2s;flex-shrink:0;font-size:0.85rem}
 .btn-invite:active{transform:scale(0.95)}
 
-/* Bottom Navigation */
 .bottom-nav{width:100%;min-height:64px;background:rgba(14,20,38,0.95);border:2px solid rgba(255,209,102,0.3);border-radius:24px;display:flex;align-items:center;justify-content:space-around;padding:6px 4px;backdrop-filter:blur(10px);box-shadow:0 10px 30px rgba(0,0,0,0.8)}
 .nav-item{background:none;border:0;color:#aab4c7;text-decoration:none;display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:0.75rem;font-weight:700;cursor:pointer;transition:color 0.2s}
 .nav-item i{font-size:1.3rem}
 .nav-item.active{color:var(--gold)}
 .nav-item span{line-height:1}
 
-/* Modals */
 .modal{position:fixed;inset:0;background:rgba(3,5,12,0.85);backdrop-filter:blur(8px);display:none;place-items:center;z-index:100;padding:15px}
 .modal.show{display:grid}
 .modalbox{width:min(100%,400px);background:linear-gradient(145deg,#121828,#1b243f);border:2px solid var(--gold);border-radius:24px;padding:22px;display:grid;gap:14px;box-shadow:0 20px 40px rgba(0,0,0,0.8)}
@@ -71,7 +64,6 @@ main{flex:1;display:flex;flex-direction:column;width:100%;position:relative;marg
 #toast.show{transform:translate(-50%,0);opacity:1}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* Tablet & Larger Screen Optimization */
 @media (min-width: 600px) {
   .app { max-width: 600px; padding: 20px; }
   .top-bar { padding: 14px 24px; }
@@ -108,7 +100,6 @@ main{flex:1;display:flex;flex-direction:column;width:100%;position:relative;marg
  </footer>
 </div>
 
-<!-- Modals -->
 <div class="modal" id="waitingHostModal">
  <div class="modalbox" style="text-align:center;gap:12px;padding:24px">
   <div style="width:40px;height:40px;margin:auto;border:4px solid rgba(255,255,255,0.2);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite"></div>
@@ -134,12 +125,15 @@ main{flex:1;display:flex;flex-direction:column;width:100%;position:relative;marg
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script src="./invite-global.js"></script>
 <script>
 'use strict';
 const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
 const $=id=>document.getElementById(id);
 let auth,db,fbUser,user={name:'',points:500,uid:null,pieceIndex:0,avatarIcon:'fa-user'};
-let currentBet = Number(sessionStorage.getItem('sinhala_draughts_bet')) || 50;
+const urlParams = new URLSearchParams(window.location.search);
+let currentBet = Math.max(10, Number(urlParams.get('bet')) || Number(sessionStorage.getItem('sinhala_draughts_bet')) || 50);
+sessionStorage.setItem('sinhala_draughts_bet', String(currentBet));
 let incomingInviteData=null,invitesListenerRef=null,activeInviteWatcher=null;
 
 $('activeBetDisplay').textContent = currentBet;
@@ -150,7 +144,7 @@ const PIECE_DESIGNS=[
  {id:2,name:'රුධිර රතු',bg:'radial-gradient(circle at 30% 30%,#ff7675,#d63031)',border:'#c0392b',color:'#fff',icon:'◆'},
  {id:3,name:'මරකත කොළ',bg:'radial-gradient(circle at 30% 30%,#55efc4,#00b894)',border:'#00a8ff',color:'#fff',icon:'▲'},
  {id:4,name:'නියෝන් නිල්',bg:'radial-gradient(circle at 30% 30%,#74b9ff,#0984e3)',border:'#00f2fe',color:'#fff',icon:'✦'},
- {id:5,name:'शाही දම් පාට',bg:'radial-gradient(circle at 30% 30%,#a29bfe,#6c5ce7)',border:'#fd79a8',color:'#fff',icon:'❖'},
+ {id:5,name:'රාජකීය දම්',bg:'radial-gradient(circle at 30% 30%,#a29bfe,#6c5ce7)',border:'#fd79a8',color:'#fff',icon:'❖'},
  {id:6,name:'අඳුරු කාබන්',bg:'radial-gradient(circle at 30% 30%,#636e72,#2d3436)',border:'#b2bec3',color:'#ffd166',icon:'♠'},
  {id:7,name:'සූර්ය රන්',bg:'radial-gradient(circle at 30% 30%,#fab1a0,#e17055)',border:'#d63031',color:'#fff',icon:'☀'},
  {id:8,name:'මැජෙන්ටා රෝස',bg:'radial-gradient(circle at 30% 30%,#ff7979,#eb4d4b)',border:'#ff7979',color:'#fff',icon:'✿'},
@@ -191,12 +185,12 @@ auth.onAuthStateChanged(async u=>{
    const snap=await db.ref('users_v6/'+u.uid).once('value');
    const d=snap.val();
    if(d) {
-    user={name:d.name,points:Number(d.points)||500,uid:u.uid,pieceIndex:Number(d.pieceIndex)||0,avatarIcon:d.avatarIcon||'fa-user'};
+    user={name:d.name||(u.email||'').split('@')[0]||'Player',points:Number(d.points)||500,uid:u.uid,pieceIndex:Number(d.pieceIndex)||0,avatarIcon:d.avatarIcon||'fa-user'};
    } else {
     user.name = (u.email||'').split('@')[0] || 'Player';
     user.uid = u.uid;
    }
-   
+
    const profileData = {
     name: user.name,
     points: user.points,
@@ -208,9 +202,9 @@ auth.onAuthStateChanged(async u=>{
 
    const userStatusDatabaseRef = db.ref('status_v6/' + u.uid);
    db.ref('.info/connected').on('value', snapshot => {
-       if (snapshot.val() === false) return;
-       userStatusDatabaseRef.onDisconnect().set({ state: 'offline', last_changed: firebase.database.ServerValue.TIMESTAMP });
-       userStatusDatabaseRef.set({ state: 'online', last_changed: firebase.database.ServerValue.TIMESTAMP });
+     if (snapshot.val() === false) return;
+     userStatusDatabaseRef.onDisconnect().set({ state: 'offline', last_changed: firebase.database.ServerValue.TIMESTAMP });
+     userStatusDatabaseRef.set({ state: 'online', last_changed: firebase.database.ServerValue.TIMESTAMP });
    });
 
    loadAllPlayers('');
@@ -236,11 +230,11 @@ async function loadAllPlayers(rawQuery) {
 
   let profiles = profilesSnap && profilesSnap.exists() ? profilesSnap.val() : {};
   const users = usersSnap && usersSnap.exists() ? usersSnap.val() : {};
-  
+
   Object.keys(users).forEach(uid => {
-      if(!profiles[uid]) {
-          profiles[uid] = users[uid];
-      }
+   if(!profiles[uid]) {
+    profiles[uid] = users[uid];
+   }
   });
 
   if (!profiles || Object.keys(profiles).length === 0) {
@@ -255,12 +249,12 @@ async function loadAllPlayers(rawQuery) {
   Object.keys(profiles).forEach(uid => {
    const pData = profiles[uid];
    const candidateName = pData && pData.name ? String(pData.name) : '';
-   
+
    if(fbUser && uid === fbUser.uid) return;
 
    if(candidateName && (!queryName || candidateName.toLowerCase().includes(queryName))) {
     found = true;
-    
+
     const userStatus = statuses[uid];
     const isOnline = userStatus && userStatus.state === 'online';
 
@@ -292,7 +286,7 @@ async function loadAllPlayers(rawQuery) {
 
     const textWrap = document.createElement('div');
     textWrap.className = 'friend-details';
-    
+
     const playerName = document.createElement('b');
     playerName.textContent = candidateName;
 
@@ -308,7 +302,7 @@ async function loadAllPlayers(rawQuery) {
     inviteBtn.className = 'btn-invite';
     inviteBtn.innerHTML = '<i class="fa-solid fa-gamepad"></i> Invite';
     inviteBtn.onclick = () => sendGameInvite(uid, candidateName);
-    
+
     card.appendChild(inviteBtn);
     resultsContainer.appendChild(card);
    }
@@ -336,9 +330,10 @@ async function sendGameInvite(friendUid, friendName) {
 
  const newInviteRef = db.ref('invites_v6/' + friendUid).push();
  const inviteId = newInviteRef.key;
+ const nowTs = Date.now();
  const initialBoard = Array.from({length:8},()=>Array(8).fill(0));
  for(let r=0;r<8;r++)for(let c=0;c<8;c++)if((r+c)%2){if(r<3)initialBoard[r][c]=-1;else if(r>4)initialBoard[r][c]=1}
- 
+
  const targetRoomRef = db.ref('rooms_v6/' + inviteId);
 
  try {
@@ -356,16 +351,33 @@ async function sendGameInvite(friendUid, friendName) {
    guestAvatar: 'fa-user',
    bet: currentBet,
    status: 'waiting',
+   matchStarted: false,
    updatedAt: firebase.database.ServerValue.TIMESTAMP
   });
 
   await newInviteRef.set({
    fromUid: fbUser.uid,
+   fromName: user.name,
    hostName: user.name,
+   roomId: inviteId,
    bet: currentBet,
    status: 'pending',
-   timestamp: Date.now()
+   timestamp: nowTs,
+   createdAt: nowTs
   });
+
+  await db.ref('fcmPushQueue_v6').push({
+   targetUid: friendUid,
+   title: 'ශ්‍රී ලංකීය දාම් - Multiplayer Invite',
+   body: `${user.name} ඔබට ${currentBet} Coins ඔට්ටුවකට ආරාධනා කරයි!`,
+   url: `./friends.html?bet=${encodeURIComponent(currentBet)}&roomId=${encodeURIComponent(inviteId)}`,
+   roomId: inviteId,
+   bet: currentBet
+  }).catch(()=>{});
+
+  if (window.SinhalaDraughtsInviteBridge) {
+   window.SinhalaDraughtsInviteBridge.trackHostRoom(inviteId, currentBet);
+  }
 
   $('waitingHostText').textContent = `${friendName} ආරාධනය පිළිගන්නා තෙක් රැඳී සිටින්න...`;
   modal('waitingHostModal', true);
@@ -374,14 +386,25 @@ async function sendGameInvite(friendUid, friendName) {
    const roomData = snap.val();
    if(!roomData) return;
 
-   if(roomData.status === 'playing') {
+   if(roomData.status === 'playing' || roomData.status === 'active' || roomData.matchStarted === true) {
     targetRoomRef.off('value', handler);
     activeInviteWatcher = null;
     modal('waitingHostModal', false);
-    window.location.href = `arena.html?mode=multi&roomId=${inviteId}&role=host&bet=${currentBet}&oppName=${encodeURIComponent(friendName)}`;
-   } else if(roomData.status === 'rejected') {
+    if (window.SinhalaDraughtsInviteBridge) {
+     window.SinhalaDraughtsInviteBridge.goArena(inviteId, currentBet, 'host', {
+      ...roomData,
+      hostName: user.name,
+      guestName: friendName,
+      hostUid: fbUser.uid,
+      guestUid: friendUid
+     });
+    } else {
+     window.location.href = `arena.html?mode=multi&roomId=${inviteId}&role=host&bet=${currentBet}&oppName=${encodeURIComponent(friendName)}`;
+    }
+   } else if(roomData.status === 'rejected' || roomData.status === 'declined') {
     targetRoomRef.off('value', handler);
     activeInviteWatcher = null;
+    if (window.SinhalaDraughtsInviteBridge) window.SinhalaDraughtsInviteBridge.clearHostRoom();
     modal('waitingHostModal', false);
     targetRoomRef.remove().catch(()=>{});
     toast(`${friendName} ආරාධනය ප්‍රතික්ෂේප කළා.`);
@@ -400,6 +423,7 @@ async function sendGameInvite(friendUid, friendName) {
 
 $('cancelInviteBtn').onclick = () => {
  modal('waitingHostModal', false);
+ if (window.SinhalaDraughtsInviteBridge) window.SinhalaDraughtsInviteBridge.clearHostRoom();
  if(activeInviteWatcher) {
   activeInviteWatcher.ref.off('value', activeInviteWatcher.handler);
   activeInviteWatcher.ref.remove().catch(()=>{});
@@ -415,9 +439,11 @@ function listenForIncomingInvites() {
  invitesListenerRef = db.ref('invites_v6/' + fbUser.uid);
  invitesListenerRef.on('child_added', snap => {
   const invite = snap.val();
-  if(invite && invite.status === 'pending' && (Date.now() - Number(invite.timestamp || 0) < 300000)) {
-   incomingInviteData = { id: snap.key, fromUid: invite.fromUid, ...invite };
-   $('invitePopupText').textContent = `${invite.hostName} විසින් ඔට්ටුව ${invite.bet} ක් සමඟ ඔබට ආරාධනා කරයි!`;
+  const ts = Number(invite && (invite.createdAt || invite.timestamp)) || 0;
+  if(invite && invite.status === 'pending' && (Date.now() - ts < 300000)) {
+   incomingInviteData = { id: snap.key, roomId: invite.roomId || snap.key, fromUid: invite.fromUid, ...invite };
+   const senderName = invite.fromName || invite.hostName || 'ක්‍රීඩකයෙකු';
+   $('invitePopupText').textContent = `${senderName} විසින් ඔට්ටුව ${invite.bet} ක් සමඟ ඔබට ආරාධනා කරයි!`;
    modal('invitePopupModal', true);
   }
  });
@@ -427,6 +453,7 @@ $('acceptInviteBtn').onclick = async () => {
  if(!incomingInviteData) return;
  const invite = incomingInviteData;
  const bet = Number(invite.bet) || 0;
+ const targetRoomId = invite.roomId || invite.id;
 
  if(bet > user.points) {
   toast('මෙම ඔට්ටුව සඳහා ඔබ සතුව ප්‍රමාණවත් Points නොමැත.');
@@ -437,19 +464,30 @@ $('acceptInviteBtn').onclick = async () => {
  modal('invitePopupModal', false);
 
  try {
-  const roomRefCheck = db.ref('rooms_v6/' + invite.id);
+  const roomRefCheck = db.ref('rooms_v6/' + targetRoomId);
   const roomSnap = await roomRefCheck.once('value');
   const roomData = roomSnap.val() || {};
 
   await roomRefCheck.update({
+   guestUid: fbUser.uid,
+   guestName: user.name,
    guestPieceIndex: user.pieceIndex || 0,
    guestAvatar: user.avatarIcon || 'fa-user',
-   status: 'playing',
+   status: 'active',
+   matchStarted: true,
    updatedAt: firebase.database.ServerValue.TIMESTAMP
   });
 
-  await db.ref('invites_v6/' + fbUser.uid + '/' + invite.id).remove().catch(()=>{});
-  window.location.href = `arena.html?mode=multi&roomId=${invite.id}&role=guest&bet=${bet}&oppName=${encodeURIComponent(roomData.hostName || 'Host')}`;
+  await db.ref('invites_v6/' + fbUser.uid + '/' + invite.id).update({ status: 'accepted' }).catch(()=>{});
+  if (window.SinhalaDraughtsInviteBridge) {
+   window.SinhalaDraughtsInviteBridge.goArena(targetRoomId, bet, 'guest', {
+    ...roomData,
+    hostName: roomData.hostName || invite.hostName || invite.fromName || 'Host',
+    guestName: user.name
+   });
+  } else {
+   window.location.href = `arena.html?mode=multi&roomId=${targetRoomId}&role=guest&bet=${bet}&oppName=${encodeURIComponent(roomData.hostName || invite.hostName || 'Host')}`;
+  }
  } catch(err) {
   console.error('Accept error:', err);
   toast('ආරාධනය පිළිගැනීමට නොහැකි විය.');
@@ -459,10 +497,11 @@ $('acceptInviteBtn').onclick = async () => {
 $('rejectInviteBtn').onclick = () => {
  if(!incomingInviteData) return;
  const invite = incomingInviteData;
+ const targetRoomId = invite.roomId || invite.id;
  incomingInviteData = null;
  modal('invitePopupModal', false);
- db.ref('rooms_v6/' + invite.id).update({ status: 'rejected' }).catch(()=>{});
- db.ref('invites_v6/' + fbUser.uid + '/' + invite.id).remove().catch(()=>{});
+ db.ref('rooms_v6/' + targetRoomId).update({ status: 'rejected' }).catch(()=>{});
+ db.ref('invites_v6/' + fbUser.uid + '/' + invite.id).update({ status: 'declined' }).catch(()=>{});
 };
 </script>
 </body>
