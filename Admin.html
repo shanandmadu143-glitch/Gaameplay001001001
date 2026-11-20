@@ -59,6 +59,11 @@ input:focus,select:focus{border-color:var(--gold)}
 .custom-item-left{display:flex;align-items:center;gap:8px;min-width:0}
 .custom-item-left span{font-size:0.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
+.modal{position:fixed;inset:0;background:rgba(3,5,12,0.85);backdrop-filter:blur(8px);display:none;place-items:center;z-index:120;padding:15px}
+.modal.show{display:grid}
+.modalbox{width:min(100%,380px);background:linear-gradient(145deg,#121828,#1b243f);border:2px solid var(--gold);border-radius:22px;padding:22px;display:grid;gap:14px;text-align:center;box-shadow:0 20px 40px rgba(0,0,0,0.8)}
+.modalbox h3{color:var(--gold);font-size:1.15rem}
+
 #toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,120px);opacity:0;background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--gold);color:#f8f9fa;border-radius:30px;padding:10px 20px;z-index:150;transition:.25s ease;font-weight:600;display:flex;align-items:center;gap:8px;font-size:0.9rem}
 #toast.show{transform:translate(-50%,0);opacity:1}
 
@@ -90,6 +95,7 @@ input:focus,select:focus{border-color:var(--gold)}
   <button class="tab-btn" data-tab="avatarTab"><i class="fa-solid fa-id-badge"></i><span>+ Avatar</span></button>
  </div>
 
+ <!-- Tab 1: Players Management -->
  <section class="panel-scroll active" id="playersTab">
   <div class="search-bar">
    <input type="text" id="playerSearch" placeholder="ක්‍රීඩකයාගේ නම හෝ UID සොයන්න...">
@@ -100,6 +106,7 @@ input:focus,select:focus{border-color:var(--gold)}
   </div>
  </section>
 
+ <!-- Tab 2: Add Piece Theme to Shop -->
  <section class="panel-scroll" id="themeTab">
   <h3 style="color:var(--gold)">Shop වෙත නව දාම් ඉත්තන්ගේ Theme එකක් එක් කරන්න</h3>
   <div class="preview-box">
@@ -138,6 +145,7 @@ input:focus,select:focus{border-color:var(--gold)}
   <div class="custom-list" id="customThemesList"></div>
  </section>
 
+ <!-- Tab 3: Add Avatar to Shop -->
  <section class="panel-scroll" id="avatarTab">
   <h3 style="color:var(--gold)">Shop වෙත නව Profile Avatar එකක් එක් කරන්න</h3>
   <div class="preview-box">
@@ -165,6 +173,17 @@ input:focus,select:focus{border-color:var(--gold)}
  </section>
 </div>
 
+<div class="modal" id="confirmModal">
+ <div class="modalbox">
+  <h3>තහවුරු කරන්න</h3>
+  <p id="confirmText" style="color:var(--dim);font-size:0.95rem"></p>
+  <div style="display:flex;gap:10px">
+   <button class="btn-danger" id="confirmYesBtn" style="flex:1">ඔව්, ඉවත් කරන්න</button>
+   <button class="btn" id="confirmNoBtn" style="flex:1">අවලංගු කරන්න</button>
+  </div>
+ </div>
+</div>
+
 <div id="toast"></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
@@ -188,6 +207,7 @@ let customAvatars=[];
 let isNavigating=false;
 let listenersAttached=false;
 let lastDbError='';
+let pendingDeleteAction=null;
 
 function toast(s, icon='fa-circle-info'){
  const t=$('toast');
@@ -198,6 +218,24 @@ function toast(s, icon='fa-circle-info'){
  t.classList.add('show');
  setTimeout(()=>t.classList.remove('show'),3000);
 }
+
+function askConfirm(message, onConfirm){
+ $('confirmText').textContent=message;
+ pendingDeleteAction=onConfirm;
+ $('confirmModal').classList.add('show');
+}
+$('confirmNoBtn').onclick=()=>{
+ $('confirmModal').classList.remove('show');
+ pendingDeleteAction=null;
+};
+$('confirmYesBtn').onclick=async()=>{
+ $('confirmModal').classList.remove('show');
+ if(typeof pendingDeleteAction==='function'){
+  const fn=pendingDeleteAction;
+  pendingDeleteAction=null;
+  await fn();
+ }
+};
 
 function smoothNavigate(url){
  if(isNavigating)return;
@@ -226,4 +264,373 @@ try{
 
 document.querySelectorAll('.tab-btn').forEach(btn=>{
  btn.onclick=()=>{
-  document.querySelectorAll('.tab-btn').forEach(b=>b
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.panel-scroll').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  $(btn.dataset.tab).classList.add('active');
+ };
+});
+
+function mergePlayers(){
+ const uids=new Set([...Object.keys(usersMap),...Object.keys(publicMap)]);
+ allPlayers=Array.from(uids).map(uid=>{
+  const u=usersMap[uid]||{};
+  const p=publicMap[uid]||{};
+  const merged={...p,...u};
+  return {
+   uid,
+   name:merged.name?String(merged.name):`Player_${uid.slice(0,5)}`,
+   points:Number.isFinite(Number(merged.points))?Number(merged.points):0,
+   wins:Number(merged.wins)||0,
+   losses:Number(merged.losses)||0,
+   avatarIcon:merged.avatarIcon?String(merged.avatarIcon):'fa-user'
+  };
+ });
+ $('playerCountLabel').textContent=`මුළු ක්‍රීඩකයන්: ${allPlayers.length}`;
+ renderPlayers();
+}
+
+async function updatePlayerCoins(uid, name, nextCoins){
+ if(!Number.isFinite(nextCoins)||nextCoins<0){
+  toast('නිවැරදි Coin අගයක් ඇතුළත් කරන්න.');
+  return false;
+ }
+ const cleanCoins=Math.floor(nextCoins);
+ try{
+  await db.ref('users_v6/'+uid).update({points:cleanCoins}).catch(()=>{});
+  await db.ref('publicProfiles_v6/'+uid).update({points:cleanCoins});
+  toast(`${name} ගේ Coins ${cleanCoins} ලෙස යාවත්කාලීන විය.`,'fa-circle-check');
+  return true;
+ }catch(err){
+  console.error(err);
+  toast('Coins යාවත්කාලීන කිරීමට නොහැකි විය: '+(err.message||''));
+  return false;
+ }
+}
+
+function renderPlayers(){
+ const q=($('playerSearch').value||'').trim().toLowerCase();
+ const list=$('playersList');
+ list.replaceChildren();
+
+ const filtered=allPlayers.filter(p=>p.name.toLowerCase().includes(q)||p.uid.toLowerCase().includes(q));
+ if(!filtered.length){
+  const empty=document.createElement('p');
+  empty.style.cssText='text-align:center;color:var(--dim);padding:20px;line-height:1.5';
+  empty.textContent=lastDbError
+   ? `දත්ත ලබාගැනීමේ දෝෂයක්: ${lastDbError}`
+   : 'ක්‍රීඩකයන් හමු නොවීය.';
+  list.appendChild(empty);
+  return;
+ }
+
+ filtered.forEach(p=>{
+  const card=document.createElement('div');
+  card.className='player-card';
+
+  const info=document.createElement('div');
+  info.className='player-info';
+
+  const avBox=document.createElement('div');
+  avBox.className='player-av';
+  const avIcon=document.createElement('i');
+  const safeAv=isSafeIconClass(p.avatarIcon)?p.avatarIcon:'fa-user';
+  avIcon.className=`fa-solid ${safeAv}`;
+  avBox.appendChild(avIcon);
+
+  const meta=document.createElement('div');
+  const nameEl=document.createElement('b');
+  nameEl.textContent=p.name;
+  const subEl=document.createElement('small');
+  subEl.textContent=`Coins: ${p.points} • Wins: ${p.wins} | Losses: ${p.losses}`;
+  meta.append(nameEl,subEl);
+  info.append(avBox,meta);
+
+  const actions=document.createElement('div');
+  actions.className='player-actions';
+
+  const minusBtn=document.createElement('button');
+  minusBtn.className='btn';
+  minusBtn.textContent='-50';
+  minusBtn.onclick=async()=>{
+   const next=Math.max(0,(Number(coinInp.value)||0)-50);
+   coinInp.value=next;
+   await updatePlayerCoins(p.uid,p.name,next);
+  };
+
+  const coinInp=document.createElement('input');
+  coinInp.type='number';
+  coinInp.className='coin-input';
+  coinInp.value=p.points;
+  coinInp.min='0';
+
+  const plusBtn=document.createElement('button');
+  plusBtn.className='btn';
+  plusBtn.textContent='+50';
+  plusBtn.onclick=async()=>{
+   const next=(Number(coinInp.value)||0)+50;
+   coinInp.value=next;
+   await updatePlayerCoins(p.uid,p.name,next);
+  };
+
+  const saveCoinBtn=document.createElement('button');
+  saveCoinBtn.className='btn-green';
+  saveCoinBtn.innerHTML='<i class="fa-solid fa-coins"></i> Save';
+  saveCoinBtn.onclick=async()=>{
+   await updatePlayerCoins(p.uid,p.name,Number(coinInp.value));
+  };
+
+  const delBtn=document.createElement('button');
+  delBtn.className='btn-danger';
+  delBtn.innerHTML='<i class="fa-solid fa-trash"></i> Remove';
+  delBtn.onclick=()=>{
+   askConfirm(`"${p.name}" ක්‍රීඩකයා Database එකෙන් ඉවත් කිරීමට අවශ්‍යද?`, async()=>{
+    try{
+     const lowerName=p.name.trim().toLowerCase();
+     await db.ref('users_v6/'+p.uid).remove().catch(()=>{});
+     await db.ref('publicProfiles_v6/'+p.uid).remove().catch(()=>{});
+     if(lowerName)await db.ref('usernameIndex_v6/'+lowerName).remove().catch(()=>{});
+     delete usersMap[p.uid];
+     delete publicMap[p.uid];
+     mergePlayers();
+     toast(`${p.name} ඉවත් කරන ලදී.`,'fa-trash');
+    }catch(err){
+     console.error(err);
+     toast('ක්‍රීඩකයා ඉවත් කිරීමට නොහැකි විය.');
+    }
+   });
+  };
+
+  actions.append(minusBtn,coinInp,plusBtn,saveCoinBtn,delBtn);
+  card.append(info,actions);
+  list.appendChild(card);
+ });
+}
+
+function normalizeItems(rawVal){
+ if(!rawVal)return [];
+ if(Array.isArray(rawVal)){
+  return rawVal
+   .map((item,idx)=>item&&typeof item==='object'?{...item,_dbKey:String(idx),_isArray:true}:null)
+   .filter(Boolean);
+ }
+ if(typeof rawVal==='object'){
+  return Object.entries(rawVal).map(([key,item])=>({...item,_dbKey:key,_isArray:false}));
+ }
+ return [];
+}
+
+function updateThemePreview(){
+ const prev=$('themePreview');
+ const icon=$('themeIcon').value.trim()||'♛';
+ const bg=isSafeColor($('themeBg').value)?$('themeBg').value:'#2ecc71';
+ const border=isSafeColor($('themeBorder').value)?$('themeBorder').value:'#ffd166';
+ const color=isSafeColor($('themeColor').value)?$('themeColor').value:'#ffffff';
+ prev.textContent=icon;
+ prev.style.background=bg;
+ prev.style.border=`3px solid ${border}`;
+ prev.style.color=color;
+}
+['themeIcon','themeBg','themeBorder','themeColor'].forEach(id=>$(id).addEventListener('input',updateThemePreview));
+updateThemePreview();
+
+$('addThemeBtn').onclick=async()=>{
+ if(!db)return toast('Firebase සම්බන්ධතාවය නොමැත.');
+ const name=$('themeName').value.trim();
+ const price=Number($('themePrice').value);
+ const icon=$('themeIcon').value.trim()||'♛';
+ const bg=isSafeColor($('themeBg').value)?$('themeBg').value:'#2ecc71';
+ const border=isSafeColor($('themeBorder').value)?$('themeBorder').value:'#ffd166';
+ const color=isSafeColor($('themeColor').value)?$('themeColor').value:'#ffffff';
+
+ if(!name)return toast('කරුණාකර Theme නම ඇතුළත් කරන්න.');
+ if(!Number.isFinite(price)||price<0)return toast('නිවැරදි මිලක් ඇතුළත් කරන්න.');
+
+ const newTheme={id:'custom_piece_'+Date.now(),name,price:Math.floor(price),icon,bg,border,color};
+ try{
+  await db.ref('shopConfig_v6/customPieces').push(newTheme);
+  $('themeName').value='';
+  toast(`"${name}" Theme එක Shop එකට එක් කරන ලදී!`,'fa-circle-check');
+ }catch(err){
+  console.error(err);
+  toast('Theme එක එක් කිරීමට නොහැකි විය: '+(err.message||''));
+ }
+};
+
+function updateAvatarPreview(){
+ const prev=$('avatarPreview');
+ const rawIcon=($('avatarIcon').value.trim()||'fa-crown').replace(/^fa-solid\s+/,'');
+ const iconClass=isSafeIconClass(rawIcon)?rawIcon:'fa-crown';
+ prev.replaceChildren();
+ const iEl=document.createElement('i');
+ iEl.className=`fa-solid ${iconClass}`;
+ prev.appendChild(iEl);
+}
+$('avatarIcon').addEventListener('input',updateAvatarPreview);
+updateAvatarPreview();
+
+$('addAvatarBtn').onclick=async()=>{
+ if(!db)return toast('Firebase සම්බන්ධතාවය නොමැත.');
+ const name=$('avatarName').value.trim();
+ const price=Number($('avatarPrice').value);
+ const rawIcon=($('avatarIcon').value.trim()||'fa-crown').replace(/^fa-solid\s+/,'');
+ const iconClass=isSafeIconClass(rawIcon)?rawIcon:'fa-crown';
+
+ if(!name)return toast('කරුණාකර Avatar නම ඇතුළත් කරන්න.');
+ if(!Number.isFinite(price)||price<0)return toast('නිවැරදි මිලක් ඇතුළත් කරන්න.');
+
+ const newAvatar={id:iconClass,name,price:Math.floor(price),icon:iconClass};
+ try{
+  await db.ref('shopConfig_v6/customAvatars').push(newAvatar);
+  $('avatarName').value='';
+  toast(`"${name}" Avatar එක Shop එකට එක් කරන ලදී!`,'fa-circle-check');
+ }catch(err){
+  console.error(err);
+  toast('Avatar එක එක් කිරීමට නොහැකි විය: '+(err.message||''));
+ }
+};
+
+async function deleteCustomItem(path, item){
+ if(!db||!item)return;
+ if(item._isArray){
+  const listName=path.endsWith('customPieces')?customPieces:customAvatars;
+  const filtered=listName.filter(x=>x._dbKey!==item._dbKey).map(({_dbKey,_isArray,...rest})=>rest);
+  await db.ref(path).set(filtered);
+ }else{
+  await db.ref(`${path}/${item._dbKey}`).remove();
+ }
+}
+
+function renderCustomLists(){
+ const tList=$('customThemesList');
+ tList.replaceChildren();
+ customPieces.forEach(t=>{
+  const div=document.createElement('div');
+  div.className='custom-item';
+
+  const left=document.createElement('div');
+  left.className='custom-item-left';
+
+  const swatch=document.createElement('div');
+  swatch.style.cssText='width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:0.85rem;flex-shrink:0';
+  swatch.style.background=isSafeColor(t.bg)?t.bg:'#2ecc71';
+  swatch.style.border=`2px solid ${isSafeColor(t.border)?t.border:'#ffd166'}`;
+  swatch.style.color=isSafeColor(t.color)?t.color:'#ffffff';
+  swatch.textContent=t.icon||'♛';
+
+  const label=document.createElement('span');
+  label.textContent=`${t.name||'Theme'} (${t.price||0})`;
+  left.append(swatch,label);
+
+  const delBtn=document.createElement('button');
+  delBtn.className='btn-danger';
+  delBtn.style.padding='5px 8px';
+  delBtn.title='Delete';
+  delBtn.innerHTML='<i class="fa-solid fa-xmark"></i>';
+  delBtn.onclick=async()=>{
+   try{
+    await deleteCustomItem('shopConfig_v6/customPieces',t);
+    toast('Theme ඉවත් කරන ලදී.');
+   }catch(err){
+    toast('ඉවත් කිරීමට නොහැකි විය.');
+   }
+  };
+
+  div.append(left,delBtn);
+  tList.appendChild(div);
+ });
+
+ const aList=$('customAvatarsList');
+ aList.replaceChildren();
+ customAvatars.forEach(a=>{
+  const div=document.createElement('div');
+  div.className='custom-item';
+
+  const left=document.createElement('div');
+  left.className='custom-item-left';
+
+  const badge=document.createElement('div');
+  badge.style.cssText='width:28px;height:28px;border-radius:50%;background:rgba(255,209,102,0.14);border:1.5px solid var(--gold);color:var(--gold);display:grid;place-items:center;font-size:0.85rem;flex-shrink:0';
+  const iconEl=document.createElement('i');
+  const safeIcon=isSafeIconClass(a.icon||a.id)?(a.icon||a.id):'fa-crown';
+  iconEl.className=`fa-solid ${safeIcon}`;
+  badge.appendChild(iconEl);
+
+  const label=document.createElement('span');
+  label.textContent=`${a.name||'Avatar'} (${a.price||0})`;
+  left.append(badge,label);
+
+  const delBtn=document.createElement('button');
+  delBtn.className='btn-danger';
+  delBtn.style.padding='5px 8px';
+  delBtn.title='Delete';
+  delBtn.innerHTML='<i class="fa-solid fa-xmark"></i>';
+  delBtn.onclick=async()=>{
+   try{
+    await deleteCustomItem('shopConfig_v6/customAvatars',a);
+    toast('Avatar ඉවත් කරන ලදී.');
+   }catch(err){
+    toast('ඉවත් කිරීමට නොහැකි විය.');
+   }
+  };
+
+  div.append(left,delBtn);
+  aList.appendChild(div);
+ });
+}
+
+function attachListeners(){
+ if(!db||listenersAttached)return;
+ listenersAttached=true;
+
+ db.ref('users_v6').on('value',snap=>{
+  lastDbError='';
+  usersMap=snap.val()||{};
+  mergePlayers();
+ },err=>{
+  console.error('users_v6 error:',err);
+  if(!Object.keys(publicMap).length)lastDbError=err.message||'Permission denied';
+  mergePlayers();
+ });
+
+ db.ref('publicProfiles_v6').on('value',snap=>{
+  publicMap=snap.val()||{};
+  if(Object.keys(publicMap).length)lastDbError='';
+  mergePlayers();
+ },err=>{
+  console.error('publicProfiles_v6 error:',err);
+ });
+
+ db.ref('shopConfig_v6/customPieces').on('value',snap=>{
+  customPieces=normalizeItems(snap.val());
+  renderCustomLists();
+ },err=>{
+  console.error('customPieces error:',err);
+ });
+
+ db.ref('shopConfig_v6/customAvatars').on('value',snap=>{
+  customAvatars=normalizeItems(snap.val());
+  renderCustomLists();
+ },err=>{
+  console.error('customAvatars error:',err);
+ });
+}
+
+if(auth){
+ auth.onAuthStateChanged(()=>{
+  attachListeners();
+ });
+}else{
+ attachListeners();
+}
+
+$('playerSearch').addEventListener('input',renderPlayers);
+$('refreshPlayersBtn').onclick=()=>{renderPlayers();toast('ක්‍රීඩක ලැයිස්තුව Refresh විය.','fa-rotate');};
+$('goShopBtn').onclick=()=>smoothNavigate('shopandreward.html');
+$('exitAdminBtn').onclick=()=>{
+ sessionStorage.removeItem('sinhala_draughts_admin_auth');
+ smoothNavigate('index.html');
+};
+</script>
+</body>
+</html>
