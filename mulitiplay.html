@@ -356,12 +356,14 @@ $('cancelWaitBtn').onclick=async()=>{
  toast('රැඳී සිටීම අවලංගු කරන ලදී.');
 };
 
-function listenForRoomStart(roomId, roomBet, role='host'){
+function listenForRoomStart(roomId, roomBet, role='host', onlyIfActive=false){
  if(!db||!roomId)return;
  stopWaitingRoom();
- pendingRoomId=roomId;
- $('waitingStatus').classList.add('show');
- $('waitingText').textContent='Invite යවන ලදී — ප්‍රතිවාදියා Accept කරන තෙක් රැඳී සිටී...';
+ if(!onlyIfActive){
+  pendingRoomId=roomId;
+  $('waitingStatus').classList.add('show');
+  $('waitingText').textContent='Invite යවන ලදී — ප්‍රතිවාදියා Accept කරන තෙක් රැඳී සිටී...';
+ }
 
  currentRoomListenerRef=db.ref(`rooms_v6/${roomId}`);
  currentRoomListenerRef.on('value',snap=>{
@@ -369,7 +371,9 @@ function listenForRoomStart(roomId, roomBet, role='host'){
   if(!room)return;
   if(room.status==='declined' || room.status==='cancelled'){
    stopWaitingRoom();
-   toast('තරඟ ආරාධනාව අවලංගු / ප්‍රතික්ෂේප විය.','fa-circle-xmark');
+   if(!onlyIfActive){
+    toast('තරඟ ආරාධනාව අවලංගු / ප්‍රතික්ෂේප විය.','fa-circle-xmark');
+   }
    return;
   }
   if(room.status==='accepted' || room.status==='active'){
@@ -440,7 +444,7 @@ async function sendGameInvite(targetPlayer, btnEl){
    `mulitiplay.html?bet=${encodeURIComponent(bet)}`
   );
 
-  listenForRoomStart(roomId, bet, 'host');
+  listenForRoomStart(roomId, bet, 'host', false);
  }catch(err){
   console.error('Send invite error:',err);
   toast('Invite යැවීමට නොහැකි විය: '+(err.message||''));
@@ -448,7 +452,7 @@ async function sendGameInvite(targetPlayer, btnEl){
   setTimeout(()=>{
    btnEl.disabled=false;
    btnEl.innerHTML=originalHtml;
-  },1200);
+  },1000);
  }
 }
 
@@ -544,18 +548,13 @@ function bindUserInviteListener(uid){
  invitesListenerRef.on('value',snap=>{
   const map=snap.val()||{};
   const now=Date.now();
-  let foundPending=null;
+  const pendingList=Object.entries(map)
+   .filter(([invId,inv])=>inv && inv.status==='pending' && (now-(Number(inv.createdAt)||0)<=INVITE_MAX_AGE_MS) && !dismissedInviteIds.has(invId))
+   .sort((a,b)=>(Number(b[1].createdAt)||0)-(Number(a[1].createdAt)||0));
 
-  for(const [invId,inv] of Object.entries(map)){
-   if(!inv||inv.status!=='pending')continue;
-   if(now-(Number(inv.createdAt)||0)>INVITE_MAX_AGE_MS)continue;
-   if(dismissedInviteIds.has(invId))continue;
-   foundPending={inviteId:invId,...inv};
-   break;
-  }
-
-  if(foundPending){
-   showIncomingInvite(foundPending.inviteId, foundPending);
+  if(pendingList.length>0){
+   const [topId,topInv]=pendingList[0];
+   showIncomingInvite(topId, topInv);
   }else if(activeIncomingInvite){
    const currentStillPending=map[activeIncomingInvite.inviteId] && map[activeIncomingInvite.inviteId].status==='pending';
    if(!currentStillPending){
@@ -566,14 +565,18 @@ function bindUserInviteListener(uid){
 }
 
 if(auth){
- auth.onAuthStateChanged(u=>{
+ auth.onAuthStateChanged(async u=>{
   fbUser=u;
   bindPublicProfilesListener();
   if(u){
+   try{
+    const uSnap=await db.ref(`users_v6/${u.uid}/name`).once('value');
+    if(uSnap.exists() && uSnap.val())myProfile.name=String(uSnap.val());
+   }catch(_){}
    registerFcmToken();
    bindUserInviteListener(u.uid);
    if(autoRoomId){
-    listenForRoomStart(autoRoomId, bet, 'guest');
+    listenForRoomStart(autoRoomId, bet, 'guest', true);
    }
   }else{
    cleanupListeners();
