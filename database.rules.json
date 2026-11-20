@@ -1,0 +1,10 @@
+"fcmTokens_v6": {
+  "$uid": {
+    ".read": "auth != null && auth.uid === $uid",
+    ".write": "auth != null && auth.uid === $uid"
+  }
+},
+"fcmPushQueue_v6": {
+  ".read": false,
+  ".write": "auth != null"
+}
