@@ -60,13 +60,6 @@ input:focus{border-color:var(--gold)}
 .btn{background:rgba(255,255,255,0.1);color:white;border:1px solid rgba(255,255,255,0.2)}
 .btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;box-shadow:0 4px 15px rgba(255,173,98,0.4)}
 .row{display:flex;gap:10px;align-items:center}
-.pieces-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px;max-height:220px;overflow-y:auto;padding:4px}
-.piece-option{background:rgba(255,255,255,0.04);border:2px solid rgba(255,255,255,0.1);border-radius:12px;padding:8px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;position:relative}
-.piece-option.selected{border-color:var(--gold);background:rgba(255,209,102,0.2)}
-.piece-option.locked{opacity:0.45;cursor:pointer}
-.profile-section-head{display:flex;align-items:center;justify-content:space-between;margin-top:4px}
-.profile-section-head p{font-size:0.85rem;color:var(--dim)}
-.profile-shop-link{background:none;border:0;color:var(--gold);font-size:0.78rem;font-weight:700;cursor:pointer;text-decoration:underline}
 
 #toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,120px);opacity:0;background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--gold);color:#f8f9fa;border-radius:30px;padding:10px 20px;z-index:150;transition:.25s ease;font-weight:600;display:flex;align-items:center;gap:8px;font-size:0.9rem}
 #toast.show{transform:translate(-50%,0);opacity:1}
@@ -106,7 +99,7 @@ input:focus{border-color:var(--gold)}
  <footer class="bottom-nav" id="bottomNav">
   <a class="nav-item active" href="index.html" data-nav="index.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
   <a class="nav-item" href="friends.html" data-nav="friends.html"><i class="fa-solid fa-user-group"></i><span>Friends</span></a>
-  <button class="nav-item" id="navProfile"><i class="fa-solid fa-circle-user"></i><span>Profile</span></button>
+  <a class="nav-item" href="profile.html" id="navProfile" data-nav="profile.html"><i class="fa-solid fa-circle-user"></i><span>Profile</span></a>
   <a class="nav-item" href="shopandreward.html" data-nav="shopandreward.html"><i class="fa-solid fa-trophy"></i><span>Events</span></a>
   <a class="nav-item" href="shopandreward.html" data-nav="shopandreward.html"><i class="fa-solid fa-cart-shopping"></i><span>Shop</span></a>
  </footer>
@@ -120,32 +113,6 @@ input:focus{border-color:var(--gold)}
   <div class="row">
    <button class="btn-gold" id="startSingleGame" style="flex:1">ක්‍රීඩාව අරඹන්න</button>
    <button class="btn" id="closeSingleBet" style="flex:1">අවලංගු කරන්න</button>
-  </div>
- </div>
-</div>
-
-<div class="modal" id="profileModal">
- <div class="modalbox">
-  <div class="row"><h3 style="flex:1">PLAYER PROFILE</h3><button class="btn" id="closeProfile">×</button></div>
-  <div style="text-align:center;padding:10px;background:rgba(0,0,0,0.3);border-radius:14px">
-   <div id="profileAvatar" style="width:64px;height:64px;margin:0 auto 6px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe08a,#ffad62);color:#18213e;font-size:1.8rem;border:3px solid var(--gold)"></div>
-   <h2 id="profileName">ක්‍රීඩකයා</h2>
-   <small id="profileStats" style="color:var(--dim)">Wins: 0 | Losses: 0</small>
-   <div id="profileOwnedSummary" style="margin-top:6px;font-size:0.75rem;color:var(--neon-green)">Unlocked Avatars: 1 | Unlocked Themes: 1</div>
-  </div>
-  <div class="profile-section-head">
-   <p>මිලදී ගත් / ඇති Avatars:</p>
-   <button type="button" class="profile-shop-link" id="goShopFromAvatars">+ Shop</button>
-  </div>
-  <div class="pieces-grid" id="avatarGrid"></div>
-  <div class="profile-section-head">
-   <p>මිලදී ගත් / ඇති ඉත්තන්ගේ Themes:</p>
-   <button type="button" class="profile-shop-link" id="goShopFromPieces">+ Shop</button>
-  </div>
-  <div class="pieces-grid" id="piecesGrid"></div>
-  <div class="row" style="margin-top:6px">
-   <button class="btn-gold" id="saveProfile" style="flex:1">සුරකින්න (Save)</button>
-   <button class="btn" id="logoutBtn" style="flex:1;border-color:var(--red);color:var(--red)">Logout</button>
   </div>
  </div>
 </div>
@@ -186,7 +153,6 @@ const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user';
 let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user',unlockedAvatars:['fa-user']};
 let isNavigating=false;
 let customPieces=[];
-let customAvatars=[];
 let userRefListener=null;
 
 const DEFAULT_PIECE_DESIGNS=[
@@ -212,28 +178,6 @@ const DEFAULT_PIECE_DESIGNS=[
  {id:19,name:'අමරණීය අඳුර',bg:'radial-gradient(circle at 30% 30%,#2c3e50,#000000)',border:'#ffd166',color:'#ffd166',icon:'♔'}
 ];
 
-const DEFAULT_AVATARS=[
- {id:'fa-user',name:'සම්මත (Default)',icon:'fa-user'},
- {id:'fa-chess-knight',name:'චෙස් නයිට්',icon:'fa-chess-knight'},
- {id:'fa-dragon',name:'ගිනියම් ඩ්‍රැගන්',icon:'fa-dragon'},
- {id:'fa-robot',name:'රොබෝ යන්ත්‍රය',icon:'fa-robot'},
- {id:'fa-ghost',name:'අපූර්ව හොල්මන',icon:'fa-ghost'},
- {id:'fa-shield-halved',name:'රජකීය පලිහ',icon:'fa-shield-halved'},
- {id:'fa-crown',name:'රජකීය ඔටුන්න',icon:'fa-crown'},
- {id:'fa-fire',name:'මහා ගින්න',icon:'fa-fire'},
- {id:'fa-bolt',name:'අකුණු සැණැල්ල',icon:'fa-bolt'},
- {id:'fa-skull',name:'හිස්කබල',icon:'fa-skull'},
- {id:'fa-star',name:'රන් තරුව',icon:'fa-star'},
- {id:'fa-gem',name:'දියමන්ති මැණික',icon:'fa-gem'},
- {id:'fa-fighter-jet',name:'ජෙට් යානය',icon:'fa-fighter-jet'},
- {id:'fa-meteor',name:'උල්කාපාතය',icon:'fa-meteor'},
- {id:'fa-cat',name:'කූට බළලා',icon:'fa-cat'},
- {id:'fa-dog',name:'බල්ලා',icon:'fa-dog'},
- {id:'fa-paw',name:'සිංහ පාදය',icon:'fa-paw'},
- {id:'fa-crosshairs',name:'ඉලක්කය',icon:'fa-crosshairs'},
- {id:'fa-hat-wizard',name:'මායාකාරයා',icon:'fa-hat-wizard'}
-];
-
 function normalizeList(val, fallback) {
  if (Array.isArray(val)) return val.length ? val : fallback;
  if (val && typeof val === 'object') {
@@ -244,7 +188,6 @@ function normalizeList(val, fallback) {
 }
 
 function getAllPieces(){return [...DEFAULT_PIECE_DESIGNS,...customPieces];}
-function getAllAvatars(){return [...DEFAULT_AVATARS,...customAvatars];}
 
 function toast(s, icon='fa-circle-info'){
  const t=$('toast');
@@ -310,13 +253,6 @@ function attachShopListeners(){
   const val=snap.val();
   customPieces=Array.isArray(val)?val.filter(Boolean):(val&&typeof val==='object'?Object.values(val).filter(Boolean):[]);
   updateHeader();
-  if($('profileModal').classList.contains('show'))renderProfileItems();
- },()=>{});
- db.ref('shopConfig_v6/customAvatars').on('value',snap=>{
-  const val=snap.val();
-  customAvatars=Array.isArray(val)?val.filter(Boolean):(val&&typeof val==='object'?Object.values(val).filter(Boolean):[]);
-  updateHeader();
-  if($('profileModal').classList.contains('show'))renderProfileItems();
  },()=>{});
 }
 
@@ -345,11 +281,6 @@ function attachLiveUserListener(uid){
   };
   localStorage.setItem(KEY,JSON.stringify(user));
   updateHeader();
-  if($('profileModal').classList.contains('show')){
-   if(!user.unlockedAvatars.includes(tempSelectedAvatar)) tempSelectedAvatar=user.avatarIcon||'fa-user';
-   if(!user.unlockedPieces.includes(Number(tempSelectedPiece))) tempSelectedPiece=Number(user.pieceIndex)||0;
-   renderProfileItems();
-  }
  };
  ref.on('value',fn);
  userRefListener={ref,fn};
@@ -538,119 +469,13 @@ $('register').onclick=async()=>{
  }
 };
 
-let tempSelectedPiece=0;
-let tempSelectedAvatar='fa-user';
-
-function renderProfileItems(){
- const aGrid=$('avatarGrid');
- aGrid.innerHTML='';
- const unlockedAvatars = normalizeList(user.unlockedAvatars, ['fa-user']).map(String);
- const allAvatars = getAllAvatars();
-
- allAvatars.forEach(av => {
-  const avId = String(av.id);
-  const isUnlocked = unlockedAvatars.includes(avId);
-  const isEquipped = avId === (user.avatarIcon || 'fa-user');
-  const avDiv = document.createElement('div');
-  avDiv.className = 'piece-option' + (avId === tempSelectedAvatar ? ' selected' : '') + (isUnlocked ? '' : ' locked');
-  const statusLabel = !isUnlocked ? 'Locked' : (isEquipped ? 'Equipped' : 'Unlocked');
-  const statusColor = !isUnlocked ? 'var(--red)' : (isEquipped ? 'var(--gold)' : 'var(--neon-green)');
-  avDiv.innerHTML = `<div style="font-size:1.4rem;color:var(--gold);padding:6px;"><i class="fa-solid ${av.icon}"></i></div><span style="font-size:0.6rem;text-align:center">${av.name}</span><small style="font-size:0.5rem;color:${statusColor}">${statusLabel}</small>`;
-  avDiv.onclick = () => {
-   if(!isUnlocked){
-    toast('මෙම Avatar එක Shop වෙතින් මිලදී ගන්න!');
-    return;
-   }
-   tempSelectedAvatar = avId;
-   renderProfileItems();
-  };
-  aGrid.appendChild(avDiv);
- });
-
- const grid=$('piecesGrid');
- grid.innerHTML='';
- const unlockedPieces = normalizeList(user.unlockedPieces, [0]).map(Number);
- const allPieces = getAllPieces();
-
- allPieces.forEach((p,idx)=>{
-  const pIdx = Number(idx);
-  const isUnlocked = unlockedPieces.includes(pIdx);
-  const isEquipped = pIdx === (Number(user.pieceIndex) || 0);
-  const div=document.createElement('div');
-  div.className='piece-option'+(pIdx===Number(tempSelectedPiece)?' selected':'')+(isUnlocked?'':' locked');
-  const statusLabel = !isUnlocked ? 'Locked' : (isEquipped ? 'Equipped' : 'Unlocked');
-  const statusColor = !isUnlocked ? 'var(--red)' : (isEquipped ? 'var(--gold)' : 'var(--neon-green)');
-  div.innerHTML=`<div style="width:28px;height:28px;border-radius:50%;background:${p.bg};border:2px solid ${p.border};color:${p.color};display:grid;place-items:center;font-size:0.9rem">${p.icon}</div><span style="font-size:0.6rem;text-align:center">${p.name}</span><small style="font-size:0.5rem;color:${statusColor}">${statusLabel}</small>`;
-  div.onclick=()=>{
-   if(!isUnlocked){
-    toast('මෙම Theme එක Shop වෙතින් මිලදී ගන්න!');
-    return;
-   }
-   tempSelectedPiece=pIdx;
-   renderProfileItems();
-  };
-  grid.appendChild(div);
- });
-
- $('profileOwnedSummary').textContent=`Unlocked Avatars: ${unlockedAvatars.length}/${allAvatars.length} | Unlocked Themes: ${unlockedPieces.length}/${allPieces.length}`;
- applyAvatarToBox('profileAvatar', tempSelectedPiece, tempSelectedAvatar);
- $('profileName').textContent=user.name||'ක්‍රීඩකයා';
- $('profileStats').textContent=`Wins: ${user.wins||0} | Losses: ${user.losses||0}`;
-}
-
-$('openProfile').onclick=async()=>{
+function openProfilePage(){
  if(!fbUser && !user.uid){
   modal('authModal',true);
   return;
  }
- if(db && fbUser){
-  try{
-   const s=await db.ref('users_v6/'+fbUser.uid).once('value');
-   const d=s.val();
-   if(d){
-    user={
-     ...user,
-     ...d,
-     points:Number.isFinite(Number(d.points))?Number(d.points):user.points,
-     pieceIndex:Number(d.pieceIndex)||0,
-     unlockedPieces:normalizeList(d.unlockedPieces,[0]).map(Number),
-     avatarIcon:d.avatarIcon||'fa-user',
-     unlockedAvatars:normalizeList(d.unlockedAvatars,['fa-user']).map(String)
-    };
-    localStorage.setItem(KEY,JSON.stringify(user));
-    updateHeader();
-   }
-  }catch(e){}
- }
- tempSelectedPiece=Number(user.pieceIndex)||0;
- tempSelectedAvatar=user.avatarIcon||'fa-user';
- renderProfileItems();
- modal('profileModal',true);
-};
-
-$('closeProfile').onclick=()=>modal('profileModal',false);
-$('goShopFromAvatars').onclick=()=>{modal('profileModal',false);smoothNavigate('shopandreward.html');};
-$('goShopFromPieces').onclick=()=>{modal('profileModal',false);smoothNavigate('shopandreward.html');};
-
-$('saveProfile').onclick=()=>{
- user.pieceIndex=Number(tempSelectedPiece)||0;
- user.avatarIcon=tempSelectedAvatar||'fa-user';
- saveUser();
- modal('profileModal',false);
- toast('තෝරාගත් ඉත්තා සහ Avatar සුරකින ලදී!','fa-circle-check');
-};
-
-$('logoutBtn').onclick=async()=>{
- if(!auth)return;
- modal('profileModal',false);
- localStorage.removeItem(KEY);
- sessionStorage.removeItem('sinhala_draughts_admin_auth');
- user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user',unlockedAvatars:['fa-user']};
- updateHeader();
- await auth.signOut();
- modal('authModal',true);
- toast('ගිණුමෙන් ඉවත් විය.');
-};
+ smoothNavigate('profile.html');
+}
 
 function launchArena(params) {
  saveUser();
@@ -708,7 +533,7 @@ document.querySelectorAll('a.nav-item[href]').forEach(link => {
 
 $('collectRewards').onclick=()=>smoothNavigate('shopandreward.html');
 $('coinShop').onclick=()=>smoothNavigate('shopandreward.html');
-$('navProfile').onclick=()=>$('openProfile').click();
+$('openProfile').onclick=openProfilePage;
 </script>
 
 <script src="./invite-global.js"></script>
