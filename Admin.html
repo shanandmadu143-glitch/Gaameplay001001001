@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ශ්‍රී ලංකීය දාම් - Admin Control Panel</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Gemunu+Libre:wght@400;600;700;800&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#05070e;--panel:rgba(14,20,38,.92);--gold:#ffd166;--neon-blue:#00f2fe;--neon-green:#2ecc71;--red:#ff4757;--dim:#a0aec0}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Gemunu Libre','Poppins',sans-serif;user-select:none;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;background:radial-gradient(circle at 50% 15%,#1a103c 0%,#080b18 65%,#03050a 100%);color:#f8f9fa;overflow:hidden}
+body{min-height:100dvh;display:flex;flex-direction:column;align-items:center}
+
+.admin-app{width:100%;height:100dvh;max-width:860px;margin:0 auto;padding:14px;display:flex;flex-direction:column;gap:12px;overflow:hidden;opacity:1;transform:scale(1);transition:opacity 0.16s ease-out,transform 0.16s ease-out}
+.admin-app.page-leaving{opacity:0;transform:scale(0.985)}
+
+.admin-header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 18px;background:linear-gradient(135deg,rgba(22,30,56,0.95),rgba(10,14,28,0.95));border:2px solid rgba(255,209,102,0.45);border-radius:22px;box-shadow:0 8px 25px rgba(0,0,0,0.6);backdrop-filter:blur(10px)}
+.admin-brand{display:flex;align-items:center;gap:12px}
+.admin-badge{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffd166,#ff9f1a);color:#111;font-size:1.3rem;box-shadow:0 0 15px rgba(255,209,102,0.5)}
+.admin-brand b{font-size:1.15rem;color:var(--gold);display:block;line-height:1.15}
+.admin-brand small{font-size:0.75rem;color:var(--dim)}
+
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;background:rgba(14,20,38,0.9);padding:6px;border-radius:18px;border:1.5px solid rgba(255,209,102,0.25)}
+.tab-btn{border:0;border-radius:13px;padding:9px 8px;background:transparent;color:var(--dim);font-weight:700;font-size:0.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.18s ease}
+.tab-btn.active{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;box-shadow:0 4px 14px rgba(255,173,98,0.35)}
+
+.panel-scroll{flex:1;overflow-y:auto;padding:14px;background:linear-gradient(145deg,rgba(18,24,40,0.88),rgba(12,16,28,0.92));border:2px solid rgba(255,209,102,0.22);border-radius:24px;box-shadow:0 10px 30px rgba(0,0,0,0.5);display:none;flex-direction:column;gap:12px}
+.panel-scroll.active{display:flex}
+
+.search-bar{display:flex;gap:8px;align-items:center}
+input,select{width:100%;padding:10px 13px;background:rgba(0,0,0,0.55);border:1.5px solid rgba(255,209,102,0.35);border-radius:12px;color:#fff;font-size:0.9rem;outline:none}
+input:focus,select:focus{border-color:var(--gold)}
+
+.player-card{background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,209,102,0.2);border-radius:18px;padding:12px 14px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}
+.player-info{display:flex;align-items:center;gap:12px;min-width:160px}
+.player-av{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(255,209,102,0.14);border:2px solid var(--gold);color:var(--gold);font-size:1.15rem}
+.player-info b{font-size:1rem;color:#fff;display:block}
+.player-info small{font-size:0.75rem;color:var(--dim)}
+
+.player-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.coin-input{width:105px !important;padding:7px 10px !important;font-size:0.88rem !important;font-weight:700;color:var(--gold) !important}
+
+.btn,.btn-gold,.btn-danger,.btn-green{border:0;border-radius:11px;padding:8px 12px;cursor:pointer;font-weight:700;font-size:0.82rem;display:inline-flex;align-items:center;gap:6px;justify-content:center;transition:transform 0.12s ease}
+.btn:active,.btn-gold:active,.btn-danger:active,.btn-green:active{transform:scale(0.96)}
+.btn{background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2)}
+.btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111}
+.btn-green{background:linear-gradient(135deg,#2ecc71,#20b863);color:#0b1910}
+.btn-danger{background:linear-gradient(135deg,#ff4757,#c0392b);color:#fff}
+
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-group label{font-size:0.78rem;color:var(--dim)}
+
+.preview-box{background:rgba(0,0,0,0.35);border:1.5px dashed rgba(255,209,102,0.4);border-radius:18px;padding:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+.piece-sample{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;font-size:1.5rem;box-shadow:0 6px 18px rgba(0,0,0,0.6)}
+
+.custom-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-top:6px}
+.custom-item{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.14);border-radius:14px;padding:10px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.custom-item-left{display:flex;align-items:center;gap:8px;min-width:0}
+.custom-item-left span{font-size:0.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+#toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,120px);opacity:0;background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--gold);color:#f8f9fa;border-radius:30px;padding:10px 20px;z-index:150;transition:.25s ease;font-weight:600;display:flex;align-items:center;gap:8px;font-size:0.9rem}
+#toast.show{transform:translate(-50%,0);opacity:1}
+
+@media (max-width: 560px) {
+  .form-grid{grid-template-columns:1fr}
+  .tabs .tab-btn span{font-size:0.74rem}
+}
+</style>
+</head>
+<body>
+<div class="admin-app" id="adminRoot">
+ <div class="admin-header">
+  <div class="admin-brand">
+   <div class="admin-badge"><i class="fa-solid fa-user-shield"></i></div>
+   <div>
+    <b>ADMIN PANEL</b>
+    <small id="playerCountLabel">ක්‍රීඩකයන් පූරණය වෙමින්...</small>
+   </div>
+  </div>
+  <div style="display:flex;gap:8px">
+   <button class="btn" id="goShopBtn"><i class="fa-solid fa-store"></i> Shop</button>
+   <button class="btn" id="exitAdminBtn"><i class="fa-solid fa-right-from-bracket"></i> Lobby</button>
+  </div>
+ </div>
+
+ <div class="tabs">
+  <button class="tab-btn active" data-tab="playersTab"><i class="fa-solid fa-users-gear"></i><span>ක්‍රීඩකයන් & Coins</span></button>
+  <button class="tab-btn" data-tab="themeTab"><i class="fa-solid fa-chess-board"></i><span>+ Piece Theme</span></button>
+  <button class="tab-btn" data-tab="avatarTab"><i class="fa-solid fa-id-badge"></i><span>+ Avatar</span></button>
+ </div>
+
+ <!-- Tab 1: Players Management -->
+ <section class="panel-scroll active" id="playersTab">
+  <div class="search-bar">
+   <input type="text" id="playerSearch" placeholder="ක්‍රීඩකයාගේ නම සොයන්න...">
+   <button class="btn" id="refreshPlayersBtn" title="Refresh"><i class="fa-solid fa-rotate"></i></button>
+  </div>
+  <div id="playersList" style="display:flex;flex-direction:column;gap:10px">
+   <p style="text-align:center;color:var(--dim);padding:20px">දත්ත ලබාගනිමින් පවතී...</p>
+  </div>
+ </section>
+
+ <!-- Tab 2: Add Piece Theme to Shop -->
+ <section class="panel-scroll" id="themeTab">
+  <h3 style="color:var(--gold)">Shop වෙත නව දාම් ඉත්තන්ගේ Theme එකක් එක් කරන්න</h3>
+  <div class="preview-box">
+   <div class="piece-sample" id="themePreview">♛</div>
+   <small style="color:var(--dim)">Shop & Profile Preview</small>
+  </div>
+  <div class="form-grid">
+   <div class="form-group">
+    <label>Theme නම</label>
+    <input type="text" id="themeName" placeholder="උදා: Royal Emerald">
+   </div>
+   <div class="form-group">
+    <label>මිල (Coins / Points)</label>
+    <input type="number" id="themePrice" min="0" value="250">
+   </div>
+   <div class="form-group">
+    <label>සංකේතය (Icon / Emoji)</label>
+    <input type="text" id="themeIcon" value="♛" maxlength="4">
+   </div>
+   <div class="form-group">
+    <label>පසුබිම් වර්ණය (Background)</label>
+    <input type="color" id="themeBg" value="#2ecc71">
+   </div>
+   <div class="form-group">
+    <label>දාරයේ වර්ණය (Border)</label>
+    <input type="color" id="themeBorder" value="#ffd166">
+   </div>
+   <div class="form-group">
+    <label>අකුරු/සංකේත වර්ණය (Color)</label>
+    <input type="color" id="themeColor" value="#ffffff">
+   </div>
+  </div>
+  <button class="btn-gold" id="addThemeBtn" style="padding:12px"><i class="fa-solid fa-plus-circle"></i> Shop එකට Theme එක එක් කරන්න</button>
+
+  <h4 style="color:var(--gold);margin-top:8px">එකතු කළ Custom Themes:</h4>
+  <div class="custom-list" id="customThemesList"></div>
+ </section>
+
+ <!-- Tab 3: Add Avatar to Shop -->
+ <section class="panel-scroll" id="avatarTab">
+  <h3 style="color:var(--gold)">Shop වෙත නව Profile Avatar එකක් එක් කරන්න</h3>
+  <div class="preview-box">
+   <div class="piece-sample" id="avatarPreview" style="background:rgba(255,209,102,0.15);border:2px solid var(--gold);color:var(--gold)"><i class="fa-solid fa-crown"></i></div>
+   <small style="color:var(--dim)">Avatar Preview</small>
+  </div>
+  <div class="form-grid">
+   <div class="form-group">
+    <label>Avatar නම</label>
+    <input type="text" id="avatarName" placeholder="උදා: Golden King">
+   </div>
+   <div class="form-group">
+    <label>මිල (Coins / Points)</label>
+    <input type="number" id="avatarPrice" min="0" value="300">
+   </div>
+   <div class="form-group" style="grid-column:1/-1">
+    <label>FontAwesome Icon Class (උදා: fa-crown, fa-dragon, fa-fire, fa-bolt, fa-gem)</label>
+    <input type="text" id="avatarIcon" value="fa-crown" placeholder="fa-crown">
+   </div>
+  </div>
+  <button class="btn-gold" id="addAvatarBtn" style="padding:12px"><i class="fa-solid fa-plus-circle"></i> Shop එකට Avatar එක එක් කරන්න</button>
+
+  <h4 style="color:var(--gold);margin-top:8px">එකතු කළ Custom Avatars:</h4>
+  <div class="custom-list" id="customAvatarsList"></div>
+ </section>
+</div>
+
+<div id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script>
+'use strict';
+const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
+const $=id=>document.getElementById(id);
+
+if(sessionStorage.getItem('sinhala_draughts_admin_auth')!=='1'){
+ window.location.replace('index.html');
+}
+
+let db;
+let allPlayers=[];
+let customPieces=[];
+let customAvatars=[];
+let isNavigating=false;
+
+function toast(s, icon='fa-circle-info'){
+ const t=$('toast');
+ t.replaceChildren();
+ const iconEl=document.createElement('i');iconEl.className=`fa-solid ${icon}`;iconEl.style.color='var(--gold)';
+ const textEl=document.createElement('span');textEl.textContent=String(s);
+ t.append(iconEl,textEl);
+ t.classList.add('show');
+ setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+function smoothNavigate(url){
+ if(isNavigating)return;
+ isNavigating=true;
+ const app=$('adminRoot');
+ if(app)app.classList.add('page-leaving');
+ setTimeout(()=>{window.location.href=url;},110);
+}
+
+try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);db=firebase.database();}
+catch(e){console.error('Firebase init failed:',e);}
+
+// Tabs
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+ btn.onclick=()=>{
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.panel-scroll').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  $(btn.dataset.tab).classList.add('active');
+ };
+});
+
+// Load Players
+function loadPlayers(){
+ if(!db)return;
+ db.ref('users_v6').on('value',snap=>{
+  const val=snap.val()||{};
+  allPlayers=Object.entries(val).map(([uid,data])=>({
+   uid,
+   name:data.name||'Player',
+   points:Number(data.points)||0,
+   wins:Number(data.wins)||0,
+   losses:Number(data.losses)||0,
+   avatarIcon:data.avatarIcon||'fa-user'
+  }));
+  $('playerCountLabel').textContent=`මුළු ක්‍රීඩකයන්: ${allPlayers.length}`;
+  renderPlayers();
+ });
+}
+
+function renderPlayers(){
+ const q=($('playerSearch').value||'').trim().toLowerCase();
+ const list=$('playersList');
+ list.innerHTML='';
+
+ const filtered=allPlayers.filter(p=>p.name.toLowerCase().includes(q)||p.uid.toLowerCase().includes(q));
+ if(!filtered.length){
+  list.innerHTML='<p style="text-align:center;color:var(--dim);padding:20px">ක්‍රීඩකයන් හමු නොවීය.</p>';
+  return;
+ }
+
+ filtered.forEach(p=>{
+  const card=document.createElement('div');
+  card.className='player-card';
+
+  const info=document.createElement('div');
+  info.className='player-info';
+  info.innerHTML=`
+   <div class="player-av"><i class="fa-solid ${p.avatarIcon||'fa-user'}"></i></div>
+   <div>
+    <b>${escapeHtml(p.name)}</b>
+    <small>Wins: ${p.wins} | Losses: ${p.losses}</small>
+   </div>
+  `;
+
+  const actions=document.createElement('div');
+  actions.className='player-actions';
+
+  const coinInp=document.createElement('input');
+  coinInp.type='number';
+  coinInp.className='coin-input';
+  coinInp.value=p.points;
+  coinInp.min='0';
+
+  const saveCoinBtn=document.createElement('button');
+  saveCoinBtn.className='btn-green';
+  saveCoinBtn.innerHTML='<i class="fa-solid fa-coins"></i> Save';
+  saveCoinBtn.onclick=async()=>{
+   const nextCoins=Number(coinInp.value);
+   if(!Number.isFinite(nextCoins)||nextCoins<0)return toast('නිවැරදි Coin අගයක් ඇතුළත් කරන්න.');
+   try{
+    await db.ref('users_v6/'+p.uid).update({points:nextCoins});
+    await db.ref('publicProfiles_v6/'+p.uid).update({points:nextCoins}).catch(()=>{});
+    toast(`${p.name} ගේ Coins ${nextCoins} ලෙස යාවත්කාලීන විය.`,'fa-circle-check');
+   }catch(err){
+    toast('Coins යාවත්කාලීන කිරීමට නොහැකි විය.');
+   }
+  };
+
+  const delBtn=document.createElement('button');
+  delBtn.className='btn-danger';
+  delBtn.innerHTML='<i class="fa-solid fa-trash"></i> Remove';
+  delBtn.onclick=async()=>{
+   if(!confirm(`"${p.name}" ක්‍රීඩකයා Database එකෙන් ඉවත් කිරීමට අවශ්‍යද?`))return;
+   try{
+    const lowerName=p.name.trim().toLowerCase();
+    await db.ref('users_v6/'+p.uid).remove();
+    await db.ref('publicProfiles_v6/'+p.uid).remove().catch(()=>{});
+    if(lowerName)await db.ref('usernameIndex_v6/'+lowerName).remove().catch(()=>{});
+    toast(`${p.name} ඉවත් කරන ලදී.`,'fa-trash');
+   }catch(err){
+    toast('ක්‍රීඩකයා ඉවත් කිරීමට නොහැකි විය.');
+   }
+  };
+
+  actions.append(coinInp,saveCoinBtn,delBtn);
+  card.append(info,actions);
+  list.appendChild(card);
+ });
+}
+
+function escapeHtml(str){
+ return String(str).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+$('playerSearch').addEventListener('input',renderPlayers);
+$('refreshPlayersBtn').onclick=()=>{loadPlayers();toast('ක්‍රීඩක ලැයිස්තුව Refresh විය.','fa-rotate');};
+
+// Piece Theme Live Preview & Add
+function updateThemePreview(){
+ const prev=$('themePreview');
+ const icon=$('themeIcon').value.trim()||'♛';
+ const bg=$('themeBg').value;
+ const border=$('themeBorder').value;
+ const color=$('themeColor').value;
+ prev.textContent=icon;
+ prev.style.background=bg;
+ prev.style.border=`3px solid ${border}`;
+ prev.style.color=color;
+}
+['themeIcon','themeBg','themeBorder','themeColor'].forEach(id=>$(id).addEventListener('input',updateThemePreview));
+updateThemePreview();
+
+$('addThemeBtn').onclick=async()=>{
+ const name=$('themeName').value.trim();
+ const price=Number($('themePrice').value);
+ const icon=$('themeIcon').value.trim()||'♛';
+ const bg=$('themeBg').value;
+ const border=$('themeBorder').value;
+ const color=$('themeColor').value;
+
+ if(!name)return toast('කරුණාකර Theme නම ඇතුළත් කරන්න.');
+ if(!Number.isFinite(price)||price<0)return toast('නිවැරදි මිලක් ඇතුළත් කරන්න.');
+
+ const newTheme={
+  id:'custom_piece_'+Date.now(),
+  name,
+  price,
+  icon,
+  bg,
+  border,
+  color
+ };
+
+ const nextList=[...customPieces,newTheme];
+ await db.ref('shopConfig_v6/customPieces').set(nextList);
+ $('themeName').value='';
+ toast(`"${name}" Theme එක Shop එකට එක් කරන ලදී!`,'fa-circle-check');
+};
+
+// Avatar Live Preview & Add
+function updateAvatarPreview(){
+ const prev=$('avatarPreview');
+ const iconClass=($('avatarIcon').value.trim()||'fa-crown').replace(/^fa-solid\s+/,'');
+ prev.innerHTML=`<i class="fa-solid ${escapeHtml(iconClass)}"></i>`;
+}
+$('avatarIcon').addEventListener('input',updateAvatarPreview);
+updateAvatarPreview();
+
+$('addAvatarBtn').onclick=async()=>{
+ const name=$('avatarName').value.trim();
+ const price=Number($('avatarPrice').value);
+ const iconClass=($('avatarIcon').value.trim()||'fa-crown').replace(/^fa-solid\s+/,'');
+
+ if(!name)return toast('කරුණාකර Avatar නම ඇතුළත් කරන්න.');
+ if(!Number.isFinite(price)||price<0)return toast('නිවැරදි මිලක් ඇතුළත් කරන්න.');
+
+ const newAvatar={
+  id:iconClass,
+  name,
+  price,
+  icon:iconClass
+ };
+
+ const nextList=[...customAvatars,newAvatar];
+ await db.ref('shopConfig_v6/customAvatars').set(nextList);
+ $('avatarName').value='';
+ toast(`"${name}" Avatar එක Shop එකට එක් කරන ලදී!`,'fa-circle-check');
+};
+
+function renderCustomLists(){
+ const tList=$('customThemesList');
+ tList.innerHTML='';
+ customPieces.forEach((t,i)=>{
+  const div=document.createElement('div');
+  div.className='custom-item';
+  div.innerHTML=`
+   <div class="custom-item-left">
+    <div style="width:28px;height:28px;border-radius:50%;background:${t.bg};border:2px solid ${t.border};color:${t.color};display:grid;place-items:center;font-size:0.85rem;flex-shrink:0">${escapeHtml(t.icon||'♛')}</div>
+    <span>${escapeHtml(t.name)} (${t.price||0})</span>
+   </div>
+   <button class="btn-danger" style="padding:5px 8px" title="Delete"><i class="fa-solid fa-xmark"></i></button>
+  `;
+  div.querySelector('button').onclick=async()=>{
+   const updated=customPieces.filter((_,idx)=>idx!==i);
+   await db.ref('shopConfig_v6/customPieces').set(updated);
+   toast('Theme ඉවත් කරන ලදී.');
+  };
+  tList.appendChild(div);
+ });
+
+ const aList=$('customAvatarsList');
+ aList.innerHTML='';
+ customAvatars.forEach((a,i)=>{
+  const div=document.createElement('div');
+  div.className='custom-item';
+  div.innerHTML=`
+   <div class="custom-item-left">
+    <div style="width:28px;height:28px;border-radius:50%;background:rgba(255,209,102,0.14);border:1.5px solid var(--gold);color:var(--gold);display:grid;place-items:center;font-size:0.85rem;flex-shrink:0"><i class="fa-solid ${escapeHtml(a.icon||'fa-crown')}"></i></div>
+    <span>${escapeHtml(a.name)} (${a.price||0})</span>
+   </div>
+   <button class="btn-danger" style="padding:5px 8px" title="Delete"><i class="fa-solid fa-xmark"></i></button>
+  `;
+  div.querySelector('button').onclick=async()=>{
+   const updated=customAvatars.filter((_,idx)=>idx!==i);
+   await db.ref('shopConfig_v6/customAvatars').set(updated);
+   toast('Avatar ඉවත් කරන ලදී.');
+  };
+  aList.appendChild(div);
+ });
+}
+
+if(db){
+ loadPlayers();
+ db.ref('shopConfig_v6/customPieces').on('value',snap=>{
+  const val=snap.val();
+  customPieces=Array.isArray(val)?val.filter(Boolean):(val&&typeof val==='object'?Object.values(val):[]);
+  renderCustomLists();
+ });
+ db.ref('shopConfig_v6/customAvatars').on('value',snap=>{
+  const val=snap.val();
+  customAvatars=Array.isArray(val)?val.filter(Boolean):(val&&typeof val==='object'?Object.values(val):[]);
+  renderCustomLists();
+ });
+}
+
+$('goShopBtn').onclick=()=>smoothNavigate('shopandreward.html');
+$('exitAdminBtn').onclick=()=>{
+ sessionStorage.removeItem('sinhala_draughts_admin_auth');
+ smoothNavigate('index.html');
+};
+</script>
+</body>
+</html>
