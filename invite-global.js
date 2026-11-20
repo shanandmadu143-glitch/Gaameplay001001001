@@ -169,7 +169,7 @@
     injectStylesAndBanner();
 
     activeInvite = { inviteId, ...inv };
-    const fromName = inv.fromName || 'ක්‍රීඩකයෙකු';
+    const fromName = inv.fromName || inv.hostName || 'ක්‍රීඩකයෙකු';
     const invBet = Math.max(10, Number(inv.bet) || Number(sessionStorage.getItem(BET_KEY)) || 50);
 
     const msgEl = document.getElementById('sdGlobalInviteMsg');
@@ -183,7 +183,7 @@
 
     if (!notifiedIds.has(inviteId)) {
       notifiedIds.add(inviteId);
-      const url = `mulitiplay.html?bet=${encodeURIComponent(invBet)}&roomId=${encodeURIComponent(inv.roomId || '')}`;
+      const url = `friends.html?bet=${encodeURIComponent(invBet)}&roomId=${encodeURIComponent(inv.roomId || inviteId)}`;
       showSystemNotification(
         'ශ්‍රී ලංකීය දාම් - Game Invite',
         `${fromName} ඔබට ${invBet} Coins ඔට්ටුවකට ආරාධනා කරයි!`,
@@ -203,7 +203,8 @@
 
   async function acceptCurrentInvite() {
     if (!activeInvite || !fbUser || !db || isRedirecting) return;
-    const { inviteId, roomId, bet, fromName } = activeInvite;
+    const { inviteId, roomId: rawRoomId, bet, fromName, hostName } = activeInvite;
+    const targetRoomId = rawRoomId || inviteId;
     hideInviteCard(true);
 
     const acceptBtn = document.getElementById('sdGlobalAcceptBtn');
@@ -213,8 +214,8 @@
       await db.ref(`invites_v6/${fbUser.uid}/${inviteId}`).update({ status: 'accepted' }).catch(() => {});
 
       let latestRoom = null;
-      if (roomId) {
-        const roomSnap = await db.ref(`rooms_v6/${roomId}`).once('value').catch(() => null);
+      if (targetRoomId) {
+        const roomSnap = await db.ref(`rooms_v6/${targetRoomId}`).once('value').catch(() => null);
         latestRoom = roomSnap && roomSnap.exists() ? roomSnap.val() : null;
 
         const roomPatch = {
@@ -232,17 +233,17 @@
           roomPatch.turn = 1;
         }
 
-        await db.ref(`rooms_v6/${roomId}`).update(roomPatch);
+        await db.ref(`rooms_v6/${targetRoomId}`).update(roomPatch);
       }
 
       const mergedRoom = {
         ...(latestRoom || {}),
-        hostName: (latestRoom && latestRoom.hostName) || fromName || 'Host',
+        hostName: (latestRoom && latestRoom.hostName) || hostName || fromName || 'Host',
         guestName: myName,
         guestUid: fbUser.uid
       };
 
-      navigateToArena(roomId, bet || (latestRoom && latestRoom.bet), 'guest', mergedRoom);
+      navigateToArena(targetRoomId, bet || (latestRoom && latestRoom.bet), 'guest', mergedRoom);
     } catch (e) {
       console.error('Accept invite failed:', e);
       if (acceptBtn) acceptBtn.disabled = false;
@@ -252,11 +253,12 @@
 
   async function declineCurrentInvite() {
     if (!activeInvite || !fbUser || !db) return;
-    const { inviteId, roomId } = activeInvite;
+    const { inviteId, roomId: rawRoomId } = activeInvite;
+    const targetRoomId = rawRoomId || inviteId;
     hideInviteCard(true);
     await db.ref(`invites_v6/${fbUser.uid}/${inviteId}`).update({ status: 'declined' }).catch(() => {});
-    if (roomId) {
-      await db.ref(`rooms_v6/${roomId}`).update({ status: 'declined' }).catch(() => {});
+    if (targetRoomId) {
+      await db.ref(`rooms_v6/${targetRoomId}`).update({ status: 'rejected' }).catch(() => {});
     }
   }
 
@@ -279,7 +281,7 @@
     hostRoomRef.on('value', (snap) => {
       const room = snap.val();
       if (!room) return;
-      if (room.status === 'declined' || room.status === 'cancelled') {
+      if (room.status === 'declined' || room.status === 'rejected' || room.status === 'cancelled') {
         sessionStorage.removeItem(PENDING_ROOM_KEY);
         if (hostRoomRef) {
           try { hostRoomRef.off(); } catch (_) {}
@@ -287,7 +289,7 @@
         }
         return;
       }
-      if (room.status === 'accepted' || room.status === 'active' || room.matchStarted === true) {
+      if (room.status === 'accepted' || room.status === 'active' || room.status === 'playing' || room.matchStarted === true) {
         navigateToArena(raw.roomId, room.bet || raw.bet, 'host', room);
       }
     });
@@ -305,13 +307,18 @@
       const map = snap.val() || {};
       const now = Date.now();
       const pending = Object.entries(map)
-        .filter(([id, inv]) =>
-          inv &&
-          inv.status === 'pending' &&
-          (now - (Number(inv.createdAt) || 0) <= INVITE_MAX_AGE_MS) &&
-          !dismissedIds.has(id)
-        )
-        .sort((a, b) => (Number(b[1].createdAt) || 0) - (Number(a[1].createdAt) || 0));
+        .filter(([id, inv]) => {
+          const ts = Number(inv && (inv.createdAt || inv.timestamp)) || 0;
+          return inv &&
+            inv.status === 'pending' &&
+            (now - ts <= INVITE_MAX_AGE_MS) &&
+            !dismissedIds.has(id);
+        })
+        .sort((a, b) => {
+          const tb = Number(b[1].createdAt || b[1].timestamp) || 0;
+          const ta = Number(a[1].createdAt || a[1].timestamp) || 0;
+          return tb - ta;
+        });
 
       if (pending.length > 0) {
         const [topId, topInv] = pending[0];
