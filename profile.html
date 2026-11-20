@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Player Profile - Sinhala Draughts Pro Gaming</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Gemunu+Libre:wght@400;600;700;800&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#05070e;--panel:rgba(14,20,38,.92);--gold:#ffd166;--neon-blue:#00f2fe;--neon-green:#2ecc71;--red:#ff4757;--dim:#a0aec0}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Gemunu Libre','Poppins',sans-serif;user-select:none;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;background:radial-gradient(circle at 50% 20%,#1a103c 0%,#080b18 60%,#03050a 100%);color:#f8f9fa;overflow:hidden}
+body{min-height:100dvh;display:flex;flex-direction:column;justify-content:center;align-items:center}
+
+.app{width:100%;height:100dvh;max-width:768px;margin:0 auto;padding:14px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;opacity:1;transform:scale(1);transition:opacity 0.16s ease-out,transform 0.16s ease-out;will-change:opacity,transform}
+.app.page-leaving{opacity:0;transform:scale(0.985)}
+
+.top-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 18px;background:linear-gradient(135deg,rgba(22,30,56,0.95),rgba(10,14,28,0.95));border:2px solid rgba(255,209,102,0.4);border-radius:22px;box-shadow:0 8px 25px rgba(0,0,0,0.6);backdrop-filter:blur(10px)}
+.top-bar h2{color:var(--gold);font-size:1.15rem;font-weight:800;display:flex;align-items:center;gap:8px}
+.coin-pill{display:flex;align-items:center;gap:6px;border:1.5px solid rgba(255,209,102,0.4);border-radius:20px;background:rgba(5,8,18,0.85);padding:5px 12px;box-shadow:inset 0 2px 4px rgba(0,0,0,0.8)}
+.coin-pill>i{font-size:1rem;color:var(--gold)}
+.coin-pill b{font-size:0.95rem;color:#fff}
+
+main{flex:1;display:flex;flex-direction:column;width:100%;position:relative;margin:8px 0;overflow:hidden}
+.profile-card{width:100%;height:100%;display:flex;flex-direction:column;gap:12px;padding:16px;background:linear-gradient(145deg,rgba(18,24,40,0.88),rgba(12,16,28,0.94));border:2px solid rgba(255,209,102,0.25);border-radius:24px;backdrop-filter:blur(12px);box-shadow:0 10px 30px rgba(0,0,0,0.5);overflow-y:auto}
+
+.hero-box{text-align:center;padding:14px;background:rgba(0,0,0,0.35);border:1px solid rgba(255,209,102,0.2);border-radius:18px}
+.hero-avatar{width:68px;height:68px;margin:0 auto 8px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe08a,#ffad62);color:#18213e;font-size:1.8rem;border:3px solid var(--gold);box-shadow:0 0 15px rgba(255,209,102,0.35)}
+.hero-box h2{color:var(--gold);font-size:1.25rem;font-weight:800}
+.hero-stats{color:var(--dim);font-size:0.82rem;margin-top:2px}
+.hero-owned{margin-top:6px;font-size:0.78rem;color:var(--neon-green);font-weight:700}
+
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-top:4px}
+.section-head p{font-size:0.9rem;color:#e2e8f0;font-weight:700}
+.shop-link{background:none;border:0;color:var(--gold);font-size:0.8rem;font-weight:700;cursor:pointer;text-decoration:underline}
+
+.pieces-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:4px}
+.piece-option{background:rgba(255,255,255,0.04);border:2px solid rgba(255,255,255,0.1);border-radius:12px;padding:8px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;position:relative;transition:transform 0.12s ease,border-color 0.12s ease}
+.piece-option:active{transform:scale(0.96)}
+.piece-option.selected{border-color:var(--gold);background:rgba(255,209,102,0.2)}
+.piece-option.locked{opacity:0.45}
+
+.actions-row{display:flex;gap:10px;margin-top:auto;padding-top:8px}
+.btn,.btn-gold{border:0;border-radius:12px;padding:11px 14px;cursor:pointer;font-weight:700;display:inline-flex;align-items:center;gap:6px;justify-content:center;font-size:0.92rem;transition:transform 0.12s ease}
+.btn:active,.btn-gold:active{transform:scale(0.97)}
+.btn{background:rgba(255,255,255,0.1);color:white;border:1px solid rgba(255,255,255,0.2)}
+.btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;box-shadow:0 4px 15px rgba(255,173,98,0.4)}
+
+.bottom-nav{width:100%;min-height:66px;background:rgba(14,20,38,0.95);border:2px solid rgba(255,209,102,0.3);border-radius:24px;display:flex;align-items:center;justify-content:space-around;padding:6px 4px;backdrop-filter:blur(10px);box-shadow:0 10px 30px rgba(0,0,0,0.8)}
+.nav-item{background:none;border:0;color:#aab4c7;text-decoration:none;display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:0.72rem;font-weight:700;cursor:pointer;transition:color 0.15s ease,transform 0.15s ease}
+.nav-item:active{transform:scale(0.93)}
+.nav-item i{font-size:1.3rem}
+.nav-item.active{color:var(--gold)}
+.nav-item span{line-height:1}
+
+#toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,120px);opacity:0;background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--gold);color:#f8f9fa;border-radius:30px;padding:10px 20px;z-index:150;transition:.25s ease;font-weight:600;display:flex;align-items:center;gap:8px;font-size:0.9rem}
+#toast.show{transform:translate(-50%,0);opacity:1}
+
+@media (min-width: 600px) {
+  .app { max-width: 600px; padding: 20px; }
+  .top-bar { padding: 14px 22px; }
+  .profile-card { padding: 20px; gap: 14px; }
+  .pieces-grid { grid-template-columns: repeat(4,1fr); }
+}
+</style>
+</head>
+<body>
+<div class="app" id="appRoot">
+ <div class="top-bar">
+  <h2><i class="fa-solid fa-circle-user"></i> PLAYER PROFILE</h2>
+  <div class="coin-pill"><i class="fa-solid fa-coins"></i><b><span id="profilePoints">500</span></b></div>
+ </div>
+
+ <main>
+  <section class="profile-card">
+   <div class="hero-box">
+    <div id="profileAvatar" class="hero-avatar"></div>
+    <h2 id="profileName">ක්‍රීඩකයා</h2>
+    <div id="profileStats" class="hero-stats">Wins: 0 | Losses: 0</div>
+    <div id="profileOwnedSummary" class="hero-owned">Unlocked Avatars: 1 | Unlocked Themes: 1</div>
+   </div>
+
+   <div class="section-head">
+    <p>මිලදී ගත් / ඇති Avatars:</p>
+    <button type="button" class="shop-link" id="goShopFromAvatars">+ Shop</button>
+   </div>
+   <div class="pieces-grid" id="avatarGrid"></div>
+
+   <div class="section-head">
+    <p>මිලදී ගත් / ඇති ඉත්තන්ගේ Themes:</p>
+    <button type="button" class="shop-link" id="goShopFromPieces">+ Shop</button>
+   </div>
+   <div class="pieces-grid" id="piecesGrid"></div>
+
+   <div class="actions-row">
+    <button class="btn-gold" id="saveProfile" style="flex:1"><i class="fa-solid fa-check"></i> සුරකින්න (Save)</button>
+    <button class="btn" id="backHomeBtn" style="flex:1"><i class="fa-solid fa-house"></i> Home</button>
+    <button class="btn" id="logoutBtn" style="border-color:var(--red);color:var(--red)"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+   </div>
+  </section>
+ </main>
+
+ <footer class="bottom-nav">
+  <a class="nav-item" href="index.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
+  <a class="nav-item" href="friends.html"><i class="fa-solid fa-user-group"></i><span>Friends</span></a>
+  <a class="nav-item active" href="profile.html"><i class="fa-solid fa-circle-user"></i><span>Profile</span></a>
+  <a class="nav-item" href="shopandreward.html"><i class="fa-solid fa-trophy"></i><span>Events</span></a>
+  <a class="nav-item" href="shopandreward.html"><i class="fa-solid fa-cart-shopping"></i><span>Shop</span></a>
+ </footer>
+</div>
+
+<div id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script>
+'use strict';
+const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
+const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user';
+let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user',unlockedAvatars:['fa-user']};
+let isNavigating=false;
+let customPieces=[];
+let customAvatars=[];
+let tempSelectedPiece=0;
+let tempSelectedAvatar='fa-user';
+
+const DEFAULT_PIECE_DESIGNS=[
+ {id:0,name:'මුතු සුදු (Default)',bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●',free:true},
+ {id:1,name:'රන් ඔටුන්න',bg:'linear-gradient(135deg,#ffeaa7,#fdcb6e)',border:'#e1b12c',color:'#2d3436',icon:'★'},
+ {id:2,name:'රුධිර රතු',bg:'radial-gradient(circle at 30% 30%,#ff7675,#d63031)',border:'#c0392b',color:'#fff',icon:'◆'},
+ {id:3,name:'මරකත කොළ',bg:'radial-gradient(circle at 30% 30%,#55efc4,#00b894)',border:'#00a8ff',color:'#fff',icon:'▲'},
+ {id:4,name:'නියෝන් නිල්',bg:'radial-gradient(circle at 30% 30%,#74b9ff,#0984e3)',border:'#00f2fe',color:'#fff',icon:'✦'},
+ {id:5,name:'රාජකීය දම්',bg:'radial-gradient(circle at 30% 30%,#a29bfe,#6c5ce7)',border:'#fd79a8',color:'#fff',icon:'❖'},
+ {id:6,name:'අඳුරු කාබන්',bg:'radial-gradient(circle at 30% 30%,#636e72,#2d3436)',border:'#b2bec3',color:'#ffd166',icon:'♠'},
+ {id:7,name:'සූර්ය රන්',bg:'radial-gradient(circle at 30% 30%,#fab1a0,#e17055)',border:'#d63031',color:'#fff',icon:'☀'},
+ {id:8,name:'මැජෙන්ටා රෝස',bg:'radial-gradient(circle at 30% 30%,#ff7979,#eb4d4b)',border:'#ff7979',color:'#fff',icon:'✿'},
+ {id:9,name:'සැහැල්ලු සිල්වර්',bg:'radial-gradient(circle at 30% 30%,#dfe6e9,#b2bec3)',border:'#636e72',color:'#2d3436',icon:'⚙'},
+ {id:10,name:'කොස්මික් වයලට්',bg:'radial-gradient(circle at 30% 30%,#8e44ad,#3498db)',border:'#9b59b6',color:'#fff',icon:'☄'},
+ {id:11,name:'නියෝන් ලෙමන්',bg:'radial-gradient(circle at 30% 30%,#f1c40f,#f39c12)',border:'#f1c40f',color:'#111',icon:'⚡'},
+ {id:12,name:'ටර්කියුයිස්',bg:'radial-gradient(circle at 30% 30%,#1abc9c,#16a085)',border:'#1abc9c',color:'#fff',icon:'🌊'},
+ {id:13,name:'චොක්ලට් බ්‍රවුන්',bg:'radial-gradient(circle at 30% 30%,#d35400,#a04000)',border:'#e67e22',color:'#fff',icon:'☕'},
+ {id:14,name:'රෝස් ගෝල්ඩ්',bg:'radial-gradient(circle at 30% 30%,#f5b041,#eb984e)',border:'#f39c12',color:'#fff',icon:'♕'},
+ {id:15,name:'ගැඹුරු මිනිරන්',bg:'radial-gradient(circle at 30% 30%,#34495e,#2c3e50)',border:'#7f8c8d',color:'#ffd166',icon:'🛡'},
+ {id:16,name:'අයිස් මින්ට්',bg:'radial-gradient(circle at 30% 30%,#a3e4d7,#48c9b0)',border:'#17a589',color:'#111',icon:'❄'},
+ {id:17,name:'සැණකෙළි පර්පල්',bg:'radial-gradient(circle at 30% 30%,#d98880,#c0392b)',border:'#e74c3c',color:'#fff',icon:'🔮'},
+ {id:18,name:'විදුලි ලෙමන්',bg:'radial-gradient(circle at 30% 30%,#f7dc6f,#f9e79f)',border:'#f1c40f',color:'#111',icon:'✨'},
+ {id:19,name:'අමරණීය අඳුර',bg:'radial-gradient(circle at 30% 30%,#2c3e50,#000000)',border:'#ffd166',color:'#ffd166',icon:'♔'}
+];
+
+const DEFAULT_AVATARS=[
+ {id:'fa-user',name:'සම්මත (Default)',icon:'fa-user'},
+ {id:'fa-chess-knight',name:'චෙස් නයිට්',icon:'fa-chess-knight'},
+ {id:13,name:'ගිනියම් ඩ්‍රැගන්',icon:'fa-dragon'},
+ {id:'fa-robot',name:'රොබෝ යන්ත්‍රය',icon:'fa-robot'},
+ {id:'fa-ghost',name:'අපූර්ව හොල්මන',icon:'fa-ghost'},
+ {id:'fa-shield-halved',name:'රජකීය පලිහ',icon:'fa-shield-halved'},
+ {id:'fa-crown',name:'රජකීය ඔටුන්න',icon:'fa-crown'},
+ {id:'fa-fire',name:'මහා ගින්න',icon:'fa-fire'},
+ {id:'fa-bolt',name:'අකුණු සැණැල්ල',icon:'fa-bolt'},
+ {id:'fa-skull',name:'හිස්කබල',icon:'fa-skull'},
+ {id:'fa-star',name:'රන් තරුව',icon:'fa-star'},
+ {id:'fa-gem',name:'දියමන්ති මැණික',icon:'fa-gem'},
+ {id:'fa-fighter-jet',name:'ජෙට් යානය',icon:'fa-fighter-jet'},
+ {id:'fa-meteor',name:'උල්කාපාතය',icon:'fa-meteor'},
+ {id:13,name:'කූට බළලා',icon:'fa-cat'},
+ {id:'fa-dog',name:'බල්ලා',icon:'fa-dog'},
+ {id:'fa-paw',name:'සිංහ පාදය',icon:'fa-paw'},
+ {id:'fa-crosshairs',name:'ඉලක්කය',icon:'fa-crosshairs'},
+ {id:'fa-hat-wizard',name:'මායාකාරයා',icon:'fa-hat-wizard'}
+];
+DEFAULT_AVATARS[2].id='fa-dragon';
+DEFAULT_AVATARS[14].id='fa-cat';
+
+function normalizeList(val, fallback) {
+ if (Array.isArray(val)) return val.length ? val : fallback;
+ if (val && typeof val === 'object') {
+  const arr = Object.values(val);
+  return arr.length ? arr : fallback;
+ }
+ return fallback;
+}
+
+function getAllPieces(){return [...DEFAULT_PIECE_DESIGNS,...customPieces];}
+function getAllAvatars(){return [...DEFAULT_AVATARS,...customAvatars];}
+
+function toast(s, icon='fa-circle-info'){
+ const t=$('toast');
+ t.replaceChildren();
+ const iconEl=document.createElement('i');iconEl.className=`fa-solid ${icon}`;iconEl.style.color='var(--gold)';
+ const textEl=document.createElement('span');textEl.textContent=String(s);
+ t.append(iconEl,textEl);
+ t.classList.add('show');
+ setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+function smoothNavigate(url){
+ if(isNavigating)return;
+ isNavigating=true;
+ const app=$('appRoot');
+ if(app)app.classList.add('page-leaving');
+ setTimeout(()=>{window.location.href=url;},110);
+}
+
+function applyAvatarToBox(elementId, designIndex, customIcon){
+ const el=$(elementId);if(!el)return;
+ const allPieces=getAllPieces();
+ const idx=Number(designIndex)||0;
+ const design=allPieces[idx]||allPieces[0];
+ el.style.background=design.bg;el.style.borderColor=design.border;el.style.color=design.color;
+ el.innerHTML=customIcon ? `<i class="fa-solid ${customIcon}"></i>` : design.icon;
+}
+
+function renderProfileItems(){
+ $('profilePoints').textContent=user.points!==undefined?user.points:500;
+ const aGrid=$('avatarGrid');
+ aGrid.innerHTML='';
+ const unlockedAvatars = normalizeList(user.unlockedAvatars, ['fa-user']).map(String);
+ const allAvatars = getAllAvatars();
+
+ allAvatars.forEach(av => {
+  const avId = String(av.id);
+  const isUnlocked = unlockedAvatars.includes(avId);
+  const isEquipped = avId === (user.avatarIcon || 'fa-user');
+  const avDiv = document.createElement('div');
+  avDiv.className = 'piece-option' + (avId === tempSelectedAvatar ? ' selected' : '') + (isUnlocked ? '' : ' locked');
+  const statusLabel = !isUnlocked ? 'Locked' : (isEquipped ? 'Equipped' : 'Unlocked');
+  const statusColor = !isUnlocked ? 'var(--red)' : (isEquipped ? 'var(--gold)' : 'var(--neon-green)');
+  avDiv.innerHTML = `<div style="font-size:1.4rem;color:var(--gold);padding:6px;"><i class="fa-solid ${av.icon}"></i></div><span style="font-size:0.62rem;text-align:center">${av.name}</span><small style="font-size:0.52rem;color:${statusColor}">${statusLabel}</small>`;
+  avDiv.onclick = () => {
+   if(!isUnlocked){
+    toast('මෙම Avatar එක Shop වෙතින් මිලදී ගන්න!');
+    return;
+   }
+   tempSelectedAvatar = avId;
+   renderProfileItems();
+  };
+  aGrid.appendChild(avDiv);
+ });
+
+ const grid=$('piecesGrid');
+ grid.innerHTML='';
+ const unlockedPieces = normalizeList(user.unlockedPieces, [0]).map(Number);
+ const allPieces = getAllPieces();
+
+ allPieces.forEach((p,idx)=>{
+  const pIdx = Number(idx);
+  const isUnlocked = unlockedPieces.includes(pIdx);
+  const isEquipped = pIdx === (Number(user.pieceIndex) || 0);
+  const div=document.createElement('div');
+  div.className='piece-option'+(pIdx===Number(tempSelectedPiece)?' selected':'')+(isUnlocked?'':' locked');
+  const statusLabel = !isUnlocked ? 'Locked' : (isEquipped ? 'Equipped' : 'Unlocked');
+  const statusColor = !isUnlocked ? 'var(--red)' : (isEquipped ? 'var(--gold)' : 'var(--neon-green)');
+  div.innerHTML=`<div style="width:28px;height:28px;border-radius:50%;background:${p.bg};border:2px solid ${p.border};color:${p.color};display:grid;place-items:center;font-size:0.9rem">${p.icon}</div><span style="font-size:0.62rem;text-align:center">${p.name}</span><small style="font-size:0.52rem;color:${statusColor}">${statusLabel}</small>`;
+  div.onclick=()=>{
+   if(!isUnlocked){
+    toast('මෙම Theme එක Shop වෙතින් මිලදී ගන්න!');
+    return;
+   }
+   tempSelectedPiece=pIdx;
+   renderProfileItems();
+  };
+  grid.appendChild(div);
+ });
+
+ $('profileOwnedSummary').textContent=`Unlocked Avatars: ${unlockedAvatars.length}/${allAvatars.length} | Unlocked Themes: ${unlockedPieces.length}/${allPieces.length}`;
+ applyAvatarToBox('profileAvatar', tempSelectedPiece, tempSelectedAvatar);
+ $('profileName').textContent=user.name||'ක්‍රීඩකයා';
+ $('profileStats').textContent=`Wins: ${user.wins||0} | Losses: ${user.losses||0}`;
+}
+
+try{
+ const cached=localStorage.getItem(KEY);
+ if(cached){
+  const parsed=JSON.parse(cached);
+  if(parsed&&typeof parsed==='object'){
+   user={
+    ...user,
+    ...parsed,
+    pieceIndex:Number(parsed.pieceIndex)||0,
+    unlockedPieces:normalizeList(parsed.unlockedPieces,[0]).map(Number),
+    avatarIcon:parsed.avatarIcon||'fa-user',
+    unlockedAvatars:normalizeList(parsed.unlockedAvatars,['fa-user']).map(String)
+   };
+   tempSelectedPiece=user.pieceIndex;
+   tempSelectedAvatar=user.avatarIcon;
+  }
+ }
+}catch(e){}
+renderProfileItems();
+
+try{
+ if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
+ auth=firebase.auth();
+ db=firebase.database();
+}catch(e){console.error('Firebase error:',e);}
+
+if(db){
+ db.ref('shopConfig_v6/customPieces').on('value',snap=>{
+  const val=snap.val();
+  customPieces=Array.isArray(val)?val.filter(Boolean):(val&&typeof val==='object'?Object.values(val).filter(Boolean):[]);
+  renderProfileItems();
+ },()=>{});
+ db.ref('shopConfig_v6/customAvatars').on('value',snap=>{
+  const val=snap.val();
+  customAvatars=Array.isArray(val)?val.filter(Boolean):(val&&typeof val==='object'?Object.values(val).filter(Boolean):[]);
+  renderProfileItems();
+ },()=>{});
+}
+
+if(auth){
+ auth.onAuthStateChanged(async u=>{
+  if(!u){
+   smoothNavigate('index.html');
+   return;
+  }
+  fbUser=u;
+  try{
+   const s=await db.ref('users_v6/'+u.uid).once('value');
+   const d=s.val();
+   if(d){
+    user={
+     ...user,
+     ...d,
+     uid:u.uid,
+     points:Number.isFinite(Number(d.points))?Number(d.points):user.points,
+     pieceIndex:Number(d.pieceIndex)||0,
+     unlockedPieces:normalizeList(d.unlockedPieces,[0]).map(Number),
+     avatarIcon:d.avatarIcon||'fa-user',
+     unlockedAvatars:normalizeList(d.unlockedAvatars,['fa-user']).map(String)
+    };
+    tempSelectedPiece=user.pieceIndex;
+    tempSelectedAvatar=user.avatarIcon;
+    localStorage.setItem(KEY,JSON.stringify(user));
+    renderProfileItems();
+   }
+  }catch(e){}
+ });
+}
+
+$('saveProfile').onclick=async()=>{
+ user.pieceIndex=Number(tempSelectedPiece)||0;
+ user.avatarIcon=tempSelectedAvatar||'fa-user';
+ user.unlockedPieces=normalizeList(user.unlockedPieces,[0]).map(Number);
+ user.unlockedAvatars=normalizeList(user.unlockedAvatars,['fa-user']).map(String);
+ localStorage.setItem(KEY,JSON.stringify(user));
+
+ if(db&&fbUser){
+  const patch={
+   pieceIndex:user.pieceIndex,
+   avatarIcon:user.avatarIcon,
+   unlockedPieces:user.unlockedPieces,
+   unlockedAvatars:user.unlockedAvatars
+  };
+  await db.ref('users_v6/'+fbUser.uid).update(patch).catch(()=>{});
+  await db.ref('publicProfiles_v6/'+fbUser.uid).update(patch).catch(()=>{});
+ }
+ toast('තෝරාගත් ඉත්තා සහ Avatar සුරකින ලදී!','fa-circle-check');
+};
+
+$('backHomeBtn').onclick=()=>smoothNavigate('index.html');
+$('goShopFromAvatars').onclick=()=>smoothNavigate('shopandreward.html');
+$('goShopFromPieces').onclick=()=>smoothNavigate('shopandreward.html');
+
+$('logoutBtn').onclick=async()=>{
+ localStorage.removeItem(KEY);
+ sessionStorage.removeItem('sinhala_draughts_admin_auth');
+ if(auth)await auth.signOut().catch(()=>{});
+ smoothNavigate('index.html');
+};
+
+document.querySelectorAll('a[href]').forEach(link=>{
+ link.addEventListener('click',e=>{
+  const href=link.getAttribute('href');
+  if(!href||href.startsWith('#'))return;
+  e.preventDefault();
+  smoothNavigate(href);
+ });
+});
+</script>
+<script src="./invite-global.js"></script>
+</body>
+</html>
