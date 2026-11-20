@@ -25,7 +25,7 @@ body{min-height:100dvh;display:flex;flex-direction:column;align-items:center}
 input{width:100%;padding:10px 13px;background:rgba(0,0,0,0.55);border:1.5px solid rgba(255,209,102,0.35);border-radius:12px;color:#fff;font-size:0.9rem;outline:none}
 input:focus{border-color:var(--gold)}
 
-.status-bar{font-size:0.82rem;color:var(--neon-blue);background:rgba(0,242,254,0.08);border:1px solid rgba(0,242,254,0.25);border-radius:12px;padding:8px 12px;display:none;align-items:center;gap:8px}
+.status-bar{font-size:0.82rem;color:var(--neon-blue);background:rgba(0,242,254,0.08);border:1px solid rgba(0,242,254,0.25);border-radius:12px;padding:8px 12px;display:none;align-items:center;justify-content:space-between;gap:8px}
 .status-bar.show{display:flex}
 
 .player-item{background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,209,102,0.2);border-radius:16px;padding:11px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
@@ -41,7 +41,7 @@ input:focus{border-color:var(--gold)}
 .btn-green{background:linear-gradient(135deg,#2ecc71,#20b863);color:#0b1910}
 .btn-danger{background:linear-gradient(135deg,#ff4757,#c0392b);color:#fff}
 
-.invite-banner{position:fixed;top:16px;left:50%;transform:translate(-50%,-160%);width:min(94%,440px);background:linear-gradient(135deg,#18223d,#0d1324);border:2px solid var(--gold);border-radius:20px;padding:14px 16px;z-index:200;box-shadow:0 14px 35px rgba(0,0,0,0.75);transition:transform 0.25s ease;display:flex;flex-direction:column;gap:10px}
+.invite-banner{position:fixed;top:16px;left:50%;transform:translate(-50%,-165%);width:min(94%,440px);background:linear-gradient(135deg,#18223d,#0d1324);border:2px solid var(--gold);border-radius:20px;padding:14px 16px;z-index:200;box-shadow:0 14px 35px rgba(0,0,0,0.75);transition:transform 0.25s ease;display:flex;flex-direction:column;gap:10px}
 .invite-banner.show{transform:translate(-50%,0)}
 .invite-banner b{color:var(--gold);font-size:1rem}
 .invite-banner p{font-size:0.84rem;color:#e2e8f0}
@@ -68,8 +68,11 @@ input:focus{border-color:var(--gold)}
   </div>
 
   <div class="status-bar" id="waitingStatus">
-   <i class="fa-solid fa-spinner fa-spin"></i>
-   <span id="waitingText">ප්‍රතිවාදියා Invite එක Accept කරන තෙක් රැඳී සිටී...</span>
+   <span style="display:flex;align-items:center;gap:8px">
+    <i class="fa-solid fa-spinner fa-spin"></i>
+    <span id="waitingText">ප්‍රතිවාදියා Invite එක Accept කරන තෙක් රැඳී සිටී...</span>
+   </span>
+   <button class="btn-danger" id="cancelWaitBtn" style="padding:5px 10px;font-size:0.76rem">Cancel</button>
   </div>
 
   <div id="playersContainer" style="display:flex;flex-direction:column;gap:8px;flex:1">
@@ -104,6 +107,7 @@ input:focus{border-color:var(--gold)}
 'use strict';
 const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
 const VAPID_PUBLIC_KEY = "";
+const INVITE_MAX_AGE_MS = 180000;
 
 const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user';
 
@@ -118,11 +122,14 @@ let auth,db,messaging,fbUser;
 let myProfile={name:'ක්‍රීඩකයා',points:500};
 let publicPlayers=[];
 let activeIncomingInvite=null;
+let pendingRoomId=null;
 let currentRoomListenerRef=null;
 let invitesListenerRef=null;
 let profilesListenerBound=false;
 let isNavigating=false;
 let swRegistration=null;
+const notifiedInviteIds=new Set();
+const dismissedInviteIds=new Set();
 
 function toast(s, icon='fa-circle-info'){
  const t=$('toast');
@@ -134,12 +141,21 @@ function toast(s, icon='fa-circle-info'){
  setTimeout(()=>t.classList.remove('show'),3000);
 }
 
+function cleanupListeners(){
+ if(currentRoomListenerRef){
+  try{currentRoomListenerRef.off();}catch(_){}
+  currentRoomListenerRef=null;
+ }
+ if(invitesListenerRef){
+  try{invitesListenerRef.off();}catch(_){}
+  invitesListenerRef=null;
+ }
+}
+
 function go(url){
  if(isNavigating)return;
  isNavigating=true;
- if(currentRoomListenerRef){
-  try{currentRoomListenerRef.off();}catch(_){}
- }
+ cleanupListeners();
  const root=$('mpRoot');
  if(root)root.classList.add('page-leaving');
  setTimeout(()=>{window.location.href=url;},110);
@@ -206,7 +222,7 @@ async function registerFcmToken(){
    await db.ref(`fcmTokens_v6/${fbUser.uid}`).set({
     token,
     updatedAt:Date.now()
-   });
+   }).catch(()=>{});
   }
   return token;
  }catch(e){
@@ -322,11 +338,28 @@ function renderPlayersList(){
  });
 }
 
-function listenForRoomStart(roomId, roomBet, role='host'){
- if(!db||!roomId)return;
+function stopWaitingRoom(){
+ pendingRoomId=null;
+ $('waitingStatus').classList.remove('show');
  if(currentRoomListenerRef){
   try{currentRoomListenerRef.off();}catch(_){}
+  currentRoomListenerRef=null;
  }
+}
+
+$('cancelWaitBtn').onclick=async()=>{
+ const rId=pendingRoomId;
+ stopWaitingRoom();
+ if(rId && db){
+  await db.ref(`rooms_v6/${rId}`).update({status:'cancelled'}).catch(()=>{});
+ }
+ toast('රැඳී සිටීම අවලංගු කරන ලදී.');
+};
+
+function listenForRoomStart(roomId, roomBet, role='host'){
+ if(!db||!roomId)return;
+ stopWaitingRoom();
+ pendingRoomId=roomId;
  $('waitingStatus').classList.add('show');
  $('waitingText').textContent='Invite යවන ලදී — ප්‍රතිවාදියා Accept කරන තෙක් රැඳී සිටී...';
 
@@ -334,9 +367,9 @@ function listenForRoomStart(roomId, roomBet, role='host'){
  currentRoomListenerRef.on('value',snap=>{
   const room=snap.val();
   if(!room)return;
-  if(room.status==='declined'){
-   $('waitingStatus').classList.remove('show');
-   toast('ප්‍රතිවාදියා ආරාධනාව ප්‍රතික්ෂේප කළේය.','fa-circle-xmark');
+  if(room.status==='declined' || room.status==='cancelled'){
+   stopWaitingRoom();
+   toast('තරඟ ආරාධනාව අවලංගු / ප්‍රතික්ෂේප විය.','fa-circle-xmark');
    return;
   }
   if(room.status==='accepted' || room.status==='active'){
@@ -358,6 +391,10 @@ async function sendGameInvite(targetPlayer, btnEl){
  if(!db||!fbUser){
   return toast('Invite යැවීමට පළමුව ගිණුමට ඇතුළු වන්න.');
  }
+ if(targetPlayer.uid===fbUser.uid){
+  return toast('ඔබටම Invite යැවිය නොහැක.');
+ }
+
  await ensureNotificationPermission();
 
  btnEl.disabled=true;
@@ -411,27 +448,34 @@ async function sendGameInvite(targetPlayer, btnEl){
   setTimeout(()=>{
    btnEl.disabled=false;
    btnEl.innerHTML=originalHtml;
-  },1500);
+  },1200);
  }
 }
 
 function showIncomingInvite(inviteId, inv){
+ if(dismissedInviteIds.has(inviteId))return;
  activeIncomingInvite={inviteId,...inv};
  const fromName=inv.fromName||'ක්‍රීඩකයෙකු';
- const invBet=inv.bet||bet;
+ const invBet=Math.max(10,Number(inv.bet)||bet);
  const inviteUrl=`mulitiplay.html?bet=${encodeURIComponent(invBet)}&roomId=${encodeURIComponent(inv.roomId||'')}`;
 
  $('inviteText').textContent=`${fromName} ඔබට ${invBet} Coins ඔට්ටුවකට Multiplayer තරඟයකට ආරාධනා කරයි!`;
  $('inviteBanner').classList.add('show');
 
- showMobileStatusBarNotification(
-  'ශ්‍රී ලංකීය දාම් - Game Invite',
-  `${fromName} ඔබට ${invBet} Coins ඔට්ටුවකට ආරාධනා කරයි! Tap to open.`,
-  inviteUrl
- );
+ if(!notifiedInviteIds.has(inviteId)){
+  notifiedInviteIds.add(inviteId);
+  showMobileStatusBarNotification(
+   'ශ්‍රී ලංකීය දාම් - Game Invite',
+   `${fromName} ඔබට ${invBet} Coins ඔට්ටුවකට ආරාධනා කරයි! Tap to open.`,
+   inviteUrl
+  );
+ }
 }
 
-function hideIncomingInvite(){
+function hideIncomingInvite(markDismissed=false){
+ if(markDismissed && activeIncomingInvite && activeIncomingInvite.inviteId){
+  dismissedInviteIds.add(activeIncomingInvite.inviteId);
+ }
  $('inviteBanner').classList.remove('show');
  activeIncomingInvite=null;
 }
@@ -439,7 +483,7 @@ function hideIncomingInvite(){
 $('acceptInviteBtn').onclick=async()=>{
  if(!activeIncomingInvite||!fbUser||!db)return;
  const {inviteId,roomId,bet:invBet}=activeIncomingInvite;
- hideIncomingInvite();
+ hideIncomingInvite(true);
  try{
   await db.ref(`invites_v6/${fbUser.uid}/${inviteId}`).update({status:'accepted'}).catch(()=>{});
   if(roomId){
@@ -462,7 +506,7 @@ $('acceptInviteBtn').onclick=async()=>{
 $('declineInviteBtn').onclick=async()=>{
  if(!activeIncomingInvite||!fbUser||!db)return;
  const {inviteId,roomId}=activeIncomingInvite;
- hideIncomingInvite();
+ hideIncomingInvite(true);
  await db.ref(`invites_v6/${fbUser.uid}/${inviteId}`).update({status:'declined'}).catch(()=>{});
  if(roomId){
   await db.ref(`rooms_v6/${roomId}`).update({status:'declined'}).catch(()=>{});
@@ -497,11 +541,27 @@ function bindUserInviteListener(uid){
   try{invitesListenerRef.off();}catch(_){}
  }
  invitesListenerRef=db.ref(`invites_v6/${uid}`);
- invitesListenerRef.on('child_added',snap=>{
-  const inv=snap.val();
-  if(!inv||inv.status!=='pending')return;
-  if(Date.now()-(Number(inv.createdAt)||0)>180000)return;
-  showIncomingInvite(snap.key,inv);
+ invitesListenerRef.on('value',snap=>{
+  const map=snap.val()||{};
+  const now=Date.now();
+  let foundPending=null;
+
+  for(const [invId,inv] of Object.entries(map)){
+   if(!inv||inv.status!=='pending')continue;
+   if(now-(Number(inv.createdAt)||0)>INVITE_MAX_AGE_MS)continue;
+   if(dismissedInviteIds.has(invId))continue;
+   foundPending={inviteId:invId,...inv};
+   break;
+  }
+
+  if(foundPending){
+   showIncomingInvite(foundPending.inviteId, foundPending);
+  }else if(activeIncomingInvite){
+   const currentStillPending=map[activeIncomingInvite.inviteId] && map[activeIncomingInvite.inviteId].status==='pending';
+   if(!currentStillPending){
+    hideIncomingInvite(false);
+   }
+  }
  });
 }
 
@@ -515,12 +575,15 @@ if(auth){
    if(autoRoomId){
     listenForRoomStart(autoRoomId, bet, 'guest');
    }
+  }else{
+   cleanupListeners();
   }
  });
 }else{
  bindPublicProfilesListener();
 }
 
+window.addEventListener('pagehide',cleanupListeners);
 $('searchPlayer').addEventListener('input',renderPlayersList);
 $('backBtn').onclick=()=>go('index.html');
 </script>
