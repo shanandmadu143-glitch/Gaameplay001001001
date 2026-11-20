@@ -15,7 +15,7 @@ body{
   flex-direction:column;
   justify-content:center;
   align-items:center;
-  background: linear-gradient(rgba(10, 25, 15, 0.75), rgba(5, 15, 10, 0.85)), 
+  background: linear-gradient(rgba(10, 25, 15, 0.75), rgba(5, 15, 10, 0.85)),
               url('https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?q=80&w=1920&auto=format&fit=crop') no-repeat center center/cover;
   color:#f8f9fa;
 }
@@ -94,9 +94,9 @@ body{
   100% { border-color: #ff4757; box-shadow: 0 0 25px rgba(255, 71, 87, 0.8), inset 0 0 15px rgba(255, 71, 87, 0.5); }
 }
 
-.board-wrap { 
-  width: min(92vw, 54vh, 430px); aspect-ratio: 1; position: relative; margin: auto; 
-  background: linear-gradient(135deg, #163824, #0b1f13); padding: 12px; border-radius: 24px; 
+.board-wrap {
+  width: min(92vw, 54vh, 430px); aspect-ratio: 1; position: relative; margin: auto;
+  background: linear-gradient(135deg, #163824, #0b1f13); padding: 12px; border-radius: 24px;
   border: 4px solid #2ecc71; animation: rgbGlow 6s linear infinite;
   box-shadow: 0 15px 35px rgba(0,0,0,0.8);
 }
@@ -278,7 +278,7 @@ const PIECE_DESIGNS=[
  {id:2,name:'රුධිර රතු',bg:'radial-gradient(circle at 30% 30%,#ff7675,#d63031)',border:'#c0392b',color:'#fff',icon:'◆'},
  {id:3,name:'මරකත කොළ',bg:'radial-gradient(circle at 30% 30%,#55efc4,#00b894)',border:'#00a8ff',color:'#fff',icon:'▲'},
  {id:4,name:'නියෝන් නිල්',bg:'radial-gradient(circle at 30% 30%,#74b9ff,#0984e3)',border:'#00f2fe',color:'#fff',icon:'✦'},
- {id:5,name:'शाही දම් පාට',bg:'radial-gradient(circle at 30% 30%,#a29bfe,#6c5ce7)',border:'#fd79a8',color:'#fff',icon:'❖'},
+ {id:5,name:'රාජකීය දම්',bg:'radial-gradient(circle at 30% 30%,#a29bfe,#6c5ce7)',border:'#fd79a8',color:'#fff',icon:'❖'},
  {id:6,name:'අඳුරු කාබන්',bg:'radial-gradient(circle at 30% 30%,#636e72,#2d3436)',border:'#b2bec3',color:'#ffd166',icon:'♠'},
  {id:7,name:'සූර්ය රන්',bg:'radial-gradient(circle at 30% 30%,#fab1a0,#e17055)',border:'#d63031',color:'#fff',icon:'☀'},
  {id:8,name:'මැජෙන්ටා රෝස',bg:'radial-gradient(circle at 30% 30%,#ff7979,#eb4d4b)',border:'#ff7979',color:'#fff',icon:'✿'},
@@ -403,7 +403,7 @@ function sendVoiceMessage(audioDataUrl) {
 function appendVoiceMessage(audioUrl, isMe) {
  const div = document.createElement('div');
  div.className = 'chat-msg ' + (isMe ? 'me' : 'them') + ' voice-msg-bubble';
- 
+
  const audioEl = document.createElement('audio');
  audioEl.controls = true;
  audioEl.src = audioUrl;
@@ -539,7 +539,7 @@ function initBoard(){
  lastMove=null;
  if(single) userSide = nextStartingSide;
  render(); setTurnUI();
- 
+
  startForestAmbient();
 
  setTimeout(() => {
@@ -601,7 +601,7 @@ function render(){
    if(selected&&selected.r===r&&selected.c===c)sq.classList.add('selected');
    const m=moves.find(x=>x.toR===r&&x.toC===c);
    if(m)sq.classList.add(m.capture?'capture':'target');
-   
+
    if(lastMove){
     if(lastMove.fromR === r && lastMove.fromC === c) sq.classList.add('last-move-from');
     if(lastMove.toR === r && lastMove.toC === c) sq.classList.add('last-move-to');
@@ -660,17 +660,17 @@ async function playMove(m){
  applyMove(board,m);selected=null;moves=[];
  const landed=board[m.toR][m.toC];
  const followUps=m.capture&&Math.abs(landed)===Math.abs(moving)?pieceMoves(m.toR,m.toC).filter(x=>x.capture):[];
- 
+
  if(followUps.length){
   forcedContinuation={r:m.toR,c:m.toC};turn=Math.sign(landed);render();processing=false;setTurnUI();
   if(!single && roomRef) syncMultiplayerState();
   if(single&&turn!==userSide)aiTimer=setTimeout(aiMove,450);
   return;
  }
- 
+
  forcedContinuation=null;turn=-Math.sign(moving);render();processing=false;
  if(!allMoves(turn).length){
-  if(!single && roomRef) syncMultiplayerState();
+  if(!single && roomRef) syncMultiplayerState(Math.sign(moving),'ප්‍රතිවාදියාට නීත්‍යානුකූල Move නොමැත.');
   finish(Math.sign(moving),'ප්‍රතිවාදියාට නීත්‍යානුකූල Move නොමැත.');
   return;
  }
@@ -728,7 +728,7 @@ function finish(winner,message){
  if(gameOver)return;gameOver=true;clearInterval(aiTimer);clearInterval(turnClockTimer);
  const won=(winner===userSide);
  const bet=Number(window.currentBetPoints)||0;
- 
+
  if(gameMode==='freestyle'){
   $('overPoints').textContent='පුහුණු තරඟය - Points වෙනස් නොවේ';
  } else if(fbUser&&db) {
@@ -737,7 +737,9 @@ function finish(winner,message){
   } else {
    user.points=Math.max(0,user.points-bet);user.losses++;$('overPoints').textContent='-'+bet+' Points';
   }
+  localStorage.setItem(KEY, JSON.stringify(user));
   db.ref('users_v6/'+fbUser.uid).update({points:user.points,wins:user.wins,losses:user.losses}).catch(()=>{});
+  db.ref('publicProfiles_v6/'+fbUser.uid).update({points:user.points}).catch(()=>{});
  }
 
  if(won){
@@ -750,10 +752,9 @@ function finish(winner,message){
  $('overTitle').style.color=won?'var(--neon-green)':'var(--red)';
  $('overMessage').textContent=message;
  modal('overModal',true);
- 
+
  if(roomRef) {
-  roomRef.update({status: 'finished', winner: winner}).catch(()=>{});
-  roomRef.child('chats').remove().catch(()=>{});
+  roomRef.update({status: 'finished', winner: winner, finishReason: message}).catch(()=>{});
  }
 }
 
@@ -911,12 +912,14 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
   if(data.turn !== undefined) {
    turn = Number(data.turn) === -1 ? -1 : 1;
   }
+  selected = null;
+  moves = [];
   forcedContinuation = data.forcedContinuation || null;
   if(data.lastMove) lastMove = data.lastMove;
 
   render();
   if(data.status === 'finished') {
-   if(!gameOver) finish(Number(data.winner), 'තරඟය අවසන් විය.');
+   if(!gameOver) finish(Number(data.winner), data.finishReason || 'තරඟය අවසන් විය.');
    return;
   }
   if((data.status === 'active' || data.status === 'playing' || data.status === 'waiting' || data.matchStarted === true) && !gameOver) {
@@ -924,7 +927,7 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
   }
  };
  roomRef.on('value', roomValueHandler);
- 
+
  if(chatAddedHandler) { try { roomRef.child('chats').off('child_added', chatAddedHandler); } catch(e){} }
  chatAddedHandler = snap => {
   const c = snap.val();
@@ -946,15 +949,21 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
  startForestAmbient();
 }
 
-function syncMultiplayerState() {
+function syncMultiplayerState(extraWinner, extraReason) {
  if(roomRef) {
-  roomRef.update({
+  const payload = {
    board: board,
    turn: turn,
    forcedContinuation: forcedContinuation || null,
    lastMove: lastMove || null,
    updatedAt: firebase.database.ServerValue.TIMESTAMP
-  }).catch(()=>{});
+  };
+  if (extraWinner !== undefined) {
+   payload.status = 'finished';
+   payload.winner = extraWinner;
+   if (extraReason) payload.finishReason = extraReason;
+  }
+  roomRef.update(payload).catch(()=>{});
  }
 }
 
@@ -962,9 +971,10 @@ function leaveArena(){
  clearInterval(turnClockTimer);clearTimeout(aiTimer);
  const forestAudio = $('forestAmbient');
  if(forestAudio) forestAudio.pause();
+ sessionStorage.removeItem('sinhala_draughts_multi_room');
  if(roomRef){
   if(!gameOver && gameMode==='multi') {
-   roomRef.update({status:'finished',winner:-userSide}).catch(()=>{});
+   roomRef.update({status:'finished',winner:-userSide,finishReason:'ප්‍රතිවාදියා තරඟයෙන් ඉවත් විය.'}).catch(()=>{});
    roomRef.child('chats').remove().catch(()=>{});
   }
   if(roomValueHandler) roomRef.off('value', roomValueHandler);
