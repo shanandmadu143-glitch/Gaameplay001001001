@@ -17,7 +17,7 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage((payload) => {
   const title = (payload.notification && payload.notification.title) || (payload.data && payload.data.title) || 'ශ්‍රී ලංකීය දාම් - Game Invite';
   const body = (payload.notification && payload.notification.body) || (payload.data && payload.data.body) || 'ඔබට නව Multiplayer ආරාධනාවක් ලැබී ඇත!';
-  const targetUrl = (payload.data && payload.data.url) || './mulitiplay.html';
+  const targetUrl = (payload.data && payload.data.url) || './friends.html';
 
   self.registration.showNotification(title, {
     body,
@@ -30,12 +30,14 @@ messaging.onBackgroundMessage((payload) => {
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  const targetUrl = (event.notification.data && event.notification.data.url) || './mulitiplay.html';
+  const targetUrl = (event.notification.data && event.notification.data.url) || './friends.html';
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
       for (const client of clientList) {
-        if ('navigate' in client) {
-          return client.navigate(targetUrl).then((c) => c.focus());
+        if ('focus' in client) {
+          client.focus();
+          if ('navigate' in client) return client.navigate(targetUrl);
+          return client;
         }
       }
       if (clients.openWindow) {
@@ -44,4 +46,3 @@ self.addEventListener('notificationclick', (event) => {
     })
   );
 });
-
