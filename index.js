@@ -51,6 +51,7 @@ async function processPushItem(targetUid, payloadData = {}) {
   await admin.messaging().send(message);
 }
 
+// 1. Firebase Cloud Function (v2) export
 exports.sendInvitePush = functions.onValueCreated(
   { ref: "/fcmPushQueue_v6/{pushId}", region: "asia-southeast1" },
   async (event) => {
@@ -68,6 +69,7 @@ exports.sendInvitePush = functions.onValueCreated(
   }
 );
 
+// 2. Standalone Node.js Worker mode (when run directly via `node index.js` / `npm start`)
 if (require.main === module) {
   const queueRef = admin.database().ref("/fcmPushQueue_v6");
   console.log("Sinhala Draughts Push Worker started (watching /fcmPushQueue_v6)...");
