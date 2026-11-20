@@ -364,15 +364,6 @@ main{
   transition:transform 0.16s ease;
 }
 
-.live-piece-token.king::after{
-  content:'♛';
-  font-size:0.72rem;
-  position:absolute;
-  margin-top:16px;
-  margin-left:16px;
-  color:#ffd166;
-}
-
 /* Section Panels */
 .panel-box{
   background:var(--panel);
@@ -467,38 +458,79 @@ main{
   letter-spacing:0.3px;
 }
 
-/* Action Buttons */
-.actions-row{
+/* Gaming Icon Action Bar */
+.icon-actions-bar{
   display:grid;
-  grid-template-columns:1.4fr 1fr auto;
-  gap:8px;
+  grid-template-columns:1.35fr 1fr 0.85fr;
+  gap:10px;
   padding-top:2px;
 }
 
-.btn,.btn-gold{
-  border:0;
-  border-radius:15px;
-  padding:11px 14px;
+.icon-action-btn{
+  border-radius:18px;
+  padding:11px 12px;
   cursor:pointer;
-  font-weight:800;
-  display:inline-flex;
+  display:flex;
+  flex-direction:column;
   align-items:center;
-  gap:7px;
   justify-content:center;
-  font-size:0.9rem;
-  transition:transform 0.12s ease,box-shadow 0.15s ease;
+  gap:4px;
+  transition:transform 0.13s ease,box-shadow 0.16s ease,border-color 0.16s ease,background 0.16s ease;
 }
-.btn:active,.btn-gold:active{transform:scale(0.97)}
+.icon-action-btn:active{
+  transform:scale(0.96);
+}
 
-.btn{
-  background:rgba(255,255,255,0.08);
-  color:#f8fafc;
-  border:1px solid rgba(255,255,255,0.16);
+.icon-action-btn .ic-wrap{
+  width:34px;
+  height:34px;
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  font-size:1.15rem;
 }
-.btn-gold{
+
+.icon-action-btn .ic-label{
+  font-family:'Orbitron','Gemunu Libre',sans-serif;
+  font-size:0.66rem;
+  font-weight:800;
+  letter-spacing:0.5px;
+}
+
+.btn-save-ic{
+  background:linear-gradient(135deg,rgba(255,209,102,0.22),rgba(255,159,28,0.16));
+  border:1.5px solid var(--gold);
+  color:var(--gold);
+  box-shadow:0 6px 20px rgba(255,159,28,0.25);
+}
+.btn-save-ic .ic-wrap{
   background:linear-gradient(135deg,#ffe08a,#ff9f1c);
   color:#111;
-  box-shadow:0 6px 20px rgba(255,159,28,0.35);
+  box-shadow:0 0 12px rgba(255,209,102,0.45);
+}
+
+.btn-home-ic{
+  background:linear-gradient(135deg,rgba(0,242,254,0.16),rgba(21,30,54,0.88));
+  border:1.5px solid rgba(0,242,254,0.45);
+  color:var(--neon-blue);
+  box-shadow:0 6px 18px rgba(0,242,254,0.16);
+}
+.btn-home-ic .ic-wrap{
+  background:rgba(0,242,254,0.18);
+  color:var(--neon-blue);
+  border:1px solid rgba(0,242,254,0.4);
+}
+
+.btn-logout-ic{
+  background:linear-gradient(135deg,rgba(255,71,87,0.16),rgba(21,30,54,0.88));
+  border:1.5px solid rgba(255,71,87,0.48);
+  color:var(--red);
+  box-shadow:0 6px 18px rgba(255,71,87,0.16);
+}
+.btn-logout-ic .ic-wrap{
+  background:rgba(255,71,87,0.18);
+  color:var(--red);
+  border:1px solid rgba(255,71,87,0.42);
 }
 
 /* Bottom Navigation */
@@ -657,11 +689,20 @@ main{
     <div class="pieces-grid" id="piecesGrid"></div>
    </section>
 
-   <!-- Save / Home / Logout -->
-   <div class="actions-row">
-    <button class="btn-gold" id="saveProfile"><i class="fa-solid fa-floppy-disk"></i> සුරකින්න (Save)</button>
-    <button class="btn" id="backHomeBtn"><i class="fa-solid fa-house"></i> Home</button>
-    <button class="btn" id="logoutBtn" style="border-color:rgba(255,71,87,0.45);color:var(--red)" title="Logout"><i class="fa-solid fa-right-from-bracket"></i></button>
+   <!-- Gaming Icon Action Bar: Save / Home / Logout -->
+   <div class="icon-actions-bar">
+    <button type="button" class="icon-action-btn btn-save-ic" id="saveProfile" title="සුරකින්න (Save)">
+     <span class="ic-wrap"><i class="fa-solid fa-shield-check"></i></span>
+     <span class="ic-label">SAVE</span>
+    </button>
+    <button type="button" class="icon-action-btn btn-home-ic" id="backHomeBtn" title="Home">
+     <span class="ic-wrap"><i class="fa-solid fa-house-chimney"></i></span>
+     <span class="ic-label">HOME</span>
+    </button>
+    <button type="button" class="icon-action-btn btn-logout-ic" id="logoutBtn" title="Logout">
+     <span class="ic-wrap"><i class="fa-solid fa-power-off"></i></span>
+     <span class="ic-label">LOGOUT</span>
+    </button>
    </div>
   </div>
  </main>
@@ -721,7 +762,7 @@ const DEFAULT_AVATARS=[
  {id:'fa-robot',name:'රොබෝ යන්ත්‍රය',icon:'fa-robot'},
  {id:'fa-ghost',name:'අපූර්ව හොල්මන',icon:'fa-ghost'},
  {id:'fa-shield-halved',name:'රජකීය පලිහ',icon:'fa-shield-halved'},
- {id:13,name:'රජකීය ඔටුන්න',icon:'fa-crown'},
+ {id:'fa-crown',name:'රජකීය ඔටුන්න',icon:'fa-crown'},
  {id:'fa-fire',name:'මහා ගින්න',icon:'fa-fire'},
  {id:'fa-bolt',name:'අකුණු සැණැල්ල',icon:'fa-bolt'},
  {id:'fa-skull',name:'හිස්කබල',icon:'fa-skull'},
@@ -735,7 +776,6 @@ const DEFAULT_AVATARS=[
  {id:'fa-crosshairs',name:'ඉලක්කය',icon:'fa-crosshairs'},
  {id:'fa-hat-wizard',name:'මායාකාරයා',icon:'fa-hat-wizard'}
 ];
-DEFAULT_AVATARS[6].id='fa-crown';
 
 function normalizeList(val, fallback) {
  if (Array.isArray(val)) return val.length ? val : fallback;
@@ -975,7 +1015,7 @@ $('saveProfile').onclick=async()=>{
   await db.ref('publicProfiles_v6/'+fbUser.uid).update(patch).catch(()=>{});
  }
  renderProfileItems();
- toast('Gaming Profile Loadout සුරකින ලදී!', 'fa-circle-check');
+ toast('Gaming Profile Loadout සුරකින ලදී!', 'fa-shield-check');
 };
 
 $('backHomeBtn').onclick=()=>smoothNavigate('index.html');
