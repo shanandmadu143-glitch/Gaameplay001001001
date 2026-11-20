@@ -32,4 +32,1052 @@ body{
   backdrop-filter: blur(6px);
 }
 .arena-player-card { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; position: relative; }
-.arena-avatar-box { width: 48px; height: 48px; border-radius: 
+.arena-avatar-box { width: 48px; height: 48px; border-radius: 50%; border: 2px solid #2ecc71; background: #0f2b1c; display: grid; place-items: center; font-size: 1.3rem; color: #2ecc71; overflow: hidden; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.arena-player-card.active .arena-avatar-box { border-color: #ffd166; box-shadow: 0 0 20px rgba(255, 209, 102, 0.8); transform: scale(1.08); }
+.arena-player-card b { font-size: 0.9rem; color: #fff; max-width: 105px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.arena-player-card small { font-size: 0.72rem; color: #a0aec0; }
+
+.arena-coins-center { display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(46, 204, 113, 0.1); padding: 6px 16px; border-radius: 16px; border: 1px solid rgba(46, 204, 113, 0.3); }
+.arena-coins-center i { font-size: 1.3rem; color: #2ecc71; }
+.arena-coins-center b { font-size: 1.02rem; color: #fff; }
+
+.mid-voice-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(10, 25, 15, 0.6);
+  padding: 6px 18px;
+  border-radius: 30px;
+  border: 1px solid rgba(46, 204, 113, 0.3);
+  backdrop-filter: blur(4px);
+  margin: 4px 0;
+}
+.arena-voice-mic-btn {
+  width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--red);
+  background: rgba(255, 71, 87, 0.2); color: var(--red); font-size: 1.1rem;
+  display: grid; place-items: center; cursor: pointer; transition: all 0.2s;
+}
+.arena-voice-mic-btn.active-rec {
+  background: var(--red); color: #fff; border-color: var(--red);
+  animation: pulseRec 1s infinite;
+}
+@keyframes pulseRec {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7); }
+  70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(255, 71, 87, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
+}
+.mid-voice-label {
+  font-size: 0.78rem;
+  color: #a0aec0;
+  font-weight: 600;
+}
+
+.thought-bubble {
+  position: absolute; top: 78px; left: 50%; transform: translateX(-50%) scale(0);
+  background: rgba(14, 20, 38, 0.95); border: 2px solid var(--neon-blue); color: #fff;
+  padding: 6px 12px; border-radius: 14px; font-size: 0.78rem; white-space: nowrap; max-width: 160px;
+  overflow: hidden; text-overflow: ellipsis; box-shadow: 0 4px 20px rgba(0,242,254,0.5);
+  z-index: 50; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none;
+}
+.thought-bubble.show { transform: translateX(-50%) scale(1); }
+.thought-bubble:after {
+  content: ''; position: absolute; top: -6px; left: 50%; transform: translateX(-50%);
+  border-width: 0 6px 6px 6px; border-style: solid; border-color: transparent transparent var(--neon-blue) transparent;
+}
+
+@keyframes rgbGlow {
+  0% { border-color: #ff4757; box-shadow: 0 0 25px rgba(255, 71, 87, 0.8), inset 0 0 15px rgba(255, 71, 87, 0.5); }
+  25% { border-color: #2ecc71; box-shadow: 0 0 25px rgba(46, 204, 113, 0.8), inset 0 0 15px rgba(46, 204, 113, 0.5); }
+  50% { border-color: #00f2fe; box-shadow: 0 0 25px rgba(0, 242, 254, 0.8), inset 0 0 15px rgba(0, 242, 254, 0.5); }
+  75% { border-color: #ffd166; box-shadow: 0 0 25px rgba(255, 209, 102, 0.8), inset 0 0 15px rgba(255, 209, 102, 0.5); }
+  100% { border-color: #ff4757; box-shadow: 0 0 25px rgba(255, 71, 87, 0.8), inset 0 0 15px rgba(255, 71, 87, 0.5); }
+}
+
+.board-wrap { 
+  width: min(92vw, 54vh, 430px); aspect-ratio: 1; position: relative; margin: auto; 
+  background: linear-gradient(135deg, #163824, #0b1f13); padding: 12px; border-radius: 24px; 
+  border: 4px solid #2ecc71; animation: rgbGlow 6s linear infinite;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+}
+
+.board { width: 100%; height: 100%; display: grid; grid-template-columns: repeat(8,1fr); grid-template-rows: repeat(8,1fr); border-radius: 12px; overflow: hidden; border: 2px solid #07140c; }
+.sq { display: grid; place-items: center; position: relative; cursor: pointer; touch-action: manipulation; }
+.sq.light { background: #e8d7be; }
+.sq.dark { background: #4a2e18; }
+.sq.selected { background: #ffd166 !important; }
+.sq.target:after { content:''; width:32%; height:32%; border-radius:50%; background:#2ecc71; }
+.sq.capture:after { content:''; width:42%; height:42%; border-radius:50%; background:#ff4757; }
+
+.sq.last-move-from {
+  background: rgba(255, 165, 2, 0.35) !important;
+  box-shadow: inset 0 0 10px rgba(255, 165, 2, 0.6);
+}
+.sq.last-move-to {
+  background: rgba(0, 242, 254, 0.35) !important;
+  box-shadow: inset 0 0 12px rgba(0, 242, 254, 0.8);
+  border: 2px dashed var(--neon-blue);
+}
+
+.piece { width: 82%; height: 82%; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.7); display: grid; place-items: center; font-size: 1.15rem; position: relative; transition: transform 0.15s ease; }
+.king:after { content:'♛'; font-size: clamp(13px,3.2vw,19px); position: absolute; bottom: 2px; right: 2px; color: #ffd166; }
+
+.arena-bottom-bar { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 520px; padding: 6px 10px; margin-bottom: 4px; }
+#clockPanel { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; }
+#clockRing { --progress: 100; width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; position: relative; background: conic-gradient(#2ecc71 calc(var(--progress)*1%), rgba(255,255,255,0.12) 0); }
+#clockRing:before { content: ''; position: absolute; inset: 5px; border-radius: 50%; background: #0b1f13; border: 1px solid rgba(255,255,255,0.2); }
+#turnClock { position: relative; z-index: 1; font-size: 1.15rem; font-weight: 800; color: #2ecc71; }
+#clockCaption { font-size: 0.75rem; color: #2ecc71; font-weight: 700; }
+#clockRing.urgent #turnClock { color: var(--red); }
+
+.arena-circle-btn { width: 48px; height: 48px; border-radius: 50%; border: 2px solid #2ecc71; background: linear-gradient(135deg, #2ecc71, #27ae60); color: #0b1f13; font-size: 1.25rem; display: grid; place-items: center; cursor: pointer; position: relative; }
+.arena-circle-btn.close-btn { border-color: #ff6b81; background: linear-gradient(135deg, #ff4757, #c0392b); color: #fff; }
+.chat-badge {
+  position: absolute; top: -4px; right: -4px; background: var(--red); color: #fff; font-size: 0.65rem;
+  width: 18px; height: 18px; border-radius: 50%; display: none; place-items: center; font-weight: bold;
+}
+
+.chat-drawer { position: fixed; top: 0; right: -100%; width: min(85vw, 310px); height: 100dvh; background: rgba(10, 25, 15, 0.98); border-left: 2px solid #2ecc71; z-index: 95; display: flex; flex-direction: column; transition: right 0.3s ease; }
+.chat-drawer.open { right: 0; }
+.chat-header { padding: 14px; background: rgba(0,0,0,0.4); border-bottom: 1px solid rgba(46, 204, 113, 0.2); display: flex; justify-content: space-between; align-items: center; color: #2ecc71; }
+.chat-body { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+.chat-msg { background: rgba(255,255,255,0.06); padding: 7px 11px; border-radius: 10px; font-size: 0.85rem; max-width: 85%; word-break: break-word; user-select: text; }
+.chat-msg.me { align-self: flex-end; background: rgba(46, 204, 113, 0.25); border: 1px solid rgba(46, 204, 113, 0.5); color: #fff; }
+.chat-msg.them { align-self: flex-start; background: rgba(255,255,255,0.12); color: #fff; }
+.chat-footer { padding: 10px; display: flex; gap: 6px; background: rgba(0,0,0,0.4); align-items: center; }
+.chat-footer input { padding: 8px 10px; font-size: 0.85rem; border-radius: 12px; background: rgba(0,0,0,0.6); border: 1px solid rgba(46, 204, 113, 0.4); color: #fff; width: 100%; outline: none; user-select: text; }
+.quick-chats { display: flex; gap: 6px; overflow-x: auto; padding: 8px 10px; background: rgba(0,0,0,0.25); }
+.quick-btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-size: 0.72rem; padding: 5px 9px; border-radius: 12px; white-space: nowrap; cursor: pointer; }
+
+.voice-msg-bubble {
+  display: flex; align-items: center; gap: 8px; background: rgba(46, 204, 113, 0.15) !important;
+  border: 1px solid rgba(46, 204, 113, 0.4); padding: 6px 10px; border-radius: 12px;
+}
+.voice-msg-bubble audio {
+  height: 30px; width: 140px;
+}
+
+.modal{position:fixed;inset:0;background:rgba(3,5,12,0.85);backdrop-filter:blur(8px);display:none;place-items:center;z-index:100;padding:15px}
+.modal.show{display:grid}
+.modalbox{width:min(100%,420px);background:linear-gradient(145deg,#0a190f,#132e1e);border:2px solid #2ecc71;border-radius:24px;padding:20px;display:grid;gap:12px;max-height:85vh;overflow-y:auto;box-shadow:0 20px 40px rgba(0,0,0,0.8)}
+.modalbox h2,.modalbox h3{text-align:center;color:#2ecc71;font-weight:700}
+.btn,.btn-gold{border:0;border-radius:12px;padding:10px 14px;cursor:pointer;font-weight:700;display:inline-flex;align-items:center;gap:6px;justify-content:center}
+.btn{background:rgba(255,255,255,0.1);color:white;border:1px solid rgba(255,255,255,0.2)}
+.btn-gold{background:linear-gradient(135deg,#2ecc71,#27ae60);color:#111;box-shadow:0 4px 15px rgba(46,204,113,0.4)}
+.row{display:flex;gap:10px;align-items:center}
+#toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,120px);opacity:0;background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid #2ecc71;color:#f8f9fa;border-radius:30px;padding:10px 20px;z-index:150;transition:.3s;font-weight:600;display:flex;align-items:center;gap:8px;font-size:0.9rem}
+#toast.show{transform:translate(-50%,0);opacity:1}
+</style>
+</head>
+<body>
+
+<section class="arena" id="arena">
+ <div class="arena-top-header">
+  <div class="arena-player-card active" id="p1">
+   <div class="arena-avatar-box" id="p1AvatarBox"><i class="fa-solid fa-user"></i></div>
+   <b id="p1name">Player 1</b>
+   <small id="p1sub">Host</small>
+  </div>
+
+  <div class="arena-coins-center">
+   <i class="fa-solid fa-coins"></i>
+   <b id="arenaBetDisplay">100</b>
+  </div>
+
+  <div class="arena-player-card" id="p2">
+   <div class="thought-bubble" id="opponentThoughtBubble"></div>
+   <div class="arena-avatar-box" id="p2AvatarBox"><i class="fa-solid fa-chess-knight"></i></div>
+   <b id="p2name">Player 2</b>
+   <small id="p2sub">Guest</small>
+  </div>
+ </div>
+
+ <div class="mid-voice-bar">
+  <button class="arena-voice-mic-btn" id="arenaVoiceRecordBtn" title="Press & Hold to Record Voice Note">
+   <i class="fa-solid fa-microphone"></i>
+  </button>
+  <span class="mid-voice-label">කතා කිරීමට ඔබාගෙන සිටින්න (Hold to Speak)</span>
+ </div>
+
+ <div class="board-wrap">
+  <div class="board" id="board"></div>
+ </div>
+
+ <div class="arena-bottom-bar">
+  <button class="arena-circle-btn" id="arenaChatBtn" title="Chat">
+   <i class="fa-solid fa-comment-dots"></i>
+   <span class="chat-badge" id="chatBadge">1</span>
+  </button>
+  <div id="clockPanel">
+   <div id="clockRing" role="timer" aria-live="off"><span id="turnClock">15</span></div>
+   <span id="clockCaption">ඔබගේ වාරය</span>
+  </div>
+  <button class="arena-circle-btn close-btn" id="arenaMenuBtn" title="Close / Menu"><i class="fa-solid fa-xmark"></i></button>
+ </div>
+
+ <div class="chat-drawer" id="chatDrawer">
+  <div class="chat-header">
+   <b><i class="fa-solid fa-comments"></i> In-Game Chat</b>
+   <button class="btn" id="closeChat" style="padding:4px 10px;font-size:0.8rem">✕</button>
+  </div>
+  <div class="quick-chats">
+   <button class="quick-btn" onclick="sendQuickChat('Good Game! 👍')">Good Game! 👍</button>
+   <button class="quick-btn" onclick="sendQuickChat('Well Played! 👏')">Well Played! 👏</button>
+   <button class="quick-btn" onclick="sendQuickChat('Hurry up! ⏳')">Hurry up! ⏳</button>
+   <button class="quick-btn" onclick="sendQuickChat('Nice move! 🔥')">Nice move! 🔥</button>
+  </div>
+  <div class="chat-body" id="chatMessages">
+   <div class="chat-msg them">ප්‍රතිවාදියා සමඟ කතා කරන්න...</div>
+  </div>
+  <div class="chat-footer">
+   <input type="text" id="chatInput" placeholder="පණිවිඩයක් ලියන්න..." autocomplete="off">
+   <button class="btn-gold" id="sendChatBtn" style="padding:6px 12px"><i class="fa-solid fa-paper-plane"></i></button>
+  </div>
+ </div>
+</section>
+
+<audio id="remoteAudio" autoplay playsinline style="display:none;"></audio>
+<audio id="forestAmbient" src="https://cdn.pixabay.com/download/audio/2022/05/16/audio_db32c1b913.mp3?filename=forest-with-birds-and-wind-111456.mp3" preload="auto" loop style="display:none;"></audio>
+
+<div class="modal" id="overModal">
+ <div class="modalbox" style="text-align:center">
+  <h2 id="overTitle">තරඟය අවසන්</h2>
+  <p id="overMessage" style="color:var(--dim)"></p>
+  <b id="overPoints" style="color:#2ecc71;font-size:1.2rem"></b>
+  <div class="row" style="margin-top:10px">
+   <button class="btn-gold" id="rematch" style="flex:1">නැවත ක්‍රීඩා කරන්න</button>
+   <button class="btn" id="exit" style="flex:1">ඉවත් වෙන්න</button>
+  </div>
+ </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script>
+'use strict';
+const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
+const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user';
+let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,avatarIcon:'fa-user'};
+let board=[],turn=1,selected=null,moves=[],single=true,roomId=null,roomRef=null,roomValueHandler=null,chatAddedHandler=null,role=null,gameOver=false,aiTimer=null,processing=false,turnClockTimer=null,turnDeadline=0,forcedContinuation=null;
+let userSide=1,nextStartingSide=1,gameMode='single';
+let lastMove = null;
+let thoughtBubbleTimeout = null;
+let mySessionId = 'player_' + Math.random().toString(36).substring(2, 9);
+let customPieces = [];
+let customAvatars = [];
+
+let soundEnabled = true;
+let mediaRecorder = null;
+let audioChunks = [];
+let isRecording = false;
+
+const PIECE_DESIGNS=[
+ {id:0,name:'මුතු සුදු (Default)',bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●',free:true},
+ {id:1,name:'රන් ඔටුන්න',bg:'linear-gradient(135deg,#ffeaa7,#fdcb6e)',border:'#e1b12c',color:'#2d3436',icon:'★'},
+ {id:2,name:'රුධිර රතු',bg:'radial-gradient(circle at 30% 30%,#ff7675,#d63031)',border:'#c0392b',color:'#fff',icon:'◆'},
+ {id:3,name:'මරකත කොළ',bg:'radial-gradient(circle at 30% 30%,#55efc4,#00b894)',border:'#00a8ff',color:'#fff',icon:'▲'},
+ {id:4,name:'නියෝන් නිල්',bg:'radial-gradient(circle at 30% 30%,#74b9ff,#0984e3)',border:'#00f2fe',color:'#fff',icon:'✦'},
+ {id:5,name:'රාජකීය දම්',bg:'radial-gradient(circle at 30% 30%,#a29bfe,#6c5ce7)',border:'#fd79a8',color:'#fff',icon:'❖'},
+ {id:6,name:'අඳුරු කාබන්',bg:'radial-gradient(circle at 30% 30%,#636e72,#2d3436)',border:'#b2bec3',color:'#ffd166',icon:'♠'},
+ {id:7,name:'සූර්ය රන්',bg:'radial-gradient(circle at 30% 30%,#fab1a0,#e17055)',border:'#d63031',color:'#fff',icon:'☀'},
+ {id:8,name:'මැජෙන්ටා රෝස',bg:'radial-gradient(circle at 30% 30%,#ff7979,#eb4d4b)',border:'#ff7979',color:'#fff',icon:'✿'},
+ {id:9,name:'සැහැල්ලු සිල්වර්',bg:'radial-gradient(circle at 30% 30%,#dfe6e9,#b2bec3)',border:'#636e72',color:'#2d3436',icon:'⚙'},
+ {id:10,name:'කොස්මික් වයලට්',bg:'radial-gradient(circle at 30% 30%,#8e44ad,#3498db)',border:'#9b59b6',color:'#fff',icon:'☄'},
+ {id:11,name:'නියෝන් ලෙමන්',bg:'radial-gradient(circle at 30% 30%,#f1c40f,#f39c12)',border:'#f1c40f',color:'#111',icon:'⚡'},
+ {id:12,name:'ටර්කියුයිස්',bg:'radial-gradient(circle at 30% 30%,#1abc9c,#16a085)',border:'#1abc9c',color:'#fff',icon:'🌊'},
+ {id:13,name:'චොක්ලට් බ්‍රවුන්',bg:'radial-gradient(circle at 30% 30%,#d35400,#a04000)',border:'#e67e22',color:'#fff',icon:'☕'},
+ {id:14,name:'රෝස් ගෝල්ඩ්',bg:'radial-gradient(circle at 30% 30%,#f5b041,#eb984e)',border:'#f39c12',color:'#fff',icon:'♕'},
+ {id:15,name:'ගැඹුරු මිනිරන්',bg:'radial-gradient(circle at 30% 30%,#34495e,#2c3e50)',border:'#7f8c8d',color:'#ffd166',icon:'🛡'},
+ {id:16,name:'අයිස් මින්ට්',bg:'radial-gradient(circle at 30% 30%,#a3e4d7,#48c9b0)',border:'#17a589',color:'#111',icon:'❄'},
+ {id:17,name:'සැණකෙළි පර්පල්',bg:'radial-gradient(circle at 30% 30%,#d98880,#c0392b)',border:'#e74c3c',color:'#fff',icon:'🔮'},
+ {id:18,name:'විදුලි ලෙමන්',bg:'radial-gradient(circle at 30% 30%,#f7dc6f,#f9e79f)',border:'#f1c40f',color:'#111',icon:'✨'},
+ {id:19,name:'අමරණීය අඳුර',bg:'radial-gradient(circle at 30% 30%,#2c3e50,#000000)',border:'#ffd166',color:'#ffd166',icon:'♔'}
+];
+
+function getAllPieceDesigns(){
+ return [...PIECE_DESIGNS, ...customPieces];
+}
+
+function playVoice(text) {
+ if (!soundEnabled || !('speechSynthesis' in window)) return;
+ window.speechSynthesis.cancel();
+ const utterance = new SpeechSynthesisUtterance(text);
+ utterance.lang = 'en-US';
+ utterance.pitch = 0.3;
+ utterance.rate = 0.95;
+ utterance.volume = 1.0;
+
+ const voices = window.speechSynthesis.getVoices();
+ const robotVoice = voices.find(v => v.name.toLowerCase().includes('google us english') || v.name.toLowerCase().includes('david') || v.name.toLowerCase().includes('zira') || v.name.toLowerCase().includes('robot'));
+ if (robotVoice) utterance.voice = robotVoice;
+
+ window.speechSynthesis.speak(utterance);
+}
+
+if ('speechSynthesis' in window) {
+ window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
+}
+
+function startForestAmbient() {
+ const forestAudio = $('forestAmbient');
+ if (forestAudio && soundEnabled) {
+  forestAudio.volume = 0.35;
+  forestAudio.play().catch(() => {
+   const unlockAudio = () => {
+    forestAudio.play().catch(()=>{});
+    window.removeEventListener('click', unlockAudio);
+    window.removeEventListener('touchstart', unlockAudio);
+   };
+   window.addEventListener('click', unlockAudio, { once: true });
+   window.addEventListener('touchstart', unlockAudio, { once: true });
+  });
+ }
+}
+
+const voiceRecordBtn = $('arenaVoiceRecordBtn');
+if (voiceRecordBtn) {
+ const startRec = async (e) => {
+  e.preventDefault();
+  if (isRecording) return;
+  try {
+   const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+   mediaRecorder = new MediaRecorder(stream);
+   audioChunks = [];
+
+   mediaRecorder.ondataavailable = event => {
+    if (event.data.size > 0) audioChunks.push(event.data);
+   };
+
+   mediaRecorder.onstop = () => {
+    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+    const reader = new FileReader();
+    reader.readAsDataURL(audioBlob);
+    reader.onloadend = () => {
+     const base64Audio = reader.result;
+     sendVoiceMessage(base64Audio);
+    };
+    stream.getTracks().forEach(track => track.stop());
+   };
+
+   mediaRecorder.start();
+   isRecording = true;
+   voiceRecordBtn.classList.add('active-rec');
+   toast('🎙️ Recording Voice Note...', 'fa-microphone');
+  } catch (err) {
+   toast('Microphone අවසරය අවශ්‍යයි.');
+  }
+ };
+
+ const stopRec = (e) => {
+  e.preventDefault();
+  if (!isRecording || !mediaRecorder) return;
+  mediaRecorder.stop();
+  isRecording = false;
+  voiceRecordBtn.classList.remove('active-rec');
+  toast('🎤 Voice Note යවන ලදී', 'fa-paper-plane');
+ };
+
+ voiceRecordBtn.addEventListener('mousedown', startRec);
+ voiceRecordBtn.addEventListener('mouseup', stopRec);
+ voiceRecordBtn.addEventListener('mouseleave', () => { if(isRecording) stopRec({preventDefault:()=>{}}); });
+ voiceRecordBtn.addEventListener('touchstart', startRec);
+ voiceRecordBtn.addEventListener('touchend', stopRec);
+}
+
+function sendVoiceMessage(audioDataUrl) {
+ appendVoiceMessage(audioDataUrl, true);
+
+ if (!single && roomRef) {
+  roomRef.child('chats').push({
+   sender: user.name || 'Player',
+   senderId: mySessionId,
+   type: 'voice',
+   audioData: audioDataUrl,
+   timestamp: Date.now()
+  }).catch(()=>{});
+ } else {
+  setTimeout(() => {
+   showOpponentThought("🎙️ Listened to voice note");
+   playVoice("Voice message received.");
+  }, 1000);
+ }
+}
+
+function appendVoiceMessage(audioUrl, isMe) {
+ const div = document.createElement('div');
+ div.className = 'chat-msg ' + (isMe ? 'me' : 'them') + ' voice-msg-bubble';
+
+ const audioEl = document.createElement('audio');
+ audioEl.controls = true;
+ audioEl.src = audioUrl;
+
+ const iconEl = document.createElement('i');
+ iconEl.className = 'fa-solid fa-microphone-lines';
+ iconEl.style.color = '#2ecc71';
+
+ div.append(iconEl, audioEl);
+ $('chatMessages').appendChild(div);
+ $('chatMessages').scrollTop = $('chatMessages').scrollHeight;
+
+ if (!isMe && soundEnabled) {
+  audioEl.play().catch(e => console.log("Auto-play prevented:", e));
+ }
+}
+
+function showOpponentThought(msg) {
+ const bubble = $('opponentThoughtBubble');
+ if(!bubble) return;
+ let shortMsg = String(msg || '').trim();
+ if (shortMsg.length > 25) shortMsg = shortMsg.substring(0, 22) + '...';
+ bubble.textContent = shortMsg;
+ bubble.classList.add('show');
+ if(thoughtBubbleTimeout) clearTimeout(thoughtBubbleTimeout);
+ thoughtBubbleTimeout = setTimeout(() => { bubble.classList.remove('show'); }, 4000);
+}
+
+function toast(s, icon='fa-circle-info'){
+ const t=$('toast');
+ t.replaceChildren();
+ const iconEl=document.createElement('i');iconEl.className=`fa-solid ${icon}`;iconEl.style.color='#2ecc71';
+ const textEl=document.createElement('span');textEl.textContent=String(s);
+ t.append(iconEl,textEl);
+ t.classList.add('show');
+ setTimeout(()=>t.classList.remove('show'),3000);
+}
+function modal(id,on){$(id).classList.toggle('show',on);}
+
+try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);auth=firebase.auth();db=firebase.database();}catch(e){console.error(e);}
+
+function applyAvatarToBox(elementId, designIndex, customIcon){
+ const el=$(elementId);if(!el)return;
+ const allDesigns=getAllPieceDesigns();
+ const idx=Number(designIndex)||0;
+ const design=allDesigns[idx]||allDesigns[0];
+ el.style.background=design.bg;el.style.borderColor=design.border;el.style.color=design.color;
+ el.innerHTML=customIcon ? `<i class="fa-solid ${customIcon}"></i>` : design.icon;
+}
+
+function syncPlayerCardsVisuals(){
+ const myIdx = Number(user.pieceIndex) || 0;
+ const myAv = user.avatarIcon || 'fa-user';
+ if(single){
+  $('p1name').textContent = user.name || 'ඔබ';
+  $('p1sub').textContent = 'Player';
+  $('p2name').textContent = 'AI පරිගණකය';
+  $('p2sub').textContent = 'AI';
+  applyAvatarToBox('p1AvatarBox', myIdx, myAv);
+  applyAvatarToBox('p2AvatarBox', 2, 'fa-robot');
+ } else if(role === 'host'){
+  $('p1name').textContent = user.name || $('p1name').textContent || 'Host';
+  $('p1sub').textContent = 'Host';
+  $('p2sub').textContent = 'Guest';
+  applyAvatarToBox('p1AvatarBox', myIdx, myAv);
+  applyAvatarToBox('p2AvatarBox', window.opponentPieceIndex || 0, window.opponentAvatar || 'fa-chess-knight');
+ } else {
+  $('p2name').textContent = user.name || $('p2name').textContent || 'Guest';
+  $('p1sub').textContent = 'Host';
+  $('p2sub').textContent = 'Guest';
+  applyAvatarToBox('p1AvatarBox', window.opponentPieceIndex || 0, window.opponentAvatar || 'fa-user');
+  applyAvatarToBox('p2AvatarBox', myIdx, myAv);
+ }
+}
+
+function attachArenaShopSync(){
+ if(!db)return;
+ db.ref('shopConfig_v6/customPieces').on('value', snap => {
+  const val = snap.val();
+  customPieces = Array.isArray(val) ? val.filter(Boolean) : (val && typeof val === 'object' ? Object.values(val).filter(Boolean) : []);
+  syncPlayerCardsVisuals();
+  render();
+ }, ()=>{});
+ db.ref('shopConfig_v6/customAvatars').on('value', snap => {
+  const val = snap.val();
+  customAvatars = Array.isArray(val) ? val.filter(Boolean) : (val && typeof val === 'object' ? Object.values(val).filter(Boolean) : []);
+  syncPlayerCardsVisuals();
+ }, ()=>{});
+}
+
+async function initGameFromURL(){
+ const params = new URLSearchParams(window.location.search);
+ let storedMulti = null;
+ try { storedMulti = JSON.parse(sessionStorage.getItem('sinhala_draughts_multi_room') || 'null'); } catch(e){}
+
+ gameMode = params.get('mode') || ((params.get('roomId') || (storedMulti && storedMulti.roomId)) ? 'multi' : 'single');
+ const bet = Number(params.get('bet')) || (storedMulti && Number(storedMulti.bet)) || Number(sessionStorage.getItem('sinhala_draughts_bet')) || 0;
+ window.currentBetPoints = bet;
+ $('arenaBetDisplay').textContent = gameMode === 'freestyle' ? 'FREE' : bet;
+
+ const saved = localStorage.getItem(KEY);
+ if(saved) {
+  try {
+   const parsed = JSON.parse(saved);
+   user = Object.assign(user, parsed, {
+    pieceIndex: Number(parsed.pieceIndex) || 0,
+    avatarIcon: parsed.avatarIcon || 'fa-user'
+   });
+  } catch(e){}
+ }
+
+ attachArenaShopSync();
+
+ const startByMode = async () => {
+  if(gameMode === 'single' || gameMode === 'freestyle') {
+   single = true; role = null; roomId = null;
+   syncPlayerCardsVisuals();
+   initBoard();
+  } else if(gameMode === 'multi') {
+   single = false;
+   role = params.get('role') || (storedMulti && storedMulti.role) || 'host';
+   roomId = params.get('roomId') || (storedMulti && storedMulti.roomId) || '';
+   const oppName = params.get('oppName') || (role === 'host' ? (storedMulti && storedMulti.guestName) : (storedMulti && storedMulti.hostName)) || (role === 'host' ? 'Guest' : 'Host');
+   setupMultiplayerGame(roomId, role, oppName, bet);
+  }
+ };
+
+ if(!auth || !db) {
+  await startByMode();
+  return;
+ }
+
+ let authResolved = false;
+ auth.onAuthStateChanged(async u => {
+  if(u) {
+   fbUser = u;
+   try {
+    const snap = await db.ref('users_v6/'+u.uid).once('value');
+    if(snap.exists()) {
+     const d = snap.val();
+     if(d.name) user.name = d.name;
+     user.points = Number(d.points)||500;
+     user.wins = Number(d.wins)||0;
+     user.losses = Number(d.losses)||0;
+     user.pieceIndex = Number(d.pieceIndex)||0;
+     user.avatarIcon = d.avatarIcon||'fa-user';
+     localStorage.setItem(KEY, JSON.stringify({...user, uid: u.uid}));
+    }
+   } catch(e){}
+  }
+  if(!authResolved) {
+   authResolved = true;
+   await startByMode();
+  } else {
+   syncPlayerCardsVisuals();
+   render();
+   if(!single && roomId && db && fbUser) {
+    const patch = role === 'guest'
+     ? { guestUid: fbUser.uid, guestName: user.name || 'Guest', guestPieceIndex: Number(user.pieceIndex)||0, guestAvatar: user.avatarIcon||'fa-user', status: 'active', matchStarted: true }
+     : { hostUid: fbUser.uid, hostName: user.name || 'Host', hostPieceIndex: Number(user.pieceIndex)||0, hostAvatar: user.avatarIcon||'fa-user' };
+    db.ref('rooms_v6/' + roomId).update(patch).catch(()=>{});
+   }
+  }
+ });
+}
+
+function createFreshBoard() {
+ const b = Array.from({length:8},()=>Array(8).fill(0));
+ for(let r=0;r<8;r++)for(let c=0;c<8;c++)if((r+c)%2){if(r<3)b[r][c]=-1;else if(r>4)b[r][c]=1}
+ return b;
+}
+
+function normalizeFirebaseBoard(rawBoard) {
+ if (!Array.isArray(rawBoard) || rawBoard.length !== 8) return createFreshBoard();
+ return Array.from({length:8}, (_, r) =>
+  Array.from({length:8}, (__, c) => {
+   const val = rawBoard[r] && rawBoard[r][c];
+   return typeof val === 'number' ? val : 0;
+  })
+ );
+}
+
+function initBoard(){
+ clearInterval(turnClockTimer);
+ board=createFreshBoard();
+ turn=1;selected=null;moves=[];gameOver=false;processing=false;forcedContinuation=null;
+ lastMove=null;
+ if(single) userSide = nextStartingSide;
+ syncPlayerCardsVisuals();
+ render(); setTurnUI();
+
+ startForestAmbient();
+
+ setTimeout(() => {
+  playVoice("System online. Forest ambient active. Good luck!");
+ }, 800);
+
+ if(single && turn !== userSide) aiTimer = setTimeout(aiMove, 600);
+}
+
+const inside=(r,c)=>r>=0&&r<8&&c>=0&&c<8;
+
+function pieceMoves(r,c,b=board){
+ const p=b[r][c];if(!p)return[];
+ const isKing=Math.abs(p)===2,dirs=[[1,1],[1,-1],[-1,1],[-1,-1]];
+ const caps=[],normal=[];
+ if(isKing){
+  for(const[dr,dc]of dirs){
+   let step=1;while(true){const tr=r+dr*step,tc=c+dc*step;if(!inside(tr,tc)||b[tr][tc]!==0)break;normal.push({fromR:r,fromC:c,toR:tr,toC:tc,capture:false});step++;}
+  }
+  for(const[dr,dc]of dirs){
+   let step=1,enemyR=-1,enemyC=-1;
+   while(true){
+    const tr=r+dr*step,tc=c+dc*step;if(!inside(tr,tc))break;
+    const val=b[tr][tc];
+    if(val!==0){if(Math.sign(val)===Math.sign(p))break;else{if(enemyR!==-1)break;enemyR=tr;enemyC=tc;}}
+    else if(enemyR!==-1)caps.push({fromR:r,fromC:c,toR:tr,toC:tc,capR:enemyR,capC:enemyC,capture:true});
+    step++;
+   }
+  }
+ }else{
+  const moveDirs=(p>0?[[-1,1],[-1,-1]]:[[1,1],[1,-1]]);
+  for(const[dr,dc]of dirs){
+   const mr=r+dr,mc=c+dc,tr=r+2*dr,tc=c+2*dc;
+   if(inside(mr,mc)&&inside(tr,tc)&&b[mr][mc]&&Math.sign(b[mr][mc])!==Math.sign(p)&&!b[tr][tc])
+    caps.push({fromR:r,fromC:c,toR:tr,toC:tc,capR:mr,capC:mc,capture:true});
+  }
+  for(const[dr,dc]of moveDirs){const tr=r+dr,tc=c+dc;if(inside(tr,tc)&&!b[tr][tc])normal.push({fromR:r,fromC:c,toR:tr,toC:tc,capture:false});}
+ }
+ return caps.length?caps:normal;
+}
+
+function allMoves(side,b=board){
+ let caps=[],normal=[];
+ for(let r=0;r<8;r++)for(let c=0;c<8;c++)if(b[r][c]&&Math.sign(b[r][c])===side){
+  for(const m of pieceMoves(r,c,b))(m.capture?caps:normal).push(m);
+ }
+ return caps.length?caps:normal;
+}
+
+function render(){
+ const el=$('board');el.innerHTML='';
+ const flip=single?(userSide===-1):(role==='guest');
+ const allDesigns=getAllPieceDesigns();
+ const myPieceIdx = Number(user.pieceIndex) || 0;
+
+ for(let vr=0;vr<8;vr++){
+  for(let vc=0;vc<8;vc++){
+   const r=flip?7-vr:vr,c=flip?7-vc:vc;
+   const sq=document.createElement('div');
+   sq.className='sq '+((r+c)%2?'dark':'light');
+   sq.dataset.r=r;sq.dataset.c=c;
+   if(selected&&selected.r===r&&selected.c===c)sq.classList.add('selected');
+   const m=moves.find(x=>x.toR===r&&x.toC===c);
+   if(m)sq.classList.add(m.capture?'capture':'target');
+
+   if(lastMove){
+    if(lastMove.fromR === r && lastMove.fromC === c) sq.classList.add('last-move-from');
+    if(lastMove.toR === r && lastMove.toC === c) sq.classList.add('last-move-to');
+   }
+
+   if(board[r][c]){
+    const val=board[r][c],p=document.createElement('div');
+    const isMyPiece = single ? (Math.sign(val) === userSide) : (role === 'host' ? Math.sign(val) === 1 : Math.sign(val) === -1);
+    const oppPieceIdx = window.opponentPieceIndex !== undefined ? (Number(window.opponentPieceIndex) || 0) : (single ? (myPieceIdx === 2 ? 4 : 2) : 0);
+    const pieceDesignIndex = isMyPiece ? myPieceIdx : oppPieceIdx;
+
+    const design = allDesigns[pieceDesignIndex] || allDesigns[0];
+    p.className = 'piece' + (Math.abs(val) === 2 ? ' king' : '');
+    p.style.background = design.bg;
+    p.style.border = `2px solid ${design.border}`;
+    p.style.color = design.color;
+    p.textContent = design.icon;
+    sq.appendChild(p);
+   }
+
+   sq.onclick=()=>clickSquare(r,c);
+   el.appendChild(sq);
+  }
+ }
+}
+
+function clickSquare(r,c){
+ if(gameOver||processing)return;
+ if(turn!==userSide)return;
+ if(selected){
+  const target=moves.find(x=>x.toR===r&&x.toC===c);
+  if(target){playMove(target);return}
+ }
+ const p=board[r][c];
+ if(p&&Math.sign(p)===turn){
+  if(forcedContinuation&&(r!==forcedContinuation.r||c!==forcedContinuation.c))return;
+  const pieceLegal=allMoves(turn).filter(m=>m.fromR===r&&m.fromC===c);
+  if(!pieceLegal.length)return toast('අනිවාර්ය Capture එකක් තිබේ නම් එය කළ යුතුයි.');
+  selected={r,c};moves=pieceLegal;render();
+ }
+}
+
+function applyMove(b,m){
+ const p=b[m.fromR][m.fromC];b[m.fromR][m.fromC]=0;b[m.toR][m.toC]=p;
+ if(m.capture)b[m.capR][m.capC]=0;
+ if(p===1&&m.toR===0)b[m.toR][m.toC]=2;
+ if(p===-1&&m.toR===7)b[m.toR][m.toC]=-2;
+ return p;
+}
+
+async function playMove(m){
+ if(processing||gameOver)return;
+ processing=true;
+ lastMove = { fromR: m.fromR, fromC: m.fromC, toR: m.toR, toC: m.toC };
+
+ const moving=board[m.fromR][m.fromC];
+ applyMove(board,m);selected=null;moves=[];
+ const landed=board[m.toR][m.toC];
+ const followUps=m.capture&&Math.abs(landed)===Math.abs(moving)?pieceMoves(m.toR,m.toC).filter(x=>x.capture):[];
+
+ if(followUps.length){
+  forcedContinuation={r:m.toR,c:m.toC};turn=Math.sign(landed);render();processing=false;setTurnUI();
+  if(!single && roomRef) syncMultiplayerState();
+  if(single&&turn!==userSide)aiTimer=setTimeout(aiMove,450);
+  return;
+ }
+
+ forcedContinuation=null;turn=-Math.sign(moving);render();processing=false;
+ if(!allMoves(turn).length){
+  if(!single && roomRef) syncMultiplayerState();
+  finish(Math.sign(moving),'ප්‍රතිවාදියාට නීත්‍යානුකූල Move නොමැත.');
+  return;
+ }
+ setTurnUI();
+ if(!single && roomRef) syncMultiplayerState();
+ if(single&&turn!==userSide)aiTimer=setTimeout(aiMove,500);
+}
+
+function setTurnUI(){
+ $('p1').classList.toggle('active', single ? (turn===userSide) : (turn===1));
+ $('p2').classList.toggle('active', single ? (turn!==userSide) : (turn===-1));
+ $('clockCaption').textContent=turn===userSide?'ඔබගේ වාරය':'ප්‍රතිවාදියාගේ වාරය';
+ startTurnClock(Date.now()+15000);
+}
+
+function startTurnClock(deadline){
+ clearInterval(turnClockTimer);turnDeadline=deadline||Date.now()+15000;
+ const ring=$('clockRing'),number=$('turnClock');
+ const tick=()=>{
+  const remaining=Math.max(0,turnDeadline-Date.now()),left=Math.ceil(remaining/1000);
+  number.textContent=String(left);
+  ring.style.setProperty('--progress',Math.max(0,Math.min(100,remaining/15000*100)));
+  ring.classList.toggle('urgent',left<=3);
+  if(remaining<=0){
+   clearInterval(turnClockTimer);
+   if(single&&turn===userSide){
+    turn=-userSide;selected=null;moves=[];render();setTurnUI();aiTimer=setTimeout(aiMove,350);
+   } else if(!single&&turn===userSide&&!gameOver){
+    finish(-userSide,'ඔබගේ වාරයේ කාලය අවසන් විය.');
+   }
+  }
+ };
+ tick();turnClockTimer=setInterval(tick,100);
+}
+
+function aiMove(){
+ const aiSide=-userSide;if(gameOver||turn!==aiSide)return;
+ let legal=allMoves(aiSide);
+ if(!legal.length)return finish(userSide,'AI පරිගණකයට Move නොමැත.');
+ if(forcedContinuation)legal=pieceMoves(forcedContinuation.r,forcedContinuation.c).filter(m=>m.capture);
+ if(!legal.length){forcedContinuation=null;legal=allMoves(aiSide);}
+ const m=legal[Math.floor(Math.random()*legal.length)];
+ lastMove = { fromR: m.fromR, fromC: m.fromC, toR: m.toR, toC: m.toC };
+
+ const moving=board[m.fromR][m.fromC];
+ applyMove(board,m);
+ const landed=board[m.toR][m.toC];
+ const followUps=m.capture&&Math.abs(landed)===Math.abs(moving)?pieceMoves(m.toR,m.toC).filter(x=>x.capture):[];
+ if(followUps.length){forcedContinuation={r:m.toR,c:m.toC};turn=aiSide;render();setTurnUI();aiTimer=setTimeout(aiMove,450);return;}
+ forcedContinuation=null;render();turn=userSide;
+ if(!allMoves(userSide).length)finish(aiSide,'ඔබට නීත්‍යානුකූල Move නොමැත.');else setTurnUI();
+}
+
+function finish(winner,message){
+ if(gameOver)return;gameOver=true;clearInterval(aiTimer);clearInterval(turnClockTimer);
+ const won=(winner===userSide);
+ const bet=Number(window.currentBetPoints)||0;
+
+ if(gameMode==='freestyle'){
+  $('overPoints').textContent='පුහුණු තරඟය - Points වෙනස් නොවේ';
+ } else if(fbUser&&db) {
+  if(won){
+   user.points+=bet;user.wins++;$('overPoints').textContent='+'+bet+' Points (Win!)';
+  } else {
+   user.points=Math.max(0,user.points-bet);user.losses++;$('overPoints').textContent='-'+bet+' Points';
+  }
+  localStorage.setItem(KEY,JSON.stringify(user));
+  const statPatch = {points:user.points,wins:user.wins,losses:user.losses};
+  db.ref('users_v6/'+fbUser.uid).update(statPatch).catch(()=>{});
+  db.ref('publicProfiles_v6/'+fbUser.uid).update(statPatch).catch(()=>{});
+ }
+
+ if(won){
+  playVoice("Victory achieved. Outstanding performance!");
+ } else {
+  playVoice("Mission failed. Better luck next time.");
+ }
+
+ $('overTitle').textContent=won?'VICTORY! 🎉':'DEFEAT!';
+ $('overTitle').style.color=won?'var(--neon-green)':'var(--red)';
+ $('overMessage').textContent=message;
+ modal('overModal',true);
+
+ if(roomRef) {
+  roomRef.update({status: 'finished', winner: winner, updatedBy: mySessionId}).catch(()=>{});
+  roomRef.child('chats').remove().catch(()=>{});
+ }
+ sessionStorage.removeItem('sinhala_draughts_multi_room');
+}
+
+function toggleChatDrawer(){
+ const drawer = $('chatDrawer');
+ drawer.classList.toggle('open');
+ if(drawer.classList.contains('open')) {
+  $('chatBadge').style.display = 'none';
+  setTimeout(() => $('chatInput').focus(), 200);
+ }
+}
+
+function appendChatMessage(text, isMe) {
+ const div = document.createElement('div');
+ div.className = 'chat-msg ' + (isMe ? 'me' : 'them');
+ div.textContent = text;
+ $('chatMessages').appendChild(div);
+ $('chatMessages').scrollTop = $('chatMessages').scrollHeight;
+}
+
+function sendQuickChat(msg){
+ if(!msg || !msg.trim()) return;
+ const cleanMsg = msg.trim();
+ appendChatMessage(cleanMsg, true);
+
+ if(!single && roomRef) {
+  roomRef.child('chats').push({
+   sender: user.name || 'Player',
+   senderId: mySessionId,
+   type: 'text',
+   message: cleanMsg,
+   timestamp: Date.now()
+  }).catch(()=>{});
+ } else {
+  setTimeout(()=>{
+   const replies = ["Good game! 👍", "Epic move! 🔥", "Well played! 😊", "Interesting strategy! 🤔", "Your turn! ⚡"];
+   const replyText = replies[Math.floor(Math.random()*replies.length)];
+   appendChatMessage("AI: " + replyText, false);
+   showOpponentThought(replyText);
+  }, 900);
+ }
+}
+
+$('arenaChatBtn').onclick = toggleChatDrawer;
+$('closeChat').onclick = () => $('chatDrawer').classList.remove('open');
+
+function handleSendChat() {
+ const input = $('chatInput');
+ const v = input.value.trim();
+ if(v) {
+  sendQuickChat(v);
+  input.value = '';
+ }
+}
+
+$('sendChatBtn').onclick = handleSendChat;
+$('chatInput').addEventListener('keydown', (e) => {
+ if (e.key === 'Enter') {
+  e.preventDefault();
+  handleSendChat();
+ }
+});
+
+function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
+ role = assignedRole === 'guest' ? 'guest' : 'host';
+ roomId = id;
+ userSide = role === 'host' ? 1 : -1;
+ board = createFreshBoard();
+ turn = 1;
+ selected = null;
+ moves = [];
+ gameOver = false;
+ processing = false;
+ forcedContinuation = null;
+ lastMove = null;
+ syncPlayerCardsVisuals();
+
+ if(!db || !roomId) {
+  render();
+  setTurnUI();
+  return;
+ }
+
+ roomRef = db.ref('rooms_v6/' + roomId);
+
+ roomRef.once('value').then(snap => {
+  const data = snap.val();
+  if(data) {
+   if(data.bet) {
+    window.currentBetPoints = Number(data.bet) || bet;
+    $('arenaBetDisplay').textContent = window.currentBetPoints;
+   }
+   if(Array.isArray(data.board)) {
+    board = normalizeFirebaseBoard(data.board);
+   }
+   if(data.turn !== undefined) {
+    turn = Number(data.turn) === -1 ? -1 : 1;
+   }
+
+   if(role === 'host') {
+    window.opponentPieceIndex = data.guestPieceIndex !== undefined ? (Number(data.guestPieceIndex) || 0) : 0;
+    window.opponentAvatar = data.guestAvatar || 'fa-chess-knight';
+    $('p1name').textContent = user.name || data.hostName || 'Host'; $('p1sub').textContent = 'Host';
+    $('p2name').textContent = opponentName || data.guestName || 'Guest'; $('p2sub').textContent = 'Guest';
+    applyAvatarToBox('p1AvatarBox', Number(user.pieceIndex)||0, user.avatarIcon||'fa-user');
+    applyAvatarToBox('p2AvatarBox', window.opponentPieceIndex, window.opponentAvatar);
+    if(!Array.isArray(data.board)) {
+     roomRef.update({
+      board: board,
+      turn: 1,
+      status: 'active',
+      matchStarted: true,
+      hostName: user.name || data.hostName || 'Host',
+      hostPieceIndex: Number(user.pieceIndex)||0,
+      hostAvatar: user.avatarIcon||'fa-user'
+     }).catch(()=>{});
+    } else {
+     roomRef.update({
+      hostName: user.name || data.hostName || 'Host',
+      hostPieceIndex: Number(user.pieceIndex)||0,
+      hostAvatar: user.avatarIcon||'fa-user'
+     }).catch(()=>{});
+    }
+   } else {
+    window.opponentPieceIndex = data.hostPieceIndex !== undefined ? (Number(data.hostPieceIndex) || 0) : 0;
+    window.opponentAvatar = data.hostAvatar || 'fa-user';
+    $('p1name').textContent = opponentName || data.hostName || 'Host'; $('p1sub').textContent = 'Host';
+    $('p2name').textContent = user.name || data.guestName || 'Guest'; $('p2sub').textContent = 'Guest';
+    applyAvatarToBox('p1AvatarBox', window.opponentPieceIndex, window.opponentAvatar);
+    applyAvatarToBox('p2AvatarBox', Number(user.pieceIndex)||0, user.avatarIcon||'fa-user');
+    const guestPatch = {
+     status: 'active',
+     matchStarted: true,
+     guestName: user.name || data.guestName || 'Guest',
+     guestPieceIndex: Number(user.pieceIndex)||0,
+     guestAvatar: user.avatarIcon||'fa-user',
+     guestJoinedAt: Date.now()
+    };
+    if(!Array.isArray(data.board)) {
+     guestPatch.board = board;
+     guestPatch.turn = 1;
+    }
+    roomRef.update(guestPatch).catch(()=>{});
+   }
+   render();
+   setTurnUI();
+  }
+ });
+
+ if(roomValueHandler) { try { roomRef.off('value', roomValueHandler); } catch(e){} }
+ roomValueHandler = snap => {
+  const data = snap.val();
+  if(!data) return;
+
+  if(role === 'host') {
+   if(data.guestName) $('p2name').textContent = data.guestName;
+   if(data.guestPieceIndex !== undefined) window.opponentPieceIndex = Number(data.guestPieceIndex) || 0;
+   if(data.guestAvatar) window.opponentAvatar = data.guestAvatar;
+  } else {
+   if(data.hostName) $('p1name').textContent = data.hostName;
+   if(data.hostPieceIndex !== undefined) window.opponentPieceIndex = Number(data.hostPieceIndex) || 0;
+   if(data.hostAvatar) window.opponentAvatar = data.hostAvatar;
+  }
+  syncPlayerCardsVisuals();
+
+  if(data.status === 'finished') {
+   if(!gameOver) finish(Number(data.winner), 'තරඟය අවසන් විය.');
+   return;
+  }
+
+  if(data.updatedBy && data.updatedBy === mySessionId) {
+   render();
+   return;
+  }
+
+  const prevTurn = turn;
+  if(Array.isArray(data.board)) {
+   board = normalizeFirebaseBoard(data.board);
+  }
+  if(data.turn !== undefined) {
+   turn = Number(data.turn) === -1 ? -1 : 1;
+  }
+  forcedContinuation = data.forcedContinuation || null;
+  if(data.lastMove) lastMove = data.lastMove;
+
+  render();
+  if(prevTurn !== turn || !turnClockTimer) {
+   setTurnUI();
+  }
+ };
+ roomRef.on('value', roomValueHandler);
+
+ if(chatAddedHandler) { try { roomRef.child('chats').off('child_added', chatAddedHandler); } catch(e){} }
+ chatAddedHandler = snap => {
+  const c = snap.val();
+  if(c && c.senderId !== mySessionId) {
+   if(c.type === 'voice' && c.audioData) {
+    appendVoiceMessage(c.audioData, false);
+   } else if(c.message) {
+    appendChatMessage(`${c.sender}: ${c.message}`, false);
+   }
+   showOpponentThought(c.message || '[Voice Message]');
+   if(!$('chatDrawer').classList.contains('open')) {
+    $('chatBadge').style.display = 'grid';
+   }
+  }
+ };
+ roomRef.child('chats').on('child_added', chatAddedHandler);
+ render();
+ setTurnUI();
+ startForestAmbient();
+}
+
+function syncMultiplayerState() {
+ if(roomRef) {
+  roomRef.update({
+   board: board,
+   turn: turn,
+   forcedContinuation: forcedContinuation || null,
+   lastMove: lastMove || null,
+   updatedBy: mySessionId,
+   updatedAt: firebase.database.ServerValue.TIMESTAMP
+  }).catch(()=>{});
+ }
+}
+
+function leaveArena(){
+ clearInterval(turnClockTimer);clearTimeout(aiTimer);
+ const forestAudio = $('forestAmbient');
+ if(forestAudio) forestAudio.pause();
+ if(roomRef){
+  if(!gameOver && gameMode==='multi') {
+   roomRef.update({status:'finished',winner:-userSide,updatedBy:mySessionId}).catch(()=>{});
+   roomRef.child('chats').remove().catch(()=>{});
+  }
+  if(roomValueHandler) roomRef.off('value', roomValueHandler);
+  if(chatAddedHandler) roomRef.child('chats').off('child_added', chatAddedHandler);
+ }
+ sessionStorage.removeItem('sinhala_draughts_multi_room');
+ window.location.href = 'index.html';
+}
+
+$('arenaMenuBtn').onclick = leaveArena;
+$('exit').onclick = leaveArena;
+$('rematch').onclick = () => {
+ modal('overModal',false);
+ if(gameMode==='multi') { leaveArena(); return; }
+ nextStartingSide = -nextStartingSide;
+ initBoard();
+};
+
+initGameFromURL();
+</script>
+
+<script src="./arena-multi-bridge.js"></script>
+
+</body>
+</html>
