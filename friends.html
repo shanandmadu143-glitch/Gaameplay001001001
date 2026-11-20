@@ -120,7 +120,7 @@ const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomai
 const $=id=>document.getElementById(id);
 let auth,db,fbUser,user={name:'',points:500,uid:null,pieceIndex:0,avatarIcon:'fa-user'};
 const urlBet = Number(new URLSearchParams(window.location.search).get('bet'));
-let currentBet = urlBet || Number(sessionStorage.getItem('sinhala_draughts_bet')) || 50;
+let currentBet = Math.max(10, urlBet || Number(sessionStorage.getItem('sinhala_draughts_bet')) || 50);
 sessionStorage.setItem('sinhala_draughts_bet', String(currentBet));
 let activeInviteWatcher=null;
 
@@ -148,6 +148,12 @@ const PIECE_DESIGNS=[
  {id:18,name:'විදුලි ලෙමන්',bg:'radial-gradient(circle at 30% 30%,#f7dc6f,#f9e79f)',border:'#f1c40f',color:'#111',icon:'✨'},
  {id:19,name:'අමරණීය අඳුර',bg:'radial-gradient(circle at 30% 30%,#2c3e50,#000000)',border:'#ffd166',color:'#ffd166',icon:'♔'}
 ];
+
+function createInitialBoard() {
+ const b = Array.from({length:8},()=>Array(8).fill(0));
+ for(let r=0;r<8;r++)for(let c=0;c<8;c++)if((r+c)%2){if(r<3)b[r][c]=-1;else if(r>4)b[r][c]=1}
+ return b;
+}
 
 function toast(s, icon='fa-circle-info'){
  const t=$('toast');
@@ -178,7 +184,7 @@ auth.onAuthStateChanged(async u=>{
     user.name = (u.email||'').split('@')[0] || 'Player';
     user.uid = u.uid;
    }
-   
+
    const profileData = {
     name: user.name,
     points: user.points,
@@ -217,7 +223,7 @@ async function loadAllPlayers(rawQuery) {
 
   let profiles = profilesSnap && profilesSnap.exists() ? profilesSnap.val() : {};
   const users = usersSnap && usersSnap.exists() ? usersSnap.val() : {};
-  
+
   Object.keys(users).forEach(uid => {
    if(!profiles[uid]) {
     profiles[uid] = users[uid];
@@ -236,13 +242,13 @@ async function loadAllPlayers(rawQuery) {
   Object.keys(profiles).forEach(uid => {
    const pData = profiles[uid];
    const candidateName = pData && pData.name ? String(pData.name) : '';
-   
+
    if(fbUser && uid === fbUser.uid) return;
    if(candidateName.toLowerCase() === 'admin') return;
 
    if(candidateName && (!queryName || candidateName.toLowerCase().includes(queryName))) {
     found = true;
-    
+
     const userStatus = statuses[uid];
     const isOnline = userStatus && userStatus.state === 'online';
 
@@ -274,7 +280,7 @@ async function loadAllPlayers(rawQuery) {
 
     const textWrap = document.createElement('div');
     textWrap.className = 'friend-details';
-    
+
     const playerName = document.createElement('b');
     playerName.textContent = candidateName;
 
@@ -290,7 +296,7 @@ async function loadAllPlayers(rawQuery) {
     inviteBtn.className = 'btn-invite';
     inviteBtn.innerHTML = '<i class="fa-solid fa-gamepad"></i> Invite';
     inviteBtn.onclick = () => sendGameInvite(uid, candidateName);
-    
+
     card.appendChild(inviteBtn);
     resultsContainer.appendChild(card);
    }
@@ -309,6 +315,7 @@ $('searchBtn').onclick = () => loadAllPlayers($('search').value);
 $('search').addEventListener('input', () => loadAllPlayers($('search').value));
 
 async function sendGameInvite(friendUid, friendName) {
+ if(!fbUser || !db) return toast('ගිණුමට ඇතුළු වී සිටින්න.');
  if(currentBet > user.points) return toast('ඔබ සතුව ප්‍රමාණවත් Points නොමැත.');
 
  if(activeInviteWatcher) {
@@ -318,17 +325,18 @@ async function sendGameInvite(friendUid, friendName) {
 
  const newInviteRef = db.ref('invites_v6/' + friendUid).push();
  const inviteId = newInviteRef.key;
- const initialBoard = Array.from({length:8},()=>Array(8).fill(0));
- for(let r=0;r<8;r++)for(let c=0;c<8;c++)if((r+c)%2){if(r<3)initialBoard[r][c]=-1;else if(r>4)initialBoard[r][c]=1}
- 
+ const initialBoard = createInitialBoard();
+
  const targetRoomRef = db.ref('rooms_v6/' + inviteId);
  const now = Date.now();
 
  try {
   await targetRoomRef.set({
+   roomId: inviteId,
    board: initialBoard,
    turn: 1,
    forcedContinuation: null,
+   lastMove: null,
    hostUid: fbUser.uid,
    guestUid: friendUid,
    hostName: user.name,
@@ -339,6 +347,7 @@ async function sendGameInvite(friendUid, friendName) {
    guestAvatar: 'fa-user',
    bet: currentBet,
    status: 'waiting',
+   matchStarted: false,
    createdAt: now,
    updatedAt: firebase.database.ServerValue.TIMESTAMP
   });
@@ -354,15 +363,6 @@ async function sendGameInvite(friendUid, friendName) {
    timestamp: now
   });
 
-  await db.ref('fcmPushQueue_v6').push({
-   targetUid: friendUid,
-   title: 'ශ්‍රී ලංකීය දාම් - Game Invite',
-   body: `${user.name} ඔබට ${currentBet} Coins ඔට්ටුවකට ආරාධනා කරයි!`,
-   roomId: inviteId,
-   bet: currentBet,
-   url: `./friends.html?bet=${currentBet}&roomId=${inviteId}`
-  }).catch(()=>{});
-
   if (window.SinhalaDraughtsInviteBridge) {
    window.SinhalaDraughtsInviteBridge.trackHostRoom(inviteId, currentBet);
   }
@@ -374,16 +374,21 @@ async function sendGameInvite(friendUid, friendName) {
    const roomData = snap.val();
    if(!roomData) return;
 
-   if(roomData.status === 'playing' || roomData.status === 'active' || roomData.matchStarted === true) {
+   if(roomData.status === 'playing' || roomData.status === 'active' || roomData.status === 'accepted' || roomData.matchStarted === true) {
     targetRoomRef.off('value', handler);
     activeInviteWatcher = null;
     modal('waitingHostModal', false);
+    const resolvedGuestName = roomData.guestName || friendName;
     if (window.SinhalaDraughtsInviteBridge) {
-     window.SinhalaDraughtsInviteBridge.goArena(inviteId, currentBet, 'host', roomData);
+     window.SinhalaDraughtsInviteBridge.goArena(inviteId, roomData.bet || currentBet, 'host', {
+      ...roomData,
+      hostName: roomData.hostName || user.name,
+      guestName: resolvedGuestName
+     });
     } else {
-     window.location.href = `arena.html?mode=multi&roomId=${inviteId}&role=host&bet=${currentBet}&oppName=${encodeURIComponent(friendName)}`;
+     window.location.replace(`arena.html?mode=multi&roomId=${encodeURIComponent(inviteId)}&role=host&bet=${encodeURIComponent(roomData.bet || currentBet)}&oppName=${encodeURIComponent(resolvedGuestName)}`);
     }
-   } else if(roomData.status === 'rejected' || roomData.status === 'declined') {
+   } else if(roomData.status === 'rejected' || roomData.status === 'declined' || roomData.status === 'cancelled') {
     targetRoomRef.off('value', handler);
     activeInviteWatcher = null;
     modal('waitingHostModal', false);
