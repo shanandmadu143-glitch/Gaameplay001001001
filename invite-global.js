@@ -168,7 +168,8 @@
     if (isOnArenaPage() || dismissedIds.has(inviteId)) return;
     injectStylesAndBanner();
 
-    activeInvite = { inviteId, ...inv };
+    const resolvedRoomId = inv.roomId || inviteId;
+    activeInvite = { inviteId, ...inv, roomId: resolvedRoomId };
     const fromName = inv.fromName || inv.hostName || 'ක්‍රීඩකයෙකු';
     const invBet = Math.max(10, Number(inv.bet) || Number(sessionStorage.getItem(BET_KEY)) || 50);
 
@@ -183,7 +184,7 @@
 
     if (!notifiedIds.has(inviteId)) {
       notifiedIds.add(inviteId);
-      const url = `friends.html?bet=${encodeURIComponent(invBet)}&roomId=${encodeURIComponent(inv.roomId || inviteId)}`;
+      const url = `friends.html?bet=${encodeURIComponent(invBet)}&roomId=${encodeURIComponent(resolvedRoomId)}`;
       showSystemNotification(
         'ශ්‍රී ලංකීය දාම් - Game Invite',
         `${fromName} ඔබට ${invBet} Coins ඔට්ටුවකට ආරාධනා කරයි!`,
@@ -203,15 +204,16 @@
 
   async function acceptCurrentInvite() {
     if (!activeInvite || !fbUser || !db || isRedirecting) return;
-    const { inviteId, roomId: rawRoomId, bet, fromName, hostName } = activeInvite;
-    const targetRoomId = rawRoomId || inviteId;
+    const { inviteId, roomId, bet, fromName, hostName } = activeInvite;
+    const targetRoomId = roomId || inviteId;
+    const inviterName = fromName || hostName || 'Host';
     hideInviteCard(true);
 
     const acceptBtn = document.getElementById('sdGlobalAcceptBtn');
     if (acceptBtn) acceptBtn.disabled = true;
 
     try {
-      await db.ref(`invites_v6/${fbUser.uid}/${inviteId}`).update({ status: 'accepted' }).catch(() => {});
+      await db.ref(`invites_v6/${fbUser.uid}/${inviteId}`).remove().catch(() => {});
 
       let latestRoom = null;
       if (targetRoomId) {
@@ -238,7 +240,7 @@
 
       const mergedRoom = {
         ...(latestRoom || {}),
-        hostName: (latestRoom && latestRoom.hostName) || hostName || fromName || 'Host',
+        hostName: (latestRoom && latestRoom.hostName) || inviterName,
         guestName: myName,
         guestUid: fbUser.uid
       };
@@ -253,12 +255,12 @@
 
   async function declineCurrentInvite() {
     if (!activeInvite || !fbUser || !db) return;
-    const { inviteId, roomId: rawRoomId } = activeInvite;
-    const targetRoomId = rawRoomId || inviteId;
+    const { inviteId, roomId } = activeInvite;
+    const targetRoomId = roomId || inviteId;
     hideInviteCard(true);
-    await db.ref(`invites_v6/${fbUser.uid}/${inviteId}`).update({ status: 'declined' }).catch(() => {});
+    await db.ref(`invites_v6/${fbUser.uid}/${inviteId}`).remove().catch(() => {});
     if (targetRoomId) {
-      await db.ref(`rooms_v6/${targetRoomId}`).update({ status: 'rejected' }).catch(() => {});
+      await db.ref(`rooms_v6/${targetRoomId}`).update({ status: 'declined' }).catch(() => {});
     }
   }
 
@@ -308,16 +310,14 @@
       const now = Date.now();
       const pending = Object.entries(map)
         .filter(([id, inv]) => {
-          const ts = Number(inv && (inv.createdAt || inv.timestamp)) || 0;
-          return inv &&
-            inv.status === 'pending' &&
-            (now - ts <= INVITE_MAX_AGE_MS) &&
-            !dismissedIds.has(id);
+          if (!inv || inv.status !== 'pending' || dismissedIds.has(id)) return false;
+          const ts = Number(inv.createdAt) || Number(inv.timestamp) || 0;
+          return (now - ts) <= INVITE_MAX_AGE_MS;
         })
         .sort((a, b) => {
-          const tb = Number(b[1].createdAt || b[1].timestamp) || 0;
-          const ta = Number(a[1].createdAt || a[1].timestamp) || 0;
-          return tb - ta;
+          const tsB = Number(b[1].createdAt) || Number(b[1].timestamp) || 0;
+          const tsA = Number(a[1].createdAt) || Number(a[1].timestamp) || 0;
+          return tsB - tsA;
         });
 
       if (pending.length > 0) {
