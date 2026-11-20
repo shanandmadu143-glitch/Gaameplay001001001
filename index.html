@@ -61,9 +61,12 @@ input:focus{border-color:var(--gold)}
 .btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;box-shadow:0 4px 15px rgba(255,173,98,0.4)}
 .row{display:flex;gap:10px;align-items:center}
 .pieces-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px;max-height:220px;overflow-y:auto;padding:4px}
-.piece-option{background:rgba(255,255,255,0.04);border:2px solid rgba(255,255,255,0.1);border-radius:12px;padding:8px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer}
+.piece-option{background:rgba(255,255,255,0.04);border:2px solid rgba(255,255,255,0.1);border-radius:12px;padding:8px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;position:relative}
 .piece-option.selected{border-color:var(--gold);background:rgba(255,209,102,0.2)}
-.piece-option.locked{opacity:0.4;cursor:not-allowed}
+.piece-option.locked{opacity:0.45;cursor:pointer}
+.profile-section-head{display:flex;align-items:center;justify-content:space-between;margin-top:4px}
+.profile-section-head p{font-size:0.85rem;color:var(--dim)}
+.profile-shop-link{background:none;border:0;color:var(--gold);font-size:0.78rem;font-weight:700;cursor:pointer;text-decoration:underline}
 
 #toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,120px);opacity:0;background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--gold);color:#f8f9fa;border-radius:30px;padding:10px 20px;z-index:150;transition:.25s ease;font-weight:600;display:flex;align-items:center;gap:8px;font-size:0.9rem}
 #toast.show{transform:translate(-50%,0);opacity:1}
@@ -128,10 +131,17 @@ input:focus{border-color:var(--gold)}
    <div id="profileAvatar" style="width:64px;height:64px;margin:0 auto 6px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe08a,#ffad62);color:#18213e;font-size:1.8rem;border:3px solid var(--gold)"></div>
    <h2 id="profileName">ක්‍රීඩකයා</h2>
    <small id="profileStats" style="color:var(--dim)">Wins: 0 | Losses: 0</small>
+   <div id="profileOwnedSummary" style="margin-top:6px;font-size:0.75rem;color:var(--neon-green)">Unlocked Avatars: 1 | Unlocked Themes: 1</div>
   </div>
-  <p style="font-size:0.85rem;color:var(--dim);margin-top:4px;">ප්‍රොෆයිල් Avatars:</p>
+  <div class="profile-section-head">
+   <p>මිලදී ගත් / ඇති Avatars:</p>
+   <button type="button" class="profile-shop-link" id="goShopFromAvatars">+ Shop</button>
+  </div>
   <div class="pieces-grid" id="avatarGrid"></div>
-  <p style="font-size:0.85rem;color:var(--dim);margin-top:4px;">ඉත්තන්ගේ Themes:</p>
+  <div class="profile-section-head">
+   <p>මිලදී ගත් / ඇති ඉත්තන්ගේ Themes:</p>
+   <button type="button" class="profile-shop-link" id="goShopFromPieces">+ Shop</button>
+  </div>
   <div class="pieces-grid" id="piecesGrid"></div>
   <div class="row" style="margin-top:6px">
    <button class="btn-gold" id="saveProfile" style="flex:1">සුරකින්න (Save)</button>
@@ -177,6 +187,7 @@ let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:
 let isNavigating=false;
 let customPieces=[];
 let customAvatars=[];
+let userRefListener=null;
 
 const DEFAULT_PIECE_DESIGNS=[
  {id:0,name:'මුතු සුදු (Default)',bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●',free:true},
@@ -205,25 +216,46 @@ const DEFAULT_AVATARS=[
  {id:'fa-user',name:'සම්මත (Default)',icon:'fa-user'},
  {id:'fa-chess-knight',name:'චෙස් නයිට්',icon:'fa-chess-knight'},
  {id:'fa-dragon',name:'ගිනියම් ඩ්‍රැගන්',icon:'fa-dragon'},
- {id:'fa-mask',name:'මුහුණු ආවරණය',icon:'fa-mask'},
  {id:13,name:'රොබෝ යන්ත්‍රය',icon:'fa-robot'},
  {id:'fa-ghost',name:'අපූර්ව හොල්මන',icon:'fa-ghost'},
  {id:'fa-shield-halved',name:'රජකීය පලිහ',icon:'fa-shield-halved'},
- {id:'fa-crown',name:'රජකීය ඔටුන්න',icon:'fa-crown'},
- {id:'fa-fire',name:'මහා ගින්න',icon:'fa-fire'},
- {id:'fa-bolt',name:'අකුණු සැණැල්ල',icon:'fa-bolt'},
- {id:'fa-skull',name:'හිස්කබල',icon:'fa-skull'},
- {id:'fa-star',name:'රන් තරුව',icon:'fa-star'},
- {id:'fa-gem',name:'දියමන්ති මැණික',icon:'fa-gem'},
- {id:'fa-fighter-jet',name:'ජෙට් යානය',icon:'fa-fighter-jet'},
- {id:'fa-meteor',name:'උල්කාපාතය',icon:'fa-meteor'},
- {id:'fa-cat',name:'කූට බළලා',icon:'fa-cat'},
- {id:'fa-dog',name:'බල්ලා',icon:'fa-dog'},
- {id:'fa-paw',name:'සිංහ පාදය',icon:'fa-paw'},
- {id:'fa-crosshairs',name:'ඉලක්කය',icon:'fa-crosshairs'},
- {id:'fa-hat-wizard',name:'මායාකාරයා',icon:'fa-hat-wizard'}
+ {id:13,name:'රජකීය ඔටුන්න',icon:'fa-crown'},
+ {id:13,name:'මහා ගින්න',icon:'fa-fire'},
+ {id:13,name:'අකුණු සැණැල්ල',icon:'fa-bolt'},
+ {id:13,name:'හිස්කබල',icon:'fa-skull'},
+ {id:13,name:'රන් තරුව',icon:'fa-star'},
+ {id:13,name:'දියමන්ති මැණික',icon:'fa-gem'},
+ {id:13,name:'ජෙට් යානය',icon:'fa-fighter-jet'},
+ {id:13,name:'උල්කාපාතය',icon:'fa-meteor'},
+ {id:13,name:'කූට බළලා',icon:'fa-cat'},
+ {id:13,name:'බල්ලා',icon:'fa-dog'},
+ {id:13,name:'සිංහ පාදය',icon:'fa-paw'},
+ {id:13,name:'ඉලක්කය',icon:'fa-crosshairs'},
+ {id:13,name:'මායාකාරයා',icon:'fa-hat-wizard'}
 ];
-DEFAULT_AVATARS[4].id='fa-robot';
+DEFAULT_AVATARS[3].id='fa-robot';
+DEFAULT_AVATARS[6].id='fa-crown';
+DEFAULT_AVATARS[7].id='fa-fire';
+DEFAULT_AVATARS[8].id='fa-bolt';
+DEFAULT_AVATARS[9].id='fa-skull';
+DEFAULT_AVATARS[10].id='fa-star';
+DEFAULT_AVATARS[11].id='fa-gem';
+DEFAULT_AVATARS[12].id='fa-fighter-jet';
+DEFAULT_AVATARS[13].id='fa-meteor';
+DEFAULT_AVATARS[14].id='fa-cat';
+DEFAULT_AVATARS[15].id='fa-dog';
+DEFAULT_AVATARS[16].id='fa-paw';
+DEFAULT_AVATARS[17].id='fa-crosshairs';
+DEFAULT_AVATARS[18].id='fa-hat-wizard';
+
+function normalizeList(val, fallback) {
+ if (Array.isArray(val)) return val.length ? val : fallback;
+ if (val && typeof val === 'object') {
+  const arr = Object.values(val);
+  return arr.length ? arr : fallback;
+ }
+ return fallback;
+}
 
 function getAllPieces(){return [...DEFAULT_PIECE_DESIGNS,...customPieces];}
 function getAllAvatars(){return [...DEFAULT_AVATARS,...customAvatars];}
@@ -251,7 +283,16 @@ try{
  const cached=localStorage.getItem(KEY);
  if(cached){
   const parsed=JSON.parse(cached);
-  if(parsed&&typeof parsed==='object')user={...user,...parsed};
+  if(parsed&&typeof parsed==='object'){
+   user={
+    ...user,
+    ...parsed,
+    pieceIndex:Number(parsed.pieceIndex)||0,
+    unlockedPieces:normalizeList(parsed.unlockedPieces,[0]).map(Number),
+    avatarIcon:parsed.avatarIcon||'fa-user',
+    unlockedAvatars:normalizeList(parsed.unlockedAvatars,['fa-user']).map(String)
+   };
+  }
  }
 }catch(e){}
 
@@ -280,14 +321,51 @@ function attachShopListeners(){
  shopListenersBound=true;
  db.ref('shopConfig_v6/customPieces').on('value',snap=>{
   const val=snap.val();
-  customPieces=Array.isArray(val)?val.filter(Boolean):(val&&typeof val==='object'?Object.values(val):[]);
+  customPieces=Array.isArray(val)?val.filter(Boolean):(val&&typeof val==='object'?Object.values(val).filter(Boolean):[]);
   updateHeader();
+  if($('profileModal').classList.contains('show'))renderProfileItems();
  },()=>{});
  db.ref('shopConfig_v6/customAvatars').on('value',snap=>{
   const val=snap.val();
-  customAvatars=Array.isArray(val)?val.filter(Boolean):(val&&typeof val==='object'?Object.values(val):[]);
+  customAvatars=Array.isArray(val)?val.filter(Boolean):(val&&typeof val==='object'?Object.values(val).filter(Boolean):[]);
   updateHeader();
+  if($('profileModal').classList.contains('show'))renderProfileItems();
  },()=>{});
+}
+
+function attachLiveUserListener(uid){
+ if(!db||!uid)return;
+ if(userRefListener){
+  try{userRefListener.ref.off('value',userRefListener.fn);}catch(e){}
+  userRefListener=null;
+ }
+ const ref=db.ref('users_v6/'+uid);
+ const fn=snap=>{
+  const d=snap.val();
+  if(!d)return;
+  user={
+   ...user,
+   name:d.name||user.name,
+   points:Number.isFinite(Number(d.points))?Number(d.points):user.points,
+   wins:Number(d.wins)||0,
+   losses:Number(d.losses)||0,
+   uid:uid,
+   pieceIndex:Number(d.pieceIndex)||0,
+   unlockedPieces:normalizeList(d.unlockedPieces,[0]).map(Number),
+   avatarIcon:d.avatarIcon||'fa-user',
+   unlockedAvatars:normalizeList(d.unlockedAvatars,['fa-user']).map(String),
+   lastRewardTime:Number(d.lastRewardTime)||0
+  };
+  localStorage.setItem(KEY,JSON.stringify(user));
+  updateHeader();
+  if($('profileModal').classList.contains('show')){
+   if(!user.unlockedAvatars.includes(tempSelectedAvatar)) tempSelectedAvatar=user.avatarIcon||'fa-user';
+   if(!user.unlockedPieces.includes(tempSelectedPiece)) tempSelectedPiece=user.pieceIndex||0;
+   renderProfileItems();
+  }
+ };
+ ref.on('value',fn);
+ userRefListener={ref,fn};
 }
 
 (async()=>{
@@ -304,6 +382,7 @@ function attachShopListeners(){
      return;
     }
     await loadSignedInUser();
+    attachLiveUserListener(u.uid);
 
     const userStatusRef = db.ref('status_v6/' + u.uid);
     db.ref('.info/connected').on('value', snapshot => {
@@ -312,6 +391,10 @@ function attachShopListeners(){
      userStatusRef.set({ state: 'online', last_changed: firebase.database.ServerValue.TIMESTAMP });
     });
    }else{
+    if(userRefListener){
+     try{userRefListener.ref.off('value',userRefListener.fn);}catch(e){}
+     userRefListener=null;
+    }
     if(!user.uid){
      user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user',unlockedAvatars:['fa-user']};
      updateHeader();
@@ -338,9 +421,9 @@ async function syncDatabaseIndices(oldName) {
    wins: Number(user.wins)||0,
    losses: Number(user.losses)||0,
    pieceIndex: Number(user.pieceIndex)||0,
-   unlockedPieces: Array.isArray(user.unlockedPieces)?user.unlockedPieces:[0],
+   unlockedPieces: normalizeList(user.unlockedPieces,[0]).map(Number),
    avatarIcon: user.avatarIcon||'fa-user',
-   unlockedAvatars: Array.isArray(user.unlockedAvatars)?user.unlockedAvatars:['fa-user']
+   unlockedAvatars: normalizeList(user.unlockedAvatars,['fa-user']).map(String)
   });
  } catch(e){
   console.error('Index sync error:', e);
@@ -357,9 +440,9 @@ function saveUser(){
    wins:Number(user.wins)||0,
    losses:Number(user.losses)||0,
    pieceIndex:Number(user.pieceIndex)||0,
-   unlockedPieces:Array.isArray(user.unlockedPieces)?user.unlockedPieces:[0],
+   unlockedPieces:normalizeList(user.unlockedPieces,[0]).map(Number),
    avatarIcon:user.avatarIcon||'fa-user',
-   unlockedAvatars:Array.isArray(user.unlockedAvatars)?user.unlockedAvatars:['fa-user'],
+   unlockedAvatars:normalizeList(user.unlockedAvatars,['fa-user']).map(String),
    lastRewardTime:Number(user.lastRewardTime)||0
   }).then(()=>{
    syncDatabaseIndices(oldName);
@@ -386,9 +469,9 @@ async function loadSignedInUser(){
    losses:Number(d.losses)||0,
    uid:fbUser.uid,
    pieceIndex:Number(d.pieceIndex)||0,
-   unlockedPieces:Array.isArray(d.unlockedPieces)?d.unlockedPieces:[0],
+   unlockedPieces:normalizeList(d.unlockedPieces,[0]).map(Number),
    avatarIcon:d.avatarIcon||'fa-user',
-   unlockedAvatars:Array.isArray(d.unlockedAvatars)?d.unlockedAvatars:['fa-user'],
+   unlockedAvatars:normalizeList(d.unlockedAvatars,['fa-user']).map(String),
    lastRewardTime:Number(d.lastRewardTime)||0
   };
   localStorage.setItem(KEY,JSON.stringify(user));
@@ -466,59 +549,97 @@ $('register').onclick=async()=>{
 let tempSelectedPiece=0;
 let tempSelectedAvatar='fa-user';
 
-$('openProfile').onclick=()=>{
- if(!fbUser && !user.uid){
-  modal('authModal',true);
-  return;
- }
- tempSelectedPiece=user.pieceIndex||0;
- tempSelectedAvatar=user.avatarIcon||'fa-user';
- 
+function renderProfileItems(){
  const aGrid=$('avatarGrid');
  aGrid.innerHTML='';
- const unlockedAvatars = Array.isArray(user.unlockedAvatars) ? user.unlockedAvatars : ['fa-user'];
+ const unlockedAvatars = normalizeList(user.unlockedAvatars, ['fa-user']).map(String);
+ const allAvatars = getAllAvatars();
 
- getAllAvatars().forEach(av => {
-  const isUnlocked = unlockedAvatars.includes(av.id);
+ allAvatars.forEach(av => {
+  const avId = String(av.id);
+  const isUnlocked = unlockedAvatars.includes(avId);
+  const isEquipped = avId === (user.avatarIcon || 'fa-user');
   const avDiv = document.createElement('div');
-  avDiv.className = 'piece-option' + (av.id === tempSelectedAvatar ? ' selected' : '') + (isUnlocked ? '' : ' locked');
-  avDiv.innerHTML = `<div style="font-size:1.4rem;color:var(--gold);padding:6px;"><i class="fa-solid ${av.icon}"></i></div><span style="font-size:0.6rem;text-align:center">${av.name}</span><small style="font-size:0.5rem;color:${isUnlocked?'var(--neon-green)':'var(--red)'}">${isUnlocked?'Unlocked':'Locked'}</small>`;
+  avDiv.className = 'piece-option' + (avId === tempSelectedAvatar ? ' selected' : '') + (isUnlocked ? '' : ' locked');
+  const statusLabel = !isUnlocked ? 'Locked' : (isEquipped ? 'Equipped' : 'Unlocked');
+  const statusColor = !isUnlocked ? 'var(--red)' : (isEquipped ? 'var(--gold)' : 'var(--neon-green)');
+  avDiv.innerHTML = `<div style="font-size:1.4rem;color:var(--gold);padding:6px;"><i class="fa-solid ${av.icon}"></i></div><span style="font-size:0.6rem;text-align:center">${av.name}</span><small style="font-size:0.5rem;color:${statusColor}">${statusLabel}</small>`;
   avDiv.onclick = () => {
-   if(!isUnlocked) return toast('මෙම Avatar එක Unlock කර නැත. Shop වෙත යන්න!');
-   tempSelectedAvatar = av.id;
-   aGrid.querySelectorAll('.piece-option').forEach(el => el.classList.remove('selected'));
-   avDiv.classList.add('selected');
-   applyAvatarToBox('profileAvatar', tempSelectedPiece, tempSelectedAvatar);
+   if(!isUnlocked){
+    toast('මෙම Avatar එක Shop වෙතින් මිලදී ගන්න!');
+    return;
+   }
+   tempSelectedAvatar = avId;
+   renderProfileItems();
   };
   aGrid.appendChild(avDiv);
  });
 
  const grid=$('piecesGrid');
  grid.innerHTML='';
- const unlockedPieces = Array.isArray(user.unlockedPieces) ? user.unlockedPieces : [0];
+ const unlockedPieces = normalizeList(user.unlockedPieces, [0]).map(Number);
+ const allPieces = getAllPieces();
 
- getAllPieces().forEach((p,idx)=>{
-  const isUnlocked = unlockedPieces.includes(idx);
+ allPieces.forEach((p,idx)=>{
+  const pIdx = Number(idx);
+  const isUnlocked = unlockedPieces.includes(pIdx);
+  const isEquipped = pIdx === (Number(user.pieceIndex) || 0);
   const div=document.createElement('div');
-  div.className='piece-option'+(idx===tempSelectedPiece?' selected':'')+(isUnlocked?'':' locked');
-  div.innerHTML=`<div style="width:28px;height:28px;border-radius:50%;background:${p.bg};border:2px solid ${p.border};color:${p.color};display:grid;place-items:center;font-size:0.9rem">${p.icon}</div><span style="font-size:0.6rem;text-align:center">${p.name}</span><small style="font-size:0.5rem;color:${isUnlocked?'var(--neon-green)':'var(--red)'}">${isUnlocked?'Unlocked':'Locked'}</small>`;
+  div.className='piece-option'+(pIdx===tempSelectedPiece?' selected':'')+(isUnlocked?'':' locked');
+  const statusLabel = !isUnlocked ? 'Locked' : (isEquipped ? 'Equipped' : 'Unlocked');
+  const statusColor = !isUnlocked ? 'var(--red)' : (isEquipped ? 'var(--gold)' : 'var(--neon-green)');
+  div.innerHTML=`<div style="width:28px;height:28px;border-radius:50%;background:${p.bg};border:2px solid ${p.border};color:${p.color};display:grid;place-items:center;font-size:0.9rem">${p.icon}</div><span style="font-size:0.6rem;text-align:center">${p.name}</span><small style="font-size:0.5rem;color:${statusColor}">${statusLabel}</small>`;
   div.onclick=()=>{
-   if(!isUnlocked) return toast('මෙම Theme එක Unlock කර නැත. Shop වෙත යන්න!');
-   tempSelectedPiece=idx;
-   grid.querySelectorAll('.piece-option').forEach(el => el.classList.remove('selected'));
-   div.classList.add('selected');
-   applyAvatarToBox('profileAvatar', tempSelectedPiece, tempSelectedAvatar);
+   if(!isUnlocked){
+    toast('මෙම Theme එක Shop වෙතින් මිලදී ගන්න!');
+    return;
+   }
+   tempSelectedPiece=pIdx;
+   renderProfileItems();
   };
   grid.appendChild(div);
  });
 
- applyAvatarToBox('profileAvatar', user.pieceIndex||0, user.avatarIcon||'fa-user');
+ $('profileOwnedSummary').textContent=`Unlocked Avatars: ${unlockedAvatars.length}/${allAvatars.length} | Unlocked Themes: ${unlockedPieces.length}/${allPieces.length}`;
+ applyAvatarToBox('profileAvatar', tempSelectedPiece, tempSelectedAvatar);
  $('profileName').textContent=user.name||'ක්‍රීඩකයා';
  $('profileStats').textContent=`Wins: ${user.wins||0} | Losses: ${user.losses||0}`;
+}
+
+$('openProfile').onclick=async()=>{
+ if(!fbUser && !user.uid){
+  modal('authModal',true);
+  return;
+ }
+ if(db && fbUser){
+  try{
+   const s=await db.ref('users_v6/'+fbUser.uid).once('value');
+   const d=s.val();
+   if(d){
+    user={
+     ...user,
+     ...d,
+     points:Number.isFinite(Number(d.points))?Number(d.points):user.points,
+     pieceIndex:Number(d.pieceIndex)||0,
+     unlockedPieces:normalizeList(d.unlockedPieces,[0]).map(Number),
+     avatarIcon:d.avatarIcon||'fa-user',
+     unlockedAvatars:normalizeList(d.unlockedAvatars,['fa-user']).map(String)
+    };
+    localStorage.setItem(KEY,JSON.stringify(user));
+    updateHeader();
+   }
+  }catch(e){}
+ }
+ tempSelectedPiece=Number(user.pieceIndex)||0;
+ tempSelectedAvatar=user.avatarIcon||'fa-user';
+ renderProfileItems();
  modal('profileModal',true);
 };
 
 $('closeProfile').onclick=()=>modal('profileModal',false);
+$('goShopFromAvatars').onclick=()=>{modal('profileModal',false);smoothNavigate('shopandreward.html');};
+$('goShopFromPieces').onclick=()=>{modal('profileModal',false);smoothNavigate('shopandreward.html');};
+
 $('saveProfile').onclick=()=>{
  user.pieceIndex=tempSelectedPiece;
  user.avatarIcon=tempSelectedAvatar;
