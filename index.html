@@ -109,7 +109,6 @@ input:focus{border-color:var(--gold)}
  </footer>
 </div>
 
-<!-- Modals -->
 <div class="modal" id="singleBetModal">
  <div class="modalbox">
   <h3>Single Player - ඔට්ටු තැබීම</h3>
@@ -207,7 +206,7 @@ const DEFAULT_AVATARS=[
  {id:'fa-chess-knight',name:'චෙස් නයිට්',icon:'fa-chess-knight'},
  {id:'fa-dragon',name:'ගිනියම් ඩ්‍රැගන්',icon:'fa-dragon'},
  {id:'fa-mask',name:'මුහුණු ආවරණය',icon:'fa-mask'},
- {id:'fa-robot',name:'රොබෝ යන්ත්‍රය',icon:'fa-robot'},
+ {id:13,name:'රොබෝ යන්ත්‍රය',icon:'fa-robot'},
  {id:'fa-ghost',name:'අපූර්ව හොල්මන',icon:'fa-ghost'},
  {id:'fa-shield-halved',name:'රජකීය පලිහ',icon:'fa-shield-halved'},
  {id:'fa-crown',name:'රජකීය ඔටුන්න',icon:'fa-crown'},
@@ -224,6 +223,7 @@ const DEFAULT_AVATARS=[
  {id:'fa-crosshairs',name:'ඉලක්කය',icon:'fa-crosshairs'},
  {id:'fa-hat-wizard',name:'මායාකාරයා',icon:'fa-hat-wizard'}
 ];
+DEFAULT_AVATARS[4].id='fa-robot';
 
 function getAllPieces(){return [...DEFAULT_PIECE_DESIGNS,...customPieces];}
 function getAllAvatars(){return [...DEFAULT_AVATARS,...customAvatars];}
