@@ -183,11 +183,14 @@ if(sessionStorage.getItem('sinhala_draughts_admin_auth')!=='1'){
 }
 
 let db;
+let usersMap={};
+let publicMap={};
 let allPlayers=[];
 let customPieces=[];
 let customAvatars=[];
 let isNavigating=false;
 let listenersAttached=false;
+let lastDbError='';
 
 function toast(s, icon='fa-circle-info'){
  const t=$('toast');
@@ -216,7 +219,7 @@ function isSafeColor(val){
 }
 
 try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);db=firebase.database();}
-catch(e){console.error('Firebase init failed:',e);}
+catch(e){console.error('Firebase init failed:',e);lastDbError=e.message||'Firebase init error';}
 
 // Tabs
 document.querySelectorAll('.tab-btn').forEach(btn=>{
@@ -227,6 +230,25 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
   $(btn.dataset.tab).classList.add('active');
  };
 });
+
+function mergePlayers(){
+ const uids=new Set([...Object.keys(usersMap),...Object.keys(publicMap)]);
+ allPlayers=Array.from(uids).map(uid=>{
+  const u=usersMap[uid]||{};
+  const p=publicMap[uid]||{};
+  const merged={...p,...u};
+  return {
+   uid,
+   name:merged.name?String(merged.name):`Player_${uid.slice(0,5)}`,
+   points:Number.isFinite(Number(merged.points))?Number(merged.points):0,
+   wins:Number(merged.wins)||0,
+   losses:Number(merged.losses)||0,
+   avatarIcon:merged.avatarIcon?String(merged.avatarIcon):'fa-user'
+  };
+ });
+ $('playerCountLabel').textContent=`මුළු ක්‍රීඩකයන්: ${allPlayers.length}`;
+ renderPlayers();
+}
 
 async function updatePlayerCoins(uid, name, nextCoins){
  if(!Number.isFinite(nextCoins)||nextCoins<0){
@@ -241,7 +263,7 @@ async function updatePlayerCoins(uid, name, nextCoins){
   return true;
  }catch(err){
   console.error(err);
-  toast('Coins යාවත්කාලීන කිරීමට නොහැකි විය.');
+  toast('Coins යාවත්කාලීන කිරීමට නොහැකි විය: '+(err.message||''));
   return false;
  }
 }
@@ -255,7 +277,9 @@ function renderPlayers(){
  if(!filtered.length){
   const empty=document.createElement('p');
   empty.style.cssText='text-align:center;color:var(--dim);padding:20px';
-  empty.textContent='ක්‍රීඩකයන් හමු නොවීය.';
+  empty.textContent=lastDbError
+   ? `දත්ත ලබාගැනීමේ දෝෂයක්: ${lastDbError}`
+   : 'ක්‍රීඩකයන් හමු නොවීය.';
   list.appendChild(empty);
   return;
  }
@@ -323,9 +347,12 @@ function renderPlayers(){
    if(!confirm(`"${p.name}" ක්‍රීඩකයා Database එකෙන් ඉවත් කිරීමට අවශ්‍යද?`))return;
    try{
     const lowerName=p.name.trim().toLowerCase();
-    await db.ref('users_v6/'+p.uid).remove();
+    await db.ref('users_v6/'+p.uid).remove().catch(()=>{});
     await db.ref('publicProfiles_v6/'+p.uid).remove().catch(()=>{});
     if(lowerName)await db.ref('usernameIndex_v6/'+lowerName).remove().catch(()=>{});
+    delete usersMap[p.uid];
+    delete publicMap[p.uid];
+    mergePlayers();
     toast(`${p.name} ඉවත් කරන ලදී.`,'fa-trash');
    }catch(err){
     console.error(err);
@@ -530,22 +557,40 @@ function renderCustomLists(){
  });
 }
 
+async function fetchPlayersOnce(){
+ if(!db)return;
+ try{
+  const [uSnap, pSnap]=await Promise.all([
+   db.ref('users_v6').once('value').catch(e=>{lastDbError=e.message;return null;}),
+   db.ref('publicProfiles_v6').once('value').catch(e=>{if(!lastDbError)lastDbError=e.message;return null;})
+  ]);
+  if(uSnap&&uSnap.exists())usersMap=uSnap.val()||{};
+  if(pSnap&&pSnap.exists())publicMap=pSnap.val()||{};
+  mergePlayers();
+ }catch(e){
+  console.error(e);
+ }
+}
+
 function attachListeners(){
  if(!db||listenersAttached)return;
  listenersAttached=true;
 
  db.ref('users_v6').on('value',snap=>{
-  const val=snap.val()||{};
-  allPlayers=Object.entries(val).map(([uid,data])=>({
-   uid,
-   name:data&&data.name?String(data.name):'Player',
-   points:Number(data&&data.points)||0,
-   wins:Number(data&&data.wins)||0,
-   losses:Number(data&&data.losses)||0,
-   avatarIcon:data&&data.avatarIcon?String(data.avatarIcon):'fa-user'
-  }));
-  $('playerCountLabel').textContent=`මුළු ක්‍රීඩකයන්: ${allPlayers.length}`;
-  renderPlayers();
+  lastDbError='';
+  usersMap=snap.val()||{};
+  mergePlayers();
+ },err=>{
+  console.error('users_v6 error:',err);
+  lastDbError=err.message||'Permission denied';
+  mergePlayers();
+ });
+
+ db.ref('publicProfiles_v6').on('value',snap=>{
+  publicMap=snap.val()||{};
+  mergePlayers();
+ },err=>{
+  console.error('publicProfiles_v6 error:',err);
  });
 
  db.ref('shopConfig_v6/customPieces').on('value',snap=>{
@@ -560,9 +605,13 @@ function attachListeners(){
 }
 
 attachListeners();
+fetchPlayersOnce();
 
 $('playerSearch').addEventListener('input',renderPlayers);
-$('refreshPlayersBtn').onclick=()=>{renderPlayers();toast('ක්‍රීඩක ලැයිස්තුව Refresh විය.','fa-rotate');};
+$('refreshPlayersBtn').onclick=async()=>{
+ await fetchPlayersOnce();
+ toast('ක්‍රීඩක ලැයිස්තුව Refresh විය.','fa-rotate');
+};
 $('goShopBtn').onclick=()=>smoothNavigate('shopandreward.html');
 $('exitAdminBtn').onclick=()=>{
  sessionStorage.removeItem('sinhala_draughts_admin_auth');
