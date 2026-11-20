@@ -336,7 +336,6 @@ function startForestAmbient() {
  }
 }
 
-// Middle Voice Record Button Handling (Press & Hold)
 const voiceRecordBtn = $('arenaVoiceRecordBtn');
 if (voiceRecordBtn) {
  const startRec = async (e) => {
@@ -460,34 +459,18 @@ function applyAvatarToBox(elementId, designIndex, customIcon){
 
 async function initGameFromURL(){
  const params = new URLSearchParams(window.location.search);
- gameMode = params.get('mode') || 'single';
- const bet = Number(params.get('bet')) || 0;
+ let storedMulti = null;
+ try { storedMulti = JSON.parse(sessionStorage.getItem('sinhala_draughts_multi_room') || 'null'); } catch(e){}
+
+ gameMode = params.get('mode') || (params.get('roomId') || (storedMulti && storedMulti.roomId) ? 'multi' : 'single');
+ const bet = Number(params.get('bet')) || (storedMulti && Number(storedMulti.bet)) || Number(sessionStorage.getItem('sinhala_draughts_bet')) || 0;
  window.currentBetPoints = bet;
  $('arenaBetDisplay').textContent = gameMode === 'freestyle' ? 'FREE' : bet;
 
  const saved = localStorage.getItem(KEY);
- if(saved) { try { user = JSON.parse(saved); } catch(e){} }
+ if(saved) { try { user = Object.assign(user, JSON.parse(saved)); } catch(e){} }
 
- if(!auth || !db) {
-  single = true;
-  $('p1name').textContent = user.name || 'ඔබ'; $('p1sub').textContent = 'Player';
-  $('p2name').textContent = 'AI පරිගණකය'; $('p2sub').textContent = 'AI';
-  initBoard();
-  return;
- }
- 
- auth.onAuthStateChanged(async u => {
-  if(u) {
-   fbUser = u;
-   const snap = await db.ref('users_v6/'+u.uid).once('value');
-   if(snap.exists()) {
-    const d = snap.val();
-    user.name = d.name; user.points = Number(d.points)||500;
-    user.wins = Number(d.wins)||0; user.losses = Number(d.losses)||0;
-    user.pieceIndex = Number(d.pieceIndex)||0; user.avatarIcon = d.avatarIcon||'fa-user';
-   }
-  }
-
+ const startByMode = async () => {
   if(gameMode === 'single' || gameMode === 'freestyle') {
    single = true; role = null; roomId = null;
    $('p1name').textContent = user.name || 'ඔබ'; $('p1sub').textContent = 'Player';
@@ -497,10 +480,43 @@ async function initGameFromURL(){
    initBoard();
   } else if(gameMode === 'multi') {
    single = false;
-   role = params.get('role');
-   roomId = params.get('roomId');
-   const oppName = params.get('oppName') || 'Opponent';
+   role = params.get('role') || (storedMulti && storedMulti.role) || 'host';
+   roomId = params.get('roomId') || (storedMulti && storedMulti.roomId) || '';
+   const oppName = params.get('oppName') || (role === 'host' ? (storedMulti && storedMulti.guestName) : (storedMulti && storedMulti.hostName)) || (role === 'host' ? 'Guest' : 'Host');
    setupMultiplayerGame(roomId, role, oppName, bet);
+  }
+ };
+
+ if(!auth || !db) {
+  await startByMode();
+  return;
+ }
+
+ let authResolved = false;
+ auth.onAuthStateChanged(async u => {
+  if(u) {
+   fbUser = u;
+   try {
+    const snap = await db.ref('users_v6/'+u.uid).once('value');
+    if(snap.exists()) {
+     const d = snap.val();
+     if(d.name) user.name = d.name;
+     user.points = Number(d.points)||500;
+     user.wins = Number(d.wins)||0;
+     user.losses = Number(d.losses)||0;
+     user.pieceIndex = Number(d.pieceIndex)||0;
+     user.avatarIcon = d.avatarIcon||'fa-user';
+    }
+   } catch(e){}
+  }
+  if(!authResolved) {
+   authResolved = true;
+   await startByMode();
+  } else if(!single && roomId && db && fbUser) {
+   const patch = role === 'guest'
+    ? { guestUid: fbUser.uid, guestName: user.name || 'Guest', guestPieceIndex: user.pieceIndex || 0, status: 'active' }
+    : { hostUid: fbUser.uid, hostName: user.name || 'Host', hostPieceIndex: user.pieceIndex || 0 };
+   db.ref('rooms_v6/' + roomId).update(patch).catch(()=>{});
   }
  });
 }
@@ -509,6 +525,16 @@ function createFreshBoard() {
  const b = Array.from({length:8},()=>Array(8).fill(0));
  for(let r=0;r<8;r++)for(let c=0;c<8;c++)if((r+c)%2){if(r<3)b[r][c]=-1;else if(r>4)b[r][c]=1}
  return b;
+}
+
+function normalizeFirebaseBoard(rawBoard) {
+ if (!Array.isArray(rawBoard) || rawBoard.length !== 8) return createFreshBoard();
+ return Array.from({length:8}, (_, r) =>
+  Array.from({length:8}, (__, c) => {
+   const val = rawBoard[r] && rawBoard[r][c];
+   return typeof val === 'number' ? val : 0;
+  })
+ );
 }
 
 function initBoard(){
@@ -797,34 +823,83 @@ $('chatInput').addEventListener('keydown', (e) => {
 });
 
 function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
- role = assignedRole; roomId = id;
+ role = assignedRole || 'host';
+ roomId = id;
  userSide = role === 'host' ? 1 : -1;
+ board = createFreshBoard();
+ turn = 1;
+ selected = null;
+ moves = [];
+ gameOver = false;
+ processing = false;
+ forcedContinuation = null;
+ lastMove = null;
+
+ if(!db || !roomId) {
+  render();
+  setTurnUI();
+  return;
+ }
+
  roomRef = db.ref('rooms_v6/' + roomId);
 
  roomRef.once('value').then(snap => {
   const data = snap.val();
   if(data) {
+   if(data.bet) {
+    window.currentBetPoints = Number(data.bet) || bet;
+    $('arenaBetDisplay').textContent = window.currentBetPoints;
+   }
    if(role === 'host') {
     window.opponentPieceIndex = data.guestPieceIndex !== undefined ? data.guestPieceIndex : 2;
     $('p1name').textContent = user.name || data.hostName || 'Host'; $('p1sub').textContent = 'Host';
     $('p2name').textContent = opponentName || data.guestName || 'Guest'; $('p2sub').textContent = 'Guest';
     applyAvatarToBox('p1AvatarBox', user.pieceIndex||0, user.avatarIcon||'fa-user');
     applyAvatarToBox('p2AvatarBox', data.guestPieceIndex||0, data.guestAvatar||'fa-chess-knight');
+    if(!Array.isArray(data.board)) {
+     roomRef.update({
+      board: board,
+      turn: 1,
+      status: data.status === 'active' ? 'active' : 'playing',
+      hostName: user.name || data.hostName || 'Host',
+      hostPieceIndex: user.pieceIndex || 0
+     }).catch(()=>{});
+    }
    } else {
     window.opponentPieceIndex = data.hostPieceIndex !== undefined ? data.hostPieceIndex : 0;
     $('p1name').textContent = opponentName || data.hostName || 'Host'; $('p1sub').textContent = 'Host';
     $('p2name').textContent = user.name || data.guestName || 'Guest'; $('p2sub').textContent = 'Guest';
     applyAvatarToBox('p1AvatarBox', data.hostPieceIndex||0, data.hostAvatar||'fa-user');
     applyAvatarToBox('p2AvatarBox', user.pieceIndex||0, user.avatarIcon||'fa-user');
+    roomRef.update({
+     status: 'active',
+     guestName: user.name || data.guestName || 'Guest',
+     guestPieceIndex: user.pieceIndex || 0,
+     guestJoinedAt: Date.now()
+    }).catch(()=>{});
    }
   }
  });
 
+ if(roomValueHandler) { try { roomRef.off('value', roomValueHandler); } catch(e){} }
  roomValueHandler = snap => {
   const data = snap.val();
   if(!data) return;
-  if(Array.isArray(data.board)) board = data.board;
-  turn = Number(data.turn) === -1 ? -1 : 1;
+
+  if(role === 'host') {
+   if(data.guestName) $('p2name').textContent = data.guestName;
+   if(data.guestPieceIndex !== undefined) window.opponentPieceIndex = data.guestPieceIndex;
+  } else {
+   if(data.hostName) $('p1name').textContent = data.hostName;
+   if(data.hostPieceIndex !== undefined) window.opponentPieceIndex = data.hostPieceIndex;
+  }
+
+  if(Array.isArray(data.board)) {
+   board = normalizeFirebaseBoard(data.board);
+  }
+  if(data.turn !== undefined) {
+   turn = Number(data.turn) === -1 ? -1 : 1;
+  }
   forcedContinuation = data.forcedContinuation || null;
   if(data.lastMove) lastMove = data.lastMove;
 
@@ -833,10 +908,13 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
    if(!gameOver) finish(Number(data.winner), 'තරඟය අවසන් විය.');
    return;
   }
-  if(data.status === 'playing' && !gameOver) setTurnUI();
+  if((data.status === 'active' || data.status === 'playing' || data.status === 'waiting') && !gameOver) {
+   setTurnUI();
+  }
  };
  roomRef.on('value', roomValueHandler);
  
+ if(chatAddedHandler) { try { roomRef.child('chats').off('child_added', chatAddedHandler); } catch(e){} }
  chatAddedHandler = snap => {
   const c = snap.val();
   if(c && c.senderId !== mySessionId) {
@@ -852,6 +930,8 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
   }
  };
  roomRef.child('chats').on('child_added', chatAddedHandler);
+ render();
+ setTurnUI();
  startForestAmbient();
 }
 
@@ -894,8 +974,6 @@ initGameFromURL();
 </script>
 
 <script src="./arena-multi-bridge.js"></script>
-
-
 
 </body>
 </html>
