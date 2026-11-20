@@ -34,18 +34,11 @@ input:focus{border-color:var(--gold)}
 .player-meta b{display:block;font-size:0.98rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .player-meta small{display:block;font-size:0.74rem;color:var(--dim)}
 
-.btn,.btn-gold,.btn-green,.btn-danger{border:0;border-radius:12px;padding:9px 13px;cursor:pointer;font-weight:700;font-size:0.84rem;display:inline-flex;align-items:center;gap:6px;justify-content:center;transition:transform 0.12s ease}
-.btn:active,.btn-gold:active,.btn-green:active,.btn-danger:active{transform:scale(0.97)}
+.btn,.btn-gold,.btn-danger{border:0;border-radius:12px;padding:9px 13px;cursor:pointer;font-weight:700;font-size:0.84rem;display:inline-flex;align-items:center;gap:6px;justify-content:center;transition:transform 0.12s ease}
+.btn:active,.btn-gold:active,.btn-danger:active{transform:scale(0.97)}
 .btn{background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2)}
 .btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;box-shadow:0 4px 15px rgba(255,173,98,0.35)}
-.btn-green{background:linear-gradient(135deg,#2ecc71,#20b863);color:#0b1910}
 .btn-danger{background:linear-gradient(135deg,#ff4757,#c0392b);color:#fff}
-
-.invite-banner{position:fixed;top:16px;left:50%;transform:translate(-50%,-180%);width:min(94%,440px);background:linear-gradient(135deg,#18223d,#0d1324);border:2px solid var(--gold);border-radius:20px;padding:14px 16px;z-index:200;box-shadow:0 14px 35px rgba(0,0,0,0.85);transition:transform 0.25s ease;display:flex;flex-direction:column;gap:10px}
-.invite-banner.show{transform:translate(-50%,0)}
-.invite-banner b{color:var(--gold);font-size:1.05rem}
-.invite-banner p{font-size:0.9rem;color:#f1f5f9;line-height:1.4}
-.invite-actions{display:flex;gap:8px;justify-content:flex-end}
 
 #toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,120px);opacity:0;background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--gold);color:#f8f9fa;border-radius:30px;padding:10px 20px;z-index:210;transition:.25s ease;font-weight:600;display:flex;align-items:center;gap:8px;font-size:0.9rem}
 #toast.show{transform:translate(-50%,0);opacity:1}
@@ -85,35 +78,21 @@ input:focus{border-color:var(--gold)}
  </div>
 </div>
 
-<!-- Incoming Invite In-App Card -->
-<div class="invite-banner" id="inviteBanner">
- <div>
-  <b><i class="fa-solid fa-gamepad"></i> Multiplayer Game Invite!</b>
-  <p id="inviteText">ක්‍රීඩකයෙකු ඔබට තරඟයකට ආරාධනා කර ඇත.</p>
- </div>
- <div class="invite-actions">
-  <button class="btn-green" id="acceptInviteBtn"><i class="fa-solid fa-check"></i> Accept & Play</button>
-  <button class="btn-danger" id="declineInviteBtn"><i class="fa-solid fa-xmark"></i> Decline</button>
- </div>
-</div>
-
 <div id="toast"></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging-compat.js"></script>
+<script src="./invite-global.js"></script>
 <script>
 'use strict';
 const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
-const VAPID_PUBLIC_KEY = "";
-const INVITE_MAX_AGE_MS = 300000;
+const VAPID_PUBLIC_KEY="";
 
 const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user';
-
 const params=new URLSearchParams(window.location.search);
 const bet=Math.max(10,Number(params.get('bet'))||Number(sessionStorage.getItem('sinhala_draughts_bet'))||50);
-const autoRoomId=params.get('roomId')||'';
 
 $('betVal').textContent=bet;
 sessionStorage.setItem('sinhala_draughts_bet',String(bet));
@@ -121,182 +100,75 @@ sessionStorage.setItem('sinhala_draughts_bet',String(bet));
 let auth,db,messaging,fbUser;
 let myProfile={name:'ක්‍රීඩකයා',points:500};
 let publicPlayers=[];
-let activeIncomingInvite=null;
 let pendingRoomId=null;
-let currentRoomListenerRef=null;
-let invitesListenerRef=null;
-let profilesListenerBound=false;
+let roomRef=null;
 let isNavigating=false;
 let swRegistration=null;
-const notifiedInviteIds=new Set();
-const dismissedInviteIds=new Set();
 
-function toast(s, icon='fa-circle-info'){
+function toast(s,icon='fa-circle-info'){
  const t=$('toast');
  t.replaceChildren();
- const iconEl=document.createElement('i');iconEl.className=`fa-solid ${icon}`;iconEl.style.color='var(--gold)';
- const textEl=document.createElement('span');textEl.textContent=String(s);
- t.append(iconEl,textEl);
+ const ic=document.createElement('i');ic.className=`fa-solid ${icon}`;ic.style.color='var(--gold)';
+ const tx=document.createElement('span');tx.textContent=String(s);
+ t.append(ic,tx);
  t.classList.add('show');
  setTimeout(()=>t.classList.remove('show'),3000);
-}
-
-function cleanupListeners(){
- if(currentRoomListenerRef){
-  try{currentRoomListenerRef.off();}catch(_){}
-  currentRoomListenerRef=null;
- }
- if(invitesListenerRef){
-  try{invitesListenerRef.off();}catch(_){}
-  invitesListenerRef=null;
- }
 }
 
 function go(url){
  if(isNavigating)return;
  isNavigating=true;
- cleanupListeners();
- const root=$('mpRoot');
- if(root)root.classList.add('page-leaving');
+ if(roomRef){try{roomRef.off();}catch(_){}}
+ const app=$('mpRoot');
+ if(app)app.classList.add('page-leaving');
  setTimeout(()=>{window.location.href=url;},110);
 }
 
-function enterArenaRoom(roomId, roomBet, role){
- const finalBet=Math.max(10,Number(roomBet)||bet);
- sessionStorage.setItem('sinhala_draughts_bet',String(finalBet));
- sessionStorage.setItem('sinhala_draughts_multi_room',JSON.stringify({
-  roomId,
-  bet:finalBet,
-  role:role||'player',
-  uid:fbUser?fbUser.uid:null
- }));
- const q=new URLSearchParams({
-  mode:'multi',
-  bet:String(finalBet),
-  roomId:String(roomId||''),
-  role:String(role||'player')
- }).toString();
- go(`arena.html?${q}`);
-}
-
 try{
- const cached=localStorage.getItem(KEY);
- if(cached){
-  const parsed=JSON.parse(cached);
-  if(parsed&&parsed.name)myProfile.name=parsed.name;
- }
-}catch(e){}
+ const c=JSON.parse(localStorage.getItem(KEY)||'null');
+ if(c&&c.name)myProfile.name=c.name;
+}catch(_){}
 
 try{
  if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
  auth=firebase.auth();
  db=firebase.database();
- if(firebase.messaging && firebase.messaging.isSupported()){
-  messaging=firebase.messaging();
- }
-}catch(e){
- console.error('Firebase init failed:',e);
-}
+ if(firebase.messaging&&firebase.messaging.isSupported())messaging=firebase.messaging();
+}catch(e){console.error(e);}
 
-async function initMessagingSW(){
- if(!('serviceWorker' in navigator))return null;
- try{
-  swRegistration=await navigator.serviceWorker.register('./firebase-messaging-sw.js');
-  return swRegistration;
- }catch(e){
-  console.warn('Service worker registration error:',e);
-  return null;
- }
-}
-
-async function registerFcmToken(){
- if(!messaging||!fbUser||!db)return null;
- if(!('Notification' in window)||Notification.permission!=='granted')return null;
- try{
-  const reg=await initMessagingSW();
-  const tokenOptions={};
-  if(reg)tokenOptions.serviceWorkerRegistration=reg;
-  if(VAPID_PUBLIC_KEY)tokenOptions.vapidKey=VAPID_PUBLIC_KEY;
-  const token=await messaging.getToken(tokenOptions);
-  if(token){
-   await db.ref(`fcmTokens_v6/${fbUser.uid}`).set({
-    token,
-    updatedAt:Date.now()
-   }).catch(()=>{});
-  }
-  return token;
- }catch(e){
-  console.warn('FCM getToken error:',e);
-  return null;
- }
-}
-
-async function ensureNotificationPermission(){
+async function ensureNotifAndToken(){
  if(!('Notification' in window))return false;
- if(Notification.permission==='granted'){
-  await registerFcmToken();
-  return true;
- }
  if(Notification.permission==='denied')return false;
- try{
-  const perm=await Notification.requestPermission();
-  if(perm==='granted'){
-   await registerFcmToken();
-   return true;
-  }
-  return false;
- }catch(e){
-  return false;
- }
-}
+ const perm=Notification.permission==='granted'?'granted':await Notification.requestPermission();
+ if(perm!=='granted')return false;
 
-async function showMobileStatusBarNotification(title, body, url){
- if(!('Notification' in window)||Notification.permission!=='granted')return;
- const options={
-  body,
-  vibrate:[200,100,200],
-  tag:'sinhala-draughts-invite',
-  renotify:true,
-  data:{url}
- };
- try{
-  const reg=swRegistration||(await navigator.serviceWorker?.getRegistration());
-  if(reg && reg.showNotification){
-   await reg.showNotification(title, options);
-   return;
-  }
-  new Notification(title, {body});
- }catch(e){
-  try{ new Notification(title, {body}); }catch(_){}
+ if('serviceWorker' in navigator){
+  try{swRegistration=await navigator.serviceWorker.register('./firebase-messaging-sw.js');}catch(_){}
  }
-}
-
-if(messaging){
- messaging.onMessage(payload=>{
-  const title=(payload.notification&&payload.notification.title)||(payload.data&&payload.data.title)||'ශ්‍රී ලංකීය දාම් - Game Invite';
-  const body=(payload.notification&&payload.notification.body)||(payload.data&&payload.data.body)||'ඔබට නව Multiplayer ආරාධනාවක් ලැබී ඇත!';
-  const url=(payload.data&&payload.data.url)||`mulitiplay.html?bet=${encodeURIComponent(bet)}`;
-  showMobileStatusBarNotification(title, body, url);
- });
+ if(messaging&&fbUser&&db){
+  try{
+   const opts={};
+   if(swRegistration)opts.serviceWorkerRegistration=swRegistration;
+   if(VAPID_PUBLIC_KEY)opts.vapidKey=VAPID_PUBLIC_KEY;
+   const token=await messaging.getToken(opts);
+   if(token)await db.ref(`fcmTokens_v6/${fbUser.uid}`).set({token,updatedAt:Date.now()}).catch(()=>{});
+  }catch(_){}
+ }
+ return true;
 }
 
 $('notifPermBtn').onclick=async()=>{
- const granted=await ensureNotificationPermission();
- toast(
-  granted
-   ? 'Mobile Notification Bar සක්‍රීයයි!'
-   : 'Browser Settings හරහා Notifications Allow කරන්න.',
-  granted ? 'fa-bell' : 'fa-triangle-exclamation'
- );
+ const ok=await ensureNotifAndToken();
+ toast(ok?'Notifications සක්‍රීයයි!':'Notifications Allow කරන්න.',ok?'fa-bell':'fa-triangle-exclamation');
 };
 
-function renderPlayersList(){
+function renderPlayers(){
  const q=($('searchPlayer').value||'').trim().toLowerCase();
- const container=$('playersContainer');
- container.replaceChildren();
+ const box=$('playersContainer');
+ box.replaceChildren();
 
  const others=publicPlayers.filter(p=>{
-  if(fbUser && p.uid===fbUser.uid)return false;
+  if(fbUser&&p.uid===fbUser.uid)return false;
   if(!q)return true;
   return p.name.toLowerCase().includes(q);
  });
@@ -305,7 +177,7 @@ function renderPlayersList(){
   const p=document.createElement('p');
   p.style.cssText='text-align:center;color:var(--dim);padding:20px';
   p.textContent='ඔන්ලයින් ක්‍රීඩකයන් හමු නොවීය.';
-  container.appendChild(p);
+  box.appendChild(p);
   return;
  }
 
@@ -320,97 +192,71 @@ function renderPlayersList(){
   av.className='av-circle';
   av.innerHTML=`<i class="fa-solid ${/^fa-[a-z0-9-]+$/i.test(p.avatarIcon)?p.avatarIcon:'fa-user'}"></i>`;
 
-  const txt=document.createElement('div');
-  const b=document.createElement('b');
-  b.textContent=p.name;
-  const sm=document.createElement('small');
-  sm.textContent=`Coins: ${p.points} • Wins: ${p.wins}`;
-  txt.append(b,sm);
-  meta.append(av,txt);
+  const info=document.createElement('div');
+  const b=document.createElement('b');b.textContent=p.name;
+  const sm=document.createElement('small');sm.textContent=`Coins: ${p.points} • Wins: ${p.wins}`;
+  info.append(b,sm);
+  meta.append(av,info);
 
   const btn=document.createElement('button');
   btn.className='btn-gold';
   btn.innerHTML='<i class="fa-solid fa-paper-plane"></i> Invite';
-  btn.onclick=()=>sendGameInvite(p,btn);
+  btn.onclick=()=>sendInvite(p,btn);
 
   row.append(meta,btn);
-  container.appendChild(row);
+  box.appendChild(row);
  });
 }
 
-function stopWaitingRoom(){
+function clearWaitUI(){
  pendingRoomId=null;
  $('waitingStatus').classList.remove('show');
- if(currentRoomListenerRef){
-  try{currentRoomListenerRef.off();}catch(_){}
-  currentRoomListenerRef=null;
- }
+ if(roomRef){try{roomRef.off();}catch(_){}roomRef=null;}
+ window.SinhalaDraughtsInviteBridge?.clearHostRoom();
 }
 
 $('cancelWaitBtn').onclick=async()=>{
  const rId=pendingRoomId;
- stopWaitingRoom();
- if(rId && db){
-  await db.ref(`rooms_v6/${rId}`).update({status:'cancelled'}).catch(()=>{});
- }
+ clearWaitUI();
+ if(rId&&db)await db.ref(`rooms_v6/${rId}`).update({status:'cancelled'}).catch(()=>{});
  toast('රැඳී සිටීම අවලංගු කරන ලදී.');
 };
 
-function listenForRoomStart(roomId, roomBet, role='host', onlyIfActive=false){
- if(!db||!roomId)return;
- stopWaitingRoom();
- if(!onlyIfActive){
-  pendingRoomId=roomId;
-  $('waitingStatus').classList.add('show');
-  $('waitingText').textContent='Invite යවන ලදී — ප්‍රතිවාදියා Accept කරන තෙක් රැඳී සිටී...';
- }
+function watchRoom(rId){
+ if(!db||!rId)return;
+ clearWaitUI();
+ pendingRoomId=rId;
+ $('waitingStatus').classList.add('show');
+ $('waitingText').textContent='Invite යවන ලදී — ප්‍රතිවාදියා Accept කරන තෙක් රැඳී සිටී...';
+ window.SinhalaDraughtsInviteBridge?.trackHostRoom(rId,bet);
 
- currentRoomListenerRef=db.ref(`rooms_v6/${roomId}`);
- currentRoomListenerRef.on('value',snap=>{
+ roomRef=db.ref(`rooms_v6/${rId}`);
+ roomRef.on('value',snap=>{
   const room=snap.val();
   if(!room)return;
-  if(room.status==='declined' || room.status==='cancelled'){
-   stopWaitingRoom();
-   if(!onlyIfActive){
-    toast('තරඟ ආරාධනාව අවලංගු / ප්‍රතික්ෂේප විය.','fa-circle-xmark');
-   }
+  if(room.status==='declined'||room.status==='cancelled'){
+   clearWaitUI();
+   toast('තරඟ ආරාධනාව අවලංගු / ප්‍රතික්ෂේප විය.','fa-circle-xmark');
    return;
   }
-  if(room.status==='accepted' || room.status==='active'){
-   enterArenaRoom(roomId, room.bet||roomBet, role);
+  if(room.status==='accepted'||room.status==='active'){
+   clearWaitUI();
+   window.SinhalaDraughtsInviteBridge?.goArena(rId,room.bet||bet,'host');
   }
  });
 }
 
-async function queuePushNotification(targetUid, payload){
- if(!db||!targetUid)return;
- await db.ref('fcmPushQueue_v6').push({
-  targetUid,
-  ...payload,
-  createdAt:Date.now()
- }).catch(()=>{});
-}
+async function sendInvite(targetPlayer,btn){
+ if(!db||!fbUser)return toast('Invite යැවීමට පළමුව ගිණුමට ඇතුළු වන්න.');
+ if(targetPlayer.uid===fbUser.uid)return toast('ඔබටම Invite යැවිය නොහැක.');
 
-async function sendGameInvite(targetPlayer, btnEl){
- if(!db||!fbUser){
-  return toast('Invite යැවීමට පළමුව ගිණුමට ඇතුළු වන්න.');
- }
- if(!targetPlayer || !targetPlayer.uid){
-  return toast('ක්‍රීඩකයාගේ තොරතුරු සම්පූර්ණ නැත.');
- }
- if(targetPlayer.uid===fbUser.uid){
-  return toast('ඔබටම Invite යැවිය නොහැක.');
- }
-
- await ensureNotificationPermission();
-
- btnEl.disabled=true;
- const originalHtml=btnEl.innerHTML;
- btnEl.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Sending';
+ await ensureNotifAndToken();
+ btn.disabled=true;
+ const prevHtml=btn.innerHTML;
+ btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Sending';
 
  const roomId=`room_${fbUser.uid}_${targetPlayer.uid}_${Date.now()}`;
  const inviteId=`inv_${fbUser.uid}_${Date.now()}`;
- const targetInviteUrl=`mulitiplay.html?bet=${encodeURIComponent(bet)}&roomId=${encodeURIComponent(roomId)}`;
 
  try{
   await db.ref(`rooms_v6/${roomId}`).set({
@@ -432,98 +278,27 @@ async function sendGameInvite(targetPlayer, btnEl){
    createdAt:Date.now()
   });
 
-  await queuePushNotification(targetPlayer.uid,{
+  await db.ref('fcmPushQueue_v6').push({
+   targetUid:targetPlayer.uid,
    title:'ශ්‍රී ලංකීය දාම් - Multiplayer Invite',
    body:`${myProfile.name} ඔබට ${bet} Coins ඔට්ටුවකට ආරාධනා කරයි!`,
-   url:targetInviteUrl,
+   url:`arena.html?mode=multi&bet=${encodeURIComponent(bet)}&roomId=${encodeURIComponent(roomId)}`,
    roomId,
-   bet
-  });
+   bet,
+   createdAt:Date.now()
+  }).catch(()=>{});
 
   toast(`${targetPlayer.name} වෙත Invite එක යවන ලදී!`,'fa-circle-check');
-  await showMobileStatusBarNotification(
-   'ශ්‍රී ලංකීය දාම් - Invite Sent',
-   `${targetPlayer.name} වෙත ${bet} Coins ඔට්ටුවකට Invite එක යවන ලදී.`,
-   `mulitiplay.html?bet=${encodeURIComponent(bet)}`
-  );
-
-  listenForRoomStart(roomId, bet, 'host', false);
- }catch(err){
-  console.error('Send invite error:',err);
-  toast('Invite යැවීමට නොහැකි විය: '+(err.message||'Database permission error'));
+  watchRoom(roomId);
+ }catch(e){
+  console.error(e);
+  toast('Invite යැවීමට නොහැකි විය.');
  }finally{
-  setTimeout(()=>{
-   btnEl.disabled=false;
-   btnEl.innerHTML=originalHtml;
-  },1000);
+  setTimeout(()=>{btn.disabled=false;btn.innerHTML=prevHtml;},1000);
  }
 }
 
-function showIncomingInvite(inviteId, inv){
- if(dismissedInviteIds.has(inviteId))return;
- activeIncomingInvite={inviteId,...inv};
- const fromName=inv.fromName||'ක්‍රීඩකයෙකු';
- const invBet=Math.max(10,Number(inv.bet)||bet);
- const inviteUrl=`mulitiplay.html?bet=${encodeURIComponent(invBet)}&roomId=${encodeURIComponent(inv.roomId||'')}`;
-
- $('inviteText').textContent=`${fromName} ඔබට ${invBet} Coins ඔට්ටුවකට Multiplayer තරඟයකට ආරාධනා කරයි!`;
- $('inviteBanner').classList.add('show');
-
- if(!notifiedInviteIds.has(inviteId)){
-  notifiedInviteIds.add(inviteId);
-  showMobileStatusBarNotification(
-   'ශ්‍රී ලංකීය දාම් - Game Invite',
-   `${fromName} ඔබට ${invBet} Coins ඔට්ටුවකට ආරාධනා කරයි! Tap to open.`,
-   inviteUrl
-  );
- }
-}
-
-function hideIncomingInvite(markDismissed=false){
- if(markDismissed && activeIncomingInvite && activeIncomingInvite.inviteId){
-  dismissedInviteIds.add(activeIncomingInvite.inviteId);
- }
- $('inviteBanner').classList.remove('show');
- activeIncomingInvite=null;
-}
-
-$('acceptInviteBtn').onclick=async()=>{
- if(!activeIncomingInvite||!fbUser||!db)return;
- const {inviteId,roomId,bet:invBet}=activeIncomingInvite;
- hideIncomingInvite(true);
- try{
-  await db.ref(`invites_v6/${fbUser.uid}/${inviteId}`).update({status:'accepted'}).catch(()=>{});
-  if(roomId){
-   await db.ref(`rooms_v6/${roomId}`).update({
-    status:'active',
-    guestUid:fbUser.uid,
-    guestName:myProfile.name,
-    startedAt:Date.now()
-   }).catch(()=>{});
-   enterArenaRoom(roomId, invBet||bet, 'guest');
-  }else{
-   enterArenaRoom('', invBet||bet, 'guest');
-  }
- }catch(err){
-  console.error(err);
-  toast('Invite එක Accept කිරීමට නොහැකි විය.');
- }
-};
-
-$('declineInviteBtn').onclick=async()=>{
- if(!activeIncomingInvite||!fbUser||!db)return;
- const {inviteId,roomId}=activeIncomingInvite;
- hideIncomingInvite(true);
- await db.ref(`invites_v6/${fbUser.uid}/${inviteId}`).update({status:'declined'}).catch(()=>{});
- if(roomId){
-  await db.ref(`rooms_v6/${roomId}`).update({status:'declined'}).catch(()=>{});
- }
- toast('ආරාධනාව ප්‍රතික්ෂේප කරන ලදී.');
-};
-
-function bindPublicProfilesListener(){
- if(!db||profilesListenerBound)return;
- profilesListenerBound=true;
+if(db){
  db.ref('publicProfiles_v6').on('value',snap=>{
   const val=snap.val()||{};
   publicPlayers=Object.entries(val).map(([uid,d])=>({
@@ -533,67 +308,28 @@ function bindPublicProfilesListener(){
    wins:Number(d&&d.wins)||0,
    avatarIcon:d&&d.avatarIcon?String(d.avatarIcon):'fa-user'
   }));
-  if(fbUser && val[fbUser.uid] && val[fbUser.uid].name){
-   myProfile.name=val[fbUser.uid].name;
-  }
-  renderPlayersList();
- },err=>{
-  console.error('publicProfiles_v6 listener error:',err);
- });
-}
-
-function bindUserInviteListener(uid){
- if(!db||!uid)return;
- if(invitesListenerRef){
-  try{invitesListenerRef.off();}catch(_){}
- }
- invitesListenerRef=db.ref(`invites_v6/${uid}`);
- invitesListenerRef.on('value',snap=>{
-  const map=snap.val()||{};
-  const now=Date.now();
-  const pendingList=Object.entries(map)
-   .filter(([invId,inv])=>inv && inv.status==='pending' && (now-(Number(inv.createdAt)||0)<=INVITE_MAX_AGE_MS) && !dismissedInviteIds.has(invId))
-   .sort((a,b)=>(Number(b[1].createdAt)||0)-(Number(a[1].createdAt)||0));
-
-  if(pendingList.length>0){
-   const [topId,topInv]=pendingList[0];
-   showIncomingInvite(topId, topInv);
-  }else if(activeIncomingInvite){
-   const currentStillPending=map[activeIncomingInvite.inviteId] && map[activeIncomingInvite.inviteId].status==='pending';
-   if(!currentStillPending){
-    hideIncomingInvite(false);
-   }
-  }
- },err=>{
-  console.error('invites_v6 listener error:',err);
+  if(fbUser&&val[fbUser.uid]&&val[fbUser.uid].name)myProfile.name=val[fbUser.uid].name;
+  renderPlayers();
  });
 }
 
 if(auth){
  auth.onAuthStateChanged(async u=>{
   fbUser=u;
-  bindPublicProfilesListener();
   if(u){
    try{
-    const uSnap=await db.ref(`users_v6/${u.uid}/name`).once('value');
-    if(uSnap.exists() && uSnap.val())myProfile.name=String(uSnap.val());
+    const ns=await db.ref(`users_v6/${u.uid}/name`).once('value');
+    if(ns.exists()&&ns.val())myProfile.name=String(ns.val());
    }catch(_){}
-   registerFcmToken();
-   bindUserInviteListener(u.uid);
-   if(autoRoomId){
-    listenForRoomStart(autoRoomId, bet, 'guest', true);
-   }
-  }else{
-   cleanupListeners();
+   ensureNotifAndToken();
   }
+  renderPlayers();
  });
-}else{
- bindPublicProfilesListener();
 }
 
-window.addEventListener('pagehide',cleanupListeners);
-$('searchPlayer').addEventListener('input',renderPlayersList);
+$('searchPlayer').addEventListener('input',renderPlayers);
 $('backBtn').onclick=()=>go('index.html');
 </script>
+<script src="./invite-global.js"></script>
 </body>
 </html>
