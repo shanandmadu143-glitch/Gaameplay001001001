@@ -6,6 +6,7 @@
   const PENDING_ROOM_KEY = 'sinhala_draughts_pending_room';
   const ACTIVE_ROOM_KEY = 'sinhala_draughts_multi_room';
   const BET_KEY = 'sinhala_draughts_bet';
+  const USER_CACHE_KEY = 'sinhala_draughts_v7_user';
 
   const DEFAULT_FB_CONFIG = {
     apiKey: 'AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI',
@@ -19,6 +20,8 @@
 
   let auth, db, fbUser;
   let myName = 'ක්‍රීඩකයා';
+  let myPieceIndex = 0;
+  let myAvatarIcon = 'fa-user';
   let invitesRef = null;
   let hostRoomRef = null;
   let activeInvite = null;
@@ -29,6 +32,17 @@
   function isOnArenaPage() {
     const p = (window.location.pathname || '').toLowerCase();
     return p.endsWith('/arena.html') || p.endsWith('arena.html');
+  }
+
+  function loadCachedUser() {
+    try {
+      const raw = localStorage.getItem(USER_CACHE_KEY);
+      if (!raw) return;
+      const u = JSON.parse(raw);
+      if (u && u.name) myName = String(u.name);
+      if (u && u.pieceIndex !== undefined) myPieceIndex = Number(u.pieceIndex) || 0;
+      if (u && u.avatarIcon) myAvatarIcon = String(u.avatarIcon);
+    } catch (_) {}
   }
 
   function injectStylesAndBanner() {
@@ -74,29 +88,44 @@
   }
 
   function navigateToArena(roomId, roomBet, role, roomData) {
-    if (isRedirecting || isOnArenaPage()) return;
+    if (isRedirecting || isOnArenaPage() || !roomId) return;
     isRedirecting = true;
+
+    if (invitesRef) {
+      try { invitesRef.off(); } catch (_) {}
+      invitesRef = null;
+    }
+    if (hostRoomRef) {
+      try { hostRoomRef.off(); } catch (_) {}
+      hostRoomRef = null;
+    }
     sessionStorage.removeItem(PENDING_ROOM_KEY);
 
     const safeBet = Math.max(10, Number(roomBet) || Number(sessionStorage.getItem(BET_KEY)) || 50);
+    const resolvedRole = role || 'host';
+    const hostName = (roomData && roomData.hostName) || (resolvedRole === 'host' ? myName : 'Host');
+    const guestName = (roomData && roomData.guestName) || (resolvedRole === 'guest' ? myName : 'Guest');
+    const oppName = resolvedRole === 'host' ? guestName : hostName;
+
     sessionStorage.setItem(BET_KEY, String(safeBet));
     sessionStorage.setItem(ACTIVE_ROOM_KEY, JSON.stringify({
-      roomId: roomId || '',
+      roomId: String(roomId),
       bet: safeBet,
-      role: role || 'player',
+      role: resolvedRole,
       uid: fbUser ? fbUser.uid : null,
-      hostUid: roomData && roomData.hostUid ? roomData.hostUid : null,
-      guestUid: roomData && roomData.guestUid ? roomData.guestUid : null,
-      hostName: roomData && roomData.hostName ? roomData.hostName : null,
-      guestName: roomData && roomData.guestName ? roomData.guestName : null,
+      hostUid: roomData && roomData.hostUid ? roomData.hostUid : (resolvedRole === 'host' && fbUser ? fbUser.uid : null),
+      guestUid: roomData && roomData.guestUid ? roomData.guestUid : (resolvedRole === 'guest' && fbUser ? fbUser.uid : null),
+      hostName,
+      guestName,
       startedAt: Date.now()
     }));
 
     const query = new URLSearchParams({
       mode: 'multi',
       bet: String(safeBet),
-      roomId: String(roomId || ''),
-      role: String(role || 'player')
+      roomId: String(roomId),
+      role: resolvedRole,
+      oppName: String(oppName)
     }).toString();
 
     window.location.replace(`arena.html?${query}`);
@@ -160,28 +189,44 @@
   }
 
   async function acceptCurrentInvite() {
-    if (!activeInvite || !fbUser || !db) return;
-    const { inviteId, roomId, bet } = activeInvite;
+    if (!activeInvite || !fbUser || !db || isRedirecting) return;
+    const { inviteId, roomId, bet, fromName } = activeInvite;
     hideInviteCard(true);
+
+    const acceptBtn = document.getElementById('sdGlobalAcceptBtn');
+    if (acceptBtn) acceptBtn.disabled = true;
 
     try {
       await db.ref(`invites_v6/${fbUser.uid}/${inviteId}`).update({ status: 'accepted' }).catch(() => {});
+
       let latestRoom = null;
       if (roomId) {
         const roomSnap = await db.ref(`rooms_v6/${roomId}`).once('value').catch(() => null);
         latestRoom = roomSnap && roomSnap.exists() ? roomSnap.val() : null;
+
         await db.ref(`rooms_v6/${roomId}`).update({
           status: 'active',
           matchStarted: true,
           guestUid: fbUser.uid,
           guestName: myName,
+          guestPieceIndex: myPieceIndex,
+          guestAvatar: myAvatarIcon,
           startedAt: Date.now()
         });
       }
-      navigateToArena(roomId, bet, 'guest', latestRoom ? { ...latestRoom, guestUid: fbUser.uid, guestName: myName } : null);
+
+      const mergedRoom = {
+        ...(latestRoom || {}),
+        hostName: (latestRoom && latestRoom.hostName) || fromName || 'Host',
+        guestName: myName,
+        guestUid: fbUser.uid
+      };
+
+      navigateToArena(roomId, bet || (latestRoom && latestRoom.bet), 'guest', mergedRoom);
     } catch (e) {
       console.error('Accept invite failed:', e);
-      navigateToArena(roomId, bet, 'guest', null);
+      if (acceptBtn) acceptBtn.disabled = false;
+      isRedirecting = false;
     }
   }
 
@@ -196,7 +241,7 @@
   }
 
   function watchHostPendingRoom() {
-    if (!db || !fbUser || isOnArenaPage()) return;
+    if (!db || !fbUser || isOnArenaPage() || isRedirecting) return;
     if (hostRoomRef) {
       try { hostRoomRef.off(); } catch (_) {}
       hostRoomRef = null;
@@ -207,7 +252,8 @@
       raw = JSON.parse(sessionStorage.getItem(PENDING_ROOM_KEY) || 'null');
     } catch (_) {}
 
-    if (!raw || !raw.roomId || raw.hostUid !== fbUser.uid) return;
+    if (!raw || !raw.roomId) return;
+    if (raw.hostUid && raw.hostUid !== fbUser.uid) return;
 
     hostRoomRef = db.ref(`rooms_v6/${raw.roomId}`);
     hostRoomRef.on('value', (snap) => {
@@ -228,7 +274,7 @@
   }
 
   function listenForInvites(uid) {
-    if (!db || !uid || isOnArenaPage()) return;
+    if (!db || !uid || isOnArenaPage() || isRedirecting) return;
     if (invitesRef) {
       try { invitesRef.off(); } catch (_) {}
       invitesRef = null;
@@ -259,11 +305,11 @@
 
   window.SinhalaDraughtsInviteBridge = {
     trackHostRoom(roomId, bet) {
-      if (!fbUser || !roomId) return;
+      if (!roomId) return;
       sessionStorage.setItem(PENDING_ROOM_KEY, JSON.stringify({
-        roomId,
+        roomId: String(roomId),
         bet: Number(bet) || 50,
-        hostUid: fbUser.uid
+        hostUid: fbUser ? fbUser.uid : null
       }));
       watchHostPendingRoom();
     },
@@ -278,9 +324,11 @@
   };
 
   function boot() {
+    loadCachedUser();
     if (!isOnArenaPage()) {
       injectStylesAndBanner();
     }
+
     try {
       if (!firebase.apps.length) {
         firebase.initializeApp(DEFAULT_FB_CONFIG);
@@ -302,9 +350,12 @@
       }
 
       try {
-        const nameSnap = await db.ref(`users_v6/${u.uid}/name`).once('value');
-        if (nameSnap.exists() && nameSnap.val()) {
-          myName = String(nameSnap.val());
+        const snap = await db.ref(`users_v6/${u.uid}`).once('value');
+        if (snap.exists()) {
+          const d = snap.val() || {};
+          if (d.name) myName = String(d.name);
+          if (d.pieceIndex !== undefined) myPieceIndex = Number(d.pieceIndex) || 0;
+          if (d.avatarIcon) myAvatarIcon = String(d.avatarIcon);
         }
       } catch (_) {}
 
