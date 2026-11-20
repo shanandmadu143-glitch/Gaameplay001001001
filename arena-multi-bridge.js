@@ -94,7 +94,6 @@
               updatePayload.guestUid = u.uid;
               updatePayload.guestJoinedAt = Date.now();
               updatePayload.status = 'active';
-              updatePayload.matchStarted = true;
             } else {
               updatePayload.hostUid = u.uid;
               updatePayload.hostJoinedAt = Date.now();
