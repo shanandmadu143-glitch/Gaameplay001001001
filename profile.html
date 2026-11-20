@@ -1,102 +1,669 @@
 <!DOCTYPE html>
 <html lang="si">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Player Profile - Sinhala Draughts Pro Gaming</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Gaming Profile - Sinhala Draughts Pro</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Gemunu+Libre:wght@400;600;700;800&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Gemunu+Libre:wght@400;600;700;800&family=Orbitron:wght@600;700;800;900&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#05070e;--panel:rgba(14,20,38,.92);--gold:#ffd166;--neon-blue:#00f2fe;--neon-green:#2ecc71;--red:#ff4757;--dim:#a0aec0}
-*{box-sizing:border-box;margin:0;padding:0;font-family:'Gemunu Libre','Poppins',sans-serif;user-select:none;-webkit-tap-highlight-color:transparent}
-html,body{width:100%;height:100%;background:radial-gradient(circle at 50% 20%,#1a103c 0%,#080b18 60%,#03050a 100%);color:#f8f9fa;overflow:hidden}
-body{min-height:100dvh;display:flex;flex-direction:column;justify-content:center;align-items:center}
+:root{
+  --bg:#05070e;
+  --panel:rgba(13,19,36,0.92);
+  --card:rgba(21,30,54,0.82);
+  --gold:#ffd166;
+  --gold-2:#ff9f1c;
+  --neon-blue:#00f2fe;
+  --neon-green:#2ecc71;
+  --purple:#9b59b6;
+  --red:#ff4757;
+  --dim:#9fb0c7;
+  --line:rgba(255,209,102,0.22);
+}
 
-.app{width:100%;height:100dvh;max-width:768px;margin:0 auto;padding:14px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;opacity:1;transform:scale(1);transition:opacity 0.16s ease-out,transform 0.16s ease-out;will-change:opacity,transform}
-.app.page-leaving{opacity:0;transform:scale(0.985)}
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:'Gemunu Libre','Poppins',sans-serif;
+  user-select:none;
+  -webkit-tap-highlight-color:transparent;
+}
 
-.top-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 18px;background:linear-gradient(135deg,rgba(22,30,56,0.95),rgba(10,14,28,0.95));border:2px solid rgba(255,209,102,0.4);border-radius:22px;box-shadow:0 8px 25px rgba(0,0,0,0.6);backdrop-filter:blur(10px)}
-.top-bar h2{color:var(--gold);font-size:1.15rem;font-weight:800;display:flex;align-items:center;gap:8px}
-.coin-pill{display:flex;align-items:center;gap:6px;border:1.5px solid rgba(255,209,102,0.4);border-radius:20px;background:rgba(5,8,18,0.85);padding:5px 12px;box-shadow:inset 0 2px 4px rgba(0,0,0,0.8)}
-.coin-pill>i{font-size:1rem;color:var(--gold)}
-.coin-pill b{font-size:0.95rem;color:#fff}
+html,body{
+  width:100%;
+  height:100%;
+  background:
+    radial-gradient(circle at 15% 12%, rgba(0,242,254,0.14), transparent 36%),
+    radial-gradient(circle at 85% 18%, rgba(255,209,102,0.16), transparent 40%),
+    radial-gradient(circle at 50% 85%, rgba(108,92,231,0.18), transparent 45%),
+    linear-gradient(180deg, #060913 0%, #04060c 100%);
+  color:#f8fafc;
+  overflow:hidden;
+}
 
-main{flex:1;display:flex;flex-direction:column;width:100%;position:relative;margin:8px 0;overflow:hidden}
-.profile-card{width:100%;height:100%;display:flex;flex-direction:column;gap:12px;padding:16px;background:linear-gradient(145deg,rgba(18,24,40,0.88),rgba(12,16,28,0.94));border:2px solid rgba(255,209,102,0.25);border-radius:24px;backdrop-filter:blur(12px);box-shadow:0 10px 30px rgba(0,0,0,0.5);overflow-y:auto}
+body{
+  min-height:100dvh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
 
-.hero-box{text-align:center;padding:14px;background:rgba(0,0,0,0.35);border:1px solid rgba(255,209,102,0.2);border-radius:18px}
-.hero-avatar{width:68px;height:68px;margin:0 auto 8px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe08a,#ffad62);color:#18213e;font-size:1.8rem;border:3px solid var(--gold);box-shadow:0 0 15px rgba(255,209,102,0.35)}
-.hero-box h2{color:var(--gold);font-size:1.25rem;font-weight:800}
-.hero-stats{color:var(--dim);font-size:0.82rem;margin-top:2px}
-.hero-owned{margin-top:6px;font-size:0.78rem;color:var(--neon-green);font-weight:700}
+.app{
+  width:100%;
+  height:100dvh;
+  max-width:768px;
+  margin:0 auto;
+  padding:12px 14px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  gap:10px;
+  position:relative;
+  opacity:1;
+  transform:scale(1);
+  transition:opacity 0.16s ease-out,transform 0.16s ease-out;
+}
+.app.page-leaving{
+  opacity:0;
+  transform:scale(0.985);
+}
 
-.section-head{display:flex;align-items:center;justify-content:space-between;margin-top:4px}
-.section-head p{font-size:0.9rem;color:#e2e8f0;font-weight:700}
-.shop-link{background:none;border:0;color:var(--gold);font-size:0.8rem;font-weight:700;cursor:pointer;text-decoration:underline}
+/* Top HUD Header */
+.top-hud{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:11px 16px;
+  background:linear-gradient(135deg,rgba(18,26,48,0.95),rgba(9,14,27,0.96));
+  border:1.5px solid var(--line);
+  border-radius:22px;
+  box-shadow:0 10px 28px rgba(0,0,0,0.65);
+  backdrop-filter:blur(12px);
+}
 
-.pieces-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:4px}
-.piece-option{background:rgba(255,255,255,0.04);border:2px solid rgba(255,255,255,0.1);border-radius:12px;padding:8px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;position:relative;transition:transform 0.12s ease,border-color 0.12s ease}
-.piece-option:active{transform:scale(0.96)}
-.piece-option.selected{border-color:var(--gold);background:rgba(255,209,102,0.2)}
-.piece-option.locked{opacity:0.45}
+.hud-title{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
 
-.actions-row{display:flex;gap:10px;margin-top:auto;padding-top:8px}
-.btn,.btn-gold{border:0;border-radius:12px;padding:11px 14px;cursor:pointer;font-weight:700;display:inline-flex;align-items:center;gap:6px;justify-content:center;font-size:0.92rem;transition:transform 0.12s ease}
+.hud-badge-icon{
+  width:38px;
+  height:38px;
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,rgba(255,209,102,0.22),rgba(0,242,254,0.14));
+  border:1px solid rgba(255,209,102,0.45);
+  color:var(--gold);
+  font-size:1.05rem;
+}
+
+.hud-title h1{
+  font-family:'Orbitron','Gemunu Libre',sans-serif;
+  font-size:0.95rem;
+  letter-spacing:0.8px;
+  color:#fff;
+  line-height:1.1;
+}
+.hud-title span{
+  font-size:0.72rem;
+  color:var(--neon-blue);
+  font-weight:700;
+}
+
+.coin-pill{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  padding:6px 13px;
+  border-radius:999px;
+  background:rgba(4,7,15,0.88);
+  border:1.5px solid rgba(255,209,102,0.45);
+  box-shadow:inset 0 2px 6px rgba(0,0,0,0.75);
+}
+.coin-pill i{
+  color:var(--gold);
+  font-size:1rem;
+  filter:drop-shadow(0 0 6px rgba(255,209,102,0.6));
+}
+.coin-pill b{
+  font-family:'Orbitron','Poppins',sans-serif;
+  font-size:0.88rem;
+  color:#fff;
+}
+
+/* Scrollable Main Area */
+main{
+  flex:1;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+
+.profile-scroll{
+  flex:1;
+  min-height:0;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  padding:2px 2px 10px;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(255,209,102,0.35) transparent;
+}
+.profile-scroll::-webkit-scrollbar{width:5px}
+.profile-scroll::-webkit-scrollbar-thumb{background:rgba(255,209,102,0.35);border-radius:999px}
+
+/* Gamer Banner Card */
+.gamer-banner{
+  position:relative;
+  overflow:hidden;
+  padding:16px;
+  border-radius:24px;
+  background:
+    linear-gradient(135deg, rgba(26,37,68,0.95) 0%, rgba(13,19,36,0.96) 65%, rgba(16,44,49,0.92) 100%);
+  border:1.5px solid rgba(255,209,102,0.35);
+  box-shadow:0 14px 34px rgba(0,0,0,0.65);
+}
+
+.gamer-banner::before{
+  content:'';
+  position:absolute;
+  top:-45px;
+  right:-45px;
+  width:140px;
+  height:140px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(0,242,254,0.22), transparent 70%);
+  pointer-events:none;
+}
+
+.gamer-top-row{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.avatar-ring-wrap{
+  position:relative;
+  flex-shrink:0;
+}
+
+.hero-avatar{
+  width:74px;
+  height:74px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,#ffe08a,#ffad62);
+  color:#18213e;
+  font-size:2rem;
+  border:3px solid var(--gold);
+  box-shadow:0 0 22px rgba(255,209,102,0.45);
+}
+
+.rank-pill{
+  position:absolute;
+  bottom:-5px;
+  left:50%;
+  transform:translateX(-50%);
+  padding:2px 9px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#ff9f1c,#ffd166);
+  color:#111;
+  font-family:'Orbitron','Poppins',sans-serif;
+  font-size:0.62rem;
+  font-weight:900;
+  white-space:nowrap;
+  box-shadow:0 4px 10px rgba(0,0,0,0.5);
+}
+
+.gamer-meta{
+  flex:1;
+  min-width:0;
+}
+
+.gamer-name-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.gamer-meta h2{
+  font-size:1.3rem;
+  font-weight:800;
+  color:#fff;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.pro-tag{
+  font-family:'Orbitron','Poppins',sans-serif;
+  font-size:0.62rem;
+  padding:2px 8px;
+  border-radius:8px;
+  background:rgba(0,242,254,0.14);
+  border:1px solid rgba(0,242,254,0.45);
+  color:var(--neon-blue);
+  font-weight:800;
+}
+
+.gamer-sub{
+  font-size:0.8rem;
+  color:var(--dim);
+  margin-top:3px;
+}
+
+.collection-strip{
+  margin-top:10px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:4px 10px;
+  border-radius:10px;
+  background:rgba(46,204,113,0.12);
+  border:1px solid rgba(46,204,113,0.3);
+  color:var(--neon-green);
+  font-size:0.74rem;
+  font-weight:700;
+}
+
+/* Stats Grid */
+.stats-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  margin-top:14px;
+}
+
+.stat-box{
+  background:rgba(6,10,20,0.65);
+  border:1px solid rgba(255,255,255,0.09);
+  border-radius:16px;
+  padding:10px 6px;
+  text-align:center;
+}
+
+.stat-box b{
+  display:block;
+  font-family:'Orbitron','Poppins',sans-serif;
+  font-size:0.98rem;
+  color:#fff;
+}
+.stat-box.win b{color:var(--neon-green)}
+.stat-box.loss b{color:var(--red)}
+.stat-box.rate b{color:var(--gold)}
+
+.stat-box span{
+  display:block;
+  font-size:0.68rem;
+  color:var(--dim);
+  margin-top:2px;
+  font-weight:700;
+}
+
+/* Live Loadout Preview Card */
+.loadout-card{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px 15px;
+  border-radius:20px;
+  background:var(--card);
+  border:1.5px solid rgba(0,242,254,0.28);
+  box-shadow:0 8px 22px rgba(0,0,0,0.45);
+}
+
+.loadout-info small{
+  display:block;
+  font-size:0.72rem;
+  color:var(--neon-blue);
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+}
+
+.loadout-info b{
+  display:block;
+  font-size:1rem;
+  color:#fff;
+  margin-top:2px;
+}
+
+.loadout-info span{
+  display:block;
+  font-size:0.76rem;
+  color:var(--dim);
+}
+
+.live-piece-stage{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:rgba(6,10,20,0.75);
+  padding:8px 12px;
+  border-radius:16px;
+  border:1px solid rgba(255,209,102,0.25);
+}
+
+.live-piece-token{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  font-size:1.15rem;
+  box-shadow:0 6px 14px rgba(0,0,0,0.65), inset 0 2px 4px rgba(255,255,255,0.45);
+  transition:transform 0.16s ease;
+}
+
+.live-piece-token.king::after{
+  content:'♛';
+  font-size:0.72rem;
+  position:absolute;
+  margin-top:16px;
+  margin-left:16px;
+  color:#ffd166;
+}
+
+/* Section Panels */
+.panel-box{
+  background:var(--panel);
+  border:1.5px solid var(--line);
+  border-radius:22px;
+  padding:14px;
+  box-shadow:0 10px 26px rgba(0,0,0,0.5);
+}
+
+.section-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:10px;
+}
+
+.section-head p{
+  font-size:0.92rem;
+  font-weight:800;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+.section-head p i{
+  color:var(--gold);
+}
+
+.shop-link{
+  background:rgba(255,209,102,0.12);
+  border:1px solid rgba(255,209,102,0.4);
+  color:var(--gold);
+  font-size:0.74rem;
+  font-weight:800;
+  padding:4px 10px;
+  border-radius:10px;
+  cursor:pointer;
+  transition:background 0.15s ease,transform 0.12s ease;
+}
+.shop-link:hover{
+  background:rgba(255,209,102,0.22);
+}
+.shop-link:active{
+  transform:scale(0.96);
+}
+
+.pieces-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:9px;
+}
+
+.piece-option{
+  background:rgba(255,255,255,0.03);
+  border:1.5px solid rgba(255,255,255,0.1);
+  border-radius:15px;
+  padding:10px 6px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:5px;
+  cursor:pointer;
+  position:relative;
+  transition:transform 0.14s ease,border-color 0.14s ease,background 0.14s ease,box-shadow 0.14s ease;
+}
+
+.piece-option:hover{
+  border-color:rgba(255,209,102,0.5);
+  background:rgba(255,255,255,0.06);
+}
+
+.piece-option:active{
+  transform:scale(0.96);
+}
+
+.piece-option.selected{
+  border-color:var(--gold);
+  background:linear-gradient(145deg,rgba(255,209,102,0.22),rgba(0,242,254,0.08));
+  box-shadow:0 0 16px rgba(255,209,102,0.24);
+}
+
+.piece-option.locked{
+  opacity:0.45;
+}
+
+.piece-badge{
+  font-size:0.56rem;
+  font-weight:800;
+  padding:2px 7px;
+  border-radius:999px;
+  background:rgba(0,0,0,0.45);
+  letter-spacing:0.3px;
+}
+
+/* Action Buttons */
+.actions-row{
+  display:grid;
+  grid-template-columns:1.4fr 1fr auto;
+  gap:8px;
+  padding-top:2px;
+}
+
+.btn,.btn-gold{
+  border:0;
+  border-radius:15px;
+  padding:11px 14px;
+  cursor:pointer;
+  font-weight:800;
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  justify-content:center;
+  font-size:0.9rem;
+  transition:transform 0.12s ease,box-shadow 0.15s ease;
+}
 .btn:active,.btn-gold:active{transform:scale(0.97)}
-.btn{background:rgba(255,255,255,0.1);color:white;border:1px solid rgba(255,255,255,0.2)}
-.btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;box-shadow:0 4px 15px rgba(255,173,98,0.4)}
 
-.bottom-nav{width:100%;min-height:66px;background:rgba(14,20,38,0.95);border:2px solid rgba(255,209,102,0.3);border-radius:24px;display:flex;align-items:center;justify-content:space-around;padding:6px 4px;backdrop-filter:blur(10px);box-shadow:0 10px 30px rgba(0,0,0,0.8)}
-.nav-item{background:none;border:0;color:#aab4c7;text-decoration:none;display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:0.72rem;font-weight:700;cursor:pointer;transition:color 0.15s ease,transform 0.15s ease}
+.btn{
+  background:rgba(255,255,255,0.08);
+  color:#f8fafc;
+  border:1px solid rgba(255,255,255,0.16);
+}
+.btn-gold{
+  background:linear-gradient(135deg,#ffe08a,#ff9f1c);
+  color:#111;
+  box-shadow:0 6px 20px rgba(255,159,28,0.35);
+}
+
+/* Bottom Navigation */
+.bottom-nav{
+  width:100%;
+  min-height:64px;
+  background:rgba(12,18,34,0.96);
+  border:1.5px solid var(--line);
+  border-radius:22px;
+  display:flex;
+  align-items:center;
+  justify-content:space-around;
+  padding:6px 4px;
+  backdrop-filter:blur(12px);
+  box-shadow:0 12px 30px rgba(0,0,0,0.8);
+}
+
+.nav-item{
+  background:none;
+  border:0;
+  color:#9fb0c7;
+  text-decoration:none;
+  display:flex;
+  flex:1;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:2px;
+  font-size:0.7rem;
+  font-weight:700;
+  cursor:pointer;
+  transition:color 0.15s ease,transform 0.15s ease;
+}
 .nav-item:active{transform:scale(0.93)}
-.nav-item i{font-size:1.3rem}
+.nav-item i{font-size:1.25rem}
 .nav-item.active{color:var(--gold)}
-.nav-item span{line-height:1}
 
-#toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,120px);opacity:0;background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--gold);color:#f8f9fa;border-radius:30px;padding:10px 20px;z-index:150;transition:.25s ease;font-weight:600;display:flex;align-items:center;gap:8px;font-size:0.9rem}
-#toast.show{transform:translate(-50%,0);opacity:1}
+/* Toast */
+#toast{
+  position:fixed;
+  bottom:84px;
+  left:50%;
+  transform:translate(-50%,120px);
+  opacity:0;
+  background:linear-gradient(135deg,#182238,#0b101d);
+  border:1.5px solid var(--gold);
+  color:#f8f9fa;
+  border-radius:30px;
+  padding:10px 20px;
+  z-index:150;
+  transition:transform 0.25s ease,opacity 0.25s ease;
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:0.88rem;
+  box-shadow:0 10px 25px rgba(0,0,0,0.65);
+}
+#toast.show{
+  transform:translate(-50%,0);
+  opacity:1;
+}
 
 @media (min-width: 600px) {
-  .app { max-width: 600px; padding: 20px; }
-  .top-bar { padding: 14px 22px; }
-  .profile-card { padding: 20px; gap: 14px; }
-  .pieces-grid { grid-template-columns: repeat(4,1fr); }
+  .app{max-width:620px;padding:18px}
+  .pieces-grid{grid-template-columns:repeat(4,1fr)}
 }
 </style>
 </head>
 <body>
 <div class="app" id="appRoot">
- <div class="top-bar">
-  <h2><i class="fa-solid fa-circle-user"></i> PLAYER PROFILE</h2>
-  <div class="coin-pill"><i class="fa-solid fa-coins"></i><b><span id="profilePoints">500</span></b></div>
- </div>
+ <header class="top-hud">
+  <div class="hud-title">
+   <div class="hud-badge-icon"><i class="fa-solid fa-gamepad"></i></div>
+   <div>
+    <h1>PLAYER PROFILE</h1>
+    <span>PRO GAMING HUB</span>
+   </div>
+  </div>
+  <div class="coin-pill">
+   <i class="fa-solid fa-coins"></i>
+   <b><span id="profilePoints">500</span></b>
+  </div>
+ </header>
 
  <main>
-  <section class="profile-card">
-   <div class="hero-box">
-    <div id="profileAvatar" class="hero-avatar"></div>
-    <h2 id="profileName">ක්‍රීඩකයා</h2>
-    <div id="profileStats" class="hero-stats">Wins: 0 | Losses: 0</div>
-    <div id="profileOwnedSummary" class="hero-owned">Unlocked Avatars: 1 | Unlocked Themes: 1</div>
-   </div>
+  <div class="profile-scroll">
+   <!-- Gamer Identity & Stats -->
+   <section class="gamer-banner">
+    <div class="gamer-top-row">
+     <div class="avatar-ring-wrap">
+      <div id="profileAvatar" class="hero-avatar"></div>
+      <div class="rank-pill" id="rankBadge">ROOKIE</div>
+     </div>
+     <div class="gamer-meta">
+      <div class="gamer-name-row">
+       <h2 id="profileName">ක්‍රීඩකයා</h2>
+       <span class="pro-tag" id="tierTag">TIER I</span>
+      </div>
+      <div class="gamer-sub" id="profileSubtitle">Sinhala Draughts Arena Competitor</div>
+      <div class="collection-strip" id="profileOwnedSummary">
+       <i class="fa-solid fa-sparkles"></i>
+       <span>Unlocked Avatars: 1/19 | Themes: 1/20</span>
+      </div>
+     </div>
+    </div>
 
-   <div class="section-head">
-    <p>මිලදී ගත් / ඇති Avatars:</p>
-    <button type="button" class="shop-link" id="goShopFromAvatars">+ Shop</button>
-   </div>
-   <div class="pieces-grid" id="avatarGrid"></div>
+    <div class="stats-grid">
+     <div class="stat-box">
+      <b id="statMatches">0</b>
+      <span>MATCHES</span>
+     </div>
+     <div class="stat-box win">
+      <b id="statWins">0</b>
+      <span>WINS</span>
+     </div>
+     <div class="stat-box loss">
+      <b id="statLosses">0</b>
+      <span>LOSSES</span>
+     </div>
+     <div class="stat-box rate">
+      <b id="statWinRate">0%</b>
+      <span>WIN RATE</span>
+     </div>
+    </div>
+   </section>
 
-   <div class="section-head">
-    <p>මිලදී ගත් / ඇති ඉත්තන්ගේ Themes:</p>
-    <button type="button" class="shop-link" id="goShopFromPieces">+ Shop</button>
-   </div>
-   <div class="pieces-grid" id="piecesGrid"></div>
+   <!-- Live Loadout Preview -->
+   <section class="loadout-card">
+    <div class="loadout-info">
+     <small><i class="fa-solid fa-eye"></i> ACTIVE LOADOUT PREVIEW</small>
+     <b id="selectedThemeName">මුතු සුදු (Default)</b>
+     <span id="selectedAvatarName">සම්මත (Default)</span>
+    </div>
+    <div class="live-piece-stage">
+     <div id="livePiecePreview" class="live-piece-token">●</div>
+     <div id="liveAvatarPreview" style="font-size:1.3rem;color:var(--gold)"><i class="fa-solid fa-user"></i></div>
+    </div>
+   </section>
 
+   <!-- Avatars Grid -->
+   <section class="panel-box">
+    <div class="section-head">
+     <p><i class="fa-solid fa-id-badge"></i> GAMING AVATARS</p>
+     <button type="button" class="shop-link" id="goShopFromAvatars"><i class="fa-solid fa-cart-plus"></i> Shop</button>
+    </div>
+    <div class="pieces-grid" id="avatarGrid"></div>
+   </section>
+
+   <!-- Piece Themes Grid -->
+   <section class="panel-box">
+    <div class="section-head">
+     <p><i class="fa-solid fa-chess-board"></i> DRAUGHT PIECE THEMES</p>
+     <button type="button" class="shop-link" id="goShopFromPieces"><i class="fa-solid fa-cart-plus"></i> Shop</button>
+    </div>
+    <div class="pieces-grid" id="piecesGrid"></div>
+   </section>
+
+   <!-- Save / Home / Logout -->
    <div class="actions-row">
-    <button class="btn-gold" id="saveProfile" style="flex:1"><i class="fa-solid fa-check"></i> සුරකින්න (Save)</button>
-    <button class="btn" id="backHomeBtn" style="flex:1"><i class="fa-solid fa-house"></i> Home</button>
-    <button class="btn" id="logoutBtn" style="border-color:var(--red);color:var(--red)"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+    <button class="btn-gold" id="saveProfile"><i class="fa-solid fa-floppy-disk"></i> සුරකින්න (Save)</button>
+    <button class="btn" id="backHomeBtn"><i class="fa-solid fa-house"></i> Home</button>
+    <button class="btn" id="logoutBtn" style="border-color:rgba(255,71,87,0.45);color:var(--red)" title="Logout"><i class="fa-solid fa-right-from-bracket"></i></button>
    </div>
-  </section>
+  </div>
  </main>
 
  <footer class="bottom-nav">
@@ -150,11 +717,11 @@ const DEFAULT_PIECE_DESIGNS=[
 const DEFAULT_AVATARS=[
  {id:'fa-user',name:'සම්මත (Default)',icon:'fa-user'},
  {id:'fa-chess-knight',name:'චෙස් නයිට්',icon:'fa-chess-knight'},
- {id:13,name:'ගිනියම් ඩ්‍රැගන්',icon:'fa-dragon'},
+ {id:'fa-dragon',name:'ගිනියම් ඩ්‍රැගන්',icon:'fa-dragon'},
  {id:'fa-robot',name:'රොබෝ යන්ත්‍රය',icon:'fa-robot'},
  {id:'fa-ghost',name:'අපූර්ව හොල්මන',icon:'fa-ghost'},
  {id:'fa-shield-halved',name:'රජකීය පලිහ',icon:'fa-shield-halved'},
- {id:'fa-crown',name:'රජකීය ඔටුන්න',icon:'fa-crown'},
+ {id:13,name:'රජකීය ඔටුන්න',icon:'fa-crown'},
  {id:'fa-fire',name:'මහා ගින්න',icon:'fa-fire'},
  {id:'fa-bolt',name:'අකුණු සැණැල්ල',icon:'fa-bolt'},
  {id:'fa-skull',name:'හිස්කබල',icon:'fa-skull'},
@@ -162,14 +729,13 @@ const DEFAULT_AVATARS=[
  {id:'fa-gem',name:'දියමන්ති මැණික',icon:'fa-gem'},
  {id:'fa-fighter-jet',name:'ජෙට් යානය',icon:'fa-fighter-jet'},
  {id:'fa-meteor',name:'උල්කාපාතය',icon:'fa-meteor'},
- {id:13,name:'කූට බළලා',icon:'fa-cat'},
+ {id:'fa-cat',name:'කූට බළලා',icon:'fa-cat'},
  {id:'fa-dog',name:'බල්ලා',icon:'fa-dog'},
  {id:'fa-paw',name:'සිංහ පාදය',icon:'fa-paw'},
  {id:'fa-crosshairs',name:'ඉලක්කය',icon:'fa-crosshairs'},
  {id:'fa-hat-wizard',name:'මායාකාරයා',icon:'fa-hat-wizard'}
 ];
-DEFAULT_AVATARS[2].id='fa-dragon';
-DEFAULT_AVATARS[14].id='fa-cat';
+DEFAULT_AVATARS[6].id='fa-crown';
 
 function normalizeList(val, fallback) {
  if (Array.isArray(val)) return val.length ? val : fallback;
@@ -182,6 +748,16 @@ function normalizeList(val, fallback) {
 
 function getAllPieces(){return [...DEFAULT_PIECE_DESIGNS,...customPieces];}
 function getAllAvatars(){return [...DEFAULT_AVATARS,...customAvatars];}
+
+function getRankInfo(wins, points){
+ const w = Number(wins) || 0;
+ const p = Number(points) || 0;
+ if (w >= 50 || p >= 5000) return { badge: 'GRANDMASTER', tier: 'TIER V' };
+ if (w >= 25 || p >= 2500) return { badge: 'DIAMOND', tier: 'TIER IV' };
+ if (w >= 12 || p >= 1200) return { badge: 'GOLD PRO', tier: 'TIER III' };
+ if (w >= 5 || p >= 700)  return { badge: 'STRIKER', tier: 'TIER II' };
+ return { badge: 'ROOKIE', tier: 'TIER I' };
+}
 
 function toast(s, icon='fa-circle-info'){
  const t=$('toast');
@@ -210,8 +786,45 @@ function applyAvatarToBox(elementId, designIndex, customIcon){
  el.innerHTML=customIcon ? `<i class="fa-solid ${customIcon}"></i>` : design.icon;
 }
 
+function updateLivePreview(){
+ const allPieces=getAllPieces();
+ const allAvatars=getAllAvatars();
+ const pIdx=Number(tempSelectedPiece)||0;
+ const piece=allPieces[pIdx]||allPieces[0];
+ const avObj=allAvatars.find(a=>String(a.id)===String(tempSelectedAvatar))||allAvatars[0];
+
+ const token=$('livePiecePreview');
+ if(token){
+  token.style.background=piece.bg;
+  token.style.border=`2px solid ${piece.border}`;
+  token.style.color=piece.color;
+  token.textContent=piece.icon;
+ }
+ const avPrev=$('liveAvatarPreview');
+ if(avPrev){
+  avPrev.innerHTML=`<i class="fa-solid ${avObj.icon}"></i>`;
+ }
+ $('selectedThemeName').textContent=piece.name;
+ $('selectedAvatarName').textContent=`Avatar: ${avObj.name}`;
+}
+
 function renderProfileItems(){
- $('profilePoints').textContent=user.points!==undefined?user.points:500;
+ const pts=user.points!==undefined?Number(user.points):500;
+ const wins=Number(user.wins)||0;
+ const losses=Number(user.losses)||0;
+ const matches=wins+losses;
+ const winRate=matches>0?Math.round((wins/matches)*100):0;
+ const rank=getRankInfo(wins, pts);
+
+ $('profilePoints').textContent=pts;
+ $('profileName').textContent=user.name||'ක්‍රීඩකයා';
+ $('rankBadge').textContent=rank.badge;
+ $('tierTag').textContent=rank.tier;
+ $('statMatches').textContent=matches;
+ $('statWins').textContent=wins;
+ $('statLosses').textContent=losses;
+ $('statWinRate').textContent=`${winRate}%`;
+
  const aGrid=$('avatarGrid');
  aGrid.innerHTML='';
  const unlockedAvatars = normalizeList(user.unlockedAvatars, ['fa-user']).map(String);
@@ -223,12 +836,16 @@ function renderProfileItems(){
   const isEquipped = avId === (user.avatarIcon || 'fa-user');
   const avDiv = document.createElement('div');
   avDiv.className = 'piece-option' + (avId === tempSelectedAvatar ? ' selected' : '') + (isUnlocked ? '' : ' locked');
-  const statusLabel = !isUnlocked ? 'Locked' : (isEquipped ? 'Equipped' : 'Unlocked');
+  const statusLabel = !isUnlocked ? 'LOCKED' : (isEquipped ? 'EQUIPPED' : 'UNLOCKED');
   const statusColor = !isUnlocked ? 'var(--red)' : (isEquipped ? 'var(--gold)' : 'var(--neon-green)');
-  avDiv.innerHTML = `<div style="font-size:1.4rem;color:var(--gold);padding:6px;"><i class="fa-solid ${av.icon}"></i></div><span style="font-size:0.62rem;text-align:center">${av.name}</span><small style="font-size:0.52rem;color:${statusColor}">${statusLabel}</small>`;
+  avDiv.innerHTML = `
+   <div style="font-size:1.35rem;color:var(--gold);padding:4px;"><i class="fa-solid ${av.icon}"></i></div>
+   <span style="font-size:0.62rem;text-align:center;color:#e2e8f0;font-weight:700">${av.name}</span>
+   <small class="piece-badge" style="color:${statusColor}">${statusLabel}</small>
+  `;
   avDiv.onclick = () => {
    if(!isUnlocked){
-    toast('මෙම Avatar එක Shop වෙතින් මිලදී ගන්න!');
+    toast('මෙම Avatar එක Shop වෙතින් මිලදී ගන්න!', 'fa-lock');
     return;
    }
    tempSelectedAvatar = avId;
@@ -248,12 +865,16 @@ function renderProfileItems(){
   const isEquipped = pIdx === (Number(user.pieceIndex) || 0);
   const div=document.createElement('div');
   div.className='piece-option'+(pIdx===Number(tempSelectedPiece)?' selected':'')+(isUnlocked?'':' locked');
-  const statusLabel = !isUnlocked ? 'Locked' : (isEquipped ? 'Equipped' : 'Unlocked');
+  const statusLabel = !isUnlocked ? 'LOCKED' : (isEquipped ? 'EQUIPPED' : 'UNLOCKED');
   const statusColor = !isUnlocked ? 'var(--red)' : (isEquipped ? 'var(--gold)' : 'var(--neon-green)');
-  div.innerHTML=`<div style="width:28px;height:28px;border-radius:50%;background:${p.bg};border:2px solid ${p.border};color:${p.color};display:grid;place-items:center;font-size:0.9rem">${p.icon}</div><span style="font-size:0.62rem;text-align:center">${p.name}</span><small style="font-size:0.52rem;color:${statusColor}">${statusLabel}</small>`;
+  div.innerHTML=`
+   <div style="width:30px;height:30px;border-radius:50%;background:${p.bg};border:2px solid ${p.border};color:${p.color};display:grid;place-items:center;font-size:0.95rem;box-shadow:0 3px 8px rgba(0,0,0,0.5)">${p.icon}</div>
+   <span style="font-size:0.62rem;text-align:center;color:#e2e8f0;font-weight:700">${p.name}</span>
+   <small class="piece-badge" style="color:${statusColor}">${statusLabel}</small>
+  `;
   div.onclick=()=>{
    if(!isUnlocked){
-    toast('මෙම Theme එක Shop වෙතින් මිලදී ගන්න!');
+    toast('මෙම Theme එක Shop වෙතින් මිලදී ගන්න!', 'fa-lock');
     return;
    }
    tempSelectedPiece=pIdx;
@@ -262,10 +883,9 @@ function renderProfileItems(){
   grid.appendChild(div);
  });
 
- $('profileOwnedSummary').textContent=`Unlocked Avatars: ${unlockedAvatars.length}/${allAvatars.length} | Unlocked Themes: ${unlockedPieces.length}/${allPieces.length}`;
+ $('profileOwnedSummary').innerHTML=`<i class="fa-solid fa-sparkles"></i> <span>Unlocked Avatars: ${unlockedAvatars.length}/${allAvatars.length} | Themes: ${unlockedPieces.length}/${allPieces.length}</span>`;
  applyAvatarToBox('profileAvatar', tempSelectedPiece, tempSelectedAvatar);
- $('profileName').textContent=user.name||'ක්‍රීඩකයා';
- $('profileStats').textContent=`Wins: ${user.wins||0} | Losses: ${user.losses||0}`;
+ updateLivePreview();
 }
 
 try{
@@ -354,7 +974,8 @@ $('saveProfile').onclick=async()=>{
   await db.ref('users_v6/'+fbUser.uid).update(patch).catch(()=>{});
   await db.ref('publicProfiles_v6/'+fbUser.uid).update(patch).catch(()=>{});
  }
- toast('තෝරාගත් ඉත්තා සහ Avatar සුරකින ලදී!','fa-circle-check');
+ renderProfileItems();
+ toast('Gaming Profile Loadout සුරකින ලදී!', 'fa-circle-check');
 };
 
 $('backHomeBtn').onclick=()=>smoothNavigate('index.html');
