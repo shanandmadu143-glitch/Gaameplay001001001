@@ -182,7 +182,7 @@ if(sessionStorage.getItem('sinhala_draughts_admin_auth')!=='1'){
  window.location.replace('index.html');
 }
 
-let db;
+let auth,db;
 let usersMap={};
 let publicMap={};
 let allPlayers=[];
@@ -218,8 +218,14 @@ function isSafeColor(val){
  return /^#[0-9a-fA-F]{3,8}$/.test(val);
 }
 
-try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);db=firebase.database();}
-catch(e){console.error('Firebase init failed:',e);lastDbError=e.message||'Firebase init error';}
+try{
+ if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
+ auth=firebase.auth();
+ db=firebase.database();
+}catch(e){
+ console.error('Firebase init failed:',e);
+ lastDbError=e.message||'Firebase init error';
+}
 
 document.querySelectorAll('.tab-btn').forEach(btn=>{
  btn.onclick=()=>{
@@ -256,8 +262,10 @@ async function updatePlayerCoins(uid, name, nextCoins){
  }
  const cleanCoins=Math.floor(nextCoins);
  try{
-  await db.ref('users_v6/'+uid).update({points:cleanCoins}).catch(()=>{});
-  await db.ref('publicProfiles_v6/'+uid).update({points:cleanCoins}).catch(()=>{});
+  if(usersMap[uid]){
+   await db.ref('users_v6/'+uid).update({points:cleanCoins}).catch(()=>{});
+  }
+  await db.ref('publicProfiles_v6/'+uid).update({points:cleanCoins});
   toast(`${name} ගේ Coins ${cleanCoins} ලෙස යාවත්කාලීන විය.`,'fa-circle-check');
   return true;
  }catch(err){
@@ -277,7 +285,7 @@ function renderPlayers(){
   const empty=document.createElement('p');
   empty.style.cssText='text-align:center;color:var(--dim);padding:20px;line-height:1.5';
   empty.textContent=lastDbError
-   ? `දත්ත ලබාගැනීමේ දෝෂයක්: ${lastDbError}\n(Firebase Console -> Realtime Database -> Rules හි ".read": true ලබා දෙන්න)`
+   ? `දත්ත ලබාගැනීමේ දෝෂයක්: ${lastDbError}`
    : 'ක්‍රීඩකයන් හමු නොවීය.';
   list.appendChild(empty);
   return;
@@ -411,7 +419,7 @@ $('addThemeBtn').onclick=async()=>{
   toast(`"${name}" Theme එක Shop එකට එක් කරන ලදී!`,'fa-circle-check');
  }catch(err){
   console.error(err);
-  toast('Theme එක එක් කිරීමට නොහැකි විය.');
+  toast('Theme එක එක් කිරීමට නොහැකි විය: '+(err.message||''));
  }
 };
 
@@ -444,7 +452,7 @@ $('addAvatarBtn').onclick=async()=>{
   toast(`"${name}" Avatar එක Shop එකට එක් කරන ලදී!`,'fa-circle-check');
  }catch(err){
   console.error(err);
-  toast('Avatar එක එක් කිරීමට නොහැකි විය.');
+  toast('Avatar එක එක් කිරීමට නොහැකි විය: '+(err.message||''));
  }
 };
 
@@ -562,15 +570,25 @@ function attachListeners(){
  db.ref('shopConfig_v6/customPieces').on('value',snap=>{
   customPieces=normalizeItems(snap.val());
   renderCustomLists();
+ },err=>{
+  console.error('customPieces error:',err);
  });
 
  db.ref('shopConfig_v6/customAvatars').on('value',snap=>{
   customAvatars=normalizeItems(snap.val());
   renderCustomLists();
+ },err=>{
+  console.error('customAvatars error:',err);
  });
 }
 
-attachListeners();
+if(auth){
+ auth.onAuthStateChanged(()=>{
+  attachListeners();
+ });
+}else{
+ attachListeners();
+}
 
 $('playerSearch').addEventListener('input',renderPlayers);
 $('refreshPlayersBtn').onclick=()=>{renderPlayers();toast('ක්‍රීඩක ලැයිස්තුව Refresh විය.','fa-rotate');};
