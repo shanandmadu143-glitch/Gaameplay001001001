@@ -32,7 +32,7 @@ body{
   backdrop-filter: blur(6px);
 }
 .arena-player-card { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; position: relative; }
-.arena-avatar-box { width: 48px; height: 48px; border-radius: 50%; border: 2px solid #2ecc71; background: #0f2b1c; display: grid; place-items: center; font-size: 1.3rem; color: #2ecc71; overflow: hidden; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.arena-avatar-box { width: 48px; height: 48px; border-radius: 50%; border: 2px solid #2ecc71; background: #0f2b1c; display: grid; place-items: center; font-size: 1.3rem; color: #2ecc71; overflow: hidden; }
 .arena-player-card.active .arena-avatar-box { border-color: #ffd166; box-shadow: 0 0 20px rgba(255, 209, 102, 0.8); transform: scale(1.08); }
 .arena-player-card b { font-size: 0.9rem; color: #fff; max-width: 105px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .arena-player-card small { font-size: 0.72rem; color: #a0aec0; }
@@ -119,7 +119,7 @@ body{
   border: 2px dashed var(--neon-blue);
 }
 
-.piece { width: 82%; height: 82%; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.7); display: grid; place-items: center; font-size: 1.15rem; position: relative; transition: transform 0.15s ease; }
+.piece { width: 82%; height: 82%; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.7); display: grid; place-items: center; font-size: 1.15rem; position: relative; }
 .king:after { content:'♛'; font-size: clamp(13px,3.2vw,19px); position: absolute; bottom: 2px; right: 2px; color: #ffd166; }
 
 .arena-bottom-bar { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 520px; padding: 6px 10px; margin-bottom: 4px; }
@@ -266,8 +266,6 @@ let userSide=1,nextStartingSide=1,gameMode='single';
 let lastMove = null;
 let thoughtBubbleTimeout = null;
 let mySessionId = 'player_' + Math.random().toString(36).substring(2, 9);
-let customPieces = [];
-let customAvatars = [];
 
 let soundEnabled = true;
 let mediaRecorder = null;
@@ -296,10 +294,6 @@ const PIECE_DESIGNS=[
  {id:18,name:'විදුලි ලෙමන්',bg:'radial-gradient(circle at 30% 30%,#f7dc6f,#f9e79f)',border:'#f1c40f',color:'#111',icon:'✨'},
  {id:19,name:'අමරණීය අඳුර',bg:'radial-gradient(circle at 30% 30%,#2c3e50,#000000)',border:'#ffd166',color:'#ffd166',icon:'♔'}
 ];
-
-function getAllPieceDesigns(){
- return [...PIECE_DESIGNS, ...customPieces];
-}
 
 function playVoice(text) {
  if (!soundEnabled || !('speechSynthesis' in window)) return;
@@ -453,51 +447,9 @@ try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);auth=firebas
 
 function applyAvatarToBox(elementId, designIndex, customIcon){
  const el=$(elementId);if(!el)return;
- const allDesigns=getAllPieceDesigns();
- const idx=Number(designIndex)||0;
- const design=allDesigns[idx]||allDesigns[0];
+ const design=PIECE_DESIGNS[designIndex]||PIECE_DESIGNS[0];
  el.style.background=design.bg;el.style.borderColor=design.border;el.style.color=design.color;
  el.innerHTML=customIcon ? `<i class="fa-solid ${customIcon}"></i>` : design.icon;
-}
-
-function syncPlayerCardsVisuals(){
- const myIdx = Number(user.pieceIndex) || 0;
- const myAv = user.avatarIcon || 'fa-user';
- if(single){
-  $('p1name').textContent = user.name || 'ඔබ';
-  $('p1sub').textContent = 'Player';
-  $('p2name').textContent = 'AI පරිගණකය';
-  $('p2sub').textContent = 'AI';
-  applyAvatarToBox('p1AvatarBox', myIdx, myAv);
-  applyAvatarToBox('p2AvatarBox', 2, 'fa-robot');
- } else if(role === 'host'){
-  $('p1name').textContent = user.name || $('p1name').textContent || 'Host';
-  $('p1sub').textContent = 'Host';
-  $('p2sub').textContent = 'Guest';
-  applyAvatarToBox('p1AvatarBox', myIdx, myAv);
-  applyAvatarToBox('p2AvatarBox', window.opponentPieceIndex || 0, window.opponentAvatar || 'fa-chess-knight');
- } else {
-  $('p2name').textContent = user.name || $('p2name').textContent || 'Guest';
-  $('p1sub').textContent = 'Host';
-  $('p2sub').textContent = 'Guest';
-  applyAvatarToBox('p1AvatarBox', window.opponentPieceIndex || 0, window.opponentAvatar || 'fa-user');
-  applyAvatarToBox('p2AvatarBox', myIdx, myAv);
- }
-}
-
-function attachArenaShopSync(){
- if(!db)return;
- db.ref('shopConfig_v6/customPieces').on('value', snap => {
-  const val = snap.val();
-  customPieces = Array.isArray(val) ? val.filter(Boolean) : (val && typeof val === 'object' ? Object.values(val).filter(Boolean) : []);
-  syncPlayerCardsVisuals();
-  render();
- }, ()=>{});
- db.ref('shopConfig_v6/customAvatars').on('value', snap => {
-  const val = snap.val();
-  customAvatars = Array.isArray(val) ? val.filter(Boolean) : (val && typeof val === 'object' ? Object.values(val).filter(Boolean) : []);
-  syncPlayerCardsVisuals();
- }, ()=>{});
 }
 
 async function initGameFromURL(){
@@ -511,22 +463,15 @@ async function initGameFromURL(){
  $('arenaBetDisplay').textContent = gameMode === 'freestyle' ? 'FREE' : bet;
 
  const saved = localStorage.getItem(KEY);
- if(saved) {
-  try {
-   const parsed = JSON.parse(saved);
-   user = Object.assign(user, parsed, {
-    pieceIndex: Number(parsed.pieceIndex) || 0,
-    avatarIcon: parsed.avatarIcon || 'fa-user'
-   });
-  } catch(e){}
- }
-
- attachArenaShopSync();
+ if(saved) { try { user = Object.assign(user, JSON.parse(saved)); } catch(e){} }
 
  const startByMode = async () => {
   if(gameMode === 'single' || gameMode === 'freestyle') {
    single = true; role = null; roomId = null;
-   syncPlayerCardsVisuals();
+   $('p1name').textContent = user.name || 'ඔබ'; $('p1sub').textContent = 'Player';
+   $('p2name').textContent = 'AI පරිගණකය'; $('p2sub').textContent = 'AI';
+   applyAvatarToBox('p1AvatarBox', user.pieceIndex||0, user.avatarIcon||'fa-user');
+   applyAvatarToBox('p2AvatarBox', 2, 'fa-robot');
    initBoard();
   } else if(gameMode === 'multi') {
    single = false;
@@ -556,22 +501,17 @@ async function initGameFromURL(){
      user.losses = Number(d.losses)||0;
      user.pieceIndex = Number(d.pieceIndex)||0;
      user.avatarIcon = d.avatarIcon||'fa-user';
-     localStorage.setItem(KEY, JSON.stringify({...user, uid: u.uid}));
     }
    } catch(e){}
   }
   if(!authResolved) {
    authResolved = true;
    await startByMode();
-  } else {
-   syncPlayerCardsVisuals();
-   render();
-   if(!single && roomId && db && fbUser) {
-    const patch = role === 'guest'
-     ? { guestUid: fbUser.uid, guestName: user.name || 'Guest', guestPieceIndex: Number(user.pieceIndex)||0, guestAvatar: user.avatarIcon||'fa-user', status: 'active', matchStarted: true }
-     : { hostUid: fbUser.uid, hostName: user.name || 'Host', hostPieceIndex: Number(user.pieceIndex)||0, hostAvatar: user.avatarIcon||'fa-user' };
-    db.ref('rooms_v6/' + roomId).update(patch).catch(()=>{});
-   }
+  } else if(!single && roomId && db && fbUser) {
+   const patch = role === 'guest'
+    ? { guestUid: fbUser.uid, guestName: user.name || 'Guest', guestPieceIndex: user.pieceIndex || 0, status: 'active', matchStarted: true }
+    : { hostUid: fbUser.uid, hostName: user.name || 'Host', hostPieceIndex: user.pieceIndex || 0 };
+   db.ref('rooms_v6/' + roomId).update(patch).catch(()=>{});
   }
  });
 }
@@ -598,7 +538,6 @@ function initBoard(){
  turn=1;selected=null;moves=[];gameOver=false;processing=false;forcedContinuation=null;
  lastMove=null;
  if(single) userSide = nextStartingSide;
- syncPlayerCardsVisuals();
  render(); setTurnUI();
 
  startForestAmbient();
@@ -653,9 +592,6 @@ function allMoves(side,b=board){
 function render(){
  const el=$('board');el.innerHTML='';
  const flip=single?(userSide===-1):(role==='guest');
- const allDesigns=getAllPieceDesigns();
- const myPieceIdx = Number(user.pieceIndex) || 0;
-
  for(let vr=0;vr<8;vr++){
   for(let vc=0;vc<8;vc++){
    const r=flip?7-vr:vr,c=flip?7-vc:vc;
@@ -674,10 +610,9 @@ function render(){
    if(board[r][c]){
     const val=board[r][c],p=document.createElement('div');
     const isMyPiece = single ? (Math.sign(val) === userSide) : (role === 'host' ? Math.sign(val) === 1 : Math.sign(val) === -1);
-    const oppPieceIdx = window.opponentPieceIndex !== undefined ? (Number(window.opponentPieceIndex) || 0) : (single ? (myPieceIdx === 2 ? 4 : 2) : 0);
-    const pieceDesignIndex = isMyPiece ? myPieceIdx : oppPieceIdx;
+    let pieceDesignIndex = isMyPiece ? (user.pieceIndex || 0) : (window.opponentPieceIndex !== undefined ? window.opponentPieceIndex : 2);
 
-    const design = allDesigns[pieceDesignIndex] || allDesigns[0];
+    const design = PIECE_DESIGNS[pieceDesignIndex]||PIECE_DESIGNS[0];
     p.className = 'piece' + (Math.abs(val) === 2 ? ' king' : '');
     p.style.background = design.bg;
     p.style.border = `2px solid ${design.border}`;
@@ -783,7 +718,7 @@ function aiMove(){
  const moving=board[m.fromR][m.fromC];
  applyMove(board,m);
  const landed=board[m.toR][m.toC];
- const followUps=m.capture&&Math.abs(landed)===Math.abs(moving)?pieceMoves(m.toR,m.toC).filter(x=>x.capture):[];
+ const followUps=m.capture&&Math.abs(landed)===Math.abs(moving)?pieceMoves(m.toR,m.toC).filter(x=>m.capture):[];
  if(followUps.length){forcedContinuation={r:m.toR,c:m.toC};turn=aiSide;render();setTurnUI();aiTimer=setTimeout(aiMove,450);return;}
  forcedContinuation=null;render();turn=userSide;
  if(!allMoves(userSide).length)finish(aiSide,'ඔබට නීත්‍යානුකූල Move නොමැත.');else setTurnUI();
@@ -898,7 +833,6 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
  processing = false;
  forcedContinuation = null;
  lastMove = null;
- syncPlayerCardsVisuals();
 
  if(!db || !roomId) {
   render();
@@ -923,12 +857,11 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
    }
 
    if(role === 'host') {
-    window.opponentPieceIndex = data.guestPieceIndex !== undefined ? (Number(data.guestPieceIndex) || 0) : 0;
-    window.opponentAvatar = data.guestAvatar || 'fa-chess-knight';
+    window.opponentPieceIndex = data.guestPieceIndex !== undefined ? data.guestPieceIndex : 2;
     $('p1name').textContent = user.name || data.hostName || 'Host'; $('p1sub').textContent = 'Host';
     $('p2name').textContent = opponentName || data.guestName || 'Guest'; $('p2sub').textContent = 'Guest';
-    applyAvatarToBox('p1AvatarBox', Number(user.pieceIndex)||0, user.avatarIcon||'fa-user');
-    applyAvatarToBox('p2AvatarBox', window.opponentPieceIndex, window.opponentAvatar);
+    applyAvatarToBox('p1AvatarBox', user.pieceIndex||0, user.avatarIcon||'fa-user');
+    applyAvatarToBox('p2AvatarBox', data.guestPieceIndex||0, data.guestAvatar||'fa-chess-knight');
     if(!Array.isArray(data.board)) {
      roomRef.update({
       board: board,
@@ -936,29 +869,20 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
       status: 'active',
       matchStarted: true,
       hostName: user.name || data.hostName || 'Host',
-      hostPieceIndex: Number(user.pieceIndex)||0,
-      hostAvatar: user.avatarIcon||'fa-user'
-     }).catch(()=>{});
-    } else {
-     roomRef.update({
-      hostName: user.name || data.hostName || 'Host',
-      hostPieceIndex: Number(user.pieceIndex)||0,
-      hostAvatar: user.avatarIcon||'fa-user'
+      hostPieceIndex: user.pieceIndex || 0
      }).catch(()=>{});
     }
    } else {
-    window.opponentPieceIndex = data.hostPieceIndex !== undefined ? (Number(data.hostPieceIndex) || 0) : 0;
-    window.opponentAvatar = data.hostAvatar || 'fa-user';
+    window.opponentPieceIndex = data.hostPieceIndex !== undefined ? data.hostPieceIndex : 0;
     $('p1name').textContent = opponentName || data.hostName || 'Host'; $('p1sub').textContent = 'Host';
     $('p2name').textContent = user.name || data.guestName || 'Guest'; $('p2sub').textContent = 'Guest';
-    applyAvatarToBox('p1AvatarBox', window.opponentPieceIndex, window.opponentAvatar);
-    applyAvatarToBox('p2AvatarBox', Number(user.pieceIndex)||0, user.avatarIcon||'fa-user');
+    applyAvatarToBox('p1AvatarBox', data.hostPieceIndex||0, data.hostAvatar||'fa-user');
+    applyAvatarToBox('p2AvatarBox', user.pieceIndex||0, user.avatarIcon||'fa-user');
     const guestPatch = {
      status: 'active',
      matchStarted: true,
      guestName: user.name || data.guestName || 'Guest',
-     guestPieceIndex: Number(user.pieceIndex)||0,
-     guestAvatar: user.avatarIcon||'fa-user',
+     guestPieceIndex: user.pieceIndex || 0,
      guestJoinedAt: Date.now()
     };
     if(!Array.isArray(data.board)) {
@@ -979,24 +903,18 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
 
   if(role === 'host') {
    if(data.guestName) $('p2name').textContent = data.guestName;
-   if(data.guestPieceIndex !== undefined) window.opponentPieceIndex = Number(data.guestPieceIndex) || 0;
-   if(data.guestAvatar) window.opponentAvatar = data.guestAvatar;
+   if(data.guestPieceIndex !== undefined) window.opponentPieceIndex = data.guestPieceIndex;
   } else {
    if(data.hostName) $('p1name').textContent = data.hostName;
-   if(data.hostPieceIndex !== undefined) window.opponentPieceIndex = Number(data.hostPieceIndex) || 0;
-   if(data.hostAvatar) window.opponentAvatar = data.hostAvatar;
+   if(data.hostPieceIndex !== undefined) window.opponentPieceIndex = data.hostPieceIndex;
   }
-  syncPlayerCardsVisuals();
 
   if(data.status === 'finished') {
    if(!gameOver) finish(Number(data.winner), 'තරඟය අවසන් විය.');
    return;
   }
 
-  if(data.updatedBy && data.updatedBy === mySessionId) {
-   render();
-   return;
-  }
+  if(data.updatedBy && data.updatedBy === mySessionId) return;
 
   const prevTurn = turn;
   if(Array.isArray(data.board)) {
