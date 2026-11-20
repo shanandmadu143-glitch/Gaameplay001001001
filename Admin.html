@@ -11,12 +11,12 @@
 html,body{width:100%;height:100%;background:radial-gradient(circle at 50% 15%,#1a103c 0%,#080b18 65%,#03050a 100%);color:#f8f9fa;overflow:hidden}
 body{min-height:100dvh;display:flex;flex-direction:column;align-items:center}
 
-.admin-app{width:100%;height:100dvh;max-width:860px;margin:0 auto;padding:14px;display:flex;flex-direction:column;gap:12px;overflow:hidden;opacity:1;transform:scale(1);transition:opacity 0.16s ease-out,transform 0.16s ease-out}
+.admin-app{width:100%;height:100dvh;max-width:860px;margin:0 auto;padding:14px;display:flex;flex-direction:column;gap:12px;overflow:hidden;opacity:1;transform:scale(1);transition:opacity 0.16s ease-out,transform 0.16s ease-out;will-change:opacity,transform}
 .admin-app.page-leaving{opacity:0;transform:scale(0.985)}
 
 .admin-header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 18px;background:linear-gradient(135deg,rgba(22,30,56,0.95),rgba(10,14,28,0.95));border:2px solid rgba(255,209,102,0.45);border-radius:22px;box-shadow:0 8px 25px rgba(0,0,0,0.6);backdrop-filter:blur(10px)}
 .admin-brand{display:flex;align-items:center;gap:12px}
-.admin-badge{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffd166,#ff9f1a);color:#111;font-size:1.3rem;box-shadow:0 0 15px rgba(255,209,102,0.5)}
+.admin-badge{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffd166,#ff9f1a);color:#111;font-size:1.3rem;box-shadow:0 0 15px rgba(255,209,102,0.5);flex-shrink:0}
 .admin-brand b{font-size:1.15rem;color:var(--gold);display:block;line-height:1.15}
 .admin-brand small{font-size:0.75rem;color:var(--dim)}
 
@@ -33,14 +33,14 @@ input:focus,select:focus{border-color:var(--gold)}
 
 .player-card{background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,209,102,0.2);border-radius:18px;padding:12px 14px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}
 .player-info{display:flex;align-items:center;gap:12px;min-width:160px}
-.player-av{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(255,209,102,0.14);border:2px solid var(--gold);color:var(--gold);font-size:1.15rem}
+.player-av{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(255,209,102,0.14);border:2px solid var(--gold);color:var(--gold);font-size:1.15rem;flex-shrink:0}
 .player-info b{font-size:1rem;color:#fff;display:block}
 .player-info small{font-size:0.75rem;color:var(--dim)}
 
-.player-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.coin-input{width:105px !important;padding:7px 10px !important;font-size:0.88rem !important;font-weight:700;color:var(--gold) !important}
+.player-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.coin-input{width:95px !important;padding:7px 9px !important;font-size:0.88rem !important;font-weight:700;color:var(--gold) !important}
 
-.btn,.btn-gold,.btn-danger,.btn-green{border:0;border-radius:11px;padding:8px 12px;cursor:pointer;font-weight:700;font-size:0.82rem;display:inline-flex;align-items:center;gap:6px;justify-content:center;transition:transform 0.12s ease}
+.btn,.btn-gold,.btn-danger,.btn-green{border:0;border-radius:11px;padding:8px 11px;cursor:pointer;font-weight:700;font-size:0.8rem;display:inline-flex;align-items:center;gap:5px;justify-content:center;transition:transform 0.12s ease}
 .btn:active,.btn-gold:active,.btn-danger:active,.btn-green:active{transform:scale(0.96)}
 .btn{background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2)}
 .btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111}
@@ -54,7 +54,7 @@ input:focus,select:focus{border-color:var(--gold)}
 .preview-box{background:rgba(0,0,0,0.35);border:1.5px dashed rgba(255,209,102,0.4);border-radius:18px;padding:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
 .piece-sample{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;font-size:1.5rem;box-shadow:0 6px 18px rgba(0,0,0,0.6)}
 
-.custom-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-top:6px}
+.custom-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:6px}
 .custom-item{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.14);border-radius:14px;padding:10px;display:flex;align-items:center;justify-content:space-between;gap:8px}
 .custom-item-left{display:flex;align-items:center;gap:8px;min-width:0}
 .custom-item-left span{font-size:0.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -93,7 +93,7 @@ input:focus,select:focus{border-color:var(--gold)}
  <!-- Tab 1: Players Management -->
  <section class="panel-scroll active" id="playersTab">
   <div class="search-bar">
-   <input type="text" id="playerSearch" placeholder="ක්‍රීඩකයාගේ නම සොයන්න...">
+   <input type="text" id="playerSearch" placeholder="ක්‍රීඩකයාගේ නම හෝ UID සොයන්න...">
    <button class="btn" id="refreshPlayersBtn" title="Refresh"><i class="fa-solid fa-rotate"></i></button>
   </div>
   <div id="playersList" style="display:flex;flex-direction:column;gap:10px">
@@ -187,6 +187,7 @@ let allPlayers=[];
 let customPieces=[];
 let customAvatars=[];
 let isNavigating=false;
+let listenersAttached=false;
 
 function toast(s, icon='fa-circle-info'){
  const t=$('toast');
@@ -206,6 +207,14 @@ function smoothNavigate(url){
  setTimeout(()=>{window.location.href=url;},110);
 }
 
+function isSafeIconClass(cls){
+ return /^fa-[a-z0-9-]+$/i.test(cls);
+}
+
+function isSafeColor(val){
+ return /^#[0-9a-fA-F]{3,8}$/.test(val);
+}
+
 try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);db=firebase.database();}
 catch(e){console.error('Firebase init failed:',e);}
 
@@ -219,32 +228,35 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
  };
 });
 
-// Load Players
-function loadPlayers(){
- if(!db)return;
- db.ref('users_v6').on('value',snap=>{
-  const val=snap.val()||{};
-  allPlayers=Object.entries(val).map(([uid,data])=>({
-   uid,
-   name:data.name||'Player',
-   points:Number(data.points)||0,
-   wins:Number(data.wins)||0,
-   losses:Number(data.losses)||0,
-   avatarIcon:data.avatarIcon||'fa-user'
-  }));
-  $('playerCountLabel').textContent=`මුළු ක්‍රීඩකයන්: ${allPlayers.length}`;
-  renderPlayers();
- });
+async function updatePlayerCoins(uid, name, nextCoins){
+ if(!Number.isFinite(nextCoins)||nextCoins<0){
+  toast('නිවැරදි Coin අගයක් ඇතුළත් කරන්න.');
+  return false;
+ }
+ const cleanCoins=Math.floor(nextCoins);
+ try{
+  await db.ref('users_v6/'+uid).update({points:cleanCoins});
+  await db.ref('publicProfiles_v6/'+uid).update({points:cleanCoins}).catch(()=>{});
+  toast(`${name} ගේ Coins ${cleanCoins} ලෙස යාවත්කාලීන විය.`,'fa-circle-check');
+  return true;
+ }catch(err){
+  console.error(err);
+  toast('Coins යාවත්කාලීන කිරීමට නොහැකි විය.');
+  return false;
+ }
 }
 
 function renderPlayers(){
  const q=($('playerSearch').value||'').trim().toLowerCase();
  const list=$('playersList');
- list.innerHTML='';
+ list.replaceChildren();
 
  const filtered=allPlayers.filter(p=>p.name.toLowerCase().includes(q)||p.uid.toLowerCase().includes(q));
  if(!filtered.length){
-  list.innerHTML='<p style="text-align:center;color:var(--dim);padding:20px">ක්‍රීඩකයන් හමු නොවීය.</p>';
+  const empty=document.createElement('p');
+  empty.style.cssText='text-align:center;color:var(--dim);padding:20px';
+  empty.textContent='ක්‍රීඩකයන් හමු නොවීය.';
+  list.appendChild(empty);
   return;
  }
 
@@ -254,16 +266,33 @@ function renderPlayers(){
 
   const info=document.createElement('div');
   info.className='player-info';
-  info.innerHTML=`
-   <div class="player-av"><i class="fa-solid ${p.avatarIcon||'fa-user'}"></i></div>
-   <div>
-    <b>${escapeHtml(p.name)}</b>
-    <small>Wins: ${p.wins} | Losses: ${p.losses}</small>
-   </div>
-  `;
+
+  const avBox=document.createElement('div');
+  avBox.className='player-av';
+  const avIcon=document.createElement('i');
+  const safeAv=isSafeIconClass(p.avatarIcon)?p.avatarIcon:'fa-user';
+  avIcon.className=`fa-solid ${safeAv}`;
+  avBox.appendChild(avIcon);
+
+  const meta=document.createElement('div');
+  const nameEl=document.createElement('b');
+  nameEl.textContent=p.name;
+  const subEl=document.createElement('small');
+  subEl.textContent=`Coins: ${p.points} • Wins: ${p.wins} | Losses: ${p.losses}`;
+  meta.append(nameEl,subEl);
+  info.append(avBox,meta);
 
   const actions=document.createElement('div');
   actions.className='player-actions';
+
+  const minusBtn=document.createElement('button');
+  minusBtn.className='btn';
+  minusBtn.textContent='-50';
+  minusBtn.onclick=async()=>{
+   const next=Math.max(0,(Number(coinInp.value)||0)-50);
+   coinInp.value=next;
+   await updatePlayerCoins(p.uid,p.name,next);
+  };
 
   const coinInp=document.createElement('input');
   coinInp.type='number';
@@ -271,19 +300,20 @@ function renderPlayers(){
   coinInp.value=p.points;
   coinInp.min='0';
 
+  const plusBtn=document.createElement('button');
+  plusBtn.className='btn';
+  plusBtn.textContent='+50';
+  plusBtn.onclick=async()=>{
+   const next=(Number(coinInp.value)||0)+50;
+   coinInp.value=next;
+   await updatePlayerCoins(p.uid,p.name,next);
+  };
+
   const saveCoinBtn=document.createElement('button');
   saveCoinBtn.className='btn-green';
   saveCoinBtn.innerHTML='<i class="fa-solid fa-coins"></i> Save';
   saveCoinBtn.onclick=async()=>{
-   const nextCoins=Number(coinInp.value);
-   if(!Number.isFinite(nextCoins)||nextCoins<0)return toast('නිවැරදි Coin අගයක් ඇතුළත් කරන්න.');
-   try{
-    await db.ref('users_v6/'+p.uid).update({points:nextCoins});
-    await db.ref('publicProfiles_v6/'+p.uid).update({points:nextCoins}).catch(()=>{});
-    toast(`${p.name} ගේ Coins ${nextCoins} ලෙස යාවත්කාලීන විය.`,'fa-circle-check');
-   }catch(err){
-    toast('Coins යාවත්කාලීන කිරීමට නොහැකි විය.');
-   }
+   await updatePlayerCoins(p.uid,p.name,Number(coinInp.value));
   };
 
   const delBtn=document.createElement('button');
@@ -298,30 +328,37 @@ function renderPlayers(){
     if(lowerName)await db.ref('usernameIndex_v6/'+lowerName).remove().catch(()=>{});
     toast(`${p.name} ඉවත් කරන ලදී.`,'fa-trash');
    }catch(err){
+    console.error(err);
     toast('ක්‍රීඩකයා ඉවත් කිරීමට නොහැකි විය.');
    }
   };
 
-  actions.append(coinInp,saveCoinBtn,delBtn);
+  actions.append(minusBtn,coinInp,plusBtn,saveCoinBtn,delBtn);
   card.append(info,actions);
   list.appendChild(card);
  });
 }
 
-function escapeHtml(str){
- return String(str).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+function normalizeItems(rawVal){
+ if(!rawVal)return [];
+ if(Array.isArray(rawVal)){
+  return rawVal
+   .map((item,idx)=>item&&typeof item==='object'?{...item,_dbKey:String(idx),_isArray:true}:null)
+   .filter(Boolean);
+ }
+ if(typeof rawVal==='object'){
+  return Object.entries(rawVal).map(([key,item])=>({...item,_dbKey:key,_isArray:false}));
+ }
+ return [];
 }
-
-$('playerSearch').addEventListener('input',renderPlayers);
-$('refreshPlayersBtn').onclick=()=>{loadPlayers();toast('ක්‍රීඩක ලැයිස්තුව Refresh විය.','fa-rotate');};
 
 // Piece Theme Live Preview & Add
 function updateThemePreview(){
  const prev=$('themePreview');
  const icon=$('themeIcon').value.trim()||'♛';
- const bg=$('themeBg').value;
- const border=$('themeBorder').value;
- const color=$('themeColor').value;
+ const bg=isSafeColor($('themeBg').value)?$('themeBg').value:'#2ecc71';
+ const border=isSafeColor($('themeBorder').value)?$('themeBorder').value:'#ffd166';
+ const color=isSafeColor($('themeColor').value)?$('themeColor').value:'#ffffff';
  prev.textContent=icon;
  prev.style.background=bg;
  prev.style.border=`3px solid ${border}`;
@@ -331,12 +368,13 @@ function updateThemePreview(){
 updateThemePreview();
 
 $('addThemeBtn').onclick=async()=>{
+ if(!db)return toast('Firebase සම්බන්ධතාවය නොමැත.');
  const name=$('themeName').value.trim();
  const price=Number($('themePrice').value);
  const icon=$('themeIcon').value.trim()||'♛';
- const bg=$('themeBg').value;
- const border=$('themeBorder').value;
- const color=$('themeColor').value;
+ const bg=isSafeColor($('themeBg').value)?$('themeBg').value:'#2ecc71';
+ const border=isSafeColor($('themeBorder').value)?$('themeBorder').value:'#ffd166';
+ const color=isSafeColor($('themeColor').value)?$('themeColor').value:'#ffffff';
 
  if(!name)return toast('කරුණාකර Theme නම ඇතුළත් කරන්න.');
  if(!Number.isFinite(price)||price<0)return toast('නිවැරදි මිලක් ඇතුළත් කරන්න.');
@@ -344,32 +382,42 @@ $('addThemeBtn').onclick=async()=>{
  const newTheme={
   id:'custom_piece_'+Date.now(),
   name,
-  price,
+  price:Math.floor(price),
   icon,
   bg,
   border,
   color
  };
 
- const nextList=[...customPieces,newTheme];
- await db.ref('shopConfig_v6/customPieces').set(nextList);
- $('themeName').value='';
- toast(`"${name}" Theme එක Shop එකට එක් කරන ලදී!`,'fa-circle-check');
+ try{
+  await db.ref('shopConfig_v6/customPieces').push(newTheme);
+  $('themeName').value='';
+  toast(`"${name}" Theme එක Shop එකට එක් කරන ලදී!`,'fa-circle-check');
+ }catch(err){
+  console.error(err);
+  toast('Theme එක එක් කිරීමට නොහැකි විය.');
+ }
 };
 
 // Avatar Live Preview & Add
 function updateAvatarPreview(){
  const prev=$('avatarPreview');
- const iconClass=($('avatarIcon').value.trim()||'fa-crown').replace(/^fa-solid\s+/,'');
- prev.innerHTML=`<i class="fa-solid ${escapeHtml(iconClass)}"></i>`;
+ const rawIcon=($('avatarIcon').value.trim()||'fa-crown').replace(/^fa-solid\s+/,'');
+ const iconClass=isSafeIconClass(rawIcon)?rawIcon:'fa-crown';
+ prev.replaceChildren();
+ const iEl=document.createElement('i');
+ iEl.className=`fa-solid ${iconClass}`;
+ prev.appendChild(iEl);
 }
 $('avatarIcon').addEventListener('input',updateAvatarPreview);
 updateAvatarPreview();
 
 $('addAvatarBtn').onclick=async()=>{
+ if(!db)return toast('Firebase සම්බන්ධතාවය නොමැත.');
  const name=$('avatarName').value.trim();
  const price=Number($('avatarPrice').value);
- const iconClass=($('avatarIcon').value.trim()||'fa-crown').replace(/^fa-solid\s+/,'');
+ const rawIcon=($('avatarIcon').value.trim()||'fa-crown').replace(/^fa-solid\s+/,'');
+ const iconClass=isSafeIconClass(rawIcon)?rawIcon:'fa-crown';
 
  if(!name)return toast('කරුණාකර Avatar නම ඇතුළත් කරන්න.');
  if(!Number.isFinite(price)||price<0)return toast('නිවැරදි මිලක් ඇතුළත් කරන්න.');
@@ -377,72 +425,144 @@ $('addAvatarBtn').onclick=async()=>{
  const newAvatar={
   id:iconClass,
   name,
-  price,
+  price:Math.floor(price),
   icon:iconClass
  };
 
- const nextList=[...customAvatars,newAvatar];
- await db.ref('shopConfig_v6/customAvatars').set(nextList);
- $('avatarName').value='';
- toast(`"${name}" Avatar එක Shop එකට එක් කරන ලදී!`,'fa-circle-check');
+ try{
+  await db.ref('shopConfig_v6/customAvatars').push(newAvatar);
+  $('avatarName').value='';
+  toast(`"${name}" Avatar එක Shop එකට එක් කරන ලදී!`,'fa-circle-check');
+ }catch(err){
+  console.error(err);
+  toast('Avatar එක එක් කිරීමට නොහැකි විය.');
+ }
 };
+
+async function deleteCustomItem(path, item){
+ if(!db||!item)return;
+ if(item._isArray){
+  const listName=path.endsWith('customPieces')?customPieces:customAvatars;
+  const filtered=listName.filter(x=>x._dbKey!==item._dbKey).map(({_dbKey,_isArray,...rest})=>rest);
+  await db.ref(path).set(filtered);
+ }else{
+  await db.ref(`${path}/${item._dbKey}`).remove();
+ }
+}
 
 function renderCustomLists(){
  const tList=$('customThemesList');
- tList.innerHTML='';
- customPieces.forEach((t,i)=>{
+ tList.replaceChildren();
+ customPieces.forEach(t=>{
   const div=document.createElement('div');
   div.className='custom-item';
-  div.innerHTML=`
-   <div class="custom-item-left">
-    <div style="width:28px;height:28px;border-radius:50%;background:${t.bg};border:2px solid ${t.border};color:${t.color};display:grid;place-items:center;font-size:0.85rem;flex-shrink:0">${escapeHtml(t.icon||'♛')}</div>
-    <span>${escapeHtml(t.name)} (${t.price||0})</span>
-   </div>
-   <button class="btn-danger" style="padding:5px 8px" title="Delete"><i class="fa-solid fa-xmark"></i></button>
-  `;
-  div.querySelector('button').onclick=async()=>{
-   const updated=customPieces.filter((_,idx)=>idx!==i);
-   await db.ref('shopConfig_v6/customPieces').set(updated);
-   toast('Theme ඉවත් කරන ලදී.');
+
+  const left=document.createElement('div');
+  left.className='custom-item-left';
+
+  const swatch=document.createElement('div');
+  swatch.style.cssText='width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:0.85rem;flex-shrink:0';
+  swatch.style.background=isSafeColor(t.bg)?t.bg:'#2ecc71';
+  swatch.style.border=`2px solid ${isSafeColor(t.border)?t.border:'#ffd166'}`;
+  swatch.style.color=isSafeColor(t.color)?t.color:'#ffffff';
+  swatch.textContent=t.icon||'♛';
+
+  const label=document.createElement('span');
+  label.textContent=`${t.name||'Theme'} (${t.price||0})`;
+
+  left.append(swatch,label);
+
+  const delBtn=document.createElement('button');
+  delBtn.className='btn-danger';
+  delBtn.style.padding='5px 8px';
+  delBtn.title='Delete';
+  delBtn.innerHTML='<i class="fa-solid fa-xmark"></i>';
+  delBtn.onclick=async()=>{
+   try{
+    await deleteCustomItem('shopConfig_v6/customPieces',t);
+    toast('Theme ඉවත් කරන ලදී.');
+   }catch(err){
+    toast('ඉවත් කිරීමට නොහැකි විය.');
+   }
   };
+
+  div.append(left,delBtn);
   tList.appendChild(div);
  });
 
  const aList=$('customAvatarsList');
- aList.innerHTML='';
- customAvatars.forEach((a,i)=>{
+ aList.replaceChildren();
+ customAvatars.forEach(a=>{
   const div=document.createElement('div');
   div.className='custom-item';
-  div.innerHTML=`
-   <div class="custom-item-left">
-    <div style="width:28px;height:28px;border-radius:50%;background:rgba(255,209,102,0.14);border:1.5px solid var(--gold);color:var(--gold);display:grid;place-items:center;font-size:0.85rem;flex-shrink:0"><i class="fa-solid ${escapeHtml(a.icon||'fa-crown')}"></i></div>
-    <span>${escapeHtml(a.name)} (${a.price||0})</span>
-   </div>
-   <button class="btn-danger" style="padding:5px 8px" title="Delete"><i class="fa-solid fa-xmark"></i></button>
-  `;
-  div.querySelector('button').onclick=async()=>{
-   const updated=customAvatars.filter((_,idx)=>idx!==i);
-   await db.ref('shopConfig_v6/customAvatars').set(updated);
-   toast('Avatar ඉවත් කරන ලදී.');
+
+  const left=document.createElement('div');
+  left.className='custom-item-left';
+
+  const badge=document.createElement('div');
+  badge.style.cssText='width:28px;height:28px;border-radius:50%;background:rgba(255,209,102,0.14);border:1.5px solid var(--gold);color:var(--gold);display:grid;place-items:center;font-size:0.85rem;flex-shrink:0';
+  const iconEl=document.createElement('i');
+  const safeIcon=isSafeIconClass(a.icon||a.id)?(a.icon||a.id):'fa-crown';
+  iconEl.className=`fa-solid ${safeIcon}`;
+  badge.appendChild(iconEl);
+
+  const label=document.createElement('span');
+  label.textContent=`${a.name||'Avatar'} (${a.price||0})`;
+
+  left.append(badge,label);
+
+  const delBtn=document.createElement('button');
+  delBtn.className='btn-danger';
+  delBtn.style.padding='5px 8px';
+  delBtn.title='Delete';
+  delBtn.innerHTML='<i class="fa-solid fa-xmark"></i>';
+  delBtn.onclick=async()=>{
+   try{
+    await deleteCustomItem('shopConfig_v6/customAvatars',a);
+    toast('Avatar ඉවත් කරන ලදී.');
+   }catch(err){
+    toast('ඉවත් කිරීමට නොහැකි විය.');
+   }
   };
+
+  div.append(left,delBtn);
   aList.appendChild(div);
  });
 }
 
-if(db){
- loadPlayers();
+function attachListeners(){
+ if(!db||listenersAttached)return;
+ listenersAttached=true;
+
+ db.ref('users_v6').on('value',snap=>{
+  const val=snap.val()||{};
+  allPlayers=Object.entries(val).map(([uid,data])=>({
+   uid,
+   name:data&&data.name?String(data.name):'Player',
+   points:Number(data&&data.points)||0,
+   wins:Number(data&&data.wins)||0,
+   losses:Number(data&&data.losses)||0,
+   avatarIcon:data&&data.avatarIcon?String(data.avatarIcon):'fa-user'
+  }));
+  $('playerCountLabel').textContent=`මුළු ක්‍රීඩකයන්: ${allPlayers.length}`;
+  renderPlayers();
+ });
+
  db.ref('shopConfig_v6/customPieces').on('value',snap=>{
-  const val=snap.val();
-  customPieces=Array.isArray(val)?val.filter(Boolean):(val&&typeof val==='object'?Object.values(val):[]);
+  customPieces=normalizeItems(snap.val());
   renderCustomLists();
  });
+
  db.ref('shopConfig_v6/customAvatars').on('value',snap=>{
-  const val=snap.val();
-  customAvatars=Array.isArray(val)?val.filter(Boolean):(val&&typeof val==='object'?Object.values(val):[]);
+  customAvatars=normalizeItems(snap.val());
   renderCustomLists();
  });
 }
 
+attachListeners();
+
+$('playerSearch').addEventListener('input',renderPlayers);
+$('refreshPlayersBtn').onclick=()=>{renderPlayers();toast('ක්‍රීඩක ලැයිස්තුව Refresh විය.','fa-rotate');};
 $('goShopBtn').onclick=()=>smoothNavigate('shopandreward.html');
 $('exitAdminBtn').onclick=()=>{
  sessionStorage.removeItem('sinhala_draughts_admin_auth');
