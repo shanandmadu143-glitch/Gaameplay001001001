@@ -109,32 +109,20 @@ main{flex:1;display:flex;flex-direction:column;width:100%;position:relative;marg
  </div>
 </div>
 
-<div class="modal" id="invitePopupModal">
- <div class="modalbox" style="text-align:center;gap:10px">
-  <h3>ක්‍රීඩා ආරාධනයක්!</h3>
-  <p id="invitePopupText" style="color:var(--dim);font-size:0.9rem"></p>
-  <div class="row" style="width:100%">
-   <button class="btn-gold" id="acceptInviteBtn" style="flex:1">පිළිගන්න (Accept)</button>
-   <button class="btn" id="rejectInviteBtn" style="flex:1">ප්‍රතික්ෂේප කරන්න</button>
-  </div>
- </div>
-</div>
-
 <div id="toast"></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<script src="./invite-global.js"></script>
 <script>
 'use strict';
 const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
 const $=id=>document.getElementById(id);
 let auth,db,fbUser,user={name:'',points:500,uid:null,pieceIndex:0,avatarIcon:'fa-user'};
-const urlParams = new URLSearchParams(window.location.search);
-let currentBet = Math.max(10, Number(urlParams.get('bet')) || Number(sessionStorage.getItem('sinhala_draughts_bet')) || 50);
+const urlBet = Number(new URLSearchParams(window.location.search).get('bet'));
+let currentBet = urlBet || Number(sessionStorage.getItem('sinhala_draughts_bet')) || 50;
 sessionStorage.setItem('sinhala_draughts_bet', String(currentBet));
-let incomingInviteData=null,invitesListenerRef=null,activeInviteWatcher=null;
+let activeInviteWatcher=null;
 
 $('activeBetDisplay').textContent = currentBet;
 
@@ -185,30 +173,29 @@ auth.onAuthStateChanged(async u=>{
    const snap=await db.ref('users_v6/'+u.uid).once('value');
    const d=snap.val();
    if(d) {
-    user={name:d.name||(u.email||'').split('@')[0]||'Player',points:Number(d.points)||500,uid:u.uid,pieceIndex:Number(d.pieceIndex)||0,avatarIcon:d.avatarIcon||'fa-user'};
+    user={name:d.name,points:Number(d.points)||500,uid:u.uid,pieceIndex:Number(d.pieceIndex)||0,avatarIcon:d.avatarIcon||'fa-user'};
    } else {
     user.name = (u.email||'').split('@')[0] || 'Player';
     user.uid = u.uid;
    }
-
+   
    const profileData = {
     name: user.name,
     points: user.points,
     pieceIndex: user.pieceIndex,
     avatarIcon: user.avatarIcon
    };
-   await db.ref('publicProfiles_v6/'+u.uid).set(profileData).catch(()=>{});
+   await db.ref('publicProfiles_v6/'+u.uid).update(profileData).catch(()=>{});
    await db.ref('users_v6/'+u.uid).update(profileData).catch(()=>{});
 
    const userStatusDatabaseRef = db.ref('status_v6/' + u.uid);
    db.ref('.info/connected').on('value', snapshot => {
-     if (snapshot.val() === false) return;
-     userStatusDatabaseRef.onDisconnect().set({ state: 'offline', last_changed: firebase.database.ServerValue.TIMESTAMP });
-     userStatusDatabaseRef.set({ state: 'online', last_changed: firebase.database.ServerValue.TIMESTAMP });
+    if (snapshot.val() === false) return;
+    userStatusDatabaseRef.onDisconnect().set({ state: 'offline', last_changed: firebase.database.ServerValue.TIMESTAMP });
+    userStatusDatabaseRef.set({ state: 'online', last_changed: firebase.database.ServerValue.TIMESTAMP });
    });
 
    loadAllPlayers('');
-   listenForIncomingInvites();
   } catch(err) {
    console.error('Auth state load error:', err);
    loadAllPlayers('');
@@ -230,7 +217,7 @@ async function loadAllPlayers(rawQuery) {
 
   let profiles = profilesSnap && profilesSnap.exists() ? profilesSnap.val() : {};
   const users = usersSnap && usersSnap.exists() ? usersSnap.val() : {};
-
+  
   Object.keys(users).forEach(uid => {
    if(!profiles[uid]) {
     profiles[uid] = users[uid];
@@ -249,12 +236,13 @@ async function loadAllPlayers(rawQuery) {
   Object.keys(profiles).forEach(uid => {
    const pData = profiles[uid];
    const candidateName = pData && pData.name ? String(pData.name) : '';
-
+   
    if(fbUser && uid === fbUser.uid) return;
+   if(candidateName.toLowerCase() === 'admin') return;
 
    if(candidateName && (!queryName || candidateName.toLowerCase().includes(queryName))) {
     found = true;
-
+    
     const userStatus = statuses[uid];
     const isOnline = userStatus && userStatus.state === 'online';
 
@@ -286,7 +274,7 @@ async function loadAllPlayers(rawQuery) {
 
     const textWrap = document.createElement('div');
     textWrap.className = 'friend-details';
-
+    
     const playerName = document.createElement('b');
     playerName.textContent = candidateName;
 
@@ -302,7 +290,7 @@ async function loadAllPlayers(rawQuery) {
     inviteBtn.className = 'btn-invite';
     inviteBtn.innerHTML = '<i class="fa-solid fa-gamepad"></i> Invite';
     inviteBtn.onclick = () => sendGameInvite(uid, candidateName);
-
+    
     card.appendChild(inviteBtn);
     resultsContainer.appendChild(card);
    }
@@ -330,11 +318,11 @@ async function sendGameInvite(friendUid, friendName) {
 
  const newInviteRef = db.ref('invites_v6/' + friendUid).push();
  const inviteId = newInviteRef.key;
- const nowTs = Date.now();
  const initialBoard = Array.from({length:8},()=>Array(8).fill(0));
  for(let r=0;r<8;r++)for(let c=0;c<8;c++)if((r+c)%2){if(r<3)initialBoard[r][c]=-1;else if(r>4)initialBoard[r][c]=1}
-
+ 
  const targetRoomRef = db.ref('rooms_v6/' + inviteId);
+ const now = Date.now();
 
  try {
   await targetRoomRef.set({
@@ -351,28 +339,28 @@ async function sendGameInvite(friendUid, friendName) {
    guestAvatar: 'fa-user',
    bet: currentBet,
    status: 'waiting',
-   matchStarted: false,
+   createdAt: now,
    updatedAt: firebase.database.ServerValue.TIMESTAMP
   });
 
   await newInviteRef.set({
+   roomId: inviteId,
    fromUid: fbUser.uid,
    fromName: user.name,
    hostName: user.name,
-   roomId: inviteId,
    bet: currentBet,
    status: 'pending',
-   timestamp: nowTs,
-   createdAt: nowTs
+   createdAt: now,
+   timestamp: now
   });
 
   await db.ref('fcmPushQueue_v6').push({
    targetUid: friendUid,
-   title: 'ශ්‍රී ලංකීය දාම් - Multiplayer Invite',
+   title: 'ශ්‍රී ලංකීය දාම් - Game Invite',
    body: `${user.name} ඔබට ${currentBet} Coins ඔට්ටුවකට ආරාධනා කරයි!`,
-   url: `./friends.html?bet=${encodeURIComponent(currentBet)}&roomId=${encodeURIComponent(inviteId)}`,
    roomId: inviteId,
-   bet: currentBet
+   bet: currentBet,
+   url: `./friends.html?bet=${currentBet}&roomId=${inviteId}`
   }).catch(()=>{});
 
   if (window.SinhalaDraughtsInviteBridge) {
@@ -391,21 +379,17 @@ async function sendGameInvite(friendUid, friendName) {
     activeInviteWatcher = null;
     modal('waitingHostModal', false);
     if (window.SinhalaDraughtsInviteBridge) {
-     window.SinhalaDraughtsInviteBridge.goArena(inviteId, currentBet, 'host', {
-      ...roomData,
-      hostName: user.name,
-      guestName: friendName,
-      hostUid: fbUser.uid,
-      guestUid: friendUid
-     });
+     window.SinhalaDraughtsInviteBridge.goArena(inviteId, currentBet, 'host', roomData);
     } else {
      window.location.href = `arena.html?mode=multi&roomId=${inviteId}&role=host&bet=${currentBet}&oppName=${encodeURIComponent(friendName)}`;
     }
    } else if(roomData.status === 'rejected' || roomData.status === 'declined') {
     targetRoomRef.off('value', handler);
     activeInviteWatcher = null;
-    if (window.SinhalaDraughtsInviteBridge) window.SinhalaDraughtsInviteBridge.clearHostRoom();
     modal('waitingHostModal', false);
+    if (window.SinhalaDraughtsInviteBridge) {
+     window.SinhalaDraughtsInviteBridge.clearHostRoom();
+    }
     targetRoomRef.remove().catch(()=>{});
     toast(`${friendName} ආරාධනය ප්‍රතික්ෂේප කළා.`);
    }
@@ -423,86 +407,20 @@ async function sendGameInvite(friendUid, friendName) {
 
 $('cancelInviteBtn').onclick = () => {
  modal('waitingHostModal', false);
- if (window.SinhalaDraughtsInviteBridge) window.SinhalaDraughtsInviteBridge.clearHostRoom();
+ if (window.SinhalaDraughtsInviteBridge) {
+  window.SinhalaDraughtsInviteBridge.clearHostRoom();
+ }
  if(activeInviteWatcher) {
   activeInviteWatcher.ref.off('value', activeInviteWatcher.handler);
+  activeInviteWatcher.ref.update({ status: 'cancelled' }).catch(()=>{});
   activeInviteWatcher.ref.remove().catch(()=>{});
   activeInviteWatcher.inviteRef.remove().catch(()=>{});
   activeInviteWatcher = null;
  }
  toast('ආරාධනය අවලංගු කරන ලදී.');
 };
-
-function listenForIncomingInvites() {
- if(!db || !fbUser) return;
- if(invitesListenerRef) invitesListenerRef.off();
- invitesListenerRef = db.ref('invites_v6/' + fbUser.uid);
- invitesListenerRef.on('child_added', snap => {
-  const invite = snap.val();
-  const ts = Number(invite && (invite.createdAt || invite.timestamp)) || 0;
-  if(invite && invite.status === 'pending' && (Date.now() - ts < 300000)) {
-   incomingInviteData = { id: snap.key, roomId: invite.roomId || snap.key, fromUid: invite.fromUid, ...invite };
-   const senderName = invite.fromName || invite.hostName || 'ක්‍රීඩකයෙකු';
-   $('invitePopupText').textContent = `${senderName} විසින් ඔට්ටුව ${invite.bet} ක් සමඟ ඔබට ආරාධනා කරයි!`;
-   modal('invitePopupModal', true);
-  }
- });
-}
-
-$('acceptInviteBtn').onclick = async () => {
- if(!incomingInviteData) return;
- const invite = incomingInviteData;
- const bet = Number(invite.bet) || 0;
- const targetRoomId = invite.roomId || invite.id;
-
- if(bet > user.points) {
-  toast('මෙම ඔට්ටුව සඳහා ඔබ සතුව ප්‍රමාණවත් Points නොමැත.');
-  return;
- }
-
- incomingInviteData = null;
- modal('invitePopupModal', false);
-
- try {
-  const roomRefCheck = db.ref('rooms_v6/' + targetRoomId);
-  const roomSnap = await roomRefCheck.once('value');
-  const roomData = roomSnap.val() || {};
-
-  await roomRefCheck.update({
-   guestUid: fbUser.uid,
-   guestName: user.name,
-   guestPieceIndex: user.pieceIndex || 0,
-   guestAvatar: user.avatarIcon || 'fa-user',
-   status: 'active',
-   matchStarted: true,
-   updatedAt: firebase.database.ServerValue.TIMESTAMP
-  });
-
-  await db.ref('invites_v6/' + fbUser.uid + '/' + invite.id).update({ status: 'accepted' }).catch(()=>{});
-  if (window.SinhalaDraughtsInviteBridge) {
-   window.SinhalaDraughtsInviteBridge.goArena(targetRoomId, bet, 'guest', {
-    ...roomData,
-    hostName: roomData.hostName || invite.hostName || invite.fromName || 'Host',
-    guestName: user.name
-   });
-  } else {
-   window.location.href = `arena.html?mode=multi&roomId=${targetRoomId}&role=guest&bet=${bet}&oppName=${encodeURIComponent(roomData.hostName || invite.hostName || 'Host')}`;
-  }
- } catch(err) {
-  console.error('Accept error:', err);
-  toast('ආරාධනය පිළිගැනීමට නොහැකි විය.');
- }
-};
-
-$('rejectInviteBtn').onclick = () => {
- if(!incomingInviteData) return;
- const invite = incomingInviteData;
- const targetRoomId = invite.roomId || invite.id;
- incomingInviteData = null;
- modal('invitePopupModal', false);
- db.ref('rooms_v6/' + targetRoomId).update({ status: 'rejected' }).catch(()=>{});
- db.ref('invites_v6/' + fbUser.uid + '/' + invite.id).update({ status: 'declined' }).catch(()=>{});
-};
 </script>
+
+<script src="./invite-global.js"></script>
 </body>
 </html>
