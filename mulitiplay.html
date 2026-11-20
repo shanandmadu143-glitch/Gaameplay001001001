@@ -61,7 +61,7 @@ input:focus{border-color:var(--gold)}
  <div class="box">
   <div class="search-row">
    <input type="text" id="searchPlayer" placeholder="සෙල්ලම් කිරීමට ක්‍රීඩකයාගේ නම සොයන්න...">
-   <button class="btn" id="notifPermBtn" title="Enable Mobile Notifications"><i class="fa-solid fa-bell"></i></button>
+   <button class="btn" id="notifPermBtn" title="Enable Push Notifications"><i class="fa-solid fa-bell"></i></button>
   </div>
 
   <div id="playersContainer" style="display:flex;flex-direction:column;gap:8px;flex:1">
@@ -91,9 +91,13 @@ input:focus{border-color:var(--gold)}
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging-compat.js"></script>
 <script>
 'use strict';
 const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
+// Firebase Console -> Project Settings -> Cloud Messaging -> Web Push certificates (VAPID Key) මෙහි යොදන්න:
+const VAPID_PUBLIC_KEY = "";
+
 const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user';
 
 const params=new URLSearchParams(window.location.search);
@@ -101,7 +105,7 @@ const bet=Math.max(10,Number(params.get('bet'))||Number(sessionStorage.getItem('
 $('betVal').textContent=bet;
 sessionStorage.setItem('sinhala_draughts_bet',String(bet));
 
-let auth,db,fbUser;
+let auth,db,messaging,fbUser;
 let myProfile={name:'ක්‍රීඩකයා',points:500};
 let publicPlayers=[];
 let activeIncomingInvite=null;
@@ -139,57 +143,67 @@ try{
  if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
  auth=firebase.auth();
  db=firebase.database();
+ if(firebase.messaging && firebase.messaging.isSupported()){
+  messaging=firebase.messaging();
+ }
 }catch(e){
  console.error('Firebase init failed:',e);
 }
 
-// Register lightweight inline Service Worker for Mobile Notification Bar support
-async function initServiceWorker(){
- if(!('serviceWorker' in navigator))return;
+async function initMessagingSW(){
+ if(!('serviceWorker' in navigator))return null;
  try{
-  const swCode=`
-   self.addEventListener('notificationclick', event => {
-    event.notification.close();
-    const targetUrl = (event.notification.data && event.notification.data.url) || './mulitiplay.html';
-    event.waitUntil(
-     clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
-      for (const client of clientList) {
-       if ('navigate' in client) {
-        return client.navigate(targetUrl).then(c => c.focus());
-       }
-      }
-      if (clients.openWindow) {
-       return clients.openWindow(targetUrl);
-      }
-     })
-    );
-   });
-  `;
-  const blob=new Blob([swCode],{type:'application/javascript'});
-  const swUrl=URL.createObjectURL(blob);
-  swRegistration=await navigator.serviceWorker.register(swUrl);
+  swRegistration=await navigator.serviceWorker.register('./firebase-messaging-sw.js');
+  return swRegistration;
  }catch(e){
-  console.warn('ServiceWorker registration skipped:',e);
+  console.warn('Service worker registration error:',e);
+  return null;
  }
 }
-initServiceWorker();
+
+async function registerFcmToken(){
+ if(!messaging||!fbUser||!db)return null;
+ if(!('Notification' in window)||Notification.permission!=='granted')return null;
+ try{
+  const reg=await initMessagingSW();
+  const tokenOptions={};
+  if(reg)tokenOptions.serviceWorkerRegistration=reg;
+  if(VAPID_PUBLIC_KEY)tokenOptions.vapidKey=VAPID_PUBLIC_KEY;
+  const token=await messaging.getToken(tokenOptions);
+  if(token){
+   await db.ref(`fcmTokens_v6/${fbUser.uid}`).set({
+    token,
+    updatedAt:Date.now()
+   });
+  }
+  return token;
+ }catch(e){
+  console.warn('FCM getToken error:',e);
+  return null;
+ }
+}
 
 async function ensureNotificationPermission(){
  if(!('Notification' in window))return false;
- if(Notification.permission==='granted')return true;
+ if(Notification.permission==='granted'){
+  await registerFcmToken();
+  return true;
+ }
  if(Notification.permission==='denied')return false;
  try{
   const perm=await Notification.requestPermission();
-  return perm==='granted';
+  if(perm==='granted'){
+   await registerFcmToken();
+   return true;
+  }
+  return false;
  }catch(e){
   return false;
  }
 }
 
 async function showMobileStatusBarNotification(title, body, url){
- if(!('Notification' in window))return;
- if(Notification.permission!=='granted')return;
-
+ if(!('Notification' in window)||Notification.permission!=='granted')return;
  const options={
   body,
   vibrate:[200,100,200],
@@ -197,13 +211,8 @@ async function showMobileStatusBarNotification(title, body, url){
   renotify:true,
   data:{url}
  };
-
  try{
-  if(swRegistration && swRegistration.showNotification){
-   await swRegistration.showNotification(title, options);
-   return;
-  }
-  const reg=await navigator.serviceWorker?.getRegistration();
+  const reg=swRegistration||(await navigator.serviceWorker?.getRegistration());
   if(reg && reg.showNotification){
    await reg.showNotification(title, options);
    return;
@@ -214,11 +223,20 @@ async function showMobileStatusBarNotification(title, body, url){
  }
 }
 
+if(messaging){
+ messaging.onMessage(payload=>{
+  const title=(payload.notification&&payload.notification.title)||(payload.data&&payload.data.title)||'ශ්‍රී ලංකීය දාම් - Game Invite';
+  const body=(payload.notification&&payload.notification.body)||(payload.data&&payload.data.body)||'ඔබට නව Multiplayer ආරාධනාවක් ලැබී ඇත!';
+  const url=(payload.data&&payload.data.url)||`mulitiplay.html?bet=${encodeURIComponent(bet)}`;
+  showMobileStatusBarNotification(title, body, url);
+ });
+}
+
 $('notifPermBtn').onclick=async()=>{
  const granted=await ensureNotificationPermission();
  toast(
   granted
-   ? 'Mobile Notification Bar අවසරය සක්‍රීයයි!'
+   ? 'Mobile Push Notifications සක්‍රීයයි!'
    : 'Browser Settings හරහා Notifications Allow කරන්න.',
   granted ? 'fa-bell' : 'fa-triangle-exclamation'
  );
@@ -285,6 +303,16 @@ function listenForRoomStart(roomId, roomBet){
  });
 }
 
+async function queuePushNotification(targetUid, payload){
+ if(!db||!targetUid)return;
+ // Push trigger queue for Cloud Functions / backend worker using Firebase Admin SDK
+ await db.ref('fcmPushQueue_v6').push({
+  targetUid,
+  ...payload,
+  createdAt:Date.now()
+ }).catch(()=>{});
+}
+
 async function sendGameInvite(targetPlayer, btnEl){
  if(!db||!fbUser){
   return toast('Invite යැවීමට පළමුව ගිණුමට ඇතුළු වන්න.');
@@ -297,6 +325,7 @@ async function sendGameInvite(targetPlayer, btnEl){
 
  const roomId=`room_${fbUser.uid}_${targetPlayer.uid}_${Date.now()}`;
  const inviteId=`inv_${fbUser.uid}_${Date.now()}`;
+ const roomUrl=`arena.html?mode=multi&bet=${encodeURIComponent(bet)}&roomId=${encodeURIComponent(roomId)}`;
 
  try{
   await db.ref(`rooms_v6/${roomId}`).set({
@@ -316,6 +345,14 @@ async function sendGameInvite(targetPlayer, btnEl){
    roomId:roomId,
    status:'pending',
    createdAt:Date.now()
+  });
+
+  await queuePushNotification(targetPlayer.uid,{
+   title:'ශ්‍රී ලංකීය දාම් - Multiplayer Invite',
+   body:`${myProfile.name} ඔබට ${bet} Coins ඔට්ටුවකට ආරාධනා කරයි!`,
+   url:roomUrl,
+   roomId,
+   bet
   });
 
   toast(`${targetPlayer.name} වෙත Invite Notification එක යවන ලදී!`,'fa-circle-check');
@@ -405,6 +442,7 @@ function startListeners(){
  });
 
  if(fbUser){
+  registerFcmToken();
   db.ref(`invites_v6/${fbUser.uid}`).on('child_added',snap=>{
    const inv=snap.val();
    if(!inv||inv.status!=='pending')return;
