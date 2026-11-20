@@ -11,7 +11,8 @@
 html,body{width:100%;height:100%;background:radial-gradient(circle at 50% 20%,#1a103c 0%,#080b18 60%,#03050a 100%);color:#f8f9fa;overflow:hidden}
 body{min-height:100dvh;display:flex;flex-direction:column;justify-content:center;align-items:center}
 
-.app{width:100%;height:100dvh;max-width:768px;margin:0 auto;padding:14px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+.app{width:100%;height:100dvh;max-width:768px;margin:0 auto;padding:14px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;opacity:1;transform:scale(1);transition:opacity 0.16s ease-out,transform 0.16s ease-out;will-change:opacity,transform}
+.app.page-leaving{opacity:0;transform:scale(0.985)}
 
 /* Professional Top Header Bar */
 .home-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 20px;background:linear-gradient(135deg,rgba(22,30,56,0.95),rgba(10,14,28,0.95));border:2px solid rgba(255,209,102,0.4);border-radius:22px;box-shadow:0 8px 25px rgba(0,0,0,0.6);backdrop-filter:blur(10px)}
@@ -30,14 +31,15 @@ main{flex:1;display:flex;flex-direction:column;justify-content:center;align-item
 .lobby{width:100%;height:100%;display:flex;flex-direction:column;gap:14px;padding:14px;background:linear-gradient(145deg,rgba(18,24,40,0.85),rgba(12,16,28,0.9));border:2px solid rgba(255,209,102,0.2);border-radius:24px;backdrop-filter:blur(12px);box-shadow:0 10px 30px rgba(0,0,0,0.5);overflow-y:auto}
 
 /* Reward Banner */
-.reward-banner{width:100%;min-height:72px;border-radius:18px;border:2px solid rgba(255,255,255,0.5);background:linear-gradient(135deg,#f39a08,#ffb10d);color:#111;font-size:1.25rem;font-weight:800;letter-spacing:0.5px;box-shadow:0 6px 20px rgba(243,154,8,0.35);display:flex;align-items:center;justify-content:center;gap:12px;cursor:pointer;transition:transform 0.2s}
-.reward-banner:hover{transform:scale(1.01)}
+.reward-banner{width:100%;min-height:72px;border-radius:18px;border:2px solid rgba(255,255,255,0.5);background:linear-gradient(135deg,#f39a08,#ffb10d);color:#111;font-size:1.25rem;font-weight:800;letter-spacing:0.5px;box-shadow:0 6px 20px rgba(243,154,8,0.35);display:flex;align-items:center;justify-content:center;gap:12px;cursor:pointer;transition:transform 0.16s ease}
+.reward-banner:active{transform:scale(0.98)}
 .reward-banner i{font-size:1.6rem}
 
 /* Game Modes Grid */
 .mode-grid{display:grid;grid-template-columns:1fr;gap:12px}
-.mode{min-height:86px;border-radius:18px;border:2px solid rgba(255,255,255,0.15);padding:14px 18px;text-align:left;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,0.5);cursor:pointer;transition:all .25s ease}
+.mode{min-height:86px;border-radius:18px;border:2px solid rgba(255,255,255,0.15);padding:14px 18px;text-align:left;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,0.5);cursor:pointer;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}
 .mode:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 8px 22px rgba(255,209,102,0.2)}
+.mode:active{transform:scale(0.985)}
 .mode:after{position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:2.8rem;opacity:0.85}
 .mode b{font-family:'Poppins',sans-serif;font-size:1.3rem;line-height:1.1;color:#fff}
 .mode p{font-size:0.8rem;color:#d1d8e0;margin-top:3px}
@@ -47,7 +49,8 @@ main{flex:1;display:flex;flex-direction:column;justify-content:center;align-item
 
 /* Professional Bottom Navigation */
 .bottom-nav{width:100%;min-height:66px;background:rgba(14,20,38,0.95);border:2px solid rgba(255,209,102,0.3);border-radius:24px;display:flex;align-items:center;justify-content:space-around;padding:6px 4px;backdrop-filter:blur(10px);box-shadow:0 10px 30px rgba(0,0,0,0.8)}
-.nav-item{background:none;border:0;color:#aab4c7;text-decoration:none;display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:0.72rem;font-weight:700;cursor:pointer;transition:color 0.2s}
+.nav-item{background:none;border:0;color:#aab4c7;text-decoration:none;display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:0.72rem;font-weight:700;cursor:pointer;transition:color 0.15s ease,transform 0.15s ease}
+.nav-item:active{transform:scale(0.93)}
 .nav-item i{font-size:1.3rem}
 .nav-item.active{color:var(--gold)}
 .nav-item span{line-height:1}
@@ -59,7 +62,8 @@ main{flex:1;display:flex;flex-direction:column;justify-content:center;align-item
 .modalbox h2,.modalbox h3{text-align:center;color:var(--gold);font-weight:700;font-size:1.2rem}
 input{width:100%;padding:11px 14px;background:rgba(0,0,0,0.5);border:1.5px solid rgba(255,209,102,0.4);border-radius:12px;color:white;font-size:0.95rem;outline:none}
 input:focus{border-color:var(--gold)}
-.btn,.btn-gold{border:0;border-radius:12px;padding:10px 14px;cursor:pointer;font-weight:700;display:inline-flex;align-items:center;gap:6px;justify-content:center}
+.btn,.btn-gold{border:0;border-radius:12px;padding:10px 14px;cursor:pointer;font-weight:700;display:inline-flex;align-items:center;gap:6px;justify-content:center;transition:transform 0.12s ease}
+.btn:active,.btn-gold:active{transform:scale(0.97)}
 .btn{background:rgba(255,255,255,0.1);color:white;border:1px solid rgba(255,255,255,0.2)}
 .btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;box-shadow:0 4px 15px rgba(255,173,98,0.4)}
 .row{display:flex;gap:10px;align-items:center}
@@ -68,16 +72,7 @@ input:focus{border-color:var(--gold)}
 .piece-option.selected{border-color:var(--gold);background:rgba(255,209,102,0.2)}
 .piece-option.locked{opacity:0.4;cursor:not-allowed}
 
-/* Custom Loading Animation Styling */
-.loading-logo-wrapper{position:relative;width:95px;height:95px;margin:0 auto 6px;display:grid;place-items:center}
-.loading-logo-wrapper img{width:88px;height:88px;border-radius:50%;object-fit:cover;border:3px solid var(--gold);box-shadow:0 0 25px rgba(255,209,102,0.7);position:relative;z-index:2;background:#121828}
-.loading-ring{position:absolute;inset:0;border:3px solid rgba(255,209,102,0.15);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;z-index:1}
-.loading-pulse{position:absolute;inset:-6px;border:2px solid var(--gold);border-radius:50%;animation:pulseGlow 1.5s ease-in-out infinite;opacity:0.6}
-
-@keyframes spin{to{transform:rotate(360deg)}}
-@keyframes pulseGlow{0%,100%{transform:scale(1);opacity:0.3}50%{transform:scale(1.12);opacity:0.8}}
-
-#toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,120px);opacity:0;background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--gold);color:#f8f9fa;border-radius:30px;padding:10px 20px;z-index:150;transition:.3s;font-weight:600;display:flex;align-items:center;gap:8px;font-size:0.9rem}
+#toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,120px);opacity:0;background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--gold);color:#f8f9fa;border-radius:30px;padding:10px 20px;z-index:150;transition:.25s ease;font-weight:600;display:flex;align-items:center;gap:8px;font-size:0.9rem}
 #toast.show{transform:translate(-50%,0);opacity:1}
 
 /* Tablet & Larger Screen Optimization */
@@ -114,11 +109,11 @@ input:focus{border-color:var(--gold)}
  </main>
 
  <footer class="bottom-nav" id="bottomNav">
-  <a class="nav-item active" href="index.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
-  <a class="nav-item" href="friends.html"><i class="fa-solid fa-user-group"></i><span>Friends</span></a>
+  <a class="nav-item active" href="index.html" data-nav="index.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
+  <a class="nav-item" href="friends.html" data-nav="friends.html"><i class="fa-solid fa-user-group"></i><span>Friends</span></a>
   <button class="nav-item" id="navProfile"><i class="fa-solid fa-circle-user"></i><span>Profile</span></button>
-  <a class="nav-item" href="shopandreward.html"><i class="fa-solid fa-trophy"></i><span>Events</span></a>
-  <a class="nav-item" href="shopandreward.html"><i class="fa-solid fa-cart-shopping"></i><span>Shop</span></a>
+  <a class="nav-item" href="shopandreward.html" data-nav="shopandreward.html"><i class="fa-solid fa-trophy"></i><span>Events</span></a>
+  <a class="nav-item" href="shopandreward.html" data-nav="shopandreward.html"><i class="fa-solid fa-cart-shopping"></i><span>Shop</span></a>
  </footer>
 </div>
 
@@ -165,17 +160,6 @@ input:focus{border-color:var(--gold)}
  </div>
 </div>
 
-<div class="modal show" id="loadingModal">
- <div class="modalbox" style="text-align:center;display:grid;place-items:center;gap:12px;padding:24px">
-  <div class="loading-logo-wrapper">
-   <div class="loading-pulse"></div>
-   <div class="loading-ring"></div>
-   <img src="18994.png" alt="Logo" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'80\' height=\'80\'><circle cx=\'40\' cy=\'40\' r=\'38\' fill=\'%23ffd166\'/></svg>';">
-  </div>
-  <h3 style="color:var(--gold);letter-spacing:1px;font-size:1.2rem;">Loading Lobby...</h3>
- </div>
-</div>
-
 <div class="modal" id="authModal">
  <div class="modalbox">
   <h2>ඇතුළු වන්න / ගිණුම සාදන්න</h2>
@@ -198,6 +182,7 @@ input:focus{border-color:var(--gold)}
 const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
 const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user';
 let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user',unlockedAvatars:['fa-user']};
+let isNavigating=false;
 
 const PIECE_DESIGNS=[
  {id:0,name:'මුතු සුදු (Default)',bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●',free:true},
@@ -225,7 +210,7 @@ const PIECE_DESIGNS=[
 const AVATARS=[
  {id:'fa-user',name:'සම්මත (Default)',icon:'fa-user'},
  {id:'fa-chess-knight',name:'චෙස් නයිට්',icon:'fa-chess-knight'},
- {id:'fa-dragon',name:'ගිනියම් ඩ්‍රැගන්',icon:'fa-dragon'},
+ {id:13,name:'ගිනියම් ඩ්‍රැගන්',icon:'fa-dragon'},
  {id:'fa-mask',name:'මුහුණු ආවරණය',icon:'fa-mask'},
  {id:'fa-robot',name:'රොබෝ යන්ත්‍රය',icon:'fa-robot'},
  {id:'fa-ghost',name:'අපූර්ව හොල්මන',icon:'fa-ghost'},
@@ -244,6 +229,7 @@ const AVATARS=[
  {id:'fa-crosshairs',name:'ඉලක්කය',icon:'fa-crosshairs'},
  {id:'fa-hat-wizard',name:'මායාකාරයා',icon:'fa-hat-wizard'}
 ];
+AVATARS[2].id='fa-dragon';
 
 function toast(s, icon='fa-circle-info'){
  const t=$('toast');
@@ -256,31 +242,27 @@ function toast(s, icon='fa-circle-info'){
 }
 function modal(id,on){$(id).classList.toggle('show',on);}
 
+function smoothNavigate(url){
+ if(isNavigating)return;
+ isNavigating=true;
+ const app=$('appRoot');
+ if(app)app.classList.add('page-leaving');
+ setTimeout(()=>{window.location.href=url;},120);
+}
+
+// Instant cache hydrate before network/auth
+try{
+ const cached=localStorage.getItem(KEY);
+ if(cached){
+  const parsed=JSON.parse(cached);
+  if(parsed&&typeof parsed==='object'){
+   user={...user,...parsed};
+  }
+ }
+}catch(e){}
+
 try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);auth=firebase.auth();db=firebase.database();}
 catch(e){console.error('Firebase initialization failed:',e);}
-
-(async()=>{
- try{
-  modal('loadingModal',true);modal('authModal',false);
-  if(!auth||!db)throw new Error('Firebase is not initialized');
-  await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-  auth.onAuthStateChanged(async u=>{
-   fbUser=u;
-   if(u) {
-    await loadSignedInUser();
-   } else {
-    user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user',unlockedAvatars:['fa-user']};
-    updateHeader();
-    modal('loadingModal',false);
-    modal('authModal',true);
-   }
-  });
- }catch(e){
-  console.error('Authentication initialization failed:',e);
-  modal('loadingModal',false);modal('authModal',true);
-  toast('Firebase සම්බන්ධතාවය සකසා නැත.');
- }
-})();
 
 function applyAvatarToBox(elementId, designIndex, customIcon){
  const el=$(elementId);if(!el)return;
@@ -294,6 +276,29 @@ function updateHeader(){
  $('points').textContent=user.points!==undefined?user.points:500;
  applyAvatarToBox('headerAvatar', user.pieceIndex||0, user.avatarIcon||'fa-user');
 }
+
+updateHeader();
+
+(async()=>{
+ try{
+  if(!auth||!db)return;
+  auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(()=>{});
+  auth.onAuthStateChanged(async u=>{
+   fbUser=u;
+   if(u){
+    modal('authModal',false);
+    await loadSignedInUser();
+   }else{
+    if(!user.uid){
+     user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user',unlockedAvatars:['fa-user']};
+     updateHeader();
+    }
+   }
+  });
+ }catch(e){
+  console.error('Authentication initialization failed:',e);
+ }
+})();
 
 async function syncDatabaseIndices(oldName) {
  if(!db||!fbUser||!user.name)return;
@@ -365,14 +370,10 @@ async function loadSignedInUser(){
   };
   localStorage.setItem(KEY,JSON.stringify(user));
   $('username').value=user.name;
-  await syncDatabaseIndices(null);
   updateHeader();
+  syncDatabaseIndices(null);
  }catch(e){
   console.error('loadSignedInUser error:',e);
-  toast('පරිශීලක දත්ත ලබාගැනීමට නොහැකි විය.');
- } finally {
-  modal('loadingModal',false);
-  modal('authModal',false);
  }
 }
 
@@ -383,11 +384,10 @@ $('login').onclick=async()=>{
  if(!auth)return toast('Firebase සම්බන්ධතාවය නොමැත.');
  if(!/^[a-zA-Z0-9_]{3,20}$/.test(name)||pass.length<6)return toast('නම (ඉංග්‍රීසි අකුරු 3-20) සහ මුරපදය (අකුරු 6+) නිවැරදිව ඇතුළත් කරන්න.');
  try{
-  modal('loadingModal',true);
   await auth.signInWithEmailAndPassword(name+'@sinhala-draughts.app',pass);
+  modal('authModal',false);
   toast('සාර්ථකව ඇතුළු විය!','fa-circle-check');
  }catch(e){
-  modal('loadingModal',false);
   console.error('Login error:',e);
   toast('ඇතුල්වීම අසාර්ථකයි: '+(e.message||'නැවත උත්සාහ කරන්න'));
  }
@@ -400,10 +400,8 @@ $('register').onclick=async()=>{
  if(!auth||!db)return toast('Firebase සම්බන්ධතාවය නොමැත.');
  if(!/^[a-zA-Z0-9_]{3,20}$/.test(name)||pass.length<6)return toast('නම (ඉංග්‍රීසි අකුරු 3-20) සහ මුරපදය (අකුරු 6+) නිවැරදිව ඇතුළත් කරන්න.');
  try{
-  modal('loadingModal',true);
   const indexSnap = await db.ref('usernameIndex_v6/'+name).once('value').catch(()=>null);
   if(indexSnap && indexSnap.exists()){
-   modal('loadingModal',false);
    return toast('මෙම නම දැනටමත් භාවිතයේ ඇත. වෙනත් නමක් තෝරන්න.');
   }
 
@@ -416,11 +414,9 @@ $('register').onclick=async()=>{
 
   localStorage.setItem(KEY,JSON.stringify(user));
   updateHeader();
-  modal('loadingModal',false);
   modal('authModal',false);
   toast('ගිණුම සාර්ථකව සාදන ලදී!','fa-circle-check');
  }catch(e){
-  modal('loadingModal',false);
   console.error('Register error:',e);
   toast('ගිණුම සෑදීමට නොහැකි විය: '+(e.message||'නැවත උත්සාහ කරන්න'));
  }
@@ -430,6 +426,10 @@ let tempSelectedPiece=0;
 let tempSelectedAvatar='fa-user';
 
 $('openProfile').onclick=()=>{
+ if(!fbUser && !user.uid){
+  modal('authModal',true);
+  return;
+ }
  tempSelectedPiece=user.pieceIndex||0;
  tempSelectedAvatar=user.avatarIcon||'fa-user';
  
@@ -472,7 +472,7 @@ $('openProfile').onclick=()=>{
  });
 
  applyAvatarToBox('profileAvatar', user.pieceIndex||0, user.avatarIcon||'fa-user');
- $('profileName').textContent=user.name;
+ $('profileName').textContent=user.name||'ක්‍රීඩකයා';
  modal('profileModal',true);
 };
 
@@ -488,13 +488,17 @@ $('saveProfile').onclick=()=>{
 $('logoutBtn').onclick=async()=>{
  if(!auth)return;
  modal('profileModal',false);
+ localStorage.removeItem(KEY);
+ user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user',unlockedAvatars:['fa-user']};
+ updateHeader();
  await auth.signOut();
+ modal('authModal',true);
  toast('ගිණුමෙන් ඉවත් විය.');
 };
 
 function launchArena(params) {
  const query = new URLSearchParams(params).toString();
- window.location.href = `arena.html?${query}`;
+ smoothNavigate(`arena.html?${query}`);
 }
 
 $('single').onclick=()=>{
@@ -515,23 +519,36 @@ $('startSingleGame').onclick=()=>{
 };
 
 $('multi').onclick = () => {
-    if(!fbUser) return toast('කරුණාකර පළමුව ගිණුමට ඇතුළු වන්න.');
-    $('maxUserPoints').textContent = user.points;
-    modal('betModal', true);
+ if(!fbUser && !user.uid) {
+  modal('authModal',true);
+  return toast('කරුණාකර පළමුව ගිණුමට ඇතුළු වන්න.');
+ }
+ $('maxUserPoints').textContent = user.points;
+ modal('betModal', true);
 };
 
 $('closeBetModal').onclick = () => modal('betModal', false);
 
 $('proceedToInvite').onclick = () => {
-    const bet = Number($('betAmountInput').value);
-    if(!Number.isInteger(bet) || bet < 10 || bet > user.points) return toast('Points 10 සිට ඔබ සතු උපරිම Points දක්වා ඇතුළත් කරන්න.');
-    
-    sessionStorage.setItem('sinhala_draughts_bet', bet);
-    window.location.href = 'friends.html';
+ const bet = Number($('betAmountInput').value);
+ if(!Number.isInteger(bet) || bet < 10 || bet > user.points) return toast('Points 10 සිට ඔබ සතු උපරිම Points දක්වා ඇතුළත් කරන්න.');
+ 
+ modal('betModal', false);
+ sessionStorage.setItem('sinhala_draughts_bet', bet);
+ smoothNavigate('friends.html');
 };
 
-$('collectRewards').onclick=()=>location.href='shopandreward.html';
-$('coinShop').onclick=()=>location.href='shopandreward.html';
+document.querySelectorAll('a.nav-item[href]').forEach(link => {
+ link.addEventListener('click', e => {
+  const href = link.getAttribute('href');
+  if(!href || href.startsWith('#'))return;
+  e.preventDefault();
+  smoothNavigate(href);
+ });
+});
+
+$('collectRewards').onclick=()=>smoothNavigate('shopandreward.html');
+$('coinShop').onclick=()=>smoothNavigate('shopandreward.html');
 $('navProfile').onclick=()=>$('openProfile').click();
 </script>
 </body>
