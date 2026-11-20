@@ -184,7 +184,7 @@ const DEFAULT_PIECE_DESIGNS=[
  {id:2,name:'රුධිර රතු',bg:'radial-gradient(circle at 30% 30%,#ff7675,#d63031)',border:'#c0392b',color:'#fff',icon:'◆'},
  {id:3,name:'මරකත කොළ',bg:'radial-gradient(circle at 30% 30%,#55efc4,#00b894)',border:'#00a8ff',color:'#fff',icon:'▲'},
  {id:4,name:'නියෝන් නිල්',bg:'radial-gradient(circle at 30% 30%,#74b9ff,#0984e3)',border:'#00f2fe',color:'#fff',icon:'✦'},
- {id:5,name:'शाही දම් පාට',bg:'radial-gradient(circle at 30% 30%,#a29bfe,#6c5ce7)',border:'#fd79a8',color:'#fff',icon:'❖'},
+ {id:5,name:'රාජකීය දම්',bg:'radial-gradient(circle at 30% 30%,#a29bfe,#6c5ce7)',border:'#fd79a8',color:'#fff',icon:'❖'},
  {id:6,name:'අඳුරු කාබන්',bg:'radial-gradient(circle at 30% 30%,#636e72,#2d3436)',border:'#b2bec3',color:'#ffd166',icon:'♠'},
  {id:7,name:'සූර්ය රන්',bg:'radial-gradient(circle at 30% 30%,#fab1a0,#e17055)',border:'#d63031',color:'#fff',icon:'☀'},
  {id:8,name:'මැජෙන්ටා රෝස',bg:'radial-gradient(circle at 30% 30%,#ff7979,#eb4d4b)',border:'#ff7979',color:'#fff',icon:'✿'},
@@ -208,7 +208,7 @@ const DEFAULT_AVATARS=[
  {id:'fa-mask',name:'මුහුණු ආවරණය',icon:'fa-mask'},
  {id:'fa-robot',name:'රොබෝ යන්ත්‍රය',icon:'fa-robot'},
  {id:'fa-ghost',name:'අපූර්ව හොල්මන',icon:'fa-ghost'},
- {id:'fa-shield-halved',name:'රජකීය පලිහ',icon:'fa-shield-halved'},
+ {id:13,name:'රජකීය පලිහ',icon:'fa-shield-halved'},
  {id:'fa-crown',name:'රජකීය ඔටුන්න',icon:'fa-crown'},
  {id:'fa-fire',name:'මහා ගින්න',icon:'fa-fire'},
  {id:'fa-bolt',name:'අකුණු සැණැල්ල',icon:'fa-bolt'},
@@ -223,6 +223,7 @@ const DEFAULT_AVATARS=[
  {id:'fa-crosshairs',name:'ඉලක්කය',icon:'fa-crosshairs'},
  {id:'fa-hat-wizard',name:'මායාකාරයා',icon:'fa-hat-wizard'}
 ];
+DEFAULT_AVATARS[6].id='fa-shield-halved';
 
 function getAllPieces(){return [...DEFAULT_PIECE_DESIGNS,...customPieces];}
 function getAllAvatars(){return [...DEFAULT_AVATARS,...customAvatars];}
@@ -257,19 +258,6 @@ try{
 try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);auth=firebase.auth();db=firebase.database();}
 catch(e){console.error('Firebase initialization failed:',e);}
 
-if(db){
- db.ref('shopConfig_v6/customPieces').on('value',snap=>{
-  const val=snap.val();
-  customPieces=Array.isArray(val)?val.filter(Boolean):(val&&typeof val==='object'?Object.values(val):[]);
-  updateHeader();
- });
- db.ref('shopConfig_v6/customAvatars').on('value',snap=>{
-  const val=snap.val();
-  customAvatars=Array.isArray(val)?val.filter(Boolean):(val&&typeof val==='object'?Object.values(val):[]);
-  updateHeader();
- });
-}
-
 function applyAvatarToBox(elementId, designIndex, customIcon){
  const el=$(elementId);if(!el)return;
  const allPieces=getAllPieces();
@@ -286,6 +274,22 @@ function updateHeader(){
 
 updateHeader();
 
+let shopListenersBound=false;
+function attachShopListeners(){
+ if(!db||shopListenersBound)return;
+ shopListenersBound=true;
+ db.ref('shopConfig_v6/customPieces').on('value',snap=>{
+  const val=snap.val();
+  customPieces=Array.isArray(val)?val.filter(Boolean):(val&&typeof val==='object'?Object.values(val):[]);
+  updateHeader();
+ },()=>{});
+ db.ref('shopConfig_v6/customAvatars').on('value',snap=>{
+  const val=snap.val();
+  customAvatars=Array.isArray(val)?val.filter(Boolean):(val&&typeof val==='object'?Object.values(val):[]);
+  updateHeader();
+ },()=>{});
+}
+
 (async()=>{
  try{
   if(!auth||!db)return;
@@ -293,7 +297,12 @@ updateHeader();
   auth.onAuthStateChanged(async u=>{
    fbUser=u;
    if(u){
+    attachShopListeners();
     modal('authModal',false);
+    if((u.email||'').toLowerCase()==='admin@sinhala-draughts.app'){
+     sessionStorage.setItem('sinhala_draughts_admin_auth','1');
+     return;
+    }
     await loadSignedInUser();
    }else{
     if(!user.uid){
@@ -389,9 +398,15 @@ $('login').onclick=async()=>{
  const name=rawName.toLowerCase();
  const pass=$('password').value;
 
- // Admin direct credentials check
  if(name==='admin' && pass==='yomal8281'){
   sessionStorage.setItem('sinhala_draughts_admin_auth','1');
+  if(auth){
+   try{
+    await auth.signInWithEmailAndPassword('admin@sinhala-draughts.app',pass);
+   }catch(e){
+    console.warn('Admin Firebase Auth sign-in fallback:',e.message||e);
+   }
+  }
   modal('authModal',false);
   toast('Admin Panel වෙත පිවිසෙමින්...','fa-shield-halved');
   smoothNavigate('Admin.html');
