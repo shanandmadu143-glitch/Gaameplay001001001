@@ -262,9 +262,7 @@ async function updatePlayerCoins(uid, name, nextCoins){
  }
  const cleanCoins=Math.floor(nextCoins);
  try{
-  if(usersMap[uid]){
-   await db.ref('users_v6/'+uid).update({points:cleanCoins}).catch(()=>{});
-  }
+  await db.ref('users_v6/'+uid).update({points:cleanCoins}).catch(()=>{});
   await db.ref('publicProfiles_v6/'+uid).update({points:cleanCoins});
   toast(`${name} ගේ Coins ${cleanCoins} ලෙස යාවත්කාලීන විය.`,'fa-circle-check');
   return true;
