@@ -221,7 +221,6 @@ function isSafeColor(val){
 try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);db=firebase.database();}
 catch(e){console.error('Firebase init failed:',e);lastDbError=e.message||'Firebase init error';}
 
-// Tabs
 document.querySelectorAll('.tab-btn').forEach(btn=>{
  btn.onclick=()=>{
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
@@ -257,7 +256,7 @@ async function updatePlayerCoins(uid, name, nextCoins){
  }
  const cleanCoins=Math.floor(nextCoins);
  try{
-  await db.ref('users_v6/'+uid).update({points:cleanCoins});
+  await db.ref('users_v6/'+uid).update({points:cleanCoins}).catch(()=>{});
   await db.ref('publicProfiles_v6/'+uid).update({points:cleanCoins}).catch(()=>{});
   toast(`${name} ගේ Coins ${cleanCoins} ලෙස යාවත්කාලීන විය.`,'fa-circle-check');
   return true;
@@ -276,9 +275,9 @@ function renderPlayers(){
  const filtered=allPlayers.filter(p=>p.name.toLowerCase().includes(q)||p.uid.toLowerCase().includes(q));
  if(!filtered.length){
   const empty=document.createElement('p');
-  empty.style.cssText='text-align:center;color:var(--dim);padding:20px';
+  empty.style.cssText='text-align:center;color:var(--dim);padding:20px;line-height:1.5';
   empty.textContent=lastDbError
-   ? `දත්ත ලබාගැනීමේ දෝෂයක්: ${lastDbError}`
+   ? `දත්ත ලබාගැනීමේ දෝෂයක්: ${lastDbError}\n(Firebase Console -> Realtime Database -> Rules හි ".read": true ලබා දෙන්න)`
    : 'ක්‍රීඩකයන් හමු නොවීය.';
   list.appendChild(empty);
   return;
@@ -379,7 +378,6 @@ function normalizeItems(rawVal){
  return [];
 }
 
-// Piece Theme Live Preview & Add
 function updateThemePreview(){
  const prev=$('themePreview');
  const icon=$('themeIcon').value.trim()||'♛';
@@ -406,16 +404,7 @@ $('addThemeBtn').onclick=async()=>{
  if(!name)return toast('කරුණාකර Theme නම ඇතුළත් කරන්න.');
  if(!Number.isFinite(price)||price<0)return toast('නිවැරදි මිලක් ඇතුළත් කරන්න.');
 
- const newTheme={
-  id:'custom_piece_'+Date.now(),
-  name,
-  price:Math.floor(price),
-  icon,
-  bg,
-  border,
-  color
- };
-
+ const newTheme={id:'custom_piece_'+Date.now(),name,price:Math.floor(price),icon,bg,border,color};
  try{
   await db.ref('shopConfig_v6/customPieces').push(newTheme);
   $('themeName').value='';
@@ -426,7 +415,6 @@ $('addThemeBtn').onclick=async()=>{
  }
 };
 
-// Avatar Live Preview & Add
 function updateAvatarPreview(){
  const prev=$('avatarPreview');
  const rawIcon=($('avatarIcon').value.trim()||'fa-crown').replace(/^fa-solid\s+/,'');
@@ -449,13 +437,7 @@ $('addAvatarBtn').onclick=async()=>{
  if(!name)return toast('කරුණාකර Avatar නම ඇතුළත් කරන්න.');
  if(!Number.isFinite(price)||price<0)return toast('නිවැරදි මිලක් ඇතුළත් කරන්න.');
 
- const newAvatar={
-  id:iconClass,
-  name,
-  price:Math.floor(price),
-  icon:iconClass
- };
-
+ const newAvatar={id:iconClass,name,price:Math.floor(price),icon:iconClass};
  try{
   await db.ref('shopConfig_v6/customAvatars').push(newAvatar);
   $('avatarName').value='';
@@ -496,7 +478,6 @@ function renderCustomLists(){
 
   const label=document.createElement('span');
   label.textContent=`${t.name||'Theme'} (${t.price||0})`;
-
   left.append(swatch,label);
 
   const delBtn=document.createElement('button');
@@ -535,7 +516,6 @@ function renderCustomLists(){
 
   const label=document.createElement('span');
   label.textContent=`${a.name||'Avatar'} (${a.price||0})`;
-
   left.append(badge,label);
 
   const delBtn=document.createElement('button');
@@ -557,21 +537,6 @@ function renderCustomLists(){
  });
 }
 
-async function fetchPlayersOnce(){
- if(!db)return;
- try{
-  const [uSnap, pSnap]=await Promise.all([
-   db.ref('users_v6').once('value').catch(e=>{lastDbError=e.message;return null;}),
-   db.ref('publicProfiles_v6').once('value').catch(e=>{if(!lastDbError)lastDbError=e.message;return null;})
-  ]);
-  if(uSnap&&uSnap.exists())usersMap=uSnap.val()||{};
-  if(pSnap&&pSnap.exists())publicMap=pSnap.val()||{};
-  mergePlayers();
- }catch(e){
-  console.error(e);
- }
-}
-
 function attachListeners(){
  if(!db||listenersAttached)return;
  listenersAttached=true;
@@ -582,12 +547,13 @@ function attachListeners(){
   mergePlayers();
  },err=>{
   console.error('users_v6 error:',err);
-  lastDbError=err.message||'Permission denied';
+  if(!Object.keys(publicMap).length)lastDbError=err.message||'Permission denied';
   mergePlayers();
  });
 
  db.ref('publicProfiles_v6').on('value',snap=>{
   publicMap=snap.val()||{};
+  if(Object.keys(publicMap).length)lastDbError='';
   mergePlayers();
  },err=>{
   console.error('publicProfiles_v6 error:',err);
@@ -605,13 +571,9 @@ function attachListeners(){
 }
 
 attachListeners();
-fetchPlayersOnce();
 
 $('playerSearch').addEventListener('input',renderPlayers);
-$('refreshPlayersBtn').onclick=async()=>{
- await fetchPlayersOnce();
- toast('ක්‍රීඩක ලැයිස්තුව Refresh විය.','fa-rotate');
-};
+$('refreshPlayersBtn').onclick=()=>{renderPlayers();toast('ක්‍රීඩක ලැයිස්තුව Refresh විය.','fa-rotate');};
 $('goShopBtn').onclick=()=>smoothNavigate('shopandreward.html');
 $('exitAdminBtn').onclick=()=>{
  sessionStorage.removeItem('sinhala_draughts_admin_auth');
