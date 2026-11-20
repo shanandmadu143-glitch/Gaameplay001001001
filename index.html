@@ -216,37 +216,23 @@ const DEFAULT_AVATARS=[
  {id:'fa-user',name:'සම්මත (Default)',icon:'fa-user'},
  {id:'fa-chess-knight',name:'චෙස් නයිට්',icon:'fa-chess-knight'},
  {id:'fa-dragon',name:'ගිනියම් ඩ්‍රැගන්',icon:'fa-dragon'},
- {id:13,name:'රොබෝ යන්ත්‍රය',icon:'fa-robot'},
+ {id:'fa-robot',name:'රොබෝ යන්ත්‍රය',icon:'fa-robot'},
  {id:'fa-ghost',name:'අපූර්ව හොල්මන',icon:'fa-ghost'},
  {id:'fa-shield-halved',name:'රජකීය පලිහ',icon:'fa-shield-halved'},
- {id:13,name:'රජකීය ඔටුන්න',icon:'fa-crown'},
- {id:13,name:'මහා ගින්න',icon:'fa-fire'},
- {id:13,name:'අකුණු සැණැල්ල',icon:'fa-bolt'},
- {id:13,name:'හිස්කබල',icon:'fa-skull'},
- {id:13,name:'රන් තරුව',icon:'fa-star'},
- {id:13,name:'දියමන්ති මැණික',icon:'fa-gem'},
- {id:13,name:'ජෙට් යානය',icon:'fa-fighter-jet'},
- {id:13,name:'උල්කාපාතය',icon:'fa-meteor'},
- {id:13,name:'කූට බළලා',icon:'fa-cat'},
- {id:13,name:'බල්ලා',icon:'fa-dog'},
- {id:13,name:'සිංහ පාදය',icon:'fa-paw'},
- {id:13,name:'ඉලක්කය',icon:'fa-crosshairs'},
- {id:13,name:'මායාකාරයා',icon:'fa-hat-wizard'}
+ {id:'fa-crown',name:'රජකීය ඔටුන්න',icon:'fa-crown'},
+ {id:'fa-fire',name:'මහා ගින්න',icon:'fa-fire'},
+ {id:'fa-bolt',name:'අකුණු සැණැල්ල',icon:'fa-bolt'},
+ {id:'fa-skull',name:'හිස්කබල',icon:'fa-skull'},
+ {id:'fa-star',name:'රන් තරුව',icon:'fa-star'},
+ {id:'fa-gem',name:'දියමන්ති මැණික',icon:'fa-gem'},
+ {id:'fa-fighter-jet',name:'ජෙට් යානය',icon:'fa-fighter-jet'},
+ {id:'fa-meteor',name:'උල්කාපාතය',icon:'fa-meteor'},
+ {id:'fa-cat',name:'කූට බළලා',icon:'fa-cat'},
+ {id:'fa-dog',name:'බල්ලා',icon:'fa-dog'},
+ {id:'fa-paw',name:'සිංහ පාදය',icon:'fa-paw'},
+ {id:'fa-crosshairs',name:'ඉලක්කය',icon:'fa-crosshairs'},
+ {id:'fa-hat-wizard',name:'මායාකාරයා',icon:'fa-hat-wizard'}
 ];
-DEFAULT_AVATARS[3].id='fa-robot';
-DEFAULT_AVATARS[6].id='fa-crown';
-DEFAULT_AVATARS[7].id='fa-fire';
-DEFAULT_AVATARS[8].id='fa-bolt';
-DEFAULT_AVATARS[9].id='fa-skull';
-DEFAULT_AVATARS[10].id='fa-star';
-DEFAULT_AVATARS[11].id='fa-gem';
-DEFAULT_AVATARS[12].id='fa-fighter-jet';
-DEFAULT_AVATARS[13].id='fa-meteor';
-DEFAULT_AVATARS[14].id='fa-cat';
-DEFAULT_AVATARS[15].id='fa-dog';
-DEFAULT_AVATARS[16].id='fa-paw';
-DEFAULT_AVATARS[17].id='fa-crosshairs';
-DEFAULT_AVATARS[18].id='fa-hat-wizard';
 
 function normalizeList(val, fallback) {
  if (Array.isArray(val)) return val.length ? val : fallback;
@@ -302,7 +288,8 @@ catch(e){console.error('Firebase initialization failed:',e);}
 function applyAvatarToBox(elementId, designIndex, customIcon){
  const el=$(elementId);if(!el)return;
  const allPieces=getAllPieces();
- const design=allPieces[designIndex]||allPieces[0];
+ const idx=Number(designIndex)||0;
+ const design=allPieces[idx]||allPieces[0];
  el.style.background=design.bg;el.style.borderColor=design.border;el.style.color=design.color;
  el.innerHTML=customIcon ? `<i class="fa-solid ${customIcon}"></i>` : design.icon;
 }
@@ -310,7 +297,7 @@ function applyAvatarToBox(elementId, designIndex, customIcon){
 function updateHeader(){
  $('headerName').textContent=user.name||'ක්‍රීඩකයා';
  $('points').textContent=user.points!==undefined?user.points:500;
- applyAvatarToBox('headerAvatar', user.pieceIndex||0, user.avatarIcon||'fa-user');
+ applyAvatarToBox('headerAvatar', Number(user.pieceIndex)||0, user.avatarIcon||'fa-user');
 }
 
 updateHeader();
@@ -360,7 +347,7 @@ function attachLiveUserListener(uid){
   updateHeader();
   if($('profileModal').classList.contains('show')){
    if(!user.unlockedAvatars.includes(tempSelectedAvatar)) tempSelectedAvatar=user.avatarIcon||'fa-user';
-   if(!user.unlockedPieces.includes(tempSelectedPiece)) tempSelectedPiece=user.pieceIndex||0;
+   if(!user.unlockedPieces.includes(Number(tempSelectedPiece))) tempSelectedPiece=Number(user.pieceIndex)||0;
    renderProfileItems();
   }
  };
@@ -431,6 +418,11 @@ async function syncDatabaseIndices(oldName) {
 }
 
 function saveUser(){
+ user.pieceIndex = Number(user.pieceIndex) || 0;
+ user.avatarIcon = user.avatarIcon || 'fa-user';
+ user.unlockedPieces = normalizeList(user.unlockedPieces, [0]).map(Number);
+ user.unlockedAvatars = normalizeList(user.unlockedAvatars, ['fa-user']).map(String);
+
  localStorage.setItem(KEY,JSON.stringify(user));
  if(db&&fbUser){
   const oldName=user.name;
@@ -439,10 +431,10 @@ function saveUser(){
    points:user.points,
    wins:Number(user.wins)||0,
    losses:Number(user.losses)||0,
-   pieceIndex:Number(user.pieceIndex)||0,
-   unlockedPieces:normalizeList(user.unlockedPieces,[0]).map(Number),
-   avatarIcon:user.avatarIcon||'fa-user',
-   unlockedAvatars:normalizeList(user.unlockedAvatars,['fa-user']).map(String),
+   pieceIndex:user.pieceIndex,
+   unlockedPieces:user.unlockedPieces,
+   avatarIcon:user.avatarIcon,
+   unlockedAvatars:user.unlockedAvatars,
    lastRewardTime:Number(user.lastRewardTime)||0
   }).then(()=>{
    syncDatabaseIndices(oldName);
@@ -585,7 +577,7 @@ function renderProfileItems(){
   const isUnlocked = unlockedPieces.includes(pIdx);
   const isEquipped = pIdx === (Number(user.pieceIndex) || 0);
   const div=document.createElement('div');
-  div.className='piece-option'+(pIdx===tempSelectedPiece?' selected':'')+(isUnlocked?'':' locked');
+  div.className='piece-option'+(pIdx===Number(tempSelectedPiece)?' selected':'')+(isUnlocked?'':' locked');
   const statusLabel = !isUnlocked ? 'Locked' : (isEquipped ? 'Equipped' : 'Unlocked');
   const statusColor = !isUnlocked ? 'var(--red)' : (isEquipped ? 'var(--gold)' : 'var(--neon-green)');
   div.innerHTML=`<div style="width:28px;height:28px;border-radius:50%;background:${p.bg};border:2px solid ${p.border};color:${p.color};display:grid;place-items:center;font-size:0.9rem">${p.icon}</div><span style="font-size:0.6rem;text-align:center">${p.name}</span><small style="font-size:0.5rem;color:${statusColor}">${statusLabel}</small>`;
@@ -641,11 +633,11 @@ $('goShopFromAvatars').onclick=()=>{modal('profileModal',false);smoothNavigate('
 $('goShopFromPieces').onclick=()=>{modal('profileModal',false);smoothNavigate('shopandreward.html');};
 
 $('saveProfile').onclick=()=>{
- user.pieceIndex=tempSelectedPiece;
- user.avatarIcon=tempSelectedAvatar;
+ user.pieceIndex=Number(tempSelectedPiece)||0;
+ user.avatarIcon=tempSelectedAvatar||'fa-user';
  saveUser();
  modal('profileModal',false);
- toast('ප්‍රොෆයිලය සුරකින ලදී!','fa-circle-check');
+ toast('තෝරාගත් ඉත්තා සහ Avatar සුරකින ලදී!','fa-circle-check');
 };
 
 $('logoutBtn').onclick=async()=>{
@@ -661,6 +653,7 @@ $('logoutBtn').onclick=async()=>{
 };
 
 function launchArena(params) {
+ saveUser();
  const query = new URLSearchParams(params).toString();
  smoothNavigate(`arena.html?${query}`);
 }
@@ -698,6 +691,7 @@ $('proceedToInvite').onclick = () => {
  const bet = Number($('betAmountInput').value);
  if(!Number.isInteger(bet) || bet < 10 || bet > user.points) return toast('Points 10 සිට ඔබ සතු උපරිම Points දක්වා ඇතුළත් කරන්න.');
  
+ saveUser();
  modal('betModal', false);
  sessionStorage.setItem('sinhala_draughts_bet', bet);
  smoothNavigate(`friends.html?bet=${encodeURIComponent(bet)}`);
