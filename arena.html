@@ -403,7 +403,7 @@ function sendVoiceMessage(audioDataUrl) {
 function appendVoiceMessage(audioUrl, isMe) {
  const div = document.createElement('div');
  div.className = 'chat-msg ' + (isMe ? 'me' : 'them') + ' voice-msg-bubble';
- 
+
  const audioEl = document.createElement('audio');
  audioEl.controls = true;
  audioEl.src = audioUrl;
@@ -539,7 +539,7 @@ function initBoard(){
  lastMove=null;
  if(single) userSide = nextStartingSide;
  render(); setTurnUI();
- 
+
  startForestAmbient();
 
  setTimeout(() => {
@@ -601,7 +601,7 @@ function render(){
    if(selected&&selected.r===r&&selected.c===c)sq.classList.add('selected');
    const m=moves.find(x=>x.toR===r&&x.toC===c);
    if(m)sq.classList.add(m.capture?'capture':'target');
-   
+
    if(lastMove){
     if(lastMove.fromR === r && lastMove.fromC === c) sq.classList.add('last-move-from');
     if(lastMove.toR === r && lastMove.toC === c) sq.classList.add('last-move-to');
@@ -660,14 +660,14 @@ async function playMove(m){
  applyMove(board,m);selected=null;moves=[];
  const landed=board[m.toR][m.toC];
  const followUps=m.capture&&Math.abs(landed)===Math.abs(moving)?pieceMoves(m.toR,m.toC).filter(x=>x.capture):[];
- 
+
  if(followUps.length){
   forcedContinuation={r:m.toR,c:m.toC};turn=Math.sign(landed);render();processing=false;setTurnUI();
   if(!single && roomRef) syncMultiplayerState();
   if(single&&turn!==userSide)aiTimer=setTimeout(aiMove,450);
   return;
  }
- 
+
  forcedContinuation=null;turn=-Math.sign(moving);render();processing=false;
  if(!allMoves(turn).length){
   if(!single && roomRef) syncMultiplayerState();
@@ -718,7 +718,7 @@ function aiMove(){
  const moving=board[m.fromR][m.fromC];
  applyMove(board,m);
  const landed=board[m.toR][m.toC];
- const followUps=m.capture&&Math.abs(landed)===Math.abs(moving)?pieceMoves(m.toR,m.toC).filter(x=>x.capture):[];
+ const followUps=m.capture&&Math.abs(landed)===Math.abs(moving)?pieceMoves(m.toR,m.toC).filter(x=>m.capture):[];
  if(followUps.length){forcedContinuation={r:m.toR,c:m.toC};turn=aiSide;render();setTurnUI();aiTimer=setTimeout(aiMove,450);return;}
  forcedContinuation=null;render();turn=userSide;
  if(!allMoves(userSide).length)finish(aiSide,'ඔබට නීත්‍යානුකූල Move නොමැත.');else setTurnUI();
@@ -728,7 +728,7 @@ function finish(winner,message){
  if(gameOver)return;gameOver=true;clearInterval(aiTimer);clearInterval(turnClockTimer);
  const won=(winner===userSide);
  const bet=Number(window.currentBetPoints)||0;
- 
+
  if(gameMode==='freestyle'){
   $('overPoints').textContent='පුහුණු තරඟය - Points වෙනස් නොවේ';
  } else if(fbUser&&db) {
@@ -753,7 +753,7 @@ function finish(winner,message){
  $('overTitle').style.color=won?'var(--neon-green)':'var(--red)';
  $('overMessage').textContent=message;
  modal('overModal',true);
- 
+
  if(roomRef) {
   roomRef.update({status: 'finished', winner: winner, updatedBy: mySessionId}).catch(()=>{});
   roomRef.child('chats').remove().catch(()=>{});
@@ -822,7 +822,7 @@ $('chatInput').addEventListener('keydown', (e) => {
 });
 
 function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
- role = assignedRole || 'host';
+ role = assignedRole === 'guest' ? 'guest' : 'host';
  roomId = id;
  userSide = role === 'host' ? 1 : -1;
  board = createFreshBoard();
@@ -932,7 +932,7 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
   }
  };
  roomRef.on('value', roomValueHandler);
- 
+
  if(chatAddedHandler) { try { roomRef.child('chats').off('child_added', chatAddedHandler); } catch(e){} }
  chatAddedHandler = snap => {
   const c = snap.val();
