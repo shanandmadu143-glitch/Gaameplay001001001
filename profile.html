@@ -43,6 +43,12 @@ html,body{
   color:#f8fafc;
 }
 
+/* Hidden Header & Bottom Menu */
+.top-hud,
+.bottom-nav{
+  display:none !important;
+}
+
 .app{
   width:100vw;
   height:100dvh;
@@ -55,7 +61,7 @@ html,body{
     calc(env(safe-area-inset-left, 0px) + 14px);
   display:flex;
   flex-direction:column;
-  justify-content:space-between;
+  justify-content:stretch;
   gap:10px;
   position:fixed;
   inset:0;
@@ -68,77 +74,11 @@ html,body{
   transform:scale(0.985);
 }
 
-/* Top HUD Header */
-.top-hud{
-  width:100%;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  padding:11px 16px;
-  background:linear-gradient(135deg,rgba(18,26,48,0.95),rgba(9,14,27,0.96));
-  border:1.5px solid var(--line);
-  border-radius:20px;
-  box-shadow:0 10px 28px rgba(0,0,0,0.65);
-  backdrop-filter:blur(12px);
-}
-
-.hud-title{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-.hud-badge-icon{
-  width:38px;
-  height:38px;
-  border-radius:12px;
-  display:grid;
-  place-items:center;
-  background:linear-gradient(135deg,rgba(255,209,102,0.22),rgba(0,242,254,0.14));
-  border:1px solid rgba(255,209,102,0.45);
-  color:var(--gold);
-  font-size:1.05rem;
-}
-
-.hud-title h1{
-  font-family:'Orbitron','Gemunu Libre',sans-serif;
-  font-size:0.95rem;
-  letter-spacing:0.8px;
-  color:#fff;
-  line-height:1.1;
-}
-.hud-title span{
-  font-size:0.72rem;
-  color:var(--neon-blue);
-  font-weight:700;
-}
-
-.coin-pill{
-  display:flex;
-  align-items:center;
-  gap:7px;
-  padding:6px 13px;
-  border-radius:999px;
-  background:rgba(4,7,15,0.88);
-  border:1.5px solid rgba(255,209,102,0.45);
-  box-shadow:inset 0 2px 6px rgba(0,0,0,0.75);
-}
-.coin-pill i{
-  color:var(--gold);
-  font-size:1rem;
-  filter:drop-shadow(0 0 6px rgba(255,209,102,0.6));
-}
-.coin-pill b{
-  font-family:'Orbitron','Poppins',sans-serif;
-  font-size:0.88rem;
-  color:#fff;
-}
-
 /* Full Screen Scrollable Main Area */
 main{
   flex:1;
   width:100%;
+  height:100%;
   min-height:0;
   display:flex;
   flex-direction:column;
@@ -148,12 +88,13 @@ main{
 .profile-scroll{
   flex:1;
   width:100%;
+  height:100%;
   min-height:0;
   overflow-y:auto;
   display:flex;
   flex-direction:column;
   gap:14px;
-  padding:2px 2px 12px;
+  padding:2px 2px 18px;
   scrollbar-width:thin;
   scrollbar-color:rgba(255,209,102,0.35) transparent;
 }
@@ -578,45 +519,10 @@ main{
   border:1px solid rgba(255,71,87,0.42);
 }
 
-/* Bottom Navigation */
-.bottom-nav{
-  width:100%;
-  min-height:62px;
-  background:rgba(12,18,34,0.96);
-  border:1.5px solid var(--line);
-  border-radius:20px;
-  display:flex;
-  align-items:center;
-  justify-content:space-around;
-  padding:6px 4px;
-  backdrop-filter:blur(12px);
-  box-shadow:0 12px 30px rgba(0,0,0,0.8);
-}
-
-.nav-item{
-  background:none;
-  border:0;
-  color:#9fb0c7;
-  text-decoration:none;
-  display:flex;
-  flex:1;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:2px;
-  font-size:0.7rem;
-  font-weight:700;
-  cursor:pointer;
-  transition:color 0.15s ease,transform 0.15s ease;
-}
-.nav-item:active{transform:scale(0.93)}
-.nav-item i{font-size:1.25rem}
-.nav-item.active{color:var(--gold)}
-
 /* Toast */
 #toast{
   position:fixed;
-  bottom:84px;
+  bottom:24px;
   left:50%;
   transform:translate(-50%,120px);
   opacity:0;
@@ -649,19 +555,7 @@ main{
 </head>
 <body>
 <div class="app" id="appRoot">
- <header class="top-hud">
-  <div class="hud-title">
-   <div class="hud-badge-icon"><i class="fa-solid fa-gamepad"></i></div>
-   <div>
-    <h1>PLAYER PROFILE</h1>
-    <span>PRO GAMING HUB</span>
-   </div>
-  </div>
-  <div class="coin-pill">
-   <i class="fa-solid fa-coins"></i>
-   <b><span id="profilePoints">500</span></b>
-  </div>
- </header>
+ <header class="top-hud" aria-hidden="true"></header>
 
  <main>
   <div class="profile-scroll">
@@ -754,13 +648,7 @@ main{
   </div>
  </main>
 
- <footer class="bottom-nav">
-  <a class="nav-item" href="index.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
-  <a class="nav-item" href="friends.html"><i class="fa-solid fa-user-group"></i><span>Friends</span></a>
-  <a class="nav-item active" href="profile.html"><i class="fa-solid fa-circle-user"></i><span>Profile</span></a>
-  <a class="nav-item" href="shopandreward.html"><i class="fa-solid fa-trophy"></i><span>Events</span></a>
-  <a class="nav-item" href="shopandreward.html"><i class="fa-solid fa-cart-shopping"></i><span>Shop</span></a>
- </footer>
+ <footer class="bottom-nav" aria-hidden="true"></footer>
 </div>
 
 <div id="toast"></div>
@@ -813,7 +701,7 @@ const DEFAULT_AVATARS=[
  {id:'fa-shield-halved',name:'රජකීය පලිහ',icon:'fa-shield-halved'},
  {id:'fa-crown',name:'රජකීය ඔටුන්න',icon:'fa-crown'},
  {id:'fa-fire',name:'මහා ගින්න',icon:'fa-fire'},
- {id:'fa-bolt',name:'අකුණු සැණැල්ල',icon:'fa-bolt'},
+ {id:13,name:'අකුණු සැණැල්ල',icon:'fa-bolt'},
  {id:'fa-skull',name:'හිස්කබල',icon:'fa-skull'},
  {id:'fa-star',name:'රන් තරුව',icon:'fa-star'},
  {id:'fa-gem',name:'දියමන්ති මැණික',icon:'fa-gem'},
@@ -825,6 +713,7 @@ const DEFAULT_AVATARS=[
  {id:'fa-crosshairs',name:'ඉලක්කය',icon:'fa-crosshairs'},
  {id:'fa-hat-wizard',name:'මායාකාරයා',icon:'fa-hat-wizard'}
 ];
+DEFAULT_AVATARS[8].id='fa-bolt';
 
 function normalizeList(val, fallback) {
  if (Array.isArray(val)) return val.length ? val : fallback;
@@ -932,15 +821,13 @@ function updateLivePreview(){
 }
 
 function renderProfileItems(){
- const pts=user.points!==undefined?Number(user.points):500;
  const wins=Number(user.wins)||0;
  const losses=Number(user.losses)||0;
  const matches=wins+losses;
  const winRate=matches>0?Math.round((wins/matches)*100):0;
- const rank=getRankInfo(wins, pts);
+ const rank=getRankInfo(wins, user.points);
  const displayName=resolveDisplayName(user, fbUser);
 
- $('profilePoints').textContent=pts;
  $('profileName').textContent=displayName;
  $('rankBadge').textContent=rank.badge;
  $('tierTag').textContent=rank.tier;
@@ -1060,28 +947,21 @@ function attachUserProfileListener(uid, authUser){
   try{userListenerRef.off('value',userListenerFn);}catch(e){}
  }
  userListenerRef=db.ref('users_v6/'+uid);
- userListenerFn=async snap=>{
-  let d=snap.val();
-  if(!d||!d.name){
-   try{
-    const pubSnap=await db.ref('publicProfiles_v6/'+uid).once('value');
-    const pubData=pubSnap.val();
-    d=Object.assign({}, pubData || {}, d || {});
-   }catch(e){}
-  }
+ userListenerFn=snap=>{
+  const d=snap.val()||{};
   const resolvedName=resolveDisplayName(d, authUser);
   user={
    ...user,
-   ...(d||{}),
+   ...d,
    name:resolvedName,
    uid:uid,
-   points:Number.isFinite(Number(d&&d.points))?Number(d.points):user.points,
-   wins:Number(d&&d.wins)||0,
-   losses:Number(d&&d.losses)||0,
-   pieceIndex:Number(d&&d.pieceIndex)||0,
-   unlockedPieces:normalizeList(d&&d.unlockedPieces,[0]).map(Number),
-   avatarIcon:(d&&d.avatarIcon)||'fa-user',
-   unlockedAvatars:normalizeList(d&&d.unlockedAvatars,['fa-user']).map(String)
+   points:Number.isFinite(Number(d.points))?Number(d.points):user.points,
+   wins:Number(d.wins)||0,
+   losses:Number(d.losses)||0,
+   pieceIndex:Number(d.pieceIndex)||0,
+   unlockedPieces:normalizeList(d.unlockedPieces,[0]).map(Number),
+   avatarIcon:d.avatarIcon||'fa-user',
+   unlockedAvatars:normalizeList(d.unlockedAvatars,['fa-user']).map(String)
   };
   tempSelectedPiece=user.pieceIndex;
   tempSelectedAvatar=user.avatarIcon;
@@ -1093,11 +973,16 @@ function attachUserProfileListener(uid, authUser){
 
 if(auth){
  auth.onAuthStateChanged(u=>{
+  fbUser=u||null;
   if(!u){
-   smoothNavigate('index.html');
+   if(userListenerRef&&userListenerFn){
+    try{userListenerRef.off('value',userListenerFn);}catch(e){}
+    userListenerRef=null;
+    userListenerFn=null;
+   }
+   renderProfileItems();
    return;
   }
-  fbUser=u;
   user.name=resolveDisplayName(user, u);
   renderProfileItems();
   attachUserProfileListener(u.uid, u);
@@ -1137,15 +1022,6 @@ $('logoutBtn').onclick=async()=>{
  if(auth)await auth.signOut().catch(()=>{});
  smoothNavigate('index.html');
 };
-
-document.querySelectorAll('a[href]').forEach(link=>{
- link.addEventListener('click',e=>{
-  const href=link.getAttribute('href');
-  if(!href||href.startsWith('#'))return;
-  e.preventDefault();
-  smoothNavigate(href);
- });
-});
 </script>
 <script src="./invite-global.js"></script>
 </body>
