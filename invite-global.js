@@ -24,6 +24,7 @@
   let myAvatarIcon = 'fa-user';
   let invitesRef = null;
   let hostRoomRef = null;
+  let hostRoomHandler = null;
   let activeInvite = null;
   let isRedirecting = false;
   const notifiedIds = new Set();
@@ -100,22 +101,30 @@
     document.getElementById('sdGlobalDeclineBtn').onclick = declineCurrentInvite;
   }
 
-  function navigateToArena(roomId, roomBet, role, roomData) {
-    if (isRedirecting || isOnArenaPage() || !roomId) return;
-    isRedirecting = true;
-
+  function detachAllListeners() {
     if (invitesRef) {
       try { invitesRef.off(); } catch (_) {}
       invitesRef = null;
     }
     if (hostRoomRef) {
-      try { hostRoomRef.off(); } catch (_) {}
+      try {
+        if (hostRoomHandler) hostRoomRef.off('value', hostRoomHandler);
+        else hostRoomRef.off();
+      } catch (_) {}
       hostRoomRef = null;
+      hostRoomHandler = null;
     }
+  }
+
+  function navigateToArena(roomId, roomBet, role, roomData) {
+    if (isRedirecting || isOnArenaPage() || !roomId) return;
+    isRedirecting = true;
+
+    detachAllListeners();
     sessionStorage.removeItem(PENDING_ROOM_KEY);
 
     const safeBet = Math.max(10, Number(roomBet) || Number(sessionStorage.getItem(BET_KEY)) || 50);
-    const resolvedRole = role || 'host';
+    const resolvedRole = role === 'guest' ? 'guest' : 'host';
     const hostName = (roomData && roomData.hostName) || (resolvedRole === 'host' ? myName : 'Host');
     const guestName = (roomData && roomData.guestName) || (resolvedRole === 'guest' ? myName : 'Guest');
     const oppName = resolvedRole === 'host' ? guestName : hostName;
@@ -176,7 +185,7 @@
     const msgEl = document.getElementById('sdGlobalInviteMsg');
     const bannerEl = document.getElementById('sdGlobalInviteBanner');
     if (msgEl) {
-      msgEl.textContent = `${fromName} ඔබට ${invBet} Coins ඔට්ටුවකට Multiplayer තරඟයකට ආරාධනා කරයි!`;
+      msgEl.textContent = `${fromName} ඔබට ${invBet} Coins ඔට්ටුවකට Multiplayer තරඟයකට ආරාධනා කර ඇත!`;
     }
     if (bannerEl) {
       bannerEl.classList.add('show');
@@ -221,6 +230,7 @@
         latestRoom = roomSnap && roomSnap.exists() ? roomSnap.val() : null;
 
         const roomPatch = {
+          roomId: targetRoomId,
           status: 'active',
           matchStarted: true,
           guestUid: fbUser.uid,
@@ -230,8 +240,10 @@
           startedAt: Date.now()
         };
 
-        if (!latestRoom || !Array.isArray(latestRoom.board)) {
+        if (!latestRoom || !Array.isArray(latestRoom.board) || latestRoom.board.length !== 8) {
           roomPatch.board = createInitialBoard();
+          roomPatch.turn = 1;
+        } else if (latestRoom.turn !== 1 && latestRoom.turn !== -1) {
           roomPatch.turn = 1;
         }
 
@@ -267,8 +279,12 @@
   function watchHostPendingRoom() {
     if (!db || !fbUser || isOnArenaPage() || isRedirecting) return;
     if (hostRoomRef) {
-      try { hostRoomRef.off(); } catch (_) {}
+      try {
+        if (hostRoomHandler) hostRoomRef.off('value', hostRoomHandler);
+        else hostRoomRef.off();
+      } catch (_) {}
       hostRoomRef = null;
+      hostRoomHandler = null;
     }
 
     let raw = null;
@@ -280,21 +296,23 @@
     if (raw.hostUid && raw.hostUid !== fbUser.uid) return;
 
     hostRoomRef = db.ref(`rooms_v6/${raw.roomId}`);
-    hostRoomRef.on('value', (snap) => {
+    hostRoomHandler = (snap) => {
       const room = snap.val();
       if (!room) return;
       if (room.status === 'declined' || room.status === 'rejected' || room.status === 'cancelled') {
         sessionStorage.removeItem(PENDING_ROOM_KEY);
         if (hostRoomRef) {
-          try { hostRoomRef.off(); } catch (_) {}
+          try { hostRoomRef.off('value', hostRoomHandler); } catch (_) {}
           hostRoomRef = null;
+          hostRoomHandler = null;
         }
         return;
       }
       if (room.status === 'accepted' || room.status === 'active' || room.status === 'playing' || room.matchStarted === true) {
         navigateToArena(raw.roomId, room.bet || raw.bet, 'host', room);
       }
-    });
+    };
+    hostRoomRef.on('value', hostRoomHandler);
   }
 
   function listenForInvites(uid) {
@@ -343,8 +361,12 @@
     clearHostRoom() {
       sessionStorage.removeItem(PENDING_ROOM_KEY);
       if (hostRoomRef) {
-        try { hostRoomRef.off(); } catch (_) {}
+        try {
+          if (hostRoomHandler) hostRoomRef.off('value', hostRoomHandler);
+          else hostRoomRef.off();
+        } catch (_) {}
         hostRoomRef = null;
+        hostRoomHandler = null;
       }
     },
     goArena: navigateToArena
@@ -370,8 +392,7 @@
     auth.onAuthStateChanged(async (u) => {
       fbUser = u;
       if (!u) {
-        if (invitesRef) { try { invitesRef.off(); } catch (_) {} invitesRef = null; }
-        if (hostRoomRef) { try { hostRoomRef.off(); } catch (_) {} hostRoomRef = null; }
+        detachAllListeners();
         hideInviteCard(false);
         return;
       }
