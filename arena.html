@@ -41,7 +41,6 @@ body{
 .arena-coins-center i { font-size: 1.3rem; color: #2ecc71; }
 .arena-coins-center b { font-size: 1.02rem; color: #fff; }
 
-/* Mid-Area Voice Record Button (Between Profile Header and Board) */
 .mid-voice-bar {
   display: flex;
   align-items: center;
@@ -193,7 +192,6 @@ body{
   </div>
  </div>
 
- <!-- Mid-Area Voice Record Bar -->
  <div class="mid-voice-bar">
   <button class="arena-voice-mic-btn" id="arenaVoiceRecordBtn" title="Press & Hold to Record Voice Note">
    <i class="fa-solid fa-microphone"></i>
@@ -238,10 +236,7 @@ body{
  </div>
 </section>
 
-<!-- Audio element for playing voice notes -->
 <audio id="remoteAudio" autoplay playsinline style="display:none;"></audio>
-
-<!-- Relaxing Forest Ambient Background Sound -->
 <audio id="forestAmbient" src="https://cdn.pixabay.com/download/audio/2022/05/16/audio_db32c1b913.mp3?filename=forest-with-birds-and-wind-111456.mp3" preload="auto" loop style="display:none;"></audio>
 
 <div class="modal" id="overModal">
@@ -462,7 +457,7 @@ async function initGameFromURL(){
  let storedMulti = null;
  try { storedMulti = JSON.parse(sessionStorage.getItem('sinhala_draughts_multi_room') || 'null'); } catch(e){}
 
- gameMode = params.get('mode') || (params.get('roomId') || (storedMulti && storedMulti.roomId) ? 'multi' : 'single');
+ gameMode = params.get('mode') || ((params.get('roomId') || (storedMulti && storedMulti.roomId)) ? 'multi' : 'single');
  const bet = Number(params.get('bet')) || (storedMulti && Number(storedMulti.bet)) || Number(sessionStorage.getItem('sinhala_draughts_bet')) || 0;
  window.currentBetPoints = bet;
  $('arenaBetDisplay').textContent = gameMode === 'freestyle' ? 'FREE' : bet;
