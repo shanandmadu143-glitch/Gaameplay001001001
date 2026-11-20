@@ -509,7 +509,7 @@ async function initGameFromURL(){
    await startByMode();
   } else if(!single && roomId && db && fbUser) {
    const patch = role === 'guest'
-    ? { guestUid: fbUser.uid, guestName: user.name || 'Guest', guestPieceIndex: user.pieceIndex || 0, status: 'active' }
+    ? { guestUid: fbUser.uid, guestName: user.name || 'Guest', guestPieceIndex: user.pieceIndex || 0, status: 'active', matchStarted: true }
     : { hostUid: fbUser.uid, hostName: user.name || 'Host', hostPieceIndex: user.pieceIndex || 0 };
    db.ref('rooms_v6/' + roomId).update(patch).catch(()=>{});
   }
@@ -845,6 +845,13 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
     window.currentBetPoints = Number(data.bet) || bet;
     $('arenaBetDisplay').textContent = window.currentBetPoints;
    }
+   if(Array.isArray(data.board)) {
+    board = normalizeFirebaseBoard(data.board);
+   }
+   if(data.turn !== undefined) {
+    turn = Number(data.turn) === -1 ? -1 : 1;
+   }
+
    if(role === 'host') {
     window.opponentPieceIndex = data.guestPieceIndex !== undefined ? data.guestPieceIndex : 2;
     $('p1name').textContent = user.name || data.hostName || 'Host'; $('p1sub').textContent = 'Host';
@@ -856,6 +863,7 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
       board: board,
       turn: 1,
       status: data.status === 'active' ? 'active' : 'playing',
+      matchStarted: true,
       hostName: user.name || data.hostName || 'Host',
       hostPieceIndex: user.pieceIndex || 0
      }).catch(()=>{});
@@ -866,13 +874,21 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
     $('p2name').textContent = user.name || data.guestName || 'Guest'; $('p2sub').textContent = 'Guest';
     applyAvatarToBox('p1AvatarBox', data.hostPieceIndex||0, data.hostAvatar||'fa-user');
     applyAvatarToBox('p2AvatarBox', user.pieceIndex||0, user.avatarIcon||'fa-user');
-    roomRef.update({
+    const guestPatch = {
      status: 'active',
+     matchStarted: true,
      guestName: user.name || data.guestName || 'Guest',
      guestPieceIndex: user.pieceIndex || 0,
      guestJoinedAt: Date.now()
-    }).catch(()=>{});
+    };
+    if(!Array.isArray(data.board)) {
+     guestPatch.board = board;
+     guestPatch.turn = 1;
+    }
+    roomRef.update(guestPatch).catch(()=>{});
    }
+   render();
+   setTurnUI();
   }
  });
 
@@ -903,7 +919,7 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
    if(!gameOver) finish(Number(data.winner), 'තරඟය අවසන් විය.');
    return;
   }
-  if((data.status === 'active' || data.status === 'playing' || data.status === 'waiting') && !gameOver) {
+  if((data.status === 'active' || data.status === 'playing' || data.status === 'waiting' || data.matchStarted === true) && !gameOver) {
    setTurnUI();
   }
  };
