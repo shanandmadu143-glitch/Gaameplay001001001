@@ -550,7 +550,7 @@ $('startSingleGame').onclick=()=>{
  const bet=Number($('singleBetInput').value);
  if(!Number.isInteger(bet)||bet<10||bet>user.points)return toast('Points 10 සිට ඔබ සතු උපරිම Points දක්වා ඇතුළත් කරන්න.');
  modal('singleBetModal',false);
- launchArena({ mode: 'single', bet: bet });
+ smoothNavigate(`singalplayer.html?bet=${encodeURIComponent(bet)}`);
 };
 
 $('multi').onclick = () => {
@@ -570,7 +570,7 @@ $('proceedToInvite').onclick = () => {
  
  modal('betModal', false);
  sessionStorage.setItem('sinhala_draughts_bet', bet);
- smoothNavigate('friends.html');
+ smoothNavigate(`mulitiplay.html?bet=${encodeURIComponent(bet)}`);
 };
 
 document.querySelectorAll('a.nav-item[href]').forEach(link => {
