@@ -4,6 +4,7 @@
 
   const INVITE_MAX_AGE_MS = 300000;
   const PENDING_ROOM_KEY = 'sinhala_draughts_pending_room';
+  const ACTIVE_ROOM_KEY = 'sinhala_draughts_multi_room';
   const BET_KEY = 'sinhala_draughts_bet';
 
   const DEFAULT_FB_CONFIG = {
@@ -21,11 +22,17 @@
   let invitesRef = null;
   let hostRoomRef = null;
   let activeInvite = null;
-  let isLeaving = false;
+  let isRedirecting = false;
   const notifiedIds = new Set();
   const dismissedIds = new Set();
 
+  function isOnArenaPage() {
+    const p = (window.location.pathname || '').toLowerCase();
+    return p.endsWith('/arena.html') || p.endsWith('arena.html');
+  }
+
   function injectStylesAndBanner() {
+    if (isOnArenaPage()) return;
     if (document.getElementById('globalInviteStyles')) return;
 
     const style = document.createElement('style');
@@ -66,19 +73,23 @@
     document.getElementById('sdGlobalDeclineBtn').onclick = declineCurrentInvite;
   }
 
-  function navigateToArena(roomId, roomBet, role) {
-    if (isLeaving) return;
-    if (window.location.pathname.toLowerCase().endsWith('/arena.html')) return;
-    isLeaving = true;
+  function navigateToArena(roomId, roomBet, role, roomData) {
+    if (isRedirecting || isOnArenaPage()) return;
+    isRedirecting = true;
     sessionStorage.removeItem(PENDING_ROOM_KEY);
 
     const safeBet = Math.max(10, Number(roomBet) || Number(sessionStorage.getItem(BET_KEY)) || 50);
     sessionStorage.setItem(BET_KEY, String(safeBet));
-    sessionStorage.setItem('sinhala_draughts_multi_room', JSON.stringify({
+    sessionStorage.setItem(ACTIVE_ROOM_KEY, JSON.stringify({
       roomId: roomId || '',
       bet: safeBet,
       role: role || 'player',
-      uid: fbUser ? fbUser.uid : null
+      uid: fbUser ? fbUser.uid : null,
+      hostUid: roomData && roomData.hostUid ? roomData.hostUid : null,
+      guestUid: roomData && roomData.guestUid ? roomData.guestUid : null,
+      hostName: roomData && roomData.hostName ? roomData.hostName : null,
+      guestName: roomData && roomData.guestName ? roomData.guestName : null,
+      startedAt: Date.now()
     }));
 
     const query = new URLSearchParams({
@@ -88,7 +99,7 @@
       role: String(role || 'player')
     }).toString();
 
-    window.location.href = `arena.html?${query}`;
+    window.location.replace(`arena.html?${query}`);
   }
 
   async function showSystemNotification(title, body, url) {
@@ -112,7 +123,7 @@
   }
 
   function showInviteCard(inviteId, inv) {
-    if (dismissedIds.has(inviteId)) return;
+    if (isOnArenaPage() || dismissedIds.has(inviteId)) return;
     injectStylesAndBanner();
 
     activeInvite = { inviteId, ...inv };
@@ -155,17 +166,22 @@
 
     try {
       await db.ref(`invites_v6/${fbUser.uid}/${inviteId}`).update({ status: 'accepted' }).catch(() => {});
+      let latestRoom = null;
       if (roomId) {
+        const roomSnap = await db.ref(`rooms_v6/${roomId}`).once('value').catch(() => null);
+        latestRoom = roomSnap && roomSnap.exists() ? roomSnap.val() : null;
         await db.ref(`rooms_v6/${roomId}`).update({
           status: 'active',
+          matchStarted: true,
           guestUid: fbUser.uid,
           guestName: myName,
           startedAt: Date.now()
-        }).catch(() => {});
+        });
       }
-      navigateToArena(roomId, bet, 'guest');
+      navigateToArena(roomId, bet, 'guest', latestRoom ? { ...latestRoom, guestUid: fbUser.uid, guestName: myName } : null);
     } catch (e) {
       console.error('Accept invite failed:', e);
+      navigateToArena(roomId, bet, 'guest', null);
     }
   }
 
@@ -180,7 +196,7 @@
   }
 
   function watchHostPendingRoom() {
-    if (!db || !fbUser) return;
+    if (!db || !fbUser || isOnArenaPage()) return;
     if (hostRoomRef) {
       try { hostRoomRef.off(); } catch (_) {}
       hostRoomRef = null;
@@ -205,14 +221,14 @@
         }
         return;
       }
-      if (room.status === 'accepted' || room.status === 'active') {
-        navigateToArena(raw.roomId, room.bet || raw.bet, 'host');
+      if (room.status === 'accepted' || room.status === 'active' || room.matchStarted === true) {
+        navigateToArena(raw.roomId, room.bet || raw.bet, 'host', room);
       }
     });
   }
 
   function listenForInvites(uid) {
-    if (!db || !uid) return;
+    if (!db || !uid || isOnArenaPage()) return;
     if (invitesRef) {
       try { invitesRef.off(); } catch (_) {}
       invitesRef = null;
@@ -262,7 +278,9 @@
   };
 
   function boot() {
-    injectStylesAndBanner();
+    if (!isOnArenaPage()) {
+      injectStylesAndBanner();
+    }
     try {
       if (!firebase.apps.length) {
         firebase.initializeApp(DEFAULT_FB_CONFIG);
