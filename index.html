@@ -72,8 +72,12 @@ main{flex:1;display:flex;flex-direction:column;justify-content:center;align-item
 
 .modal{position:fixed;inset:0;background:rgba(3,5,12,0.85);backdrop-filter:blur(8px);display:none;place-items:center;z-index:100;padding:15px}
 .modal.show{display:grid}
+#apkUpdateModal{z-index:220}
 .modalbox{width:min(100%,420px);background:linear-gradient(145deg,#121828,#1b243f);border:2px solid var(--gold);border-radius:24px;padding:22px;display:grid;gap:14px;max-height:85vh;overflow-y:auto;box-shadow:0 20px 40px rgba(0,0,0,0.8)}
 .modalbox h2,.modalbox h3{text-align:center;color:var(--gold);font-weight:700;font-size:1.2rem}
+.apk-badge{width:54px;height:54px;margin:0 auto;border-radius:50%;display:grid;place-items:center;background:rgba(46,204,113,0.16);border:2px solid var(--neon-green);color:var(--neon-green);font-size:1.5rem}
+.apk-version{text-align:center;font-weight:800;color:var(--neon-blue);font-size:0.92rem}
+.apk-notes{background:rgba(0,0,0,0.35);border-radius:14px;padding:10px 12px;color:#d1d8e0;font-size:0.9rem;line-height:1.45;text-align:center}
 input{width:100%;padding:11px 14px;background:rgba(0,0,0,0.5);border:1.5px solid rgba(255,209,102,0.4);border-radius:12px;color:white;font-size:0.95rem;outline:none}
 input:focus{border-color:var(--gold)}
 .btn,.btn-gold{border:0;border-radius:12px;padding:10px 14px;cursor:pointer;font-weight:700;display:inline-flex;align-items:center;gap:6px;justify-content:center;transition:transform 0.12s ease}
@@ -163,20 +167,36 @@ input:focus{border-color:var(--gold)}
  </div>
 </div>
 
+<div class="modal" id="apkUpdateModal" role="dialog" aria-modal="true" aria-labelledby="apkUpdateHeading">
+ <div class="modalbox">
+  <div class="apk-badge"><i class="fa-brands fa-android"></i></div>
+  <h3 id="apkUpdateHeading">New Update</h3>
+  <div class="apk-version" id="apkUpdateVersion">Version v1.0.0</div>
+  <div class="apk-notes" id="apkUpdateNotes">අලුත් Game APK Update එකක් ලබා ගත හැක. Install ඔබා install කරන්න.</div>
+  <div class="row">
+   <button class="btn-gold" id="installApkBtn" style="flex:1"><i class="fa-solid fa-download"></i> Install</button>
+   <button class="btn" id="dismissApkBtn" style="flex:1">පසුවට</button>
+  </div>
+ </div>
+</div>
+
 <div id="toast"></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
 <script>
 'use strict';
 const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
 const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user';
 const EVENT_MONTH_MS=30*24*60*60*1000;
 
-let auth,db,fbUser,isNavigating=false;
+let auth,db,storage,fbUser,isNavigating=false;
 let customPieces=[];
 let userRefListener=null;
+let apkUpdateListenerAttached=false;
+let latestApkUpdate=null;
 let lastTrackedPoints=null;
 let user={
  name:'',
@@ -316,8 +336,58 @@ try{
 }catch(e){}
 syncEventWinCycle(user.points);
 
-try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);auth=firebase.auth();db=firebase.database();}
-catch(e){console.error('Firebase initialization failed:',e);}
+try{
+ if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
+ auth=firebase.auth();
+ db=firebase.database();
+ storage=firebase.storage();
+}catch(e){console.error('Firebase initialization failed:',e);}
+
+function attachApkUpdateListener(){
+ if(!db || apkUpdateListenerAttached)return;
+ apkUpdateListenerAttached=true;
+ db.ref('adminConfig_v6/apkUpdate').on('value',snap=>{
+  const upd=snap.val();
+  if(!upd || !upd.version || !upd.downloadUrl)return;
+  if(sessionStorage.getItem('dismissed_apk_v_'+upd.version)==='1')return;
+  latestApkUpdate=upd;
+  $('apkUpdateVersion').textContent=`Version v${upd.version} • ${upd.fileName||'SinhalaDraughts.apk'}`;
+  $('apkUpdateNotes').textContent=upd.notes || 'අලුත් Game APK Update එකක් ලබා ගත හැක. Install ඔබා install කරන්න.';
+  modal('apkUpdateModal',true);
+ },err=>{
+  console.error('APK update listener error:',err);
+ });
+}
+attachApkUpdateListener();
+
+$('dismissApkBtn').onclick=()=>{
+ if(latestApkUpdate?.version){
+  sessionStorage.setItem('dismissed_apk_v_'+latestApkUpdate.version,'1');
+ }
+ modal('apkUpdateModal',false);
+};
+
+$('installApkBtn').onclick=async()=>{
+ if(!latestApkUpdate)return;
+ let url=latestApkUpdate.downloadUrl;
+ if(!url && storage && latestApkUpdate.storagePath){
+  try{
+   url=await storage.ref().child(latestApkUpdate.storagePath).getDownloadURL();
+  }catch(e){
+   console.error('Storage download URL fetch error:',e);
+  }
+ }
+ if(!url)return toast('APK Download link එක සොයාගත නොහැක.');
+ toast('APK Install / Download ආරම්භ වේ...','fa-download');
+ const link=document.createElement('a');
+ link.href=url;
+ link.download=latestApkUpdate.fileName||'SinhalaDraughts.apk';
+ link.target='_blank';
+ link.rel='noopener noreferrer';
+ document.body.appendChild(link);
+ link.click();
+ link.remove();
+};
 
 function applyAvatarToBox(elementId, designIndex, customIcon){
  const el=$(elementId);if(!el)return;
@@ -390,6 +460,7 @@ function attachLiveUserListener(uid){
   auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(()=>{});
   auth.onAuthStateChanged(async u=>{
    fbUser=u;
+   attachApkUpdateListener();
    if(u){
     attachShopListeners();
     modal('authModal',false);
