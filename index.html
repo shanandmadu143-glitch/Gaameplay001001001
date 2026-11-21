@@ -150,10 +150,28 @@ input:focus{border-color:var(--gold)}
 'use strict';
 const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
 const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user';
-let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user',unlockedAvatars:['fa-user']};
-let isNavigating=false;
+const EVENT_MONTH_MS=30*24*60*60*1000;
+
+let auth,db,fbUser,isNavigating=false;
 let customPieces=[];
 let userRefListener=null;
+let lastTrackedPoints=null;
+let user={
+ name:'',
+ points:500,
+ wins:0,
+ losses:0,
+ uid:null,
+ pieceIndex:0,
+ unlockedPieces:[0],
+ avatarIcon:'fa-user',
+ unlockedAvatars:['fa-user'],
+ eventSeasonStart:0,
+ eventSeasonNumber:1,
+ monthlyWonCoins:0,
+ hasProPass:false,
+ claimedEventRewards:[]
+};
 
 const DEFAULT_PIECE_DESIGNS=[
  {id:0,name:'මුතු සුදු (Default)',bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●',free:true},
@@ -189,6 +207,37 @@ function normalizeList(val, fallback) {
 
 function getAllPieces(){return [...DEFAULT_PIECE_DESIGNS,...customPieces];}
 
+function findPieceDesign(keyOrIdx){
+ const all=getAllPieces();
+ const str=String(keyOrIdx ?? '0');
+ const byId=all.find(p=>p && String(p.id)===str);
+ if(byId)return byId;
+ const num=Number(str);
+ if(Number.isFinite(num) && all[num])return all[num];
+ return all[0];
+}
+
+function syncEventWinCycle(currentPoints){
+ const now=Date.now();
+ if(!user.eventSeasonStart){
+  user.eventSeasonStart=now;
+  user.eventSeasonNumber=Number(user.eventSeasonNumber)||1;
+ }
+ const elapsed=now - Number(user.eventSeasonStart);
+ if(elapsed >= EVENT_MONTH_MS){
+  const cycles=Math.floor(elapsed / EVENT_MONTH_MS);
+  user.eventSeasonNumber=(Number(user.eventSeasonNumber)||1) + cycles;
+  user.eventSeasonStart=Number(user.eventSeasonStart) + (cycles * EVENT_MONTH_MS);
+  user.monthlyWonCoins=0;
+  user.claimedEventRewards=[];
+ }
+ const pts=Number(currentPoints)||0;
+ if(lastTrackedPoints !== null && pts > lastTrackedPoints){
+  user.monthlyWonCoins=(Number(user.monthlyWonCoins)||0) + (pts - lastTrackedPoints);
+ }
+ lastTrackedPoints=pts;
+}
+
 function toast(s, icon='fa-circle-info'){
  const t=$('toast');
  t.replaceChildren();
@@ -216,31 +265,36 @@ try{
    user={
     ...user,
     ...parsed,
-    pieceIndex:Number(parsed.pieceIndex)||0,
-    unlockedPieces:normalizeList(parsed.unlockedPieces,[0]).map(Number),
+    pieceIndex:parsed.pieceIndex ?? 0,
+    unlockedPieces:normalizeList(parsed.unlockedPieces,[0]),
     avatarIcon:parsed.avatarIcon||'fa-user',
-    unlockedAvatars:normalizeList(parsed.unlockedAvatars,['fa-user']).map(String)
+    unlockedAvatars:normalizeList(parsed.unlockedAvatars,['fa-user']).map(String),
+    eventSeasonStart:Number(parsed.eventSeasonStart)||0,
+    eventSeasonNumber:Number(parsed.eventSeasonNumber)||1,
+    monthlyWonCoins:Number(parsed.monthlyWonCoins)||0,
+    hasProPass:Boolean(parsed.hasProPass),
+    claimedEventRewards:Array.isArray(parsed.claimedEventRewards)?parsed.claimedEventRewards:[]
    };
   }
  }
 }catch(e){}
+syncEventWinCycle(user.points);
 
 try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);auth=firebase.auth();db=firebase.database();}
 catch(e){console.error('Firebase initialization failed:',e);}
 
 function applyAvatarToBox(elementId, designIndex, customIcon){
  const el=$(elementId);if(!el)return;
- const allPieces=getAllPieces();
- const idx=Number(designIndex)||0;
- const design=allPieces[idx]||allPieces[0];
+ const design=findPieceDesign(designIndex);
  el.style.background=design.bg;el.style.borderColor=design.border;el.style.color=design.color;
- el.innerHTML=customIcon ? `<i class="fa-solid ${customIcon}"></i>` : design.icon;
+ const cleanIcon=String(customIcon||'fa-user').replace(/^fa-solid\s+/,'');
+ el.innerHTML=customIcon ? `<i class="fa-solid ${cleanIcon}"></i>` : design.icon;
 }
 
 function updateHeader(){
  $('headerName').textContent=user.name||'ක්‍රීඩකයා';
  $('points').textContent=user.points!==undefined?user.points:500;
- applyAvatarToBox('headerAvatar', Number(user.pieceIndex)||0, user.avatarIcon||'fa-user');
+ applyAvatarToBox('headerAvatar', user.pieceIndex ?? 0, user.avatarIcon||'fa-user');
 }
 
 updateHeader();
@@ -266,20 +320,27 @@ function attachLiveUserListener(uid){
  const fn=snap=>{
   const d=snap.val();
   if(!d)return;
+  const incomingPts=Number.isFinite(Number(d.points))?Number(d.points):(Number(user.points)||500);
   user={
    ...user,
    ...d,
    name:d.name||user.name,
-   points:Number.isFinite(Number(d.points))?Number(d.points):user.points,
+   points:incomingPts,
    wins:Number(d.wins)||0,
    losses:Number(d.losses)||0,
    uid:uid,
-   pieceIndex:Number(d.pieceIndex)||0,
-   unlockedPieces:normalizeList(d.unlockedPieces,[0]).map(Number),
+   pieceIndex:d.pieceIndex ?? 0,
+   unlockedPieces:normalizeList(d.unlockedPieces,[0]),
    avatarIcon:d.avatarIcon||'fa-user',
    unlockedAvatars:normalizeList(d.unlockedAvatars,['fa-user']).map(String),
-   lastRewardTime:Number(d.lastRewardTime)||0
+   lastRewardTime:Number(d.lastRewardTime)||0,
+   eventSeasonStart:Number(d.eventSeasonStart)||user.eventSeasonStart||Date.now(),
+   eventSeasonNumber:Number(d.eventSeasonNumber)||user.eventSeasonNumber||1,
+   monthlyWonCoins:Number(d.monthlyWonCoins)||0,
+   hasProPass:Boolean(d.hasProPass),
+   claimedEventRewards:Array.isArray(d.claimedEventRewards)?d.claimedEventRewards:[]
   };
+  syncEventWinCycle(incomingPts);
   localStorage.setItem(KEY,JSON.stringify(user));
   updateHeader();
  };
@@ -315,7 +376,8 @@ function attachLiveUserListener(uid){
      userRefListener=null;
     }
     if(!user.uid){
-     user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user',unlockedAvatars:['fa-user']};
+     user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user',unlockedAvatars:['fa-user'],eventSeasonStart:Date.now(),eventSeasonNumber:1,monthlyWonCoins:0,hasProPass:false,claimedEventRewards:[]};
+     lastTrackedPoints=500;
      updateHeader();
     }
    }
@@ -340,10 +402,15 @@ async function syncDatabaseIndices(oldName) {
    points: Number(user.points)||500,
    wins: Number(user.wins)||0,
    losses: Number(user.losses)||0,
-   pieceIndex: Number(user.pieceIndex)||0,
-   unlockedPieces: normalizeList(user.unlockedPieces,[0]).map(Number),
+   pieceIndex: user.pieceIndex ?? 0,
+   unlockedPieces: normalizeList(user.unlockedPieces,[0]),
    avatarIcon: user.avatarIcon||'fa-user',
-   unlockedAvatars: normalizeList(user.unlockedAvatars,['fa-user']).map(String)
+   unlockedAvatars: normalizeList(user.unlockedAvatars,['fa-user']).map(String),
+   eventSeasonStart: Number(user.eventSeasonStart)||Date.now(),
+   eventSeasonNumber: Number(user.eventSeasonNumber)||1,
+   monthlyWonCoins: Number(user.monthlyWonCoins)||0,
+   hasProPass: Boolean(user.hasProPass),
+   claimedEventRewards: Array.isArray(user.claimedEventRewards)?user.claimedEventRewards:[]
   });
  } catch(e){
   console.error('Index sync error:', e);
@@ -351,9 +418,10 @@ async function syncDatabaseIndices(oldName) {
 }
 
 function saveUser(){
- user.pieceIndex = Number(user.pieceIndex) || 0;
+ syncEventWinCycle(user.points);
+ user.pieceIndex = user.pieceIndex ?? 0;
  user.avatarIcon = user.avatarIcon || 'fa-user';
- user.unlockedPieces = normalizeList(user.unlockedPieces, [0]).map(Number);
+ user.unlockedPieces = normalizeList(user.unlockedPieces, [0]);
  user.unlockedAvatars = normalizeList(user.unlockedAvatars, ['fa-user']).map(String);
 
  localStorage.setItem(KEY,JSON.stringify(user));
@@ -368,7 +436,12 @@ function saveUser(){
    unlockedPieces:user.unlockedPieces,
    avatarIcon:user.avatarIcon,
    unlockedAvatars:user.unlockedAvatars,
-   lastRewardTime:Number(user.lastRewardTime)||0
+   lastRewardTime:Number(user.lastRewardTime)||0,
+   eventSeasonStart:Number(user.eventSeasonStart)||Date.now(),
+   eventSeasonNumber:Number(user.eventSeasonNumber)||1,
+   monthlyWonCoins:Number(user.monthlyWonCoins)||0,
+   hasProPass:Boolean(user.hasProPass),
+   claimedEventRewards:Array.isArray(user.claimedEventRewards)?user.claimedEventRewards:[]
   }).then(()=>{
    syncDatabaseIndices(oldName);
   }).catch(e=>{
@@ -384,22 +457,30 @@ async function loadSignedInUser(){
   let d=s.val();
   if(!d||!d.name){
    const fallbackName=(fbUser.email||'').split('@')[0]||$('username').value.trim().replace(/\s+/g,'_')||'Player_'+fbUser.uid.slice(0,5);
-   d={name:fallbackName,points:500,wins:0,losses:0,uid:fbUser.uid,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user',unlockedAvatars:['fa-user'],lastRewardTime:0};
+   d={name:fallbackName,points:500,wins:0,losses:0,uid:fbUser.uid,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user',unlockedAvatars:['fa-user'],lastRewardTime:0,eventSeasonStart:Date.now(),eventSeasonNumber:1,monthlyWonCoins:0,hasProPass:false,claimedEventRewards:[]};
    await db.ref('users_v6/'+fbUser.uid).set(d);
   }
+  const loadedPts=Number.isFinite(Number(d.points))?Number(d.points):500;
+  lastTrackedPoints=loadedPts;
   user={
    ...d,
    name:d.name,
-   points:Number.isFinite(Number(d.points))?Number(d.points):500,
+   points:loadedPts,
    wins:Number(d.wins)||0,
    losses:Number(d.losses)||0,
    uid:fbUser.uid,
-   pieceIndex:Number(d.pieceIndex)||0,
-   unlockedPieces:normalizeList(d.unlockedPieces,[0]).map(Number),
+   pieceIndex:d.pieceIndex ?? 0,
+   unlockedPieces:normalizeList(d.unlockedPieces,[0]),
    avatarIcon:d.avatarIcon||'fa-user',
    unlockedAvatars:normalizeList(d.unlockedAvatars,['fa-user']).map(String),
-   lastRewardTime:Number(d.lastRewardTime)||0
+   lastRewardTime:Number(d.lastRewardTime)||0,
+   eventSeasonStart:Number(d.eventSeasonStart)||Date.now(),
+   eventSeasonNumber:Number(d.eventSeasonNumber)||1,
+   monthlyWonCoins:Number(d.monthlyWonCoins)||0,
+   hasProPass:Boolean(d.hasProPass),
+   claimedEventRewards:Array.isArray(d.claimedEventRewards)?d.claimedEventRewards:[]
   };
+  syncEventWinCycle(loadedPts);
   localStorage.setItem(KEY,JSON.stringify(user));
   $('username').value=user.name;
   updateHeader();
@@ -457,7 +538,8 @@ $('register').onclick=async()=>{
 
   const cred=await auth.createUserWithEmailAndPassword(name+'@sinhala-draughts.app',pass);
   fbUser=cred.user;
-  user={name:rawName,points:500,wins:0,losses:0,uid:fbUser.uid,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user',unlockedAvatars:['fa-user'],lastRewardTime:0};
+  lastTrackedPoints=500;
+  user={name:rawName,points:500,wins:0,losses:0,uid:fbUser.uid,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user',unlockedAvatars:['fa-user'],lastRewardTime:0,eventSeasonStart:Date.now(),eventSeasonNumber:1,monthlyWonCoins:0,hasProPass:false,claimedEventRewards:[]};
   
   await db.ref('users_v6/'+fbUser.uid).set(user);
   await syncDatabaseIndices(null);
