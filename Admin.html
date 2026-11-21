@@ -263,7 +263,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold)}
 'use strict';
 const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
 const $=id=>document.getElementById(id);
-const CHUNK_RAW_BYTES = 500 * 1024; // ~500 KB per Firestore chunk (safely under 1MB doc limit after base64)
+const CHUNK_RAW_BYTES = 500 * 1024;
 
 if(sessionStorage.getItem('sinhala_draughts_admin_auth')!=='1'){
  window.location.replace('index.html');
@@ -787,7 +787,7 @@ $('uploadApkToFirestoreBtn').onclick=async()=>{
   console.error('Firestore APK upload error:',err);
   progState.textContent='Failed';
   progStatus.textContent='Upload අසාර්ථක විය.';
-  errHint.textContent=`Error (${err.code||'firestore_error'}): ${err.message||'Firestore Rules හෝ අන්තර්ජාල සම්බන්ධතාවය පරීක්ෂා කරන්න.'}`;
+  errHint.textContent=`Error (${err.code||'firestore_error'}): ${err.message||'Firestore Rules Publish කර ඇත්දැයි පරීක්ෂා කරන්න.'}`;
   toast('Firestore Upload අසාර්ථක විය.','fa-circle-exclamation');
  }finally{
   $('uploadApkToFirestoreBtn').disabled=false;
@@ -869,7 +869,12 @@ function attachListeners(){
 attachFirestoreApkListener();
 
 if(auth){
- auth.onAuthStateChanged(()=>{
+ auth.onAuthStateChanged(async u=>{
+  if(!u){
+   try{
+    await auth.signInWithEmailAndPassword('admin@sinhala-draughts.app','yomal8281');
+   }catch(_){}
+  }
   attachListeners();
  });
 }else{
