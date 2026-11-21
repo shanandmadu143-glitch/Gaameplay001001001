@@ -41,13 +41,12 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold)}
 .player-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .coin-input{width:95px !important;padding:7px 9px !important;font-size:0.88rem !important;font-weight:700;color:var(--gold) !important}
 
-.btn,.btn-gold,.btn-danger,.btn-green,.btn-blue{border:0;border-radius:11px;padding:8px 11px;cursor:pointer;font-weight:700;font-size:0.8rem;display:inline-flex;align-items:center;gap:5px;justify-content:center;transition:transform 0.12s ease}
-.btn:active,.btn-gold:active,.btn-danger:active,.btn-green:active,.btn-blue:active{transform:scale(0.96)}
+.btn,.btn-gold,.btn-danger,.btn-green{border:0;border-radius:11px;padding:8px 11px;cursor:pointer;font-weight:700;font-size:0.8rem;display:inline-flex;align-items:center;gap:5px;justify-content:center;transition:transform 0.12s ease}
+.btn:active,.btn-gold:active,.btn-danger:active,.btn-green:active{transform:scale(0.96)}
 .btn{background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2)}
 .btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111}
 .btn-green{background:linear-gradient(135deg,#2ecc71,#20b863);color:#0b1910}
 .btn-danger{background:linear-gradient(135deg,#ff4757,#c0392b);color:#fff}
-.btn-blue{background:linear-gradient(135deg,#00f2fe,#0284c7);color:#06131c}
 
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .form-group{display:flex;flex-direction:column;gap:4px}
@@ -65,14 +64,10 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold)}
 .apk-dropzone:hover{border-color:var(--gold);background:rgba(255,209,102,0.07)}
 .apk-status-card{background:rgba(255,255,255,0.04);border:1.5px solid rgba(46,204,113,0.35);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:8px}
 
-/* Install Loading Animation */
-.install-loader-wrap{display:none;flex-direction:column;gap:8px;background:rgba(5,9,18,0.85);border:1.5px solid rgba(0,242,254,0.4);border-radius:16px;padding:12px}
-.install-loader-wrap.active{display:flex}
-.install-ring-row{display:flex;align-items:center;gap:12px}
-.install-spinner{width:34px;height:34px;border-radius:50%;border:3px solid rgba(255,255,255,0.12);border-top-color:var(--neon-blue);border-right-color:var(--gold);animation:spinInstall 0.85s linear infinite;flex-shrink:0}
-@keyframes spinInstall{to{transform:rotate(360deg)}}
-.install-bar-track{width:100%;height:10px;border-radius:999px;background:rgba(255,255,255,0.08);overflow:hidden}
-.install-bar-fill{height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,var(--neon-blue),var(--neon-green),var(--gold));transition:width 0.25s ease}
+.upload-prog-box{display:none;flex-direction:column;gap:6px;background:rgba(0,0,0,0.45);border:1px solid rgba(0,242,254,0.35);border-radius:14px;padding:12px}
+.upload-prog-box.active{display:flex}
+.upload-prog-track{width:100%;height:12px;border-radius:999px;background:rgba(255,255,255,0.08);overflow:hidden}
+.upload-prog-fill{height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,var(--neon-blue),var(--neon-green),var(--gold));transition:width 0.2s ease}
 
 .modal{position:fixed;inset:0;background:rgba(3,5,12,0.85);backdrop-filter:blur(8px);display:none;place-items:center;z-index:120;padding:15px}
 .modal.show{display:grid}
@@ -109,7 +104,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold)}
   <button class="tab-btn active" data-tab="playersTab"><i class="fa-solid fa-users-gear"></i><span>ක්‍රීඩකයන් & Coins</span></button>
   <button class="tab-btn" data-tab="themeTab"><i class="fa-solid fa-chess-board"></i><span>+ Piece Theme</span></button>
   <button class="tab-btn" data-tab="avatarTab"><i class="fa-solid fa-id-badge"></i><span>+ Avatar</span></button>
-  <button class="tab-btn" data-tab="apkTab"><i class="fa-brands fa-android"></i><span>APK Update</span></button>
+  <button class="tab-btn" data-tab="apkTab"><i class="fa-brands fa-android"></i><span>APK Upload</span></button>
  </div>
 
  <!-- Tab 1: Players Management -->
@@ -189,61 +184,52 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold)}
   <div class="custom-list" id="customAvatarsList"></div>
  </section>
 
- <!-- Tab 4: Game APK Upload & New Update -->
+ <!-- Tab 4: Upload Game APK to Firebase -->
  <section class="panel-scroll" id="apkTab">
-  <h3 style="color:var(--gold)"><i class="fa-brands fa-android"></i> Game APK Upload & New Update Push</h3>
+  <h3 style="color:var(--gold)"><i class="fa-brands fa-android"></i> Firebase වෙත Game APK Upload කරන්න</h3>
 
   <div class="apk-dropzone" id="apkDropzone">
-   <i class="fa-solid fa-file-arrow-up" style="font-size:2rem;color:var(--neon-blue)"></i>
+   <i class="fa-solid fa-cloud-arrow-up" style="font-size:2rem;color:var(--neon-blue)"></i>
    <b style="color:#fff">.APK File එකක් තෝරන්න හෝ මෙහි Drop කරන්න</b>
-   <small style="color:var(--dim)" id="selectedApkMeta">තෝරාගත් APK file එකක් නොමැත (Direct APK URL ද භාවිතා කළ හැක)</small>
+   <small style="color:var(--dim)" id="selectedApkMeta">තෝරාගත් APK file එකක් නොමැත</small>
    <input type="file" id="apkFileInput" accept=".apk,application/vnd.android.package-archive" style="display:none">
   </div>
 
   <div class="form-grid">
    <div class="form-group">
-    <label>Version අංකය (උදා: 1.2.0)</label>
-    <input type="text" id="apkVersionInput" placeholder="1.2.0">
+    <label>Version අංකය (උදා: 1.0.5)</label>
+    <input type="text" id="apkVersionInput" placeholder="1.0.5">
    </div>
    <div class="form-group">
     <label>APK File Name</label>
-    <input type="text" id="apkFileNameInput" placeholder="SinhalaDraughts-Pro.apk">
+    <input type="text" id="apkFileNameInput" placeholder="SinhalaDraughts.apk">
    </div>
    <div class="form-group" style="grid-column:1/-1">
-    <label>Direct APK Download URL (Firebase Storage / GitHub / CDN Link - Optional)</label>
-    <input type="url" id="apkUrlInput" placeholder="https://example.com/SinhalaDraughts-Pro.apk">
-   </div>
-   <div class="form-group" style="grid-column:1/-1">
-    <label>New Update විස්තරය (Release Notes)</label>
-    <textarea id="apkNotesInput" placeholder="අලුත් features, bug fixes සහ වෙනස්කම් සඳහන් කරන්න..."></textarea>
+    <label>Update Message / Notes (ක්‍රීඩකයන්ට පෙන්වන පණිවිඩය)</label>
+    <textarea id="apkNotesInput" placeholder="New Update available! Tap Install to update the game."></textarea>
    </div>
   </div>
 
-  <div style="display:flex;gap:8px;flex-wrap:wrap">
-   <button class="btn-gold" id="publishApkBtn" style="flex:1;padding:12px"><i class="fa-solid fa-cloud-arrow-up"></i> New Update Publish කරන්න</button>
-   <button class="btn-blue" id="testInstallAnimBtn" style="padding:12px"><i class="fa-solid fa-download"></i> Test Install Animation</button>
-  </div>
+  <button class="btn-gold" id="uploadApkToFirebaseBtn" style="padding:12px">
+   <i class="fa-solid fa-upload"></i> Firebase වෙත Upload කර New Update යවන්න
+  </button>
 
-  <div class="install-loader-wrap" id="adminInstallLoader">
-   <div class="install-ring-row">
-    <div class="install-spinner"></div>
-    <div style="flex:1">
-     <b style="color:var(--neon-blue);display:block;font-size:0.92rem" id="installAnimTitle">Installing APK Update...</b>
-     <small style="color:var(--dim)" id="installAnimSub">Preparing package for installation</small>
-    </div>
-    <span style="color:var(--gold);font-weight:800" id="installAnimPct">0%</span>
+  <div class="upload-prog-box" id="apkUploadProgBox">
+   <div style="display:flex;justify-content:space-between;font-size:0.84rem;font-weight:700">
+    <span style="color:var(--neon-blue)" id="apkUploadStatusText">Firebase Storage වෙත Upload වෙමින්...</span>
+    <span style="color:var(--gold)" id="apkUploadPctText">0%</span>
    </div>
-   <div class="install-bar-track">
-    <div class="install-bar-fill" id="installAnimBar"></div>
+   <div class="upload-prog-track">
+    <div class="upload-prog-fill" id="apkUploadProgFill"></div>
    </div>
   </div>
 
   <div class="apk-status-card" id="currentApkStatus">
    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
-    <b style="color:var(--neon-green)"><i class="fa-solid fa-circle-check"></i> Current Active APK Update</b>
+    <b style="color:var(--neon-green)"><i class="fa-solid fa-circle-check"></i> Firebase හි ඇති Active APK Update</b>
     <button class="btn-danger" id="clearApkUpdateBtn" style="padding:5px 9px;font-size:0.75rem"><i class="fa-solid fa-trash"></i> Remove</button>
    </div>
-   <p style="font-size:0.85rem;color:var(--dim)" id="activeApkDetails">දැනට Publish කළ APK update එකක් නොමැත.</p>
+   <p style="font-size:0.85rem;color:var(--dim)" id="activeApkDetails">දැනට Upload කළ APK update එකක් නොමැත.</p>
   </div>
  </section>
 </div>
@@ -264,6 +250,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold)}
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
 <script>
 'use strict';
 const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
@@ -273,15 +260,14 @@ if(sessionStorage.getItem('sinhala_draughts_admin_auth')!=='1'){
  window.location.replace('index.html');
 }
 
-let auth,db;
+let auth,db,storage;
 let usersMap={};
 let publicMap={};
 let allPlayers=[];
 let customPieces=[];
 let customAvatars=[];
 let activeApkData=null;
-let pickedApkFile=null;
-let pickedApkDataUrl='';
+let selectedApkFile=null;
 let isNavigating=false;
 let listenersAttached=false;
 let lastDbError='';
@@ -331,16 +317,11 @@ function isSafeColor(val){
  return /^#[0-9a-fA-F]{3,8}$/.test(val);
 }
 
-function isSafeUrl(url){
- if(!url)return false;
- if(/^data:application\/vnd\.android\.package-archive;base64,/i.test(url))return true;
- return /^https?:\/\/[^\s"'<>]+$/i.test(url);
-}
-
 try{
  if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
  auth=firebase.auth();
  db=firebase.database();
+ storage=firebase.storage();
 }catch(e){
  console.error('Firebase init failed:',e);
  lastDbError=e.message||'Firebase init error';
@@ -663,7 +644,7 @@ function renderCustomLists(){
  });
 }
 
-/* APK Upload & Install Loading Animation */
+/* Firebase Storage APK Upload & Notification Trigger */
 $('apkDropzone').onclick=()=>$('apkFileInput').click();
 $('apkDropzone').addEventListener('dragover',e=>{
  e.preventDefault();
@@ -676,109 +657,87 @@ $('apkDropzone').addEventListener('drop',e=>{
  e.preventDefault();
  $('apkDropzone').style.borderColor='rgba(0,242,254,0.45)';
  const f=e.dataTransfer?.files?.[0];
- if(f)handleApkFileSelected(f);
+ if(f)setSelectedApkFile(f);
 });
 $('apkFileInput').addEventListener('change',e=>{
  const f=e.target?.files?.[0];
- if(f)handleApkFileSelected(f);
+ if(f)setSelectedApkFile(f);
 });
 
-function handleApkFileSelected(file){
- pickedApkFile=file;
+function setSelectedApkFile(file){
+ selectedApkFile=file;
  const sizeMb=(file.size/(1024*1024)).toFixed(2);
  $('selectedApkMeta').textContent=`${file.name} (${sizeMb} MB)`;
  if(!$('apkFileNameInput').value.trim()){
   $('apkFileNameInput').value=file.name;
  }
- if(file.size <= 3.5*1024*1024){
-  const reader=new FileReader();
-  reader.onload=()=>{
-   pickedApkDataUrl=String(reader.result||'');
-  };
-  reader.readAsDataURL(file);
- }else{
-  pickedApkDataUrl='';
-  toast('APK file එක 3.5MB වඩා විශාලයි — Direct APK Download URL එකක් ඇතුළත් කරන්න.','fa-circle-exclamation');
- }
 }
 
-function runInstallLoadingAnimation(apkInfo, onComplete){
- const wrap=$('adminInstallLoader');
- const bar=$('installAnimBar');
- const pctEl=$('installAnimPct');
- const titleEl=$('installAnimTitle');
- const subEl=$('installAnimSub');
+$('uploadApkToFirebaseBtn').onclick=()=>{
+ if(!storage || !db)return toast('Firebase Storage / Database සම්බන්ධතාවය නොමැත.');
+ if(!selectedApkFile)return toast('කරුණාකර .APK file එකක් තෝරන්න.');
 
- wrap.classList.add('active');
- bar.style.width='0%';
- pctEl.textContent='0%';
- titleEl.textContent=`Installing ${apkInfo?.fileName||'Game APK'}...`;
- subEl.textContent='Verifying package & preparing installer';
+ const version=$('apkVersionInput').value.trim() || ('1.0.' + Math.floor(Date.now()/100000));
+ const cleanFileName=($('apkFileNameInput').value.trim() || selectedApkFile.name).replace(/[^a-zA-Z0-9._-]/g,'_');
+ const finalFileName=cleanFileName.toLowerCase().endsWith('.apk') ? cleanFileName : cleanFileName + '.apk';
+ const notes=$('apkNotesInput').value.trim() || `New Update v${version} is available! Tap Install to update.`;
 
- let pct=0;
- const timer=setInterval(()=>{
-  pct=Math.min(100, pct + Math.floor(Math.random()*16 + 10));
-  bar.style.width=`${pct}%`;
-  pctEl.textContent=`${pct}%`;
-  if(pct < 45){
-   subEl.textContent='Downloading update package...';
-  }else if(pct < 85){
-   subEl.textContent='Verifying APK signature...';
-  }else{
-   subEl.textContent='Launching APK installer...';
+ const progBox=$('apkUploadProgBox');
+ const progFill=$('apkUploadProgFill');
+ const progPct=$('apkUploadPctText');
+ const progStatus=$('apkUploadStatusText');
+
+ progBox.classList.add('active');
+ progFill.style.width='0%';
+ progPct.textContent='0%';
+ progStatus.textContent='Firebase Storage වෙත APK Upload වෙමින්...';
+ $('uploadApkToFirebaseBtn').disabled=true;
+
+ const storagePath=`apk_updates/v${version}_${finalFileName}`;
+ const fileRef=storage.ref().child(storagePath);
+ const uploadTask=fileRef.put(selectedApkFile, {contentType:'application/vnd.android.package-archive'});
+
+ uploadTask.on('state_changed', snap=>{
+  const pct=snap.totalBytes > 0 ? Math.round((snap.bytesTransferred / snap.totalBytes) * 100) : 0;
+  progFill.style.width=pct+'%';
+  progPct.textContent=pct+'%';
+ }, err=>{
+  console.error('APK upload failed:',err);
+  $('uploadApkToFirebaseBtn').disabled=false;
+  progStatus.textContent='Upload අසාර්ථක විය: '+(err.message||'');
+  toast('APK Upload කිරීමට නොහැකි විය: '+(err.message||''));
+ }, async()=>{
+  try{
+   const downloadUrl=await uploadTask.snapshot.ref.getDownloadURL();
+   const updatePayload={
+    version,
+    fileName:finalFileName,
+    storagePath,
+    downloadUrl,
+    notes,
+    sizeBytes:selectedApkFile.size,
+    updatedAt:Date.now(),
+    notificationTitle:'New Update'
+   };
+   await db.ref('adminConfig_v6/apkUpdate').set(updatePayload);
+   await db.ref('adminConfig_v6/apkHistory').push(updatePayload).catch(()=>{});
+   progStatus.textContent='Upload සම්පූර්ණයි! ක්‍රීඩකයන්ට New Update යවන ලදී.';
+   toast(`APK v${version} Firebase වෙත Upload කර New Update යවන ලදී!`,'fa-circle-check');
+  }catch(err){
+   console.error(err);
+   toast('Download URL / Database update අසාර්ථක විය.');
+  }finally{
+   $('uploadApkToFirebaseBtn').disabled=false;
   }
-  if(pct >= 100){
-   clearInterval(timer);
-   setTimeout(()=>{
-    if(typeof onComplete === 'function')onComplete();
-    setTimeout(()=>wrap.classList.remove('active'), 1800);
-   }, 350);
-  }
- }, 180);
-}
-
-$('testInstallAnimBtn').onclick=()=>{
- runInstallLoadingAnimation(activeApkData || {fileName:$('apkFileNameInput').value.trim()||'SinhalaDraughts-Pro.apk'}, ()=>{
-  toast('Install Loading Animation සම්පූර්ණයි!','fa-circle-check');
  });
-};
-
-$('publishApkBtn').onclick=async()=>{
- if(!db)return toast('Firebase සම්බන්ධතාවය නොමැත.');
- const version=$('apkVersionInput').value.trim();
- const fileName=$('apkFileNameInput').value.trim()||'SinhalaDraughts-Pro.apk';
- const directUrl=$('apkUrlInput').value.trim();
- const notes=$('apkNotesInput').value.trim();
- const finalUrl=directUrl || pickedApkDataUrl;
-
- if(!version)return toast('කරුණාකර Version අංකය ඇතුළත් කරන්න.');
- if(!finalUrl || !isSafeUrl(finalUrl)){
-  return toast('කරුණාකර වලංගු Direct APK URL එකක් හෝ කුඩා APK file එකක් තෝරන්න.');
- }
-
- const payload={
-  version,
-  fileName,
-  downloadUrl:finalUrl,
-  notes:notes || `New Update v${version} Available!`,
-  updatedAt:Date.now()
- };
-
- try{
-  await db.ref('adminConfig_v6/apkUpdate').set(payload);
-  toast(`New Update v${version} සියලු ක්‍රීඩකයන් වෙත Publish කරන ලදී!`,'fa-circle-check');
- }catch(err){
-  console.error(err);
-  toast('APK Update Publish කිරීමට නොහැකි විය: '+(err.message||''));
- }
 };
 
 $('clearApkUpdateBtn').onclick=()=>{
  if(!db)return;
- askConfirm('දැනට Publish කර ඇති APK Update එක ඉවත් කිරීමට අවශ්‍යද?', async()=>{
+ askConfirm('Firebase හි ඇති Active APK Update Notification එක ඉවත් කිරීමට අවශ්‍යද?', async()=>{
   try{
    await db.ref('adminConfig_v6/apkUpdate').remove();
-   toast('APK Update ඉවත් කරන ලදී.','fa-trash');
+   toast('Active APK Update ඉවත් කරන ලදී.','fa-trash');
   }catch(err){
    toast('ඉවත් කිරීමට නොහැකි විය.');
   }
@@ -787,11 +746,12 @@ $('clearApkUpdateBtn').onclick=()=>{
 
 function renderApkStatus(){
  const el=$('activeApkDetails');
- if(!activeApkData || !activeApkData.version){
-  el.textContent='දැනට Publish කළ APK update එකක් නොමැත.';
+ if(!activeApkData || !activeApkData.version || !activeApkData.downloadUrl){
+  el.textContent='දැනට Upload කළ APK update එකක් නොමැත.';
   return;
  }
- el.textContent=`Version: v${activeApkData.version} • File: ${activeApkData.fileName||'game.apk'} • Notes: ${activeApkData.notes||'-'}`;
+ const mb=activeApkData.sizeBytes ? ` (${(activeApkData.sizeBytes/(1024*1024)).toFixed(2)} MB)` : '';
+ el.textContent=`Version: v${activeApkData.version} • File: ${activeApkData.fileName||'game.apk'}${mb} • Notes: ${activeApkData.notes||'-'}`;
 }
 
 function attachListeners(){
