@@ -187,9 +187,9 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold)}
   <div class="custom-list" id="customAvatarsList"></div>
  </section>
 
- <!-- Tab 4: Upload Game APK to Firebase -->
+ <!-- Tab 4: Upload Game APK to Cloud Firestore -->
  <section class="panel-scroll" id="apkTab">
-  <h3 style="color:var(--gold)"><i class="fa-brands fa-android"></i> Firebase වෙත Game APK Upload කරන්න</h3>
+  <h3 style="color:var(--gold)"><i class="fa-brands fa-android"></i> Cloud Firestore වෙත Game APK Upload කරන්න</h3>
 
   <div class="apk-dropzone" id="apkDropzone">
    <i class="fa-solid fa-cloud-arrow-up" style="font-size:2rem;color:var(--neon-blue)"></i>
@@ -213,13 +213,13 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold)}
    </div>
   </div>
 
-  <button class="btn-gold" id="uploadApkToFirebaseBtn" style="padding:12px">
-   <i class="fa-solid fa-upload"></i> Firebase වෙත Upload කර New Update යවන්න
+  <button class="btn-gold" id="uploadApkToFirestoreBtn" style="padding:12px">
+   <i class="fa-solid fa-upload"></i> Firestore වෙත Upload කර New Update යවන්න
   </button>
 
   <div class="upload-prog-box" id="apkUploadProgBox">
    <div class="upload-prog-header">
-    <span style="color:var(--neon-blue)" id="apkUploadStatusText">Firebase Storage වෙත Upload වෙමින්...</span>
+    <span style="color:var(--neon-blue)" id="apkUploadStatusText">Cloud Firestore වෙත APK Upload වෙමින්...</span>
     <span style="color:var(--gold)" id="apkUploadPctText">0%</span>
    </div>
    <div class="upload-prog-track">
@@ -227,14 +227,14 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold)}
    </div>
    <div class="upload-prog-meta">
     <span>Upload වූ ප්‍රමාණය: <strong id="apkUploadedSizeText" style="color:var(--neon-green)">0.00 MB / 0.00 MB</strong></span>
-    <span id="apkUploadStateBadge" style="color:var(--dim)">Uploading</span>
+    <span id="apkUploadStateBadge" style="color:var(--dim)">Uploading...</span>
    </div>
    <div class="upload-err-hint" id="apkUploadErrorHint"></div>
   </div>
 
   <div class="apk-status-card" id="currentApkStatus">
    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
-    <b style="color:var(--neon-green)"><i class="fa-solid fa-circle-check"></i> Firebase හි ඇති Active APK Update</b>
+    <b style="color:var(--neon-green)"><i class="fa-solid fa-circle-check"></i> Firestore හි ඇති Active APK Update</b>
     <button class="btn-danger" id="clearApkUpdateBtn" style="padding:5px 9px;font-size:0.75rem"><i class="fa-solid fa-trash"></i> Remove</button>
    </div>
    <p style="font-size:0.85rem;color:var(--dim)" id="activeApkDetails">දැනට Upload කළ APK update එකක් නොමැත.</p>
@@ -258,17 +258,18 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold)}
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script>
 'use strict';
 const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
 const $=id=>document.getElementById(id);
+const CHUNK_RAW_BYTES = 500 * 1024; // ~500 KB per Firestore chunk (safely under 1MB doc limit after base64)
 
 if(sessionStorage.getItem('sinhala_draughts_admin_auth')!=='1'){
  window.location.replace('index.html');
 }
 
-let auth,db,storage;
+let auth,db,firestore;
 let usersMap={};
 let publicMap={};
 let allPlayers=[];
@@ -329,27 +330,11 @@ function isSafeColor(val){
  return /^#[0-9a-fA-F]{3,8}$/.test(val);
 }
 
-function getStorageInstance(){
- if(storage)return storage;
- try{
-  if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
-  storage=firebase.storage();
-  return storage;
- }catch(err){
-  try{
-   storage=firebase.app().storage('gs://bin-card-42614.firebasestorage.app');
-   return storage;
-  }catch(_){
-   return null;
-  }
- }
-}
-
 try{
  if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
  auth=firebase.auth();
  db=firebase.database();
- storage=getStorageInstance();
+ firestore=firebase.firestore();
 }catch(e){
  console.error('Firebase init failed:',e);
  lastDbError=e.message||'Firebase init error';
@@ -672,7 +657,7 @@ function renderCustomLists(){
  });
 }
 
-/* Firebase Storage APK Upload & Live Progress */
+/* Cloud Firestore Chunked APK Upload */
 $('apkDropzone').onclick=()=>$('apkFileInput').click();
 $('apkDropzone').addEventListener('dragover',e=>{
  e.preventDefault();
@@ -701,24 +686,29 @@ function setSelectedApkFile(file){
  $('apkUploadErrorHint').textContent='';
 }
 
-function explainUploadError(err){
- const code=(err && err.code) || '';
- const msg=(err && err.message) || 'Unknown upload error';
- if(code==='storage/unauthorized'){
-  return `Permission Error (storage/unauthorized): Firebase Console -> Storage -> Rules තුළ "allow read, write: if true;" ලබා දී Publish කරන්න.`;
+function arrayBufferToBase64(buffer){
+ const bytes=new Uint8Array(buffer);
+ let binary='';
+ const step=0x8000;
+ for(let i=0;i<bytes.length;i+=step){
+  binary+=String.fromCharCode.apply(null, bytes.subarray(i, i+step));
  }
- if(code==='storage/canceled'){
-  return 'Upload අවලංගු කරන ලදී.';
- }
- if(code==='storage/retry-limit-exceeded' || /network|failed to fetch|timeout/i.test(msg)){
-  return `Network / Connection Error: අන්තර්ජාල සම්බන්ධතාවය හෝ VPN/DNS පරීක්ෂා කර නැවත උත්සාහ කරන්න (${msg}).`;
- }
- return `Error (${code || 'upload_error'}): ${msg}`;
+ return btoa(binary);
 }
 
-$('uploadApkToFirebaseBtn').onclick=()=>{
- const st=getStorageInstance();
- if(!st || !db)return toast('Firebase Storage / Database සම්බන්ධතාවය නොමැත.');
+async function clearExistingChunks(metaDocRef){
+ const snap=await metaDocRef.collection('chunks').get().catch(()=>null);
+ if(!snap || snap.empty)return;
+ const docs=snap.docs;
+ for(let i=0;i<docs.length;i+=300){
+  const batch=firestore.batch();
+  docs.slice(i,i+300).forEach(d=>batch.delete(d.ref));
+  await batch.commit();
+ }
+}
+
+$('uploadApkToFirestoreBtn').onclick=async()=>{
+ if(!firestore)return toast('Cloud Firestore සම්බන්ධතාවය නොමැත.');
  if(!selectedApkFile)return toast('කරුණාකර .APK file එකක් තෝරන්න.');
 
  const version=$('apkVersionInput').value.trim() || ('1.0.' + Math.floor(Date.now()/100000));
@@ -734,71 +724,85 @@ $('uploadApkToFirebaseBtn').onclick=()=>{
  const progState=$('apkUploadStateBadge');
  const errHint=$('apkUploadErrorHint');
 
+ const totalBytes=selectedApkFile.size;
+ const totalChunks=Math.max(1, Math.ceil(totalBytes / CHUNK_RAW_BYTES));
+
  progBox.classList.add('active');
  progFill.style.width='0%';
  progPct.textContent='0%';
- progSize.textContent=`0.00 MB / ${formatMb(selectedApkFile.size)} MB`;
+ progSize.textContent=`0.00 MB / ${formatMb(totalBytes)} MB`;
  progState.textContent='Uploading...';
- progStatus.textContent='Firebase Storage වෙත APK Upload වෙමින්...';
+ progStatus.textContent='Cloud Firestore වෙත APK Upload වෙමින්...';
  errHint.textContent='';
- $('uploadApkToFirebaseBtn').disabled=true;
+ $('uploadApkToFirestoreBtn').disabled=true;
 
- const storagePath=`apk_updates/v${version}_${finalFileName}`;
- const fileRef=st.ref().child(storagePath);
- const uploadTask=fileRef.put(selectedApkFile, {contentType:'application/vnd.android.package-archive'});
+ try{
+  const metaRef=firestore.collection('apk_updates_v6').doc('latest_meta');
+  progStatus.textContent='පැරණි chunks පිරිසිදු කරමින්...';
+  await clearExistingChunks(metaRef);
 
- uploadTask.on('state_changed', snap=>{
-  const pct=snap.totalBytes > 0 ? Math.round((snap.bytesTransferred / snap.totalBytes) * 100) : 0;
-  progFill.style.width=pct+'%';
-  progPct.textContent=pct+'%';
-  progSize.textContent=`${formatMb(snap.bytesTransferred)} MB / ${formatMb(snap.totalBytes)} MB`;
-  progState.textContent=snap.state==='paused' ? 'Paused' : 'Uploading...';
- }, err=>{
-  console.error('APK upload failed:',err);
-  $('uploadApkToFirebaseBtn').disabled=false;
+  let uploadedBytes=0;
+  for(let idx=0;idx<totalChunks;idx++){
+   const start=idx * CHUNK_RAW_BYTES;
+   const end=Math.min(totalBytes, start + CHUNK_RAW_BYTES);
+   const chunkBuf=await selectedApkFile.slice(start, end).arrayBuffer();
+   const base64Data=arrayBufferToBase64(chunkBuf);
+
+   await metaRef.collection('chunks').doc(String(idx).padStart(5,'0')).set({
+    index:idx,
+    data:base64Data
+   });
+
+   uploadedBytes=end;
+   const pct=Math.min(99, Math.round((uploadedBytes / totalBytes) * 100));
+   progFill.style.width=pct+'%';
+   progPct.textContent=pct+'%';
+   progSize.textContent=`${formatMb(uploadedBytes)} MB / ${formatMb(totalBytes)} MB`;
+   progStatus.textContent=`Chunk ${idx+1} / ${totalChunks} Firestore වෙත යැවෙමින්...`;
+  }
+
+  const updatePayload={
+   version,
+   fileName:finalFileName,
+   notes,
+   sizeBytes:totalBytes,
+   totalChunks,
+   storageMode:'firestore_chunks',
+   updatedAt:Date.now(),
+   notificationTitle:'New Update'
+  };
+
+  await metaRef.set(updatePayload);
+  if(db){
+   await db.ref('adminConfig_v6/apkUpdate').set(updatePayload).catch(()=>{});
+  }
+
+  progFill.style.width='100%';
+  progPct.textContent='100%';
+  progSize.textContent=`${formatMb(totalBytes)} MB / ${formatMb(totalBytes)} MB`;
+  progState.textContent='Completed';
+  progStatus.textContent='Cloud Firestore Upload සම්පූර්ණයි! ක්‍රීඩකයන්ට New Update යවන ලදී.';
+  toast(`APK v${version} Firestore වෙත Upload කර New Update යවන ලදී!`,'fa-circle-check');
+ }catch(err){
+  console.error('Firestore APK upload error:',err);
   progState.textContent='Failed';
   progStatus.textContent='Upload අසාර්ථක විය.';
-  errHint.textContent=explainUploadError(err);
-  toast('APK Upload කිරීමට නොහැකි විය.','fa-circle-exclamation');
- }, async()=>{
-  try{
-   const downloadUrl=await uploadTask.snapshot.ref.getDownloadURL();
-   const updatePayload={
-    version,
-    fileName:finalFileName,
-    storagePath,
-    downloadUrl,
-    notes,
-    sizeBytes:selectedApkFile.size,
-    updatedAt:Date.now(),
-    notificationTitle:'New Update'
-   };
-   await db.ref('adminConfig_v6/apkUpdate').set(updatePayload);
-   await db.ref('adminConfig_v6/apkHistory').push(updatePayload).catch(()=>{});
-   progFill.style.width='100%';
-   progPct.textContent='100%';
-   progSize.textContent=`${formatMb(selectedApkFile.size)} MB / ${formatMb(selectedApkFile.size)} MB`;
-   progState.textContent='Completed';
-   progStatus.textContent='Upload සම්පූර්ණයි! ක්‍රීඩකයන්ට New Update යවන ලදී.';
-   errHint.textContent='';
-   toast(`APK v${version} Firebase වෙත Upload කර New Update යවන ලදී!`,'fa-circle-check');
-  }catch(err){
-   console.error(err);
-   progState.textContent='Error';
-   errHint.textContent='Download URL / Database update අසාර්ථක විය: '+(err.message||'');
-   toast('Download URL / Database update අසාර්ථක විය.');
-  }finally{
-   $('uploadApkToFirebaseBtn').disabled=false;
-  }
- });
+  errHint.textContent=`Error (${err.code||'firestore_error'}): ${err.message||'Firestore Rules හෝ අන්තර්ජාල සම්බන්ධතාවය පරීක්ෂා කරන්න.'}`;
+  toast('Firestore Upload අසාර්ථක විය.','fa-circle-exclamation');
+ }finally{
+  $('uploadApkToFirestoreBtn').disabled=false;
+ }
 };
 
 $('clearApkUpdateBtn').onclick=()=>{
- if(!db)return;
- askConfirm('Firebase හි ඇති Active APK Update Notification එක ඉවත් කිරීමට අවශ්‍යද?', async()=>{
+ if(!firestore)return;
+ askConfirm('Cloud Firestore හි ඇති Active APK Update එක ඉවත් කිරීමට අවශ්‍යද?', async()=>{
   try{
-   await db.ref('adminConfig_v6/apkUpdate').remove();
-   toast('Active APK Update ඉවත් කරන ලදී.','fa-trash');
+   const metaRef=firestore.collection('apk_updates_v6').doc('latest_meta');
+   await clearExistingChunks(metaRef);
+   await metaRef.delete().catch(()=>{});
+   if(db)await db.ref('adminConfig_v6/apkUpdate').remove().catch(()=>{});
+   toast('Firestore APK Update ඉවත් කරන ලදී.','fa-trash');
   }catch(err){
    toast('ඉවත් කිරීමට නොහැකි විය.');
   }
@@ -807,12 +811,22 @@ $('clearApkUpdateBtn').onclick=()=>{
 
 function renderApkStatus(){
  const el=$('activeApkDetails');
- if(!activeApkData || !activeApkData.version || !activeApkData.downloadUrl){
+ if(!activeApkData || !activeApkData.version){
   el.textContent='දැනට Upload කළ APK update එකක් නොමැත.';
   return;
  }
  const mb=activeApkData.sizeBytes ? ` (${formatMb(activeApkData.sizeBytes)} MB)` : '';
  el.textContent=`Version: v${activeApkData.version} • File: ${activeApkData.fileName||'game.apk'}${mb} • Notes: ${activeApkData.notes||'-'}`;
+}
+
+function attachFirestoreApkListener(){
+ if(!firestore)return;
+ firestore.collection('apk_updates_v6').doc('latest_meta').onSnapshot(docSnap=>{
+  activeApkData=docSnap.exists ? docSnap.data() : null;
+  renderApkStatus();
+ },err=>{
+  console.error('Firestore apk listener error:',err);
+ });
 }
 
 function attachListeners(){
@@ -850,14 +864,9 @@ function attachListeners(){
  },err=>{
   console.error('customAvatars error:',err);
  });
-
- db.ref('adminConfig_v6/apkUpdate').on('value',snap=>{
-  activeApkData=snap.val()||null;
-  renderApkStatus();
- },err=>{
-  console.error('apkUpdate error:',err);
- });
 }
+
+attachFirestoreApkListener();
 
 if(auth){
  auth.onAuthStateChanged(()=>{
