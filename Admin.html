@@ -11,7 +11,7 @@
 html,body{width:100%;height:100%;background:radial-gradient(circle at 50% 15%,#1a103c 0%,#080b18 65%,#03050a 100%);color:#f8f9fa;overflow:hidden}
 body{min-height:100dvh;display:flex;flex-direction:column;align-items:center}
 
-.admin-app{width:100%;height:100dvh;max-width:860px;margin:0 auto;padding:14px;display:flex;flex-direction:column;gap:12px;overflow:hidden;opacity:1;transform:scale(1);transition:opacity 0.16s ease-out,transform 0.16s ease-out;will-change:opacity,transform}
+.admin-app{width:100%;height:100dvh;max-width:900px;margin:0 auto;padding:14px;display:flex;flex-direction:column;gap:12px;overflow:hidden;opacity:1;transform:scale(1);transition:opacity 0.16s ease-out,transform 0.16s ease-out;will-change:opacity,transform}
 .admin-app.page-leaving{opacity:0;transform:scale(0.985)}
 
 .admin-header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 18px;background:linear-gradient(135deg,rgba(22,30,56,0.95),rgba(10,14,28,0.95));border:2px solid rgba(255,209,102,0.45);border-radius:22px;box-shadow:0 8px 25px rgba(0,0,0,0.6);backdrop-filter:blur(10px)}
@@ -20,16 +20,17 @@ body{min-height:100dvh;display:flex;flex-direction:column;align-items:center}
 .admin-brand b{font-size:1.15rem;color:var(--gold);display:block;line-height:1.15}
 .admin-brand small{font-size:0.75rem;color:var(--dim)}
 
-.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;background:rgba(14,20,38,0.9);padding:6px;border-radius:18px;border:1.5px solid rgba(255,209,102,0.25)}
-.tab-btn{border:0;border-radius:13px;padding:9px 8px;background:transparent;color:var(--dim);font-weight:700;font-size:0.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.18s ease}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;background:rgba(14,20,38,0.9);padding:6px;border-radius:18px;border:1.5px solid rgba(255,209,102,0.25)}
+.tab-btn{border:0;border-radius:13px;padding:9px 8px;background:transparent;color:var(--dim);font-weight:700;font-size:0.84rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.18s ease}
 .tab-btn.active{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;box-shadow:0 4px 14px rgba(255,173,98,0.35)}
 
 .panel-scroll{flex:1;overflow-y:auto;padding:14px;background:linear-gradient(145deg,rgba(18,24,40,0.88),rgba(12,16,28,0.92));border:2px solid rgba(255,209,102,0.22);border-radius:24px;box-shadow:0 10px 30px rgba(0,0,0,0.5);display:none;flex-direction:column;gap:12px}
 .panel-scroll.active{display:flex}
 
 .search-bar{display:flex;gap:8px;align-items:center}
-input,select{width:100%;padding:10px 13px;background:rgba(0,0,0,0.55);border:1.5px solid rgba(255,209,102,0.35);border-radius:12px;color:#fff;font-size:0.9rem;outline:none}
-input:focus,select:focus{border-color:var(--gold)}
+input,select,textarea{width:100%;padding:10px 13px;background:rgba(0,0,0,0.55);border:1.5px solid rgba(255,209,102,0.35);border-radius:12px;color:#fff;font-size:0.9rem;outline:none}
+textarea{min-height:74px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:var(--gold)}
 
 .player-card{background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,209,102,0.2);border-radius:18px;padding:12px 14px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}
 .player-info{display:flex;align-items:center;gap:12px;min-width:160px}
@@ -40,12 +41,13 @@ input:focus,select:focus{border-color:var(--gold)}
 .player-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .coin-input{width:95px !important;padding:7px 9px !important;font-size:0.88rem !important;font-weight:700;color:var(--gold) !important}
 
-.btn,.btn-gold,.btn-danger,.btn-green{border:0;border-radius:11px;padding:8px 11px;cursor:pointer;font-weight:700;font-size:0.8rem;display:inline-flex;align-items:center;gap:5px;justify-content:center;transition:transform 0.12s ease}
-.btn:active,.btn-gold:active,.btn-danger:active,.btn-green:active{transform:scale(0.96)}
+.btn,.btn-gold,.btn-danger,.btn-green,.btn-blue{border:0;border-radius:11px;padding:8px 11px;cursor:pointer;font-weight:700;font-size:0.8rem;display:inline-flex;align-items:center;gap:5px;justify-content:center;transition:transform 0.12s ease}
+.btn:active,.btn-gold:active,.btn-danger:active,.btn-green:active,.btn-blue:active{transform:scale(0.96)}
 .btn{background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2)}
 .btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111}
 .btn-green{background:linear-gradient(135deg,#2ecc71,#20b863);color:#0b1910}
 .btn-danger{background:linear-gradient(135deg,#ff4757,#c0392b);color:#fff}
+.btn-blue{background:linear-gradient(135deg,#00f2fe,#0284c7);color:#06131c}
 
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .form-group{display:flex;flex-direction:column;gap:4px}
@@ -59,17 +61,31 @@ input:focus,select:focus{border-color:var(--gold)}
 .custom-item-left{display:flex;align-items:center;gap:8px;min-width:0}
 .custom-item-left span{font-size:0.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
+.apk-dropzone{border:2px dashed rgba(0,242,254,0.45);background:rgba(0,242,254,0.05);border-radius:18px;padding:18px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;transition:all 0.2s ease}
+.apk-dropzone:hover{border-color:var(--gold);background:rgba(255,209,102,0.07)}
+.apk-status-card{background:rgba(255,255,255,0.04);border:1.5px solid rgba(46,204,113,0.35);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:8px}
+
+/* Install Loading Animation */
+.install-loader-wrap{display:none;flex-direction:column;gap:8px;background:rgba(5,9,18,0.85);border:1.5px solid rgba(0,242,254,0.4);border-radius:16px;padding:12px}
+.install-loader-wrap.active{display:flex}
+.install-ring-row{display:flex;align-items:center;gap:12px}
+.install-spinner{width:34px;height:34px;border-radius:50%;border:3px solid rgba(255,255,255,0.12);border-top-color:var(--neon-blue);border-right-color:var(--gold);animation:spinInstall 0.85s linear infinite;flex-shrink:0}
+@keyframes spinInstall{to{transform:rotate(360deg)}}
+.install-bar-track{width:100%;height:10px;border-radius:999px;background:rgba(255,255,255,0.08);overflow:hidden}
+.install-bar-fill{height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,var(--neon-blue),var(--neon-green),var(--gold));transition:width 0.25s ease}
+
 .modal{position:fixed;inset:0;background:rgba(3,5,12,0.85);backdrop-filter:blur(8px);display:none;place-items:center;z-index:120;padding:15px}
 .modal.show{display:grid}
-.modalbox{width:min(100%,380px);background:linear-gradient(145deg,#121828,#1b243f);border:2px solid var(--gold);border-radius:22px;padding:22px;display:grid;gap:14px;text-align:center;box-shadow:0 20px 40px rgba(0,0,0,0.8)}
+.modalbox{width:min(100%,400px);background:linear-gradient(145deg,#121828,#1b243f);border:2px solid var(--gold);border-radius:22px;padding:22px;display:grid;gap:14px;text-align:center;box-shadow:0 20px 40px rgba(0,0,0,0.8)}
 .modalbox h3{color:var(--gold);font-size:1.15rem}
 
 #toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,120px);opacity:0;background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--gold);color:#f8f9fa;border-radius:30px;padding:10px 20px;z-index:150;transition:.25s ease;font-weight:600;display:flex;align-items:center;gap:8px;font-size:0.9rem}
 #toast.show{transform:translate(-50%,0);opacity:1}
 
-@media (max-width: 560px) {
+@media (max-width: 640px) {
   .form-grid{grid-template-columns:1fr}
-  .tabs .tab-btn span{font-size:0.74rem}
+  .tabs{grid-template-columns:repeat(2,1fr)}
+  .tabs .tab-btn span{font-size:0.76rem}
 }
 </style>
 </head>
@@ -93,6 +109,7 @@ input:focus,select:focus{border-color:var(--gold)}
   <button class="tab-btn active" data-tab="playersTab"><i class="fa-solid fa-users-gear"></i><span>ක්‍රීඩකයන් & Coins</span></button>
   <button class="tab-btn" data-tab="themeTab"><i class="fa-solid fa-chess-board"></i><span>+ Piece Theme</span></button>
   <button class="tab-btn" data-tab="avatarTab"><i class="fa-solid fa-id-badge"></i><span>+ Avatar</span></button>
+  <button class="tab-btn" data-tab="apkTab"><i class="fa-brands fa-android"></i><span>APK Update</span></button>
  </div>
 
  <!-- Tab 1: Players Management -->
@@ -171,6 +188,64 @@ input:focus,select:focus{border-color:var(--gold)}
   <h4 style="color:var(--gold);margin-top:8px">එකතු කළ Custom Avatars:</h4>
   <div class="custom-list" id="customAvatarsList"></div>
  </section>
+
+ <!-- Tab 4: Game APK Upload & New Update -->
+ <section class="panel-scroll" id="apkTab">
+  <h3 style="color:var(--gold)"><i class="fa-brands fa-android"></i> Game APK Upload & New Update Push</h3>
+
+  <div class="apk-dropzone" id="apkDropzone">
+   <i class="fa-solid fa-file-arrow-up" style="font-size:2rem;color:var(--neon-blue)"></i>
+   <b style="color:#fff">.APK File එකක් තෝරන්න හෝ මෙහි Drop කරන්න</b>
+   <small style="color:var(--dim)" id="selectedApkMeta">තෝරාගත් APK file එකක් නොමැත (Direct APK URL ද භාවිතා කළ හැක)</small>
+   <input type="file" id="apkFileInput" accept=".apk,application/vnd.android.package-archive" style="display:none">
+  </div>
+
+  <div class="form-grid">
+   <div class="form-group">
+    <label>Version අංකය (උදා: 1.2.0)</label>
+    <input type="text" id="apkVersionInput" placeholder="1.2.0">
+   </div>
+   <div class="form-group">
+    <label>APK File Name</label>
+    <input type="text" id="apkFileNameInput" placeholder="SinhalaDraughts-Pro.apk">
+   </div>
+   <div class="form-group" style="grid-column:1/-1">
+    <label>Direct APK Download URL (Firebase Storage / GitHub / CDN Link - Optional)</label>
+    <input type="url" id="apkUrlInput" placeholder="https://example.com/SinhalaDraughts-Pro.apk">
+   </div>
+   <div class="form-group" style="grid-column:1/-1">
+    <label>New Update විස්තරය (Release Notes)</label>
+    <textarea id="apkNotesInput" placeholder="අලුත් features, bug fixes සහ වෙනස්කම් සඳහන් කරන්න..."></textarea>
+   </div>
+  </div>
+
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+   <button class="btn-gold" id="publishApkBtn" style="flex:1;padding:12px"><i class="fa-solid fa-cloud-arrow-up"></i> New Update Publish කරන්න</button>
+   <button class="btn-blue" id="testInstallAnimBtn" style="padding:12px"><i class="fa-solid fa-download"></i> Test Install Animation</button>
+  </div>
+
+  <div class="install-loader-wrap" id="adminInstallLoader">
+   <div class="install-ring-row">
+    <div class="install-spinner"></div>
+    <div style="flex:1">
+     <b style="color:var(--neon-blue);display:block;font-size:0.92rem" id="installAnimTitle">Installing APK Update...</b>
+     <small style="color:var(--dim)" id="installAnimSub">Preparing package for installation</small>
+    </div>
+    <span style="color:var(--gold);font-weight:800" id="installAnimPct">0%</span>
+   </div>
+   <div class="install-bar-track">
+    <div class="install-bar-fill" id="installAnimBar"></div>
+   </div>
+  </div>
+
+  <div class="apk-status-card" id="currentApkStatus">
+   <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+    <b style="color:var(--neon-green)"><i class="fa-solid fa-circle-check"></i> Current Active APK Update</b>
+    <button class="btn-danger" id="clearApkUpdateBtn" style="padding:5px 9px;font-size:0.75rem"><i class="fa-solid fa-trash"></i> Remove</button>
+   </div>
+   <p style="font-size:0.85rem;color:var(--dim)" id="activeApkDetails">දැනට Publish කළ APK update එකක් නොමැත.</p>
+  </div>
+ </section>
 </div>
 
 <div class="modal" id="confirmModal">
@@ -204,6 +279,9 @@ let publicMap={};
 let allPlayers=[];
 let customPieces=[];
 let customAvatars=[];
+let activeApkData=null;
+let pickedApkFile=null;
+let pickedApkDataUrl='';
 let isNavigating=false;
 let listenersAttached=false;
 let lastDbError='';
@@ -251,6 +329,12 @@ function isSafeIconClass(cls){
 
 function isSafeColor(val){
  return /^#[0-9a-fA-F]{3,8}$/.test(val);
+}
+
+function isSafeUrl(url){
+ if(!url)return false;
+ if(/^data:application\/vnd\.android\.package-archive;base64,/i.test(url))return true;
+ return /^https?:\/\/[^\s"'<>]+$/i.test(url);
 }
 
 try{
@@ -579,6 +663,137 @@ function renderCustomLists(){
  });
 }
 
+/* APK Upload & Install Loading Animation */
+$('apkDropzone').onclick=()=>$('apkFileInput').click();
+$('apkDropzone').addEventListener('dragover',e=>{
+ e.preventDefault();
+ $('apkDropzone').style.borderColor='var(--gold)';
+});
+$('apkDropzone').addEventListener('dragleave',()=>{
+ $('apkDropzone').style.borderColor='rgba(0,242,254,0.45)';
+});
+$('apkDropzone').addEventListener('drop',e=>{
+ e.preventDefault();
+ $('apkDropzone').style.borderColor='rgba(0,242,254,0.45)';
+ const f=e.dataTransfer?.files?.[0];
+ if(f)handleApkFileSelected(f);
+});
+$('apkFileInput').addEventListener('change',e=>{
+ const f=e.target?.files?.[0];
+ if(f)handleApkFileSelected(f);
+});
+
+function handleApkFileSelected(file){
+ pickedApkFile=file;
+ const sizeMb=(file.size/(1024*1024)).toFixed(2);
+ $('selectedApkMeta').textContent=`${file.name} (${sizeMb} MB)`;
+ if(!$('apkFileNameInput').value.trim()){
+  $('apkFileNameInput').value=file.name;
+ }
+ if(file.size <= 3.5*1024*1024){
+  const reader=new FileReader();
+  reader.onload=()=>{
+   pickedApkDataUrl=String(reader.result||'');
+  };
+  reader.readAsDataURL(file);
+ }else{
+  pickedApkDataUrl='';
+  toast('APK file එක 3.5MB වඩා විශාලයි — Direct APK Download URL එකක් ඇතුළත් කරන්න.','fa-circle-exclamation');
+ }
+}
+
+function runInstallLoadingAnimation(apkInfo, onComplete){
+ const wrap=$('adminInstallLoader');
+ const bar=$('installAnimBar');
+ const pctEl=$('installAnimPct');
+ const titleEl=$('installAnimTitle');
+ const subEl=$('installAnimSub');
+
+ wrap.classList.add('active');
+ bar.style.width='0%';
+ pctEl.textContent='0%';
+ titleEl.textContent=`Installing ${apkInfo?.fileName||'Game APK'}...`;
+ subEl.textContent='Verifying package & preparing installer';
+
+ let pct=0;
+ const timer=setInterval(()=>{
+  pct=Math.min(100, pct + Math.floor(Math.random()*16 + 10));
+  bar.style.width=`${pct}%`;
+  pctEl.textContent=`${pct}%`;
+  if(pct < 45){
+   subEl.textContent='Downloading update package...';
+  }else if(pct < 85){
+   subEl.textContent='Verifying APK signature...';
+  }else{
+   subEl.textContent='Launching APK installer...';
+  }
+  if(pct >= 100){
+   clearInterval(timer);
+   setTimeout(()=>{
+    if(typeof onComplete === 'function')onComplete();
+    setTimeout(()=>wrap.classList.remove('active'), 1800);
+   }, 350);
+  }
+ }, 180);
+}
+
+$('testInstallAnimBtn').onclick=()=>{
+ runInstallLoadingAnimation(activeApkData || {fileName:$('apkFileNameInput').value.trim()||'SinhalaDraughts-Pro.apk'}, ()=>{
+  toast('Install Loading Animation සම්පූර්ණයි!','fa-circle-check');
+ });
+};
+
+$('publishApkBtn').onclick=async()=>{
+ if(!db)return toast('Firebase සම්බන්ධතාවය නොමැත.');
+ const version=$('apkVersionInput').value.trim();
+ const fileName=$('apkFileNameInput').value.trim()||'SinhalaDraughts-Pro.apk';
+ const directUrl=$('apkUrlInput').value.trim();
+ const notes=$('apkNotesInput').value.trim();
+ const finalUrl=directUrl || pickedApkDataUrl;
+
+ if(!version)return toast('කරුණාකර Version අංකය ඇතුළත් කරන්න.');
+ if(!finalUrl || !isSafeUrl(finalUrl)){
+  return toast('කරුණාකර වලංගු Direct APK URL එකක් හෝ කුඩා APK file එකක් තෝරන්න.');
+ }
+
+ const payload={
+  version,
+  fileName,
+  downloadUrl:finalUrl,
+  notes:notes || `New Update v${version} Available!`,
+  updatedAt:Date.now()
+ };
+
+ try{
+  await db.ref('adminConfig_v6/apkUpdate').set(payload);
+  toast(`New Update v${version} සියලු ක්‍රීඩකයන් වෙත Publish කරන ලදී!`,'fa-circle-check');
+ }catch(err){
+  console.error(err);
+  toast('APK Update Publish කිරීමට නොහැකි විය: '+(err.message||''));
+ }
+};
+
+$('clearApkUpdateBtn').onclick=()=>{
+ if(!db)return;
+ askConfirm('දැනට Publish කර ඇති APK Update එක ඉවත් කිරීමට අවශ්‍යද?', async()=>{
+  try{
+   await db.ref('adminConfig_v6/apkUpdate').remove();
+   toast('APK Update ඉවත් කරන ලදී.','fa-trash');
+  }catch(err){
+   toast('ඉවත් කිරීමට නොහැකි විය.');
+  }
+ });
+};
+
+function renderApkStatus(){
+ const el=$('activeApkDetails');
+ if(!activeApkData || !activeApkData.version){
+  el.textContent='දැනට Publish කළ APK update එකක් නොමැත.';
+  return;
+ }
+ el.textContent=`Version: v${activeApkData.version} • File: ${activeApkData.fileName||'game.apk'} • Notes: ${activeApkData.notes||'-'}`;
+}
+
 function attachListeners(){
  if(!db||listenersAttached)return;
  listenersAttached=true;
@@ -613,6 +828,13 @@ function attachListeners(){
   renderCustomLists();
  },err=>{
   console.error('customAvatars error:',err);
+ });
+
+ db.ref('adminConfig_v6/apkUpdate').on('value',snap=>{
+  activeApkData=snap.val()||null;
+  renderApkStatus();
+ },err=>{
+  console.error('apkUpdate error:',err);
  });
 }
 
