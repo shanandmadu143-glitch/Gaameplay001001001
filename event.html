@@ -65,7 +65,6 @@ html,body{
   transform:scale(0.985);
 }
 
-/* Top Bar */
 .event-top{
   display:flex;
   align-items:center;
@@ -135,7 +134,6 @@ html,body{
 }
 .coin-pill i{color:var(--gold)}
 
-/* Main Scrollable Area */
 main{
   flex:1;
   width:100%;
@@ -151,7 +149,6 @@ main{
 main::-webkit-scrollbar{width:5px}
 main::-webkit-scrollbar-thumb{background:rgba(255,209,102,0.35);border-radius:999px}
 
-/* Center Coin Win Loading Bar Card */
 .coin-win-hero{
   background:linear-gradient(145deg,rgba(24,34,64,0.96),rgba(12,18,34,0.98));
   border:1.5px solid rgba(255,209,102,0.35);
@@ -197,7 +194,6 @@ main::-webkit-scrollbar-thumb{background:rgba(255,209,102,0.35);border-radius:99
   font-weight:800;
 }
 
-/* Free & Pro Pass Split */
 .tracks-split-bar{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -273,7 +269,6 @@ main::-webkit-scrollbar-thumb{background:rgba(255,209,102,0.35);border-radius:99
   cursor:default;
 }
 
-/* Center Coin Win Loading Bar */
 .center-loading-wrap{
   background:rgba(5,9,18,0.85);
   border:1.5px solid rgba(255,255,255,0.1);
@@ -340,20 +335,6 @@ main::-webkit-scrollbar-thumb{background:rgba(255,209,102,0.35);border-radius:99
   color:var(--dim);
 }
 
-.sim-win-btn{
-  background:rgba(0,242,254,0.14);
-  border:1px solid rgba(0,242,254,0.4);
-  color:var(--neon-blue);
-  border-radius:10px;
-  padding:5px 10px;
-  font-size:clamp(0.66rem, 1.5vw, 0.74rem);
-  font-weight:800;
-  cursor:pointer;
-  flex-shrink:0;
-}
-.sim-win-btn:active{transform:scale(0.96)}
-
-/* Milestones Grid */
 .milestones-list{
   display:grid;
   grid-template-columns:1fr;
@@ -533,7 +514,6 @@ main::-webkit-scrollbar-thumb{background:rgba(255,209,102,0.35);border-radius:99
   cursor:not-allowed;
 }
 
-/* Toast */
 #toast{
   position:fixed;
   bottom:calc(env(safe-area-inset-bottom, 0px) + 18px);
@@ -560,7 +540,6 @@ main::-webkit-scrollbar-thumb{background:rgba(255,209,102,0.35);border-radius:99
   opacity:1;
 }
 
-/* Tablet Layout (600px and above) */
 @media (min-width: 600px) {
   .app{
     padding:
@@ -583,18 +562,6 @@ main::-webkit-scrollbar-thumb{background:rgba(255,209,102,0.35);border-radius:99
   .reward-lanes{gap:10px}
   .lane-box{padding:10px}
 }
-
-/* Wide Tablet / Landscape Tablet (900px and above) */
-@media (min-width: 900px) {
-  .app{
-    padding:
-      calc(env(safe-area-inset-top, 0px) + 18px)
-      calc(env(safe-area-inset-right, 0px) + 24px)
-      calc(env(safe-area-inset-bottom, 0px) + 18px)
-      calc(env(safe-area-inset-left, 0px) + 24px);
-  }
-  .milestones-list{gap:16px}
-}
 </style>
 </head>
 <body>
@@ -604,17 +571,16 @@ main::-webkit-scrollbar-thumb{background:rgba(255,209,102,0.35);border-radius:99
    <i class="fa-solid fa-arrow-left"></i>
   </button>
   <div class="event-title-box">
-   <b>MONTHLY COIN EVENT</b>
-   <small>මාසයක් ඇතුළත දිනන Coins වලින් Rewards ලබාගන්න</small>
+   <b id="seasonTitle">MONTHLY COIN EVENT · SEASON 1</b>
+   <small>සෑම දින 30කට වරක් අලුත් වන Event & Rewards</small>
   </div>
   <div class="coin-pill"><i class="fa-solid fa-coins"></i><span id="userCoinBalance">500</span></div>
  </div>
 
  <main>
-  <!-- Center Coin Win Loading Bar + Free / Pro Pass Split -->
   <section class="coin-win-hero">
    <div class="hero-header-row">
-    <span class="month-badge"><i class="fa-solid fa-calendar-days"></i> 30-DAY SEASON PASS</span>
+    <span class="month-badge" id="seasonCycleBadge"><i class="fa-solid fa-rotate"></i> SEASON #1 (30 DAYS)</span>
     <span class="days-left-badge" id="seasonDaysLeft"><i class="fa-solid fa-hourglass-half"></i> දින 30ක් ඉතිරියි</span>
    </div>
 
@@ -639,7 +605,7 @@ main::-webkit-scrollbar-thumb{background:rgba(255,209,102,0.35);border-radius:99
 
    <div class="center-loading-wrap">
     <div class="loading-stats-row">
-     <span class="earned-label"><i class="fa-solid fa-trophy" style="color:var(--gold)"></i> මාසයේ දිනූ Coins (Coin Win Progress)</span>
+     <span class="earned-label"><i class="fa-solid fa-trophy" style="color:var(--gold)"></i> මෙම මාසයේ Auto Win Coins</span>
      <span class="earned-amount" id="monthlyEarnedDisplay">0 <small>/ 720,000</small></span>
     </div>
     <div class="coin-progress-track">
@@ -647,14 +613,11 @@ main::-webkit-scrollbar-thumb{background:rgba(255,209,102,0.35);border-radius:99
     </div>
     <div class="loading-footer-row">
      <span id="progressPercentText">0% Completed</span>
-     <button type="button" class="sim-win-btn" id="simulateMatchWinBtn" title="තරඟයකින් දිනූ Coins එකතු කර පරීක්ෂා කරන්න">
-      <i class="fa-solid fa-plus"></i> +5,000 Win Test
-     </button>
+     <span id="seasonResetHint">දින 30කින් ස්වයංක්‍රීයව අලුත් වේ</span>
     </div>
    </div>
   </section>
 
-  <!-- Milestones List -->
   <section class="milestones-list" id="milestonesContainer"></section>
  </main>
 </div>
@@ -670,8 +633,74 @@ const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomai
 const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user';
 const PRO_PASS_PRICE=100000;
 const MONTH_MS=30*24*60*60*1000;
+const MILESTONE_TARGETS=[1000,10000,30000,45000,75000,100000,200000,245000,545000,720000];
+
+const REWARD_POOLS={
+ freePieces:[
+  {name:'Bronze Mist Piece',bg:'radial-gradient(circle at 30% 30%,#e6b89c,#9c6644)',border:'#ddb892',color:'#fff',icon:'◈'},
+  {name:'Jade Forest Piece',bg:'radial-gradient(circle at 30% 30%,#6ee7b7,#047857)',border:'#34d399',color:'#fff',icon:'❖'},
+  {name:'Cobalt Wave Piece',bg:'radial-gradient(circle at 30% 30%,#93c5fd,#1d4ed8)',border:'#60a5fa',color:'#fff',icon:'▲'},
+  {name:'Silver Moon Piece',bg:'radial-gradient(circle at 30% 30%,#f1f5f9,#64748b)',border:'#cbd5e1',color:'#0f172a',icon:'☾'},
+  {name:'Amber Sun Piece',bg:'radial-gradient(circle at 30% 30%,#fde68a,#d97706)',border:'#fbbf24',color:'#111',icon:'☀'},
+  {name:'Mint Frost Piece',bg:'radial-gradient(circle at 30% 30%,#ccfbf1,#0f766e)',border:'#5eead4',color:'#fff',icon:'❄'},
+  {name:'Copper Shield Piece',bg:'radial-gradient(circle at 30% 30%,#fdba74,#9a3412)',border:'#fb923c',color:'#fff',icon:'🛡'},
+  {name:'Crimson Rose Piece',bg:'radial-gradient(circle at 30% 30%,#fecdd3,#be123c)',border:'#fda4af',color:'#fff',icon:'✿'},
+  {name:'Obsidian Edge Piece',bg:'radial-gradient(circle at 30% 30%,#475569,#0f172a)',border:'#94a3b8',color:'#ffd166',icon:'♠'},
+  {name:'Grand Star Piece',bg:'radial-gradient(circle at 30% 30%,#fde047,#b45309)',border:'#ffd166',color:'#111',icon:'★'}
+ ],
+ proPieces:[
+  {name:'Aurelia Gold Piece',bg:'linear-gradient(135deg,#fff3b0,#f59e0b)',border:'#fde68a',color:'#111',icon:'♛'},
+  {name:'Cyber Plasma Piece',bg:'radial-gradient(circle at 30% 30%,#67e8f9,#0284c7)',border:'#00f2fe',color:'#fff',icon:'✦'},
+  {name:'Crimson Flare Piece',bg:'radial-gradient(circle at 30% 30%,#fda4af,#be123c)',border:'#fb7185',color:'#fff',icon:'☀'},
+  {name:'Royal Amethyst Piece',bg:'radial-gradient(circle at 30% 30%,#e9d5ff,#7e22ce)',border:'#c084fc',color:'#fff',icon:'❖'},
+  {name:'Dragon Fang Piece',bg:'linear-gradient(135deg,#f87171,#7f1d1d)',border:'#ffd166',color:'#ffd166',icon:'🐉'},
+  {name:'Volt Titan Piece',bg:'radial-gradient(circle at 30% 30%,#fef08a,#ca8a04)',border:'#00f2fe',color:'#111',icon:'⚡'},
+  {name:'Diamond Nova Piece',bg:'radial-gradient(circle at 30% 30%,#e0f2fe,#0369a1)',border:'#ffd166',color:'#fff',icon:'◆'},
+  {name:'Meteor Core Piece',bg:'radial-gradient(circle at 30% 30%,#c084fc,#312e81)',border:'#ffd166',color:'#ffd166',icon:'☄'},
+  {name:'Phantom Crown Piece',bg:'linear-gradient(135deg,#a855f7,#0f172a)',border:'#ffd166',color:'#fff',icon:'♕'},
+  {name:'Immortal King Piece',bg:'linear-gradient(135deg,#ffd166,#ff4757,#7e22ce)',border:'#fff',color:'#fff',icon:'♔'}
+ ],
+ freeAvatars:[
+  {name:'Pawn Starter',icon:'fa-chess-pawn'},
+  {name:'Emerald Scout',icon:'fa-leaf'},
+  {name:'Tide Runner',icon:'fa-water'},
+  {name:'Night Watcher',icon:'fa-moon'},
+  {name:'Solar Striker',icon:'fa-sun'},
+  {name:'Frost Warden',icon:'fa-snowflake'},
+  {name:'Iron Guardian',icon:'fa-shield-halved'},
+  {name:'Champion Honor',icon:'fa-award'},
+  {name:'Citadel Master',icon:'fa-chess-rook'},
+  {name:'Grand Finale Hero',icon:'fa-trophy'}
+ ],
+ proAvatars:[
+  {name:'Queen Vanguard',icon:'fa-chess-queen'},
+  {name:'Astro Commander',icon:'fa-user-astronaut'},
+  {name:'Inferno Lord',icon:'fa-fire-flame-curved'},
+  {name:'Arcane Sovereign',icon:'fa-wand-sparkles'},
+  {name:'Dragon Emperor',icon:'fa-dragon'},
+  {name:'Thunder Titan',icon:'fa-bolt-lightning'},
+  {name:'Diamond Legend',icon:'fa-gem'},
+  {name:'Cosmic Overlord',icon:'fa-meteor'},
+  {name:'Mythic Monarch',icon:'fa-crown'},
+  {name:'Immortal Grandmaster',icon:'fa-chess-king'}
+ ]
+};
+
+const COIN_AMOUNTS={
+ 1000:{free:200,pro:600},
+ 10000:{free:800,pro:2500},
+ 30000:{free:1500,pro:4500},
+ 45000:{free:2200,pro:6500},
+ 75000:{free:3500,pro:10000},
+ 100000:{free:5000,pro:15000},
+ 200000:{free:8000,pro:25000},
+ 245000:{free:10000,pro:30000},
+ 545000:{free:18000,pro:55000},
+ 720000:{free:25000,pro:80000}
+};
 
 let auth,db,fbUser,isNavigating=false;
+let lastObservedPoints=null;
 let user={
  name:'',
  points:500,
@@ -683,143 +712,11 @@ let user={
  avatarIcon:'fa-user',
  unlockedAvatars:['fa-user'],
  eventSeasonStart:0,
+ eventSeasonNumber:1,
  monthlyWonCoins:0,
  hasProPass:false,
  claimedEventRewards:[]
 };
-
-const EVENT_MILESTONES=[
- {
-  target:1000,
-  free:{
-   coins:200,
-   piece:{id:'ev_p_1k_free',name:'Bronze Mist Piece',bg:'radial-gradient(circle at 30% 30%,#e6b89c,#9c6644)',border:'#ddb892',color:'#fff',icon:'◈'},
-   avatar:{id:'fa-chess-pawn',name:'Pawn Starter',icon:'fa-chess-pawn'}
-  },
-  pro:{
-   coins:600,
-   piece:{id:'ev_p_1k_pro',name:'Aurelia Gold Piece',bg:'linear-gradient(135deg,#fff3b0,#f59e0b)',border:'#fde68a',color:'#111',icon:'♛'},
-   avatar:{id:'fa-chess-queen',name:'Queen Vanguard',icon:'fa-chess-queen'}
-  }
- },
- {
-  target:10000,
-  free:{
-   coins:800,
-   piece:{id:'ev_p_10k_free',name:'Jade Forest Piece',bg:'radial-gradient(circle at 30% 30%,#6ee7b7,#047857)',border:'#34d399',color:'#fff',icon:'❖'},
-   avatar:{id:'fa-leaf',name:'Emerald Scout',icon:'fa-leaf'}
-  },
-  pro:{
-   coins:2500,
-   piece:{id:'ev_p_10k_pro',name:'Cyber Plasma Piece',bg:'radial-gradient(circle at 30% 30%,#67e8f9,#0284c7)',border:'#00f2fe',color:'#fff',icon:'✦'},
-   avatar:{id:'fa-user-astronaut',name:'Astro Commander',icon:'fa-user-astronaut'}
-  }
- },
- {
-  target:30000,
-  free:{
-   coins:1500,
-   piece:{id:'ev_p_30k_free',name:'Cobalt Wave Piece',bg:'radial-gradient(circle at 30% 30%,#93c5fd,#1d4ed8)',border:'#60a5fa',color:'#fff',icon:'▲'},
-   avatar:{id:'fa-water',name:'Tide Runner',icon:'fa-water'}
-  },
-  pro:{
-   coins:4500,
-   piece:{id:'ev_p_30k_pro',name:'Crimson Flare Piece',bg:'radial-gradient(circle at 30% 30%,#fda4af,#be123c)',border:'#fb7185',color:'#fff',icon:'☀'},
-   avatar:{id:'fa-fire-flame-curved',name:'Inferno Lord',icon:'fa-fire-flame-curved'}
-  }
- },
- {
-  target:45000,
-  free:{
-   coins:2200,
-   piece:{id:'ev_p_45k_free',name:'Silver Moon Piece',bg:'radial-gradient(circle at 30% 30%,#f1f5f9,#64748b)',border:'#cbd5e1',color:'#0f172a',icon:'☾'},
-   avatar:{id:'fa-moon',name:'Night Watcher',icon:'fa-moon'}
-  },
-  pro:{
-   coins:6500,
-   piece:{id:'ev_p_45k_pro',name:'Royal Amethyst Piece',bg:'radial-gradient(circle at 30% 30%,#e9d5ff,#7e22ce)',border:'#c084fc',color:'#fff',icon:'❖'},
-   avatar:{id:'fa-wand-sparkles',name:'Arcane Sovereign',icon:'fa-wand-sparkles'}
-  }
- },
- {
-  target:75000,
-  free:{
-   coins:3500,
-   piece:{id:'ev_p_75k_free',name:'Amber Sun Piece',bg:'radial-gradient(circle at 30% 30%,#fde68a,#d97706)',border:'#fbbf24',color:'#111',icon:'☀'},
-   avatar:{id:'fa-sun',name:'Solar Striker',icon:'fa-sun'}
-  },
-  pro:{
-   coins:10000,
-   piece:{id:'ev_p_75k_pro',name:'Dragon Fang Piece',bg:'linear-gradient(135deg,#f87171,#7f1d1d)',border:'#ffd166',color:'#ffd166',icon:'🐉'},
-   avatar:{id:'fa-dragon',name:'Dragon Emperor',icon:'fa-dragon'}
-  }
- },
- {
-  target:100000,
-  free:{
-   coins:5000,
-   piece:{id:'ev_p_100k_free',name:'Mint Frost Piece',bg:'radial-gradient(circle at 30% 30%,#ccfbf1,#0f766e)',border:'#5eead4',color:'#fff',icon:'❄'},
-   avatar:{id:'fa-snowflake',name:'Frost Warden',icon:'fa-snowflake'}
-  },
-  pro:{
-   coins:15000,
-   piece:{id:'ev_p_100k_pro',name:'Volt Titan Piece',bg:'radial-gradient(circle at 30% 30%,#fef08a,#ca8a04)',border:'#00f2fe',color:'#111',icon:'⚡'},
-   avatar:{id:'fa-bolt-lightning',name:'Thunder Titan',icon:'fa-bolt-lightning'}
-  }
- },
- {
-  target:200000,
-  free:{
-   coins:8000,
-   piece:{id:'ev_p_200k_free',name:'Copper Shield Piece',bg:'radial-gradient(circle at 30% 30%,#fdba74,#9a3412)',border:'#fb923c',color:'#fff',icon:'🛡'},
-   avatar:{id:'fa-shield-halved',name:'Iron Guardian',icon:'fa-shield-halved'}
-  },
-  pro:{
-   coins:25000,
-   piece:{id:'ev_p_200k_pro',name:'Diamond Nova Piece',bg:'radial-gradient(circle at 30% 30%,#e0f2fe,#0369a1)',border:'#ffd166',color:'#fff',icon:'◆'},
-   avatar:{id:'fa-gem',name:'Diamond Legend',icon:'fa-gem'}
-  }
- },
- {
-  target:245000,
-  free:{
-   coins:10000,
-   piece:{id:'ev_p_245k_free',name:'Crimson Rose Piece',bg:'radial-gradient(circle at 30% 30%,#fecdd3,#be123c)',border:'#fda4af',color:'#fff',icon:'✿'},
-   avatar:{id:'fa-award',name:'Champion Honor',icon:'fa-award'}
-  },
-  pro:{
-   coins:30000,
-   piece:{id:'ev_p_245k_pro',name:'Meteor Core Piece',bg:'radial-gradient(circle at 30% 30%,#c084fc,#312e81)',border:'#ffd166',color:'#ffd166',icon:'☄'},
-   avatar:{id:'fa-meteor',name:'Cosmic Overlord',icon:'fa-meteor'}
-  }
- },
- {
-  target:545000,
-  free:{
-   coins:18000,
-   piece:{id:'ev_p_545k_free',name:'Obsidian Edge Piece',bg:'radial-gradient(circle at 30% 30%,#475569,#0f172a)',border:'#94a3b8',color:'#ffd166',icon:'♠'},
-   avatar:{id:'fa-chess-rook',name:'Citadel Master',icon:'fa-chess-rook'}
-  },
-  pro:{
-   coins:55000,
-   piece:{id:'ev_p_545k_pro',name:'Phantom Crown Piece',bg:'linear-gradient(135deg,#a855f7,#0f172a)',border:'#ffd166',color:'#fff',icon:'♕'},
-   avatar:{id:'fa-crown',name:'Mythic Monarch',icon:'fa-crown'}
-  }
- },
- {
-  target:720000,
-  free:{
-   coins:25000,
-   piece:{id:'ev_p_720k_free',name:'Grand Star Piece',bg:'radial-gradient(circle at 30% 30%,#fde047,#b45309)',border:'#ffd166',color:'#111',icon:'★'},
-   avatar:{id:'fa-trophy',name:'Grand Finale Hero',icon:'fa-trophy'}
-  },
-  pro:{
-   coins:80000,
-   piece:{id:'ev_p_720k_pro',name:'Immortal King Piece',bg:'linear-gradient(135deg,#ffd166,#ff4757,#7e22ce)',border:'#fff',color:'#fff',icon:'♔'},
-   avatar:{id:'fa-chess-king',name:'Immortal Grandmaster',icon:'fa-chess-king'}
-  }
- }
-];
 
 function normalizeList(val, fallback) {
  if (Array.isArray(val)) return val.length ? val : fallback;
@@ -848,19 +745,75 @@ function smoothNavigate(url){
  setTimeout(()=>{window.location.href=url;},110);
 }
 
+function getCurrentSeasonNumber(){
+ const now=Date.now();
+ const start=Number(user.eventSeasonStart)||now;
+ const cycles=Math.floor((now - start) / MONTH_MS);
+ return Math.max(1, (Number(user.eventSeasonNumber)||1) + Math.max(0, cycles));
+}
+
 function ensureMonthlyCycle(){
  const now=Date.now();
- const start=Number(user.eventSeasonStart)||0;
- if(!start || (now - start) >= MONTH_MS){
+ if(!user.eventSeasonStart){
   user.eventSeasonStart=now;
+  user.eventSeasonNumber=Number(user.eventSeasonNumber)||1;
+ }
+ const elapsed=now - Number(user.eventSeasonStart);
+ if(elapsed >= MONTH_MS){
+  const completedCycles=Math.floor(elapsed / MONTH_MS);
+  user.eventSeasonNumber=(Number(user.eventSeasonNumber)||1) + completedCycles;
+  user.eventSeasonStart=Number(user.eventSeasonStart) + (completedCycles * MONTH_MS);
   user.monthlyWonCoins=0;
   user.claimedEventRewards=[];
+  toast(`නව දින 30 Event Season #${user.eventSeasonNumber} ආරම්භ විය! නව Rewards සූදානම්.`,'fa-rotate');
  }
+}
+
+function buildSeasonMilestones(seasonNum){
+ const shift=(Math.max(1, Number(seasonNum)||1) - 1);
+ return MILESTONE_TARGETS.map((target, idx)=>{
+  const fPieceBase=REWARD_POOLS.freePieces[(idx + shift) % REWARD_POOLS.freePieces.length];
+  const pPieceBase=REWARD_POOLS.proPieces[(idx + shift) % REWARD_POOLS.proPieces.length];
+  const fAvBase=REWARD_POOLS.freeAvatars[(idx + shift) % REWARD_POOLS.freeAvatars.length];
+  const pAvBase=REWARD_POOLS.proAvatars[(idx + shift) % REWARD_POOLS.proAvatars.length];
+  const cAmt=COIN_AMOUNTS[target]||{free:500,pro:1500};
+
+  return {
+   target,
+   free:{
+    coins:cAmt.free,
+    piece:{
+     ...fPieceBase,
+     id:`ev_s${seasonNum}_p_${target}_free`,
+     name:`${fPieceBase.name} (S${seasonNum})`
+    },
+    avatar:{
+     ...fAvBase,
+     id:`${fAvBase.icon}_s${seasonNum}_f`,
+     name:`${fAvBase.name} (S${seasonNum})`
+    }
+   },
+   pro:{
+    coins:cAmt.pro,
+    piece:{
+     ...pPieceBase,
+     id:`ev_s${seasonNum}_p_${target}_pro`,
+     name:`${pPieceBase.name} (S${seasonNum})`
+    },
+    avatar:{
+     ...pAvBase,
+     id:`${pAvBase.icon}_s${seasonNum}_p`,
+     name:`${pAvBase.name} (S${seasonNum})`
+    }
+   }
+  };
+ });
 }
 
 function persistEventState(){
  user.points=Number(user.points)||0;
  user.monthlyWonCoins=Number(user.monthlyWonCoins)||0;
+ user.eventSeasonNumber=Number(user.eventSeasonNumber)||1;
  user.unlockedPieces=Array.from(new Set(normalizeList(user.unlockedPieces,[0])));
  user.unlockedAvatars=Array.from(new Set(normalizeList(user.unlockedAvatars,['fa-user']).map(String)));
  user.claimedEventRewards=Array.from(new Set(Array.isArray(user.claimedEventRewards)?user.claimedEventRewards:[]));
@@ -869,11 +822,12 @@ function persistEventState(){
  if(db && fbUser){
   const payload={
    points:user.points,
-   pieceIndex:Number(user.pieceIndex)||0,
+   pieceIndex:user.pieceIndex ?? 0,
    unlockedPieces:user.unlockedPieces,
    avatarIcon:user.avatarIcon||'fa-user',
    unlockedAvatars:user.unlockedAvatars,
    eventSeasonStart:Number(user.eventSeasonStart)||Date.now(),
+   eventSeasonNumber:user.eventSeasonNumber,
    monthlyWonCoins:user.monthlyWonCoins,
    hasProPass:Boolean(user.hasProPass),
    claimedEventRewards:user.claimedEventRewards
@@ -893,17 +847,35 @@ function addEventRewardToShopConfig(type, itemObj){
   if(!exists){
    list.push({
     ...itemObj,
-    price: itemObj.price || 0,
-    isEventReward: true
+    price:0,
+    isEventReward:true,
+    season:user.eventSeasonNumber||1
    });
    db.ref(path).set(list).catch(()=>{});
   }
  }).catch(()=>{});
 }
 
+function syncAutoCoinWinFromBalance(newPoints){
+ ensureMonthlyCycle();
+ const currentPts=Number(newPoints)||0;
+ if(lastObservedPoints !== null && currentPts > lastObservedPoints){
+  const gained=currentPts - lastObservedPoints;
+  user.monthlyWonCoins=(Number(user.monthlyWonCoins)||0) + gained;
+  user.points=currentPts;
+  persistEventState();
+ }else{
+  user.points=currentPts;
+ }
+ lastObservedPoints=currentPts;
+}
+
 function claimMilestoneReward(target, track){
- const m=EVENT_MILESTONES.find(x=>x.target===target);
+ const seasonNum=Number(user.eventSeasonNumber)||1;
+ const milestones=buildSeasonMilestones(seasonNum);
+ const m=milestones.find(x=>x.target===target);
  if(!m)return;
+
  const won=Number(user.monthlyWonCoins)||0;
  if(won < target){
   return toast(`මෙම Reward එකට තව Coins ${(target - won).toLocaleString()}ක් දිනිය යුතුයි!`,'fa-lock');
@@ -911,14 +883,17 @@ function claimMilestoneReward(target, track){
  if(track === 'pro' && !user.hasProPass){
   return toast('Pro Pass Rewards ලබාගැනීමට Pro Pass (100,000 Coins) මිලදී ගන්න!','fa-crown');
  }
- const claimKey=`${target}_${track}`;
+
+ const claimKey=`s${seasonNum}_${target}_${track}`;
  const claimed=Array.isArray(user.claimedEventRewards)?user.claimedEventRewards:[];
  if(claimed.includes(claimKey)){
   return toast('මෙම ත්‍යාගය දැනටමත් ලබාගෙන ඇත.');
  }
 
  const rewardData=m[track];
- user.points=(Number(user.points)||0) + (Number(rewardData.coins)||0);
+ const bonusCoins=Number(rewardData.coins)||0;
+ user.points=(Number(user.points)||0) + bonusCoins;
+ lastObservedPoints=user.points;
 
  if(rewardData.avatar){
   const avId=String(rewardData.avatar.id);
@@ -942,12 +917,12 @@ function claimMilestoneReward(target, track){
  toast(`${target.toLocaleString()} (${track.toUpperCase()}) Event Reward ලැබුණි! Profile එකේ පෙන්වයි.`,'fa-trophy');
 }
 
-function renderRewardLaneHtml(m, track){
+function renderRewardLaneHtml(m, track, seasonNum){
  const data=m[track];
  const won=Number(user.monthlyWonCoins)||0;
  const unlockedMilestone=won >= m.target;
  const proAllowed=(track === 'free') || Boolean(user.hasProPass);
- const claimKey=`${m.target}_${track}`;
+ const claimKey=`s${seasonNum}_${m.target}_${track}`;
  const isClaimed=(user.claimedEventRewards||[]).includes(claimKey);
 
  let btnClass='claim-btn disabled';
@@ -1002,12 +977,16 @@ function renderRewardLaneHtml(m, track){
 
 function renderEventUI(){
  ensureMonthlyCycle();
+ const seasonNum=Number(user.eventSeasonNumber)||1;
+ const milestones=buildSeasonMilestones(seasonNum);
  const won=Number(user.monthlyWonCoins)||0;
- const maxTarget=EVENT_MILESTONES[EVENT_MILESTONES.length-1].target;
+ const maxTarget=milestones[milestones.length-1].target;
  const pct=Math.min(100, Math.round((won / maxTarget) * 1000) / 10);
  const elapsed=Date.now() - (Number(user.eventSeasonStart)||Date.now());
  const daysRem=Math.max(1, Math.ceil((MONTH_MS - elapsed) / (24*60*60*1000)));
 
+ $('seasonTitle').textContent=`MONTHLY COIN EVENT · SEASON ${seasonNum}`;
+ $('seasonCycleBadge').innerHTML=`<i class="fa-solid fa-rotate"></i> SEASON #${seasonNum} (30 DAYS)`;
  $('userCoinBalance').textContent=(Number(user.points)||0).toLocaleString();
  $('seasonDaysLeft').innerHTML=`<i class="fa-solid fa-hourglass-half"></i> දින ${daysRem}ක් ඉතිරියි`;
  $('monthlyEarnedDisplay').innerHTML=`${won.toLocaleString()} <small>/ ${maxTarget.toLocaleString()}</small>`;
@@ -1028,6 +1007,7 @@ function renderEventUI(){
     return toast(`Pro Pass මිලදී ගැනීමට Coins ${PRO_PASS_PRICE.toLocaleString()}ක් අවශ්‍යයි!`,'fa-coins');
    }
    user.points=bal - PRO_PASS_PRICE;
+   lastObservedPoints=user.points;
    user.hasProPass=true;
    persistEventState();
    renderEventUI();
@@ -1037,7 +1017,7 @@ function renderEventUI(){
 
  const container=$('milestonesContainer');
  container.innerHTML='';
- EVENT_MILESTONES.forEach(m=>{
+ milestones.forEach(m=>{
   const reached=won >= m.target;
   const card=document.createElement('div');
   card.className='milestone-card'+(reached?' reached':'');
@@ -1047,22 +1027,13 @@ function renderEventUI(){
     <span class="milestone-state ${reached?'state-unlocked':'state-locked'}">${reached?'UNLOCKED':'TARGET '+m.target.toLocaleString()}</span>
    </div>
    <div class="reward-lanes">
-    ${renderRewardLaneHtml(m, 'free')}
-    ${renderRewardLaneHtml(m, 'pro')}
+    ${renderRewardLaneHtml(m, 'free', seasonNum)}
+    ${renderRewardLaneHtml(m, 'pro', seasonNum)}
    </div>
   `;
   container.appendChild(card);
  });
 }
-
-$('simulateMatchWinBtn').onclick=()=>{
- const gain=5000;
- user.monthlyWonCoins=(Number(user.monthlyWonCoins)||0)+gain;
- user.points=(Number(user.points)||0)+gain;
- persistEventState();
- renderEventUI();
- toast(`+${gain.toLocaleString()} Win Coins එකතු කරන ලදී!`,'fa-coins');
-};
 
 $('backHomeBtn').onclick=()=>smoothNavigate('index.html');
 
@@ -1075,6 +1046,9 @@ try{
   }
  }
 }catch(e){}
+ensureMonthlyCycle();
+lastObservedPoints=Number(user.points)||0;
+persistEventState();
 renderEventUI();
 
 try{
@@ -1090,18 +1064,21 @@ if(auth && db){
   db.ref('users_v6/'+u.uid).on('value',snap=>{
    const d=snap.val();
    if(!d)return;
+   const incomingPts=Number.isFinite(Number(d.points))?Number(d.points):(Number(user.points)||0);
    user={
     ...user,
     ...d,
     uid:u.uid,
-    points:Number.isFinite(Number(d.points))?Number(d.points):user.points,
+    points:incomingPts,
     monthlyWonCoins:Number(d.monthlyWonCoins)||0,
-    hasProPass:Boolean(d.hasProPass),
     eventSeasonStart:Number(d.eventSeasonStart)||user.eventSeasonStart||Date.now(),
+    eventSeasonNumber:Number(d.eventSeasonNumber)||user.eventSeasonNumber||1,
+    hasProPass:Boolean(d.hasProPass),
     claimedEventRewards:Array.isArray(d.claimedEventRewards)?d.claimedEventRewards:[],
     unlockedPieces:normalizeList(d.unlockedPieces,[0]),
     unlockedAvatars:normalizeList(d.unlockedAvatars,['fa-user']).map(String)
    };
+   syncAutoCoinWinFromBalance(incomingPts);
    localStorage.setItem(KEY,JSON.stringify(user));
    renderEventUI();
   });
