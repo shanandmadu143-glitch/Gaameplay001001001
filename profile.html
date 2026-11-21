@@ -746,7 +746,7 @@ let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:
 let isNavigating=false;
 let customPieces=[];
 let customAvatars=[];
-let tempSelectedPiece='0';
+let tempSelectedPiece=0;
 let tempSelectedAvatar='fa-user';
 let userListenerRef=null;
 let userListenerFn=null;
@@ -783,7 +783,7 @@ const EVENT_REWARD_PIECES=[
  {id:'ev_p_30k_pro',name:'Crimson Flare Piece',bg:'radial-gradient(circle at 30% 30%,#fda4af,#be123c)',border:'#fb7185',color:'#fff',icon:'☀'},
  {id:'ev_p_45k_free',name:'Silver Moon Piece',bg:'radial-gradient(circle at 30% 30%,#f1f5f9,#64748b)',border:'#cbd5e1',color:'#0f172a',icon:'☾'},
  {id:'ev_p_45k_pro',name:'Royal Amethyst Piece',bg:'radial-gradient(circle at 30% 30%,#e9d5ff,#7e22ce)',border:'#c084fc',color:'#fff',icon:'❖'},
- {id:100:'ev_p_75k_free',name:'Amber Sun Piece',bg:'radial-gradient(circle at 30% 30%,#fde68a,#d97706)',border:'#fbbf24',color:'#111',icon:'☀'},
+ {id:'ev_p_75k_free',name:'Amber Sun Piece',bg:'radial-gradient(circle at 30% 30%,#fde68a,#d97706)',border:'#fbbf24',color:'#111',icon:'☀'},
  {id:'ev_p_75k_pro',name:'Dragon Fang Piece',bg:'linear-gradient(135deg,#f87171,#7f1d1d)',border:'#ffd166',color:'#ffd166',icon:'🐉'},
  {id:'ev_p_100k_free',name:'Mint Frost Piece',bg:'radial-gradient(circle at 30% 30%,#ccfbf1,#0f766e)',border:'#5eead4',color:'#fff',icon:'❄'},
  {id:'ev_p_100k_pro',name:'Volt Titan Piece',bg:'radial-gradient(circle at 30% 30%,#fef08a,#ca8a04)',border:'#00f2fe',color:'#111',icon:'⚡'},
@@ -795,7 +795,7 @@ const EVENT_REWARD_PIECES=[
  {id:'ev_p_545k_pro',name:'Phantom Crown Piece',bg:'linear-gradient(135deg,#a855f7,#0f172a)',border:'#ffd166',color:'#fff',icon:'♕'},
  {id:'ev_p_720k_free',name:'Grand Star Piece',bg:'radial-gradient(circle at 30% 30%,#fde047,#b45309)',border:'#ffd166',color:'#111',icon:'★'},
  {id:'ev_p_720k_pro',name:'Immortal King Piece',bg:'linear-gradient(135deg,#ffd166,#ff4757,#7e22ce)',border:'#fff',color:'#fff',icon:'♔'}
-].map(item => item && item.name ? item : null).filter(Boolean);
+];
 
 const DEFAULT_AVATARS=[
  {id:'fa-user',name:'සම්මත (Default)',icon:'fa-user'},
@@ -810,14 +810,14 @@ const DEFAULT_AVATARS=[
  {id:'fa-skull',name:'හිස්කබල',icon:'fa-skull'},
  {id:'fa-star',name:'රන් තරුව',icon:'fa-star'},
  {id:'fa-gem',name:'දියමන්ති මැණික',icon:'fa-gem'},
- {id:'fa-fighter-jet',name:'ජෙට් යානය',icon:'fa-fighter-jet'},
+ {id:100,name:'ජෙට් යානය',icon:'fa-fighter-jet'},
  {id:'fa-meteor',name:'උල්කාපාතය',icon:'fa-meteor'},
  {id:'fa-cat',name:'කූට බළලා',icon:'fa-cat'},
  {id:'fa-dog',name:'බල්ලා',icon:'fa-dog'},
  {id:'fa-paw',name:'සිංහ පාදය',icon:'fa-paw'},
  {id:'fa-crosshairs',name:'ඉලක්කය',icon:'fa-crosshairs'},
  {id:'fa-hat-wizard',name:'මායාකාරයා',icon:'fa-hat-wizard'}
-];
+].map(a => a && a.name ? a : null).filter(Boolean);
 
 const EVENT_REWARD_AVATARS=[
  {id:'fa-chess-pawn',name:'Pawn Starter',icon:'fa-chess-pawn'},
@@ -1090,8 +1090,8 @@ function renderProfileItems(){
    const isSelected = avId === String(tempSelectedAvatar) || iconCls === resolveIconClass(tempSelectedAvatar);
    const avDiv = document.createElement('div');
    avDiv.className = 'piece-option' + (isSelected ? ' selected' : '');
-   const statusLabel = isEquipped ? 'EQUIPPED' : 'UNLOCKED';
-   const statusColor = isEquipped ? 'var(--gold)' : 'var(--neon-green)';
+   const statusLabel = isEquipped ? 'EQUIPPED' : (isSelected ? 'SELECTED' : 'UNLOCKED');
+   const statusColor = isEquipped ? 'var(--gold)' : (isSelected ? 'var(--neon-blue)' : 'var(--neon-green)');
    avDiv.innerHTML = `
     <div style="font-size:1.05rem;color:var(--gold);line-height:1"><i class="fa-solid ${iconCls}"></i></div>
     <span style="font-size:0.56rem;text-align:center;color:#e2e8f0;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%">${av.name}</span>
@@ -1123,8 +1123,8 @@ function renderProfileItems(){
    const isSelected = (selKey === String(pIdx)) || (selKey === idStr) || (String(findPieceByKey(selKey)._key) === String(p._key));
    const div=document.createElement('div');
    div.className='piece-option'+(isSelected?' selected':'');
-   const statusLabel = isEquipped ? 'EQUIPPED' : 'UNLOCKED';
-   const statusColor = isEquipped ? 'var(--gold)' : 'var(--neon-green)';
+   const statusLabel = isEquipped ? 'EQUIPPED' : (isSelected ? 'SELECTED' : 'UNLOCKED');
+   const statusColor = isEquipped ? 'var(--gold)' : (isSelected ? 'var(--neon-blue)' : 'var(--neon-green)');
    div.innerHTML=`
     <div style="width:22px;height:22px;border-radius:50%;background:${p.bg};border:1.5px solid ${p.border};color:${p.color};display:grid;place-items:center;font-size:0.75rem;box-shadow:0 2px 6px rgba(0,0,0,0.5)">${p.icon}</div>
     <span style="font-size:0.56rem;text-align:center;color:#e2e8f0;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%">${p.name}</span>
@@ -1239,16 +1239,20 @@ $('saveProfile').onclick=async()=>{
  user.unlockedAvatars=normalizeList(user.unlockedAvatars,['fa-user']).map(String);
  localStorage.setItem(KEY,JSON.stringify(user));
 
- if(db&&fbUser){
+ const activeUid = (fbUser && fbUser.uid) || user.uid;
+ if(db && activeUid){
   const patch={
    name:user.name,
+   points:Number.isFinite(Number(user.points))?Number(user.points):500,
+   wins:Number(user.wins)||0,
+   losses:Number(user.losses)||0,
    pieceIndex:user.pieceIndex,
    avatarIcon:user.avatarIcon,
    unlockedPieces:user.unlockedPieces,
    unlockedAvatars:user.unlockedAvatars
   };
-  await db.ref('users_v6/'+fbUser.uid).update(patch).catch(()=>{});
-  await db.ref('publicProfiles_v6/'+fbUser.uid).update(patch).catch(()=>{});
+  await db.ref('users_v6/'+activeUid).update(patch).catch(()=>{});
+  await db.ref('publicProfiles_v6/'+activeUid).update(patch).catch(()=>{});
  }
  renderProfileItems();
  toast('Gaming Profile Loadout සුරකින ලදී!', 'fa-shield-check');
@@ -1262,7 +1266,7 @@ $('logoutBtn').onclick=async()=>{
  localStorage.removeItem(KEY);
  sessionStorage.removeItem('sinhala_draughts_admin_auth');
  user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user',unlockedAvatars:['fa-user']};
- tempSelectedPiece='0';
+ tempSelectedPiece=0;
  tempSelectedAvatar='fa-user';
  if(auth)await auth.signOut().catch(()=>{});
  smoothNavigate('index.html');
