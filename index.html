@@ -11,7 +11,6 @@
 html,body{width:100%;height:100%;background:radial-gradient(circle at 50% 20%,#1a103c 0%,#080b18 60%,#03050a 100%);color:#f8f9fa;overflow:hidden}
 body{min-height:100dvh;display:flex;flex-direction:column;justify-content:center;align-items:center}
 
-/* Professional Instant (0ms) Transition Sweep */
 .page-sweep{
   position:fixed;
   top:0;
@@ -76,12 +75,12 @@ main{flex:1;display:flex;flex-direction:column;justify-content:center;align-item
 .modalbox{width:min(100%,420px);background:linear-gradient(145deg,#121828,#1b243f);border:2px solid var(--gold);border-radius:24px;padding:22px;display:grid;gap:14px;max-height:85vh;overflow-y:auto;box-shadow:0 20px 40px rgba(0,0,0,0.8)}
 .modalbox h2,.modalbox h3{text-align:center;color:var(--gold);font-weight:700;font-size:1.2rem}
 .apk-badge{width:54px;height:54px;margin:0 auto;border-radius:50%;display:grid;place-items:center;background:rgba(46,204,113,0.16);border:2px solid var(--neon-green);color:var(--neon-green);font-size:1.5rem}
-.apk-version{text-align:center;font-weight:800;color:var(--neon-blue);font-size:0.92rem;word-break:break-all}
+.apk-version{text-align:center;font-weight:800;color:var(--neon-blue);font-size:0.92rem}
 .apk-notes{background:rgba(0,0,0,0.35);border-radius:14px;padding:10px 12px;color:#d1d8e0;font-size:0.9rem;line-height:1.45;text-align:center}
 
 .apk-dl-prog{display:none;flex-direction:column;gap:6px;background:rgba(0,0,0,0.45);border:1px solid rgba(0,242,254,0.35);border-radius:14px;padding:10px 12px}
 .apk-dl-prog.active{display:flex}
-.apk-dl-top{display:flex;justify-content:space-between;align-items:center;font-size:0.82rem;font-weight:700;gap:8px}
+.apk-dl-top{display:flex;justify-content:space-between;align-items:center;font-size:0.82rem;font-weight:700}
 .apk-dl-track{width:100%;height:11px;border-radius:999px;background:rgba(255,255,255,0.08);overflow:hidden}
 .apk-dl-fill{height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,var(--neon-blue),var(--neon-green),var(--gold));transition:width 0.16s ease}
 .apk-dl-sub{display:flex;justify-content:space-between;font-size:0.78rem;color:var(--dim)}
@@ -185,8 +184,8 @@ input:focus{border-color:var(--gold)}
  <div class="modalbox">
   <div class="apk-badge"><i class="fa-brands fa-android"></i></div>
   <h3 id="apkUpdateHeading">New Update</h3>
-  <div class="apk-version" id="apkUpdateVersion">Version v0.1 • app-debug.apk (26.07 MB)</div>
-  <div class="apk-notes" id="apkUpdateNotes">New Update v0.1 is available! Tap Install to update the game.</div>
+  <div class="apk-version" id="apkUpdateVersion">Version v1.0.0</div>
+  <div class="apk-notes" id="apkUpdateNotes">අලුත් Game APK Update එකක් ලබා ගත හැක. Install ඔබා install කරන්න.</div>
 
   <div class="apk-dl-prog" id="apkDownloadProgBox">
    <div class="apk-dl-top">
@@ -197,14 +196,14 @@ input:focus{border-color:var(--gold)}
     <div class="apk-dl-fill" id="apkDownloadProgFill"></div>
    </div>
    <div class="apk-dl-sub">
-    <span id="apkDownloadSizeText">26.07 MB</span>
-    <span id="apkDownloadChunksText">0 / 54 chunks</span>
+    <span id="apkDownloadSizeText">0.00 MB</span>
+    <span id="apkDownloadChunksText">0 / 0 chunks</span>
    </div>
   </div>
 
   <div class="apk-success-box" id="apkSuccessBox">
    <div class="apk-success-title"><i class="fa-solid fa-circle-check"></i> Successful Install</div>
-   <div class="apk-success-desc" id="apkSuccessDesc">APK සාර්ථකව සැකසී install/download ආරම්භ විය. App එක අලුත් කිරීමට Reset App ඔබන්න.</div>
+   <div class="apk-success-desc" id="apkSuccessDesc">APK සාර්ථකව install screen එකට යවන ලදී. Install අවසන් වූ පසු Reset App ඔබන්න.</div>
   </div>
 
   <div class="row" id="apkPreInstallActions">
@@ -229,6 +228,7 @@ input:focus{border-color:var(--gold)}
 const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
 const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user';
 const EVENT_MONTH_MS=30*24*60*60*1000;
+const BRIDGE_SLICE_BYTES=256*1024;
 
 let auth,db,firestore,fbUser,isNavigating=false;
 let customPieces=[];
@@ -387,7 +387,7 @@ try{
  firestore=firebase.firestore();
 }catch(e){console.error('Firebase initialization failed:',e);}
 
-/* APK Update Modal API + Firestore Listener + AndroidApkBridge */
+/* Cloud Firestore APK Update Listener, Install & Reset App Flow */
 function resetApkModalState(meta){
  isInstallCompleted=false;
  $('apkSuccessBox').classList.remove('show');
@@ -399,77 +399,9 @@ function resetApkModalState(meta){
  $('apkDownloadProgFill').style.width='0%';
  $('apkDownloadPctText').textContent='0%';
  if(meta){
-  const total=Number(meta.totalChunks)||54;
-  $('apkDownloadChunksText').textContent=`0 / ${total} chunks`;
-  if(meta.sizeText){
-   $('apkDownloadSizeText').textContent=String(meta.sizeText);
-  }else if(meta.sizeBytes){
-   $('apkDownloadSizeText').textContent=`${formatMb(meta.sizeBytes)} MB`;
-  }
+  $('apkDownloadChunksText').textContent=`0 / ${meta.totalChunks} chunks`;
  }
 }
-
-function renderUpdateModalContent(meta){
- const verRaw=String(meta.version || 'v0.1');
- const verFormatted=verRaw.startsWith('v') || verRaw.startsWith('V') ? verRaw : `v${verRaw}`;
- const fileName=meta.fileName || 'app-debug.apk';
- const sizeStr=meta.sizeText ? String(meta.sizeText) : (meta.sizeBytes ? `${formatMb(meta.sizeBytes)} MB` : '26.07 MB');
-
- $('apkUpdateVersion').textContent=`Version ${verFormatted} • ${fileName} (${sizeStr})`;
- $('apkUpdateNotes').textContent=meta.message || meta.notes || `New Update ${verFormatted} is available! Tap Install to update the game.`;
- $('apkDownloadSizeText').textContent=sizeStr;
-}
-
-window.openGameUpdateModal=function(opts={}){
- latestApkMeta={
-  version: opts.version || 'v0.1',
-  fileName: opts.fileName || 'app-debug.apk',
-  sizeText: opts.sizeText || (opts.sizeBytes ? `${formatMb(opts.sizeBytes)} MB` : '26.07 MB'),
-  sizeBytes: opts.sizeBytes || 0,
-  totalChunks: Number(opts.totalChunks) || 54,
-  apkUrl: opts.apkUrl || '',
-  message: opts.message || opts.notes || `New Update ${opts.version || 'v0.1'} is available! Tap Install to update the game.`
- };
- renderUpdateModalContent(latestApkMeta);
- resetApkModalState(latestApkMeta);
- modal('apkUpdateModal',true);
-};
-
-window.closeGameUpdateModal=function(){
- if(isDownloadingApk)return;
- modal('apkUpdateModal',false);
-};
-
-window.onApkDownloadProgress=function(percent, chunksDone){
- const p=Math.max(0, Math.min(100, Number(percent)||0));
- const total=Number(latestApkMeta?.totalChunks)||54;
- const done=chunksDone !== undefined ? Number(chunksDone) : Math.round((p/100)*total);
- $('apkDownloadProgBox').classList.add('active');
- $('apkDownloadProgFill').style.width=p+'%';
- $('apkDownloadPctText').textContent=p+'%';
- $('apkDownloadChunksText').textContent=`${done} / ${total} chunks`;
- $('apkDownloadStatusText').style.color='var(--neon-blue)';
- $('apkDownloadStatusText').textContent='Download වෙමින් පවතී...';
-};
-
-window.onApkDownloadStatus=function(msg, isError){
- $('apkDownloadProgBox').classList.add('active');
- $('apkDownloadProgFill').style.width='100%';
- $('apkDownloadPctText').textContent='100%';
- const total=Number(latestApkMeta?.totalChunks)||54;
- $('apkDownloadChunksText').textContent=`${total} / ${total} chunks`;
- $('apkDownloadStatusText').style.color=isError ? 'var(--red)' : 'var(--neon-green)';
- $('apkDownloadStatusText').textContent=String(msg || (isError ? 'Install අසාර්ථක විය.' : 'Install කිරීමට සූදානම්.'));
- if(!isError){
-  isInstallCompleted=true;
-  $('apkPreInstallActions').style.display='none';
-  $('apkSuccessBox').classList.add('show');
-  $('apkPostInstallActions').style.display='flex';
- }else{
-  $('installApkBtn').disabled=false;
-  $('dismissApkBtn').disabled=false;
- }
-};
 
 function attachFirestoreApkListener(){
  if(!firestore || firestoreApkListenerAttached)return;
@@ -482,7 +414,9 @@ function attachFirestoreApkListener(){
   if(sessionStorage.getItem('dismissed_apk_v_'+meta.version)==='1')return;
 
   latestApkMeta=meta;
-  renderUpdateModalContent(meta);
+  const mbStr=meta.sizeBytes ? ` (${formatMb(meta.sizeBytes)} MB)` : '';
+  $('apkUpdateVersion').textContent=`Version v${meta.version} • ${meta.fileName||'SinhalaDraughts.apk'}${mbStr}`;
+  $('apkUpdateNotes').textContent=meta.notes || 'අලුත් Game APK Update එකක් ලබා ගත හැක. Install ඔබා install කරන්න.';
   resetApkModalState(meta);
   modal('apkUpdateModal',true);
  },err=>{
@@ -509,22 +443,62 @@ function base64ToUint8Array(base64){
  return bytes;
 }
 
-function triggerApkInstallFromUrlOrBlob(urlOrBlob, fileName){
- if(window.AndroidApkBridge && typeof window.AndroidApkBridge.installApkFromUrl === 'function'){
-  window.AndroidApkBridge.installApkFromUrl(urlOrBlob, fileName);
- }else{
-  const link=document.createElement('a');
-  link.href=urlOrBlob;
-  link.download=fileName;
-  link.rel='noopener';
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
+function uint8ArrayToBase64(bytes){
+ let binary='';
+ const step=0x8000;
+ for(let i=0;i<bytes.length;i+=step){
+  binary+=String.fromCharCode.apply(null, bytes.subarray(i, i+step));
  }
+ return btoa(binary);
+}
+
+async function sendBlobToAndroidNativeInstaller(apkBlob, fileName, onStatus){
+ const bridge=window.AndroidApkBridge;
+ if(bridge && typeof bridge.installApkChunk === 'function' && typeof bridge.finishAndInstallApk === 'function'){
+  const totalBytes=apkBlob.size;
+  const totalSlices=Math.max(1, Math.ceil(totalBytes / BRIDGE_SLICE_BYTES));
+  if(typeof bridge.beginApkTransfer === 'function'){
+   bridge.beginApkTransfer(fileName, totalBytes);
+  }
+  for(let i=0;i<totalSlices;i++){
+   const start=i * BRIDGE_SLICE_BYTES;
+   const end=Math.min(totalBytes, start + BRIDGE_SLICE_BYTES);
+   const buf=await apkBlob.slice(start, end).arrayBuffer();
+   const b64=uint8ArrayToBase64(new Uint8Array(buf));
+   bridge.installApkChunk(i, totalSlices, b64, fileName);
+   if(typeof onStatus==='function'){
+    onStatus(Math.round(((i+1)/totalSlices)*100), `APK Installer වෙත යවමින් (${i+1}/${totalSlices})...`);
+   }
+  }
+  bridge.finishAndInstallApk(fileName);
+  return true;
+ }
+
+ if(bridge && typeof bridge.installApkFromUrl === 'function'){
+  const reader=new FileReader();
+  const dataUrl=await new Promise((res,rej)=>{
+   reader.onloadend=()=>res(reader.result);
+   reader.onerror=rej;
+   reader.readAsDataURL(apkBlob);
+  });
+  bridge.installApkFromUrl(dataUrl, fileName);
+  return true;
+ }
+
+ const blobUrl=URL.createObjectURL(apkBlob);
+ const link=document.createElement('a');
+ link.href=blobUrl;
+ link.download=fileName;
+ link.rel='noopener';
+ document.body.appendChild(link);
+ link.click();
+ link.remove();
+ setTimeout(()=>URL.revokeObjectURL(blobUrl), 120000);
+ return false;
 }
 
 $('installApkBtn').onclick=async()=>{
- if(!latestApkMeta || isDownloadingApk || isInstallCompleted)return;
+ if(!firestore || !latestApkMeta || isDownloadingApk || isInstallCompleted)return;
  isDownloadingApk=true;
  $('installApkBtn').disabled=true;
  $('dismissApkBtn').disabled=true;
@@ -537,89 +511,75 @@ $('installApkBtn').onclick=async()=>{
  const progStatus=$('apkDownloadStatusText');
  const progSize=$('apkDownloadSizeText');
  const progChunks=$('apkDownloadChunksText');
- const totalChunks=Number(latestApkMeta.totalChunks)||54;
 
+ const totalChunks=Number(latestApkMeta.totalChunks)||1;
  progBox.classList.add('active');
- progFill.style.width='5%';
- progPct.textContent='5%';
- progStatus.style.color='var(--neon-blue)';
- progStatus.textContent='APK සකසමින්...';
+ progFill.style.width='0%';
+ progPct.textContent='0%';
+ progStatus.textContent='Firestore වෙතින් APK කොටස් ලබාගනිමින්...';
  progChunks.textContent=`0 / ${totalChunks} chunks`;
+ progSize.textContent='0.00 MB';
 
  try{
-  const fileName=latestApkMeta.fileName || `SinhalaDraughts_v${latestApkMeta.version||'0.1'}.apk`;
+  const chunksSnap=await firestore
+   .collection('apk_updates_v6')
+   .doc('latest_meta')
+   .collection('chunks')
+   .orderBy('index','asc')
+   .get();
 
-  if(latestApkMeta.apkUrl && /^https?:\/\//i.test(String(latestApkMeta.apkUrl).trim())){
-   const directUrl=String(latestApkMeta.apkUrl).trim();
-   progFill.style.width='100%';
-   progPct.textContent='100%';
-   progStatus.style.color='var(--neon-green)';
-   progStatus.textContent='Install ආරම්භ විය!';
-   progChunks.textContent=`${totalChunks} / ${totalChunks} chunks`;
-   triggerApkInstallFromUrlOrBlob(directUrl, fileName);
-  }else if(firestore){
-   progStatus.textContent='Firestore වෙතින් APK කොටස් ලබාගනිමින්...';
-   const chunksSnap=await firestore
-    .collection('apk_updates_v6')
-    .doc('latest_meta')
-    .collection('chunks')
-    .orderBy('index','asc')
-    .get();
-
-   const docs=chunksSnap.docs;
-   if(!docs.length){
-    throw new Error('APK chunks හමු නොවීය.');
-   }
-
-   const parts=[];
-   let assembledBytes=0;
-
-   for(let i=0;i<docs.length;i++){
-    const d=docs[i].data();
-    if(d && typeof d.data==='string'){
-     const bytes=base64ToUint8Array(d.data);
-     parts.push(bytes);
-     assembledBytes+=bytes.length;
-    }
-    const pct=Math.min(99, Math.round(((i+1) / docs.length) * 100));
-    progFill.style.width=pct+'%';
-    progPct.textContent=pct+'%';
-    progChunks.textContent=`${i+1} / ${docs.length} chunks`;
-    progSize.textContent=`${formatMb(assembledBytes)} MB`;
-   }
-
-   const apkBlob=new Blob(parts, {type:'application/vnd.android.package-archive'});
-   const blobUrl=URL.createObjectURL(apkBlob);
-
-   progFill.style.width='100%';
-   progPct.textContent='100%';
-   progStatus.style.color='var(--neon-green)';
-   progStatus.textContent='Install ආරම්භ විය!';
-   progSize.textContent=`${formatMb(apkBlob.size)} MB`;
-
-   triggerApkInstallFromUrlOrBlob(blobUrl, fileName);
-   setTimeout(()=>URL.revokeObjectURL(blobUrl), 120000);
-  }else{
-   throw new Error('APK මූලාශ්‍රය (apkUrl හෝ Firestore) හමු නොවීය.');
+  const docs=chunksSnap.docs;
+  if(!docs.length){
+   throw new Error('APK chunks හමු නොවීය.');
   }
+
+  const parts=[];
+  let assembledBytes=0;
+
+  for(let i=0;i<docs.length;i++){
+   const d=docs[i].data();
+   if(d && typeof d.data==='string'){
+    const bytes=base64ToUint8Array(d.data);
+    parts.push(bytes);
+    assembledBytes+=bytes.length;
+   }
+   const pct=Math.min(90, Math.round(((i+1) / docs.length) * 90));
+   progFill.style.width=pct+'%';
+   progPct.textContent=pct+'%';
+   progChunks.textContent=`${i+1} / ${docs.length} chunks`;
+   progSize.textContent=`${formatMb(assembledBytes)} MB`;
+  }
+
+  const apkBlob=new Blob(parts, {type:'application/vnd.android.package-archive'});
+  const fileName=latestApkMeta.fileName || `SinhalaDraughts_v${latestApkMeta.version}.apk`;
+
+  const usedNative=await sendBlobToAndroidNativeInstaller(apkBlob, fileName, (transferPct, msg)=>{
+   const overall=90 + Math.round((transferPct / 100) * 10);
+   progFill.style.width=overall+'%';
+   progPct.textContent=overall+'%';
+   progStatus.textContent=msg;
+  });
+
+  progFill.style.width='100%';
+  progPct.textContent='100%';
+  progStatus.textContent=usedNative ? 'Android Installer විවෘත විය!' : 'APK Download ආරම්භ විය!';
+  progSize.textContent=`${formatMb(apkBlob.size)} MB`;
 
   isInstallCompleted=true;
   $('apkPreInstallActions').style.display='none';
-  $('apkSuccessDesc').textContent=`${fileName} සාර්ථකව සැකසී install/download ආරම්භ විය. App එක අලුත් කිරීමට Reset App ඔබන්න.`;
+  $('apkSuccessDesc').textContent=usedNative
+   ? `${fileName} (${formatMb(apkBlob.size)} MB) සාර්ථකව සැකසී Android Installer වෙත යවන ලදී. Install අවසන් වූ පසු "Reset App" ඔබන්න.`
+   : `${fileName} (${formatMb(apkBlob.size)} MB) සාර්ථකව සැකසී download ආරම්භ විය. Install අවසන් වූ පසු "Reset App" ඔබන්න.`;
   $('apkSuccessBox').classList.add('show');
   $('apkPostInstallActions').style.display='flex';
 
   toast('Successful Install! දැන් Reset App ඔබන්න.','fa-circle-check');
  }catch(err){
   console.error('APK assembly/install error:',err);
-  progFill.style.width='100%';
-  progPct.textContent='100%';
-  progChunks.textContent=`${totalChunks} / ${totalChunks} chunks`;
-  progStatus.style.color='var(--red)';
   progStatus.textContent='Install අසාර්ථක විය.';
   $('installApkBtn').disabled=false;
   $('dismissApkBtn').disabled=false;
-  toast('Install අසාර්ථක විය: '+(err.message||''),'fa-circle-exclamation');
+  toast('APK install කිරීමට නොහැකි විය: '+(err.message||''),'fa-circle-exclamation');
  }finally{
   isDownloadingApk=false;
  }
