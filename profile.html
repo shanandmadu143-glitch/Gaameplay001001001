@@ -43,7 +43,6 @@ html,body{
   color:#f8fafc;
 }
 
-/* Hidden Header & Bottom Menu */
 .top-hud,
 .bottom-nav{
   display:none !important;
@@ -119,7 +118,6 @@ html,body{
   border:1px solid rgba(255,255,255,0.08);
 }
 
-/* Full Screen Scrollable Main Area */
 main{
   flex:1;
   width:100%;
@@ -146,7 +144,7 @@ main{
 .profile-scroll::-webkit-scrollbar{width:5px}
 .profile-scroll::-webkit-scrollbar-thumb{background:rgba(255,209,102,0.35);border-radius:999px}
 
-/* Gamer Banner Card - Fixed Clipping & Alignment */
+/* Gamer Banner Card */
 .gamer-banner{
   width:100%;
   min-height:fit-content;
@@ -167,7 +165,6 @@ main{
   min-height:92px;
 }
 
-/* Gaming Frame Wrapper */
 .avatar-ring-wrap{
   position:relative;
   width:84px;
@@ -345,6 +342,11 @@ main{
   box-shadow:0 8px 22px rgba(0,0,0,0.45);
 }
 
+.loadout-info{
+  min-width:0;
+  flex:1;
+}
+
 .loadout-info small{
   display:block;
   font-size:0.72rem;
@@ -359,12 +361,18 @@ main{
   font-size:1rem;
   color:#fff;
   margin-top:2px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
 .loadout-info span{
   display:block;
   font-size:0.76rem;
   color:var(--dim);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
 .live-piece-stage{
@@ -375,6 +383,7 @@ main{
   padding:8px 12px;
   border-radius:16px;
   border:1px solid rgba(255,209,102,0.25);
+  flex-shrink:0;
 }
 
 .live-piece-token{
@@ -403,6 +412,7 @@ main{
   align-items:center;
   justify-content:space-between;
   margin-bottom:10px;
+  gap:8px;
 }
 
 .section-head p{
@@ -427,6 +437,7 @@ main{
   border-radius:10px;
   cursor:pointer;
   transition:background 0.15s ease,transform 0.12s ease;
+  flex-shrink:0;
 }
 .shop-link:hover{
   background:rgba(255,209,102,0.22);
@@ -490,7 +501,7 @@ main{
   border-radius:14px;
 }
 
-/* Gaming Icon Action Bar: Save / Logout */
+/* Action Bar: Save / Logout (No Home Button) */
 .icon-actions-bar{
   width:100%;
   display:grid;
@@ -616,7 +627,7 @@ main{
       <div class="gamer-sub" id="profileSubtitle">Sinhala Draughts Arena Competitor</div>
       <div class="collection-strip" id="profileOwnedSummary">
        <i class="fa-solid fa-sparkles"></i>
-       <span>Unlocked Avatars: 1/19 | Themes: 1/20</span>
+       <span>Unlocked Avatars: 1 | Themes: 1</span>
       </div>
      </div>
     </div>
@@ -672,7 +683,7 @@ main{
     <div class="pieces-grid" id="piecesGrid"></div>
    </section>
 
-   <!-- Gaming Icon Action Bar: Save / Logout -->
+   <!-- Action Bar: Save / Logout -->
    <div class="icon-actions-bar">
     <button type="button" class="icon-action-btn btn-save-ic" id="saveProfile" title="සුරකින්න (Save)">
      <span class="ic-wrap"><i class="fa-solid fa-shield-check"></i></span>
@@ -702,7 +713,7 @@ let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:
 let isNavigating=false;
 let customPieces=[];
 let customAvatars=[];
-let tempSelectedPiece=0;
+let tempSelectedPiece='0';
 let tempSelectedAvatar='fa-user';
 let userListenerRef=null;
 let userListenerFn=null;
@@ -730,6 +741,29 @@ const DEFAULT_PIECE_DESIGNS=[
  {id:19,name:'අමරණීය අඳුර',bg:'radial-gradient(circle at 30% 30%,#2c3e50,#000000)',border:'#ffd166',color:'#ffd166',icon:'♔'}
 ];
 
+const EVENT_REWARD_PIECES=[
+ {id:'ev_p_1k_free',name:'Bronze Mist Piece',bg:'radial-gradient(circle at 30% 30%,#e6b89c,#9c6644)',border:'#ddb892',color:'#fff',icon:'◈'},
+ {id:'ev_p_1k_pro',name:'Aurelia Gold Piece',bg:'linear-gradient(135deg,#fff3b0,#f59e0b)',border:'#fde68a',color:'#111',icon:'♛'},
+ {id:'ev_p_10k_free',name:'Jade Forest Piece',bg:'radial-gradient(circle at 30% 30%,#6ee7b7,#047857)',border:'#34d399',color:'#fff',icon:'❖'},
+ {id:'ev_p_10k_pro',name:'Cyber Plasma Piece',bg:'radial-gradient(circle at 30% 30%,#67e8f9,#0284c7)',border:'#00f2fe',color:'#fff',icon:'✦'},
+ {id:'ev_p_30k_free',name:'Cobalt Wave Piece',bg:'radial-gradient(circle at 30% 30%,#93c5fd,#1d4ed8)',border:'#60a5fa',color:'#fff',icon:'▲'},
+ {id:100:'ev_p_30k_pro',name:'Crimson Flare Piece',bg:'radial-gradient(circle at 30% 30%,#fda4af,#be123c)',border:'#fb7185',color:'#fff',icon:'☀'},
+ {id:'ev_p_45k_free',name:'Silver Moon Piece',bg:'radial-gradient(circle at 30% 30%,#f1f5f9,#64748b)',border:'#cbd5e1',color:'#0f172a',icon:'☾'},
+ {id:'ev_p_45k_pro',name:'Royal Amethyst Piece',bg:'radial-gradient(circle at 30% 30%,#e9d5ff,#7e22ce)',border:'#c084fc',color:'#fff',icon:'❖'},
+ {id:'ev_p_75k_free',name:'Amber Sun Piece',bg:'radial-gradient(circle at 30% 30%,#fde68a,#d97706)',border:'#fbbf24',color:'#111',icon:'☀'},
+ {id:'ev_p_75k_pro',name:'Dragon Fang Piece',bg:'linear-gradient(135deg,#f87171,#7f1d1d)',border:'#ffd166',color:'#ffd166',icon:'🐉'},
+ {id:'ev_p_100k_free',name:'Mint Frost Piece',bg:'radial-gradient(circle at 30% 30%,#ccfbf1,#0f766e)',border:'#5eead4',color:'#fff',icon:'❄'},
+ {id:'ev_p_100k_pro',name:'Volt Titan Piece',bg:'radial-gradient(circle at 30% 30%,#fef08a,#ca8a04)',border:'#00f2fe',color:'#111',icon:'⚡'},
+ {id:'ev_p_200k_free',name:'Copper Shield Piece',bg:'radial-gradient(circle at 30% 30%,#fdba74,#9a3412)',border:'#fb923c',color:'#fff',icon:'🛡'},
+ {id:'ev_p_200k_pro',name:'Diamond Nova Piece',bg:'radial-gradient(circle at 30% 30%,#e0f2fe,#0369a1)',border:'#ffd166',color:'#fff',icon:'◆'},
+ {id:'ev_p_245k_free',name:'Crimson Rose Piece',bg:'radial-gradient(circle at 30% 30%,#fecdd3,#be123c)',border:'#fda4af',color:'#fff',icon:'✿'},
+ {id:'ev_p_245k_pro',name:'Meteor Core Piece',bg:'radial-gradient(circle at 30% 30%,#c084fc,#312e81)',border:'#ffd166',color:'#ffd166',icon:'☄'},
+ {id:'ev_p_545k_free',name:'Obsidian Edge Piece',bg:'radial-gradient(circle at 30% 30%,#475569,#0f172a)',border:'#94a3b8',color:'#ffd166',icon:'♠'},
+ {id:'ev_p_545k_pro',name:'Phantom Crown Piece',bg:'linear-gradient(135deg,#a855f7,#0f172a)',border:'#ffd166',color:'#fff',icon:'♕'},
+ {id:'ev_p_720k_free',name:'Grand Star Piece',bg:'radial-gradient(circle at 30% 30%,#fde047,#b45309)',border:'#ffd166',color:'#111',icon:'★'},
+ {id:'ev_p_720k_pro',name:'Immortal King Piece',bg:'linear-gradient(135deg,#ffd166,#ff4757,#7e22ce)',border:'#fff',color:'#fff',icon:'♔'}
+].filter(item => item && item.name);
+
 const DEFAULT_AVATARS=[
  {id:'fa-user',name:'සම්මත (Default)',icon:'fa-user'},
  {id:'fa-chess-knight',name:'චෙස් නයිට්',icon:'fa-chess-knight'},
@@ -738,7 +772,7 @@ const DEFAULT_AVATARS=[
  {id:'fa-ghost',name:'අපූර්ව හොල්මන',icon:'fa-ghost'},
  {id:'fa-shield-halved',name:'රජකීය පලිහ',icon:'fa-shield-halved'},
  {id:'fa-crown',name:'රජකීය ඔටුන්න',icon:'fa-crown'},
- {id:'fa-fire',name:'මහා ගින්න',icon:'fa-fire'},
+ {id:100:'fa-fire',name:'මහා ගින්න',icon:'fa-fire'},
  {id:'fa-bolt',name:'අකුණු සැණැල්ල',icon:'fa-bolt'},
  {id:'fa-skull',name:'හිස්කබල',icon:'fa-skull'},
  {id:'fa-star',name:'රන් තරුව',icon:'fa-star'},
@@ -750,6 +784,24 @@ const DEFAULT_AVATARS=[
  {id:'fa-paw',name:'සිංහ පාදය',icon:'fa-paw'},
  {id:'fa-crosshairs',name:'ඉලක්කය',icon:'fa-crosshairs'},
  {id:'fa-hat-wizard',name:'මායාකාරයා',icon:'fa-hat-wizard'}
+].filter(item => item && item.name);
+
+const EVENT_REWARD_AVATARS=[
+ {id:'fa-chess-pawn',name:'Pawn Starter',icon:'fa-chess-pawn'},
+ {id:'fa-chess-queen',name:'Queen Vanguard',icon:'fa-chess-queen'},
+ {id:'fa-leaf',name:'Emerald Scout',icon:'fa-leaf'},
+ {id:'fa-user-astronaut',name:'Astro Commander',icon:'fa-user-astronaut'},
+ {id:'fa-water',name:'Tide Runner',icon:'fa-water'},
+ {id:'fa-fire-flame-curved',name:'Inferno Lord',icon:'fa-fire-flame-curved'},
+ {id:'fa-moon',name:'Night Watcher',icon:'fa-moon'},
+ {id:'fa-wand-sparkles',name:'Arcane Sovereign',icon:'fa-wand-sparkles'},
+ {id:'fa-sun',name:'Solar Striker',icon:'fa-sun'},
+ {id:'fa-snowflake',name:'Frost Warden',icon:'fa-snowflake'},
+ {id:'fa-bolt-lightning',name:'Thunder Titan',icon:'fa-bolt-lightning'},
+ {id:'fa-award',name:'Champion Honor',icon:'fa-award'},
+ {id:'fa-chess-rook',name:'Citadel Master',icon:'fa-chess-rook'},
+ {id:'fa-trophy',name:'Grand Finale Hero',icon:'fa-trophy'},
+ {id:'fa-chess-king',name:'Immortal Grandmaster',icon:'fa-chess-king'}
 ];
 
 function normalizeList(val, fallback) {
@@ -761,8 +813,35 @@ function normalizeList(val, fallback) {
  return fallback;
 }
 
-function getAllPieces(){return [...DEFAULT_PIECE_DESIGNS,...customPieces];}
-function getAllAvatars(){return [...DEFAULT_AVATARS,...customAvatars];}
+function getAllPieces(){
+ const map = new Map();
+ [...DEFAULT_PIECE_DESIGNS, ...customPieces, ...EVENT_REWARD_PIECES].forEach((p, i) => {
+  if(!p || !p.name) return;
+  const key = String(p.id !== undefined ? p.id : i);
+  if(!map.has(key)) map.set(key, { ...p, _key: key, _idx: i });
+ });
+ return Array.from(map.values());
+}
+
+function getAllAvatars(){
+ const map = new Map();
+ [...DEFAULT_AVATARS, ...customAvatars, ...EVENT_REWARD_AVATARS].forEach((a, i) => {
+  if(!a || !a.name) return;
+  const key = String(a.id || a.icon || i);
+  if(!map.has(key)) map.set(key, { ...a, _key: key });
+ });
+ return Array.from(map.values());
+}
+
+function findPieceByKey(keyOrIdx){
+ const all = getAllPieces();
+ const str = String(keyOrIdx ?? '0');
+ const byId = all.find(p => String(p.id) === str || String(p._key) === str);
+ if(byId) return byId;
+ const num = Number(str);
+ if(Number.isFinite(num) && all[num]) return all[num];
+ return all[0];
+}
 
 function resolveDisplayName(d, authUser){
  const candidates = [
@@ -812,11 +891,9 @@ function smoothNavigate(url){
  setTimeout(()=>{window.location.href=url;},110);
 }
 
-function applyAvatarToBox(elementId, designIndex, customIcon){
+function applyAvatarToBox(elementId, pieceKeyOrIdx, customIcon){
  const el=$(elementId);if(!el)return;
- const allPieces=getAllPieces();
- const idx=Number(designIndex)||0;
- const design=allPieces[idx]||allPieces[0];
+ const design=findPieceByKey(pieceKeyOrIdx);
  el.style.background=design.bg;
  el.style.borderColor=design.border;
  el.style.color=design.color;
@@ -835,11 +912,9 @@ function applyAvatarToBox(elementId, designIndex, customIcon){
 }
 
 function updateLivePreview(){
- const allPieces=getAllPieces();
  const allAvatars=getAllAvatars();
- const pIdx=Number(tempSelectedPiece)||0;
- const piece=allPieces[pIdx]||allPieces[0];
- const avObj=allAvatars.find(a=>String(a.id)===String(tempSelectedAvatar))||allAvatars[0];
+ const piece=findPieceByKey(tempSelectedPiece);
+ const avObj=allAvatars.find(a=>String(a.id)===String(tempSelectedAvatar) || String(a._key)===String(tempSelectedAvatar))||allAvatars[0];
  const iconCls=resolveIconClass(avObj ? (avObj.icon || avObj.id) : tempSelectedAvatar);
 
  const token=$('livePiecePreview');
@@ -890,9 +965,10 @@ function renderProfileItems(){
    const avId = String(av.id);
    const iconCls = resolveIconClass(av.icon || av.id);
    const currentAv = resolveIconClass(user.avatarIcon || 'fa-user');
-   const isEquipped = avId === (user.avatarIcon || 'fa-user') || iconCls === currentAv;
+   const isEquipped = avId === String(user.avatarIcon || 'fa-user') || iconCls === currentAv;
+   const isSelected = avId === String(tempSelectedAvatar) || iconCls === resolveIconClass(tempSelectedAvatar);
    const avDiv = document.createElement('div');
-   avDiv.className = 'piece-option' + (avId === tempSelectedAvatar ? ' selected' : '');
+   avDiv.className = 'piece-option' + (isSelected ? ' selected' : '');
    const statusLabel = isEquipped ? 'EQUIPPED' : 'UNLOCKED';
    const statusColor = isEquipped ? 'var(--gold)' : 'var(--neon-green)';
    avDiv.innerHTML = `
@@ -910,19 +986,22 @@ function renderProfileItems(){
 
  const grid=$('piecesGrid');
  grid.innerHTML='';
- const unlockedPieces = normalizeList(user.unlockedPieces, [0]).map(Number);
+ const unlockedPieces = normalizeList(user.unlockedPieces, [0]).map(String);
  const allPieces = getAllPieces();
  const unlockedPieceEntries = allPieces
-  .map((p, idx) => ({ p, idx: Number(idx) }))
-  .filter(item => unlockedPieces.includes(item.idx));
+  .map((p, idx) => ({ p, idx: Number(idx), idStr: String(p.id !== undefined ? p.id : idx) }))
+  .filter(item => unlockedPieces.includes(String(item.idx)) || unlockedPieces.includes(item.idStr));
 
  if(!unlockedPieceEntries.length){
   grid.innerHTML=`<div class="empty-unlocked-msg">Unlocked Piece Themes නොමැත.</div>`;
  } else {
-  unlockedPieceEntries.forEach(({ p, idx: pIdx }) => {
-   const isEquipped = pIdx === (Number(user.pieceIndex) || 0);
+  unlockedPieceEntries.forEach(({ p, idx: pIdx, idStr }) => {
+   const equippedKey = String(user.pieceIndex ?? 0);
+   const isEquipped = (equippedKey === String(pIdx)) || (equippedKey === idStr) || (String(findPieceByKey(equippedKey)._key) === String(p._key));
+   const selKey = String(tempSelectedPiece ?? 0);
+   const isSelected = (selKey === String(pIdx)) || (selKey === idStr) || (String(findPieceByKey(selKey)._key) === String(p._key));
    const div=document.createElement('div');
-   div.className='piece-option'+(pIdx===Number(tempSelectedPiece)?' selected':'');
+   div.className='piece-option'+(isSelected?' selected':'');
    const statusLabel = isEquipped ? 'EQUIPPED' : 'UNLOCKED';
    const statusColor = isEquipped ? 'var(--gold)' : 'var(--neon-green)';
    div.innerHTML=`
@@ -931,7 +1010,7 @@ function renderProfileItems(){
     <small class="piece-badge" style="color:${statusColor}">${statusLabel}</small>
    `;
    div.onclick=()=>{
-    tempSelectedPiece=pIdx;
+    tempSelectedPiece = (typeof p.id === 'number') ? p.id : idStr;
     renderProfileItems();
    };
    grid.appendChild(div);
@@ -952,8 +1031,8 @@ try{
     ...user,
     ...parsed,
     name:resolveDisplayName(parsed, null),
-    pieceIndex:Number(parsed.pieceIndex)||0,
-    unlockedPieces:normalizeList(parsed.unlockedPieces,[0]).map(Number),
+    pieceIndex:parsed.pieceIndex ?? 0,
+    unlockedPieces:normalizeList(parsed.unlockedPieces,[0]),
     avatarIcon:parsed.avatarIcon||'fa-user',
     unlockedAvatars:normalizeList(parsed.unlockedAvatars,['fa-user']).map(String)
    };
@@ -1000,8 +1079,8 @@ function attachUserProfileListener(uid, authUser){
    points:Number.isFinite(Number(d.points))?Number(d.points):user.points,
    wins:Number(d.wins)||0,
    losses:Number(d.losses)||0,
-   pieceIndex:Number(d.pieceIndex)||0,
-   unlockedPieces:normalizeList(d.unlockedPieces,[0]).map(Number),
+   pieceIndex:d.pieceIndex ?? 0,
+   unlockedPieces:normalizeList(d.unlockedPieces,[0]),
    avatarIcon:d.avatarIcon||'fa-user',
    unlockedAvatars:normalizeList(d.unlockedAvatars,['fa-user']).map(String)
   };
@@ -1033,9 +1112,9 @@ if(auth){
 
 $('saveProfile').onclick=async()=>{
  user.name=resolveDisplayName(user, fbUser);
- user.pieceIndex=Number(tempSelectedPiece)||0;
+ user.pieceIndex=tempSelectedPiece ?? 0;
  user.avatarIcon=tempSelectedAvatar||'fa-user';
- user.unlockedPieces=normalizeList(user.unlockedPieces,[0]).map(Number);
+ user.unlockedPieces=normalizeList(user.unlockedPieces,[0]);
  user.unlockedAvatars=normalizeList(user.unlockedAvatars,['fa-user']).map(String);
  localStorage.setItem(KEY,JSON.stringify(user));
 
