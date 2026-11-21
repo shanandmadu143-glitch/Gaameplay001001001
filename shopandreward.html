@@ -1,37 +1,54 @@
 <!DOCTYPE html>
 <html lang="si">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>ශ්‍රී ලංකීය දාම් - Shop & Rewards</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Gemunu+Libre:wght@400;600;700;800&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#05070e;--panel:rgba(14,20,38,.92);--gold:#ffd166;--neon-blue:#00f2fe;--neon-green:#2ecc71;--red:#ff4757;--dim:#a0aec0}
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Gemunu Libre','Poppins',sans-serif;user-select:none;-webkit-tap-highlight-color:transparent}
-html,body{width:100%;height:100%;background:radial-gradient(circle at 50% 20%,#1a103c 0%,#080b18 60%,#03050a 100%);color:#f8f9fa;overflow:hidden}
+html,body{width:100vw;height:100dvh;max-width:100vw;background:radial-gradient(circle at 50% 20%,#1a103c 0%,#080b18 60%,#03050a 100%);color:#f8f9fa;overflow:hidden}
 body{min-height:100dvh;display:flex;flex-direction:column;justify-content:center;align-items:center}
 
-.app{width:100%;height:100dvh;max-width:768px;margin:0 auto;padding:14px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;opacity:1;transform:scale(1);transition:opacity 0.16s ease-out,transform 0.16s ease-out;will-change:opacity,transform}
+/* Hidden Header & Bottom Menu */
+.home-top,
+.bottom-nav{
+  display:none !important;
+}
+
+.app{
+  width:100vw;
+  height:100dvh;
+  max-width:100vw;
+  margin:0;
+  padding:
+    calc(env(safe-area-inset-top, 0px) + 12px)
+    calc(env(safe-area-inset-right, 0px) + 14px)
+    calc(env(safe-area-inset-bottom, 0px) + 12px)
+    calc(env(safe-area-inset-left, 0px) + 14px);
+  display:flex;
+  flex-direction:column;
+  justify-content:stretch;
+  position:fixed;
+  inset:0;
+  overflow:hidden;
+  opacity:1;
+  transform:scale(1);
+  transition:opacity 0.16s ease-out,transform 0.16s ease-out;
+  will-change:opacity,transform;
+}
 .app.page-leaving{opacity:0;transform:scale(0.985)}
 
-.home-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 18px;background:linear-gradient(135deg,rgba(22,30,56,0.95),rgba(10,14,28,0.95));border:2px solid rgba(255,209,102,0.4);border-radius:22px;box-shadow:0 8px 25px rgba(0,0,0,0.6);backdrop-filter:blur(10px)}
-.header-left{display:flex;align-items:center;gap:10px}
-.back-btn{width:40px;height:40px;border-radius:50%;border:1.5px solid rgba(255,209,102,0.45);background:rgba(255,255,255,0.06);color:var(--gold);font-size:1rem;display:grid;place-items:center;cursor:pointer;transition:transform 0.12s ease}
-.back-btn:active{transform:scale(0.94)}
-.page-title b{font-size:1.1rem;color:#fff;display:block;line-height:1.15}
-.page-title small{font-size:0.72rem;color:var(--dim)}
+main{flex:1;width:100%;height:100%;min-height:0;display:flex;flex-direction:column;position:relative;margin:0;overflow:hidden;gap:10px}
 
-.coin-pill{display:flex;align-items:center;gap:6px;border:1.5px solid rgba(255,209,102,0.4);border-radius:20px;background:rgba(5,8,18,0.85);padding:5px 12px;box-shadow:inset 0 2px 4px rgba(0,0,0,0.8)}
-.coin-pill>i{font-size:1.05rem;color:var(--gold);filter:drop-shadow(0 0 4px rgba(255,209,102,0.6))}
-.coin-pill b{font-size:1rem;letter-spacing:0.5px;color:#fff}
-
-main{flex:1;display:flex;flex-direction:column;width:100%;position:relative;margin:8px 0;overflow:hidden;gap:10px}
-
-.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;background:rgba(14,20,38,0.92);padding:6px;border-radius:18px;border:1.5px solid rgba(255,209,102,0.25)}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;background:rgba(14,20,38,0.92);padding:6px;border-radius:18px;border:1.5px solid rgba(255,209,102,0.25);flex-shrink:0}
 .tab-btn{border:0;border-radius:13px;padding:9px 6px;background:transparent;color:var(--dim);font-weight:700;font-size:0.82rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:all 0.16s ease}
 .tab-btn.active{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;box-shadow:0 4px 14px rgba(255,173,98,0.35)}
 
-.scroll-panel{flex:1;overflow-y:auto;padding:14px;background:linear-gradient(145deg,rgba(18,24,40,0.88),rgba(12,16,28,0.92));border:2px solid rgba(255,209,102,0.2);border-radius:24px;box-shadow:0 10px 30px rgba(0,0,0,0.5);display:none;flex-direction:column;gap:14px}
+.scroll-panel{flex:1;width:100%;min-height:0;overflow-y:auto;padding:14px 14px 20px;background:linear-gradient(145deg,rgba(18,24,40,0.88),rgba(12,16,28,0.92));border:2px solid rgba(255,209,102,0.2);border-radius:24px;box-shadow:0 10px 30px rgba(0,0,0,0.5);display:none;flex-direction:column;gap:14px;scrollbar-width:thin;scrollbar-color:rgba(255,209,102,0.35) transparent}
+.scroll-panel::-webkit-scrollbar{width:5px}
+.scroll-panel::-webkit-scrollbar-thumb{background:rgba(255,209,102,0.35);border-radius:999px}
 .scroll-panel.active{display:flex}
 
 /* Daily Reward Card */
@@ -58,35 +75,20 @@ main{flex:1;display:flex;flex-direction:column;width:100%;position:relative;marg
 .item-tag{font-size:0.65rem;color:var(--neon-blue);font-weight:700}
 .item-price{font-size:0.82rem;color:var(--gold);font-weight:700}
 
-/* Bottom Nav */
-.bottom-nav{width:100%;min-height:66px;background:rgba(14,20,38,0.95);border:2px solid rgba(255,209,102,0.3);border-radius:24px;display:flex;align-items:center;justify-content:space-around;padding:6px 4px;backdrop-filter:blur(10px);box-shadow:0 10px 30px rgba(0,0,0,0.8)}
-.nav-item{background:none;border:0;color:#aab4c7;text-decoration:none;display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:0.72rem;font-weight:700;cursor:pointer;transition:color 0.15s ease,transform 0.15s ease}
-.nav-item:active{transform:scale(0.93)}
-.nav-item i{font-size:1.3rem}
-.nav-item.active{color:var(--gold)}
-.nav-item span{line-height:1}
-
 #toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,120px);opacity:0;background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--gold);color:#f8f9fa;border-radius:30px;padding:10px 20px;z-index:150;transition:.25s ease;font-weight:600;display:flex;align-items:center;gap:8px;font-size:0.9rem}
 #toast.show{transform:translate(-50%,0);opacity:1}
 
 @media (min-width: 600px) {
-  .app { max-width: 680px; padding: 18px; }
-  .shop-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .shop-grid { grid-template-columns: repeat(4, 1fr); gap: 12px; }
+}
+@media (min-width: 900px) {
+  .shop-grid { grid-template-columns: repeat(6, 1fr); gap: 12px; }
 }
 </style>
 </head>
 <body>
 <div class="app" id="appRoot">
- <div class="home-top">
-  <div class="header-left">
-   <button class="back-btn" id="backBtn" aria-label="Back"><i class="fa-solid fa-arrow-left"></i></button>
-   <div class="page-title">
-    <b>SHOP & REWARDS</b>
-    <small id="playerStatusLabel">ක්‍රීඩකයා</small>
-   </div>
-  </div>
-  <div class="coin-pill"><i class="fa-solid fa-coins"></i><b><span id="points">500</span></b></div>
- </div>
+ <div class="home-top" aria-hidden="true"></div>
 
  <main>
   <div class="tabs">
@@ -117,13 +119,7 @@ main{flex:1;display:flex;flex-direction:column;width:100%;position:relative;marg
   </section>
  </main>
 
- <footer class="bottom-nav">
-  <a class="nav-item" href="index.html" data-nav="index.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
-  <a class="nav-item" href="friends.html" data-nav="friends.html"><i class="fa-solid fa-user-group"></i><span>Friends</span></a>
-  <a class="nav-item" href="index.html" data-nav="index.html"><i class="fa-solid fa-circle-user"></i><span>Profile</span></a>
-  <button class="nav-item active" id="navEvents"><i class="fa-solid fa-trophy"></i><span>Events</span></button>
-  <button class="nav-item active" id="navShop"><i class="fa-solid fa-cart-shopping"></i><span>Shop</span></button>
- </footer>
+ <footer class="bottom-nav" aria-hidden="true"></footer>
 </div>
 
 <div id="toast"></div>
@@ -169,13 +165,13 @@ const DEFAULT_AVATARS=[
  {id:'fa-user',name:'සම්මත (Default)',price:0,icon:'fa-user'},
  {id:'fa-chess-knight',name:'චෙස් නයිට්',price:100,icon:'fa-chess-knight'},
  {id:'fa-dragon',name:'ගිනියම් ඩ්‍රැගන්',price:150,icon:'fa-dragon'},
- {id:13,name:'මුහුණු ආවරණය',price:150,icon:'fa-mask'},
+ {id:'fa-mask',name:'මුහුණු ආවරණය',price:150,icon:'fa-mask'},
  {id:'fa-robot',name:'රොබෝ යන්ත්‍රය',price:180,icon:'fa-robot'},
  {id:'fa-ghost',name:'අපූර්ව හොල්මන',price:180,icon:'fa-ghost'},
  {id:'fa-shield-halved',name:'රජකීය පලිහ',price:200,icon:'fa-shield-halved'},
- {id:14,name:'රජකීය ඔටුන්න',price:220,icon:'fa-crown'},
+ {id:'fa-crown',name:'රජකීය ඔටුන්න',price:220,icon:'fa-crown'},
  {id:'fa-fire',name:'මහා ගින්න',price:220,icon:'fa-fire'},
- {id:'fa-bolt',name:'අකුණු සැණැල්ල',price:240,icon:'fa-bolt'},
+ {id:13,name:'අකුණු සැණැල්ල',price:240,icon:'fa-bolt'},
  {id:'fa-skull',name:'හිස්කබල',price:250,icon:'fa-skull'},
  {id:'fa-star',name:'රන් තරුව',price:260,icon:'fa-star'},
  {id:'fa-gem',name:'දියමන්ති මැණික',price:280,icon:'fa-gem'},
@@ -187,8 +183,7 @@ const DEFAULT_AVATARS=[
  {id:'fa-crosshairs',name:'ඉලක්කය',price:360,icon:'fa-crosshairs'},
  {id:'fa-hat-wizard',name:'මායාකාරයා',price:400,icon:'fa-hat-wizard'}
 ];
-DEFAULT_AVATARS[3].id='fa-mask';
-DEFAULT_AVATARS[7].id='fa-crown';
+DEFAULT_AVATARS[9].id='fa-bolt';
 
 function toast(s, icon='fa-circle-info'){
  const t=$('toast');
@@ -198,14 +193,6 @@ function toast(s, icon='fa-circle-info'){
  t.append(iconEl,textEl);
  t.classList.add('show');
  setTimeout(()=>t.classList.remove('show'),3000);
-}
-
-function smoothNavigate(url){
- if(isNavigating)return;
- isNavigating=true;
- const app=$('appRoot');
- if(app)app.classList.add('page-leaving');
- setTimeout(()=>{window.location.href=url;},110);
 }
 
 function escapeHtml(str){
@@ -225,8 +212,10 @@ try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);auth=firebas
 catch(e){console.error('Firebase init failed:',e);}
 
 function updateUI(){
- $('points').textContent=Number(user.points)||0;
- $('playerStatusLabel').textContent=user.name ? `${user.name} • Shop & Rewards` : 'ක්‍රීඩකයා • Shop & Rewards';
+ const ptsEl=$('points');
+ if(ptsEl)ptsEl.textContent=Number(user.points)||0;
+ const statusEl=$('playerStatusLabel');
+ if(statusEl)statusEl.textContent=user.name ? `${user.name} • Shop & Rewards` : 'ක්‍රීඩකයා • Shop & Rewards';
  updateRewardStatus();
  renderShopItems();
 }
@@ -476,16 +465,6 @@ if(auth && db){
 }
 
 updateUI();
-
-$('backBtn').onclick=()=>smoothNavigate('index.html');
-document.querySelectorAll('a.nav-item[href]').forEach(link=>{
- link.addEventListener('click',e=>{
-  const href=link.getAttribute('href');
-  if(!href||href.startsWith('#'))return;
-  e.preventDefault();
-  smoothNavigate(href);
- });
-});
 </script>
 
 <script src="./invite-global.js"></script>
