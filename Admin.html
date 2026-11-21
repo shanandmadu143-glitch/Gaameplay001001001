@@ -64,12 +64,13 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold)}
 .apk-dropzone:hover{border-color:var(--gold);background:rgba(255,209,102,0.07)}
 .apk-status-card{background:rgba(255,255,255,0.04);border:1.5px solid rgba(46,204,113,0.35);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:8px}
 
-.upload-prog-box{display:none;flex-direction:column;gap:8px;background:rgba(0,0,0,0.5);border:1.5px solid rgba(0,242,254,0.4);border-radius:16px;padding:14px}
+.upload-prog-box{display:none;flex-direction:column;gap:8px;background:rgba(0,0,0,0.55);border:1.5px solid rgba(0,242,254,0.4);border-radius:16px;padding:14px}
 .upload-prog-box.active{display:flex}
 .upload-prog-header{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:0.86rem;font-weight:700}
 .upload-prog-track{width:100%;height:14px;border-radius:999px;background:rgba(255,255,255,0.08);overflow:hidden}
 .upload-prog-fill{height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,var(--neon-blue),var(--neon-green),var(--gold));transition:width 0.18s ease}
-.upload-prog-meta{display:flex;justify-content:space-between;align-items:center;font-size:0.82rem;color:#e2e8f0}
+.upload-prog-meta{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;font-size:0.82rem;color:#e2e8f0}
+.upload-err-hint{color:#ff7675;font-size:0.8rem;line-height:1.4;word-break:break-word}
 
 .modal{position:fixed;inset:0;background:rgba(3,5,12,0.85);backdrop-filter:blur(8px);display:none;place-items:center;z-index:120;padding:15px}
 .modal.show{display:grid}
@@ -194,7 +195,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold)}
    <i class="fa-solid fa-cloud-arrow-up" style="font-size:2rem;color:var(--neon-blue)"></i>
    <b style="color:#fff">.APK File එකක් තෝරන්න හෝ මෙහි Drop කරන්න</b>
    <small style="color:var(--dim)" id="selectedApkMeta">තෝරාගත් APK file එකක් නොමැත</small>
-   <input type="file" id="apkFileInput" accept=".apk,application/vnd.android.package-archive" style="display:none">
+   <input type="file" id="apkFileInput" accept="*/*" style="display:none">
   </div>
 
   <div class="form-grid">
@@ -228,6 +229,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold)}
     <span>Upload වූ ප්‍රමාණය: <strong id="apkUploadedSizeText" style="color:var(--neon-green)">0.00 MB / 0.00 MB</strong></span>
     <span id="apkUploadStateBadge" style="color:var(--dim)">Uploading</span>
    </div>
+   <div class="upload-err-hint" id="apkUploadErrorHint"></div>
   </div>
 
   <div class="apk-status-card" id="currentApkStatus">
@@ -327,11 +329,27 @@ function isSafeColor(val){
  return /^#[0-9a-fA-F]{3,8}$/.test(val);
 }
 
+function getStorageInstance(){
+ if(storage)return storage;
+ try{
+  if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
+  storage=firebase.storage();
+  return storage;
+ }catch(err){
+  try{
+   storage=firebase.app().storage('gs://bin-card-42614.firebasestorage.app');
+   return storage;
+  }catch(_){
+   return null;
+  }
+ }
+}
+
 try{
  if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
  auth=firebase.auth();
  db=firebase.database();
- storage=firebase.storage();
+ storage=getStorageInstance();
 }catch(e){
  console.error('Firebase init failed:',e);
  lastDbError=e.message||'Firebase init error';
@@ -680,10 +698,27 @@ function setSelectedApkFile(file){
  if(!$('apkFileNameInput').value.trim()){
   $('apkFileNameInput').value=file.name;
  }
+ $('apkUploadErrorHint').textContent='';
+}
+
+function explainUploadError(err){
+ const code=(err && err.code) || '';
+ const msg=(err && err.message) || 'Unknown upload error';
+ if(code==='storage/unauthorized'){
+  return `Permission Error (storage/unauthorized): Firebase Console -> Storage -> Rules තුළ "allow read, write: if true;" ලබා දී Publish කරන්න.`;
+ }
+ if(code==='storage/canceled'){
+  return 'Upload අවලංගු කරන ලදී.';
+ }
+ if(code==='storage/retry-limit-exceeded' || /network|failed to fetch|timeout/i.test(msg)){
+  return `Network / Connection Error: අන්තර්ජාල සම්බන්ධතාවය හෝ VPN/DNS පරීක්ෂා කර නැවත උත්සාහ කරන්න (${msg}).`;
+ }
+ return `Error (${code || 'upload_error'}): ${msg}`;
 }
 
 $('uploadApkToFirebaseBtn').onclick=()=>{
- if(!storage || !db)return toast('Firebase Storage / Database සම්බන්ධතාවය නොමැත.');
+ const st=getStorageInstance();
+ if(!st || !db)return toast('Firebase Storage / Database සම්බන්ධතාවය නොමැත.');
  if(!selectedApkFile)return toast('කරුණාකර .APK file එකක් තෝරන්න.');
 
  const version=$('apkVersionInput').value.trim() || ('1.0.' + Math.floor(Date.now()/100000));
@@ -697,17 +732,19 @@ $('uploadApkToFirebaseBtn').onclick=()=>{
  const progStatus=$('apkUploadStatusText');
  const progSize=$('apkUploadedSizeText');
  const progState=$('apkUploadStateBadge');
+ const errHint=$('apkUploadErrorHint');
 
  progBox.classList.add('active');
  progFill.style.width='0%';
  progPct.textContent='0%';
  progSize.textContent=`0.00 MB / ${formatMb(selectedApkFile.size)} MB`;
- progState.textContent='ආරම්භ වෙමින්...';
+ progState.textContent='Uploading...';
  progStatus.textContent='Firebase Storage වෙත APK Upload වෙමින්...';
+ errHint.textContent='';
  $('uploadApkToFirebaseBtn').disabled=true;
 
  const storagePath=`apk_updates/v${version}_${finalFileName}`;
- const fileRef=storage.ref().child(storagePath);
+ const fileRef=st.ref().child(storagePath);
  const uploadTask=fileRef.put(selectedApkFile, {contentType:'application/vnd.android.package-archive'});
 
  uploadTask.on('state_changed', snap=>{
@@ -720,8 +757,9 @@ $('uploadApkToFirebaseBtn').onclick=()=>{
   console.error('APK upload failed:',err);
   $('uploadApkToFirebaseBtn').disabled=false;
   progState.textContent='Failed';
-  progStatus.textContent='Upload අසාර්ථක විය: '+(err.message||'');
-  toast('APK Upload කිරීමට නොහැකි විය: '+(err.message||''));
+  progStatus.textContent='Upload අසාර්ථක විය.';
+  errHint.textContent=explainUploadError(err);
+  toast('APK Upload කිරීමට නොහැකි විය.','fa-circle-exclamation');
  }, async()=>{
   try{
    const downloadUrl=await uploadTask.snapshot.ref.getDownloadURL();
@@ -742,10 +780,12 @@ $('uploadApkToFirebaseBtn').onclick=()=>{
    progSize.textContent=`${formatMb(selectedApkFile.size)} MB / ${formatMb(selectedApkFile.size)} MB`;
    progState.textContent='Completed';
    progStatus.textContent='Upload සම්පූර්ණයි! ක්‍රීඩකයන්ට New Update යවන ලදී.';
+   errHint.textContent='';
    toast(`APK v${version} Firebase වෙත Upload කර New Update යවන ලදී!`,'fa-circle-check');
   }catch(err){
    console.error(err);
    progState.textContent='Error';
+   errHint.textContent='Download URL / Database update අසාර්ථක විය: '+(err.message||'');
    toast('Download URL / Database update අසාර්ථක විය.');
   }finally{
    $('uploadApkToFirebaseBtn').disabled=false;
