@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Monthly Event Pass - Sinhala Draughts Pro</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Gemunu+Libre:wght@400;600;700;800&family=Orbitron:wght@600;700;800;900&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#05070e;
+  --panel:rgba(14,20,38,0.92);
+  --card:rgba(21,30,54,0.86);
+  --gold:#ffd166;
+  --gold-2:#ff9f1c;
+  --neon-blue:#00f2fe;
+  --neon-green:#2ecc71;
+  --purple:#a855f7;
+  --red:#ff4757;
+  --dim:#9fb0c7;
+  --line:rgba(255,209,102,0.25);
+}
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:'Gemunu Libre','Poppins',sans-serif;
+  user-select:none;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+  width:100vw;
+  height:100dvh;
+  max-width:100vw;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(46,204,113,0.14), transparent 36%),
+    radial-gradient(circle at 82% 16%, rgba(168,85,247,0.18), transparent 40%),
+    radial-gradient(circle at 50% 88%, rgba(255,209,102,0.14), transparent 45%),
+    linear-gradient(180deg, #060913 0%, #04060c 100%);
+  color:#f8fafc;
+}
+
+.app{
+  width:100vw;
+  height:100dvh;
+  max-width:100vw;
+  margin:0;
+  padding:
+    calc(env(safe-area-inset-top, 0px) + 12px)
+    calc(env(safe-area-inset-right, 0px) + 14px)
+    calc(env(safe-area-inset-bottom, 0px) + 12px)
+    calc(env(safe-area-inset-left, 0px) + 14px);
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  position:fixed;
+  inset:0;
+  opacity:1;
+  transform:scale(1);
+  transition:opacity 0.16s ease-out,transform 0.16s ease-out;
+}
+.app.page-leaving{
+  opacity:0;
+  transform:scale(0.985);
+}
+
+/* Top Bar with Back Icon + Coins */
+.event-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-shrink:0;
+}
+
+.back-btn{
+  width:42px;
+  height:42px;
+  border-radius:14px;
+  border:1.5px solid rgba(255,209,102,0.45);
+  background:linear-gradient(135deg,rgba(24,33,62,0.96),rgba(12,17,34,0.96));
+  color:var(--gold);
+  font-size:1.05rem;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  box-shadow:0 6px 18px rgba(0,0,0,0.5);
+  transition:transform 0.12s ease,border-color 0.15s ease;
+}
+.back-btn:active{transform:scale(0.94)}
+
+.event-title-box{
+  flex:1;
+  min-width:0;
+}
+.event-title-box b{
+  display:block;
+  font-family:'Orbitron','Gemunu Libre',sans-serif;
+  font-size:0.95rem;
+  color:var(--gold);
+  letter-spacing:0.5px;
+}
+.event-title-box small{
+  display:block;
+  font-size:0.72rem;
+  color:var(--dim);
+}
+
+.coin-pill{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  border:1.5px solid rgba(255,209,102,0.4);
+  border-radius:16px;
+  background:rgba(10,15,28,0.9);
+  padding:7px 12px;
+  color:#fff;
+  font-family:'Orbitron','Poppins',sans-serif;
+  font-size:0.82rem;
+  font-weight:800;
+  flex-shrink:0;
+}
+.coin-pill i{color:var(--gold)}
+
+main{
+  flex:1;
+  width:100%;
+  min-height:0;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  padding-bottom:20px;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(255,209,102,0.35) transparent;
+}
+main::-webkit-scrollbar{width:5px}
+main::-webkit-scrollbar-thumb{background:rgba(255,209,102,0.35);border-radius:999px}
+
+/* Center Coin Win Loading Bar Card */
+.coin-win-hero{
+  background:linear-gradient(135deg,rgba(24,34,64,0.96),rgba(13,19,36,0.98));
+  border:1.5px solid rgba(255,209,102,0.35);
+  border-radius:22px;
+  padding:16px;
+  box-shadow:0 12px 30px rgba(0,0,0,0.6);
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.hero-header-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.month-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:4px 10px;
+  border-radius:10px;
+  background:rgba(0,242,254,0.12);
+  border:1px solid rgba(0,242,254,0.35);
+  color:var(--neon-blue);
+  font-size:0.72rem;
+  font-weight:800;
+}
+
+.days-left-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:4px 10px;
+  border-radius:10px;
+  background:rgba(255,209,102,0.12);
+  border:1px solid rgba(255,209,102,0.35);
+  color:var(--gold);
+  font-size:0.72rem;
+  font-weight:800;
+}
+
+/* Split Track Header: FREE vs PRO PASS */
+.tracks-split-bar{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  align-items:stretch;
+}
+
+.track-side{
+  border-radius:16px;
+  padding:11px 12px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  gap:6px;
+}
+
+.track-side.free-side{
+  background:linear-gradient(135deg,rgba(46,204,113,0.14),rgba(14,24,38,0.9));
+  border:1.5px solid rgba(46,204,113,0.45);
+}
+
+.track-side.pro-side{
+  background:linear-gradient(135deg,rgba(168,85,247,0.18),rgba(255,159,28,0.12));
+  border:1.5px solid rgba(255,209,102,0.5);
+}
+
+.track-side-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:6px;
+}
+
+.track-side b{
+  font-family:'Orbitron','Gemunu Libre',sans-serif;
+  font-size:0.78rem;
+  letter-spacing:0.4px;
+}
+.free-side b{color:var(--neon-green)}
+.pro-side b{color:var(--gold)}
+
+.track-side span{
+  font-size:0.72rem;
+  color:var(--dim);
+  line-height:1.25;
+}
+
+.pro-buy-btn{
+  margin-top:2px;
+  width:100%;
+  border:0;
+  border-radius:11px;
+  padding:8px 10px;
+  font-weight:800;
+  font-size:0.76rem;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  background:linear-gradient(135deg,#ffe08a,#ff9f1c);
+  color:#111;
+  box-shadow:0 4px 14px rgba(255,159,28,0.35);
+  transition:transform 0.12s ease;
+}
+.pro-buy-btn:active{transform:scale(0.96)}
+.pro-buy-btn.owned{
+  background:rgba(46,204,113,0.2);
+  color:var(--neon-green);
+  border:1px solid rgba(46,204,113,0.45);
+  box-shadow:none;
+  cursor:default;
+}
+
+/* Center Coin Win Loading Bar */
+.center-loading-wrap{
+  background:rgba(5,9,18,0.82);
+  border:1.5px solid rgba(255,255,255,0.1);
+  border-radius:18px;
+  padding:12px 14px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.loading-stats-row{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:8px;
+}
+
+.loading-stats-row .earned-label{
+  font-size:0.78rem;
+  color:var(--dim);
+  font-weight:700;
+}
+
+.loading-stats-row .earned-amount{
+  font-family:'Orbitron','Poppins',sans-serif;
+  font-size:1.05rem;
+  font-weight:900;
+  color:var(--gold);
+}
+
+.loading-stats-row .earned-amount small{
+  font-size:0.72rem;
+  color:var(--dim);
+  font-weight:700;
+}
+
+.coin-progress-track{
+  position:relative;
+  width:100%;
+  height:20px;
+  border-radius:999px;
+  background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,209,102,0.3);
+  overflow:hidden;
+  box-shadow:inset 0 2px 6px rgba(0,0,0,0.8);
+}
+
+.coin-progress-fill{
+  height:100%;
+  width:0%;
+  border-radius:999px;
+  background:linear-gradient(90deg, var(--neon-green), var(--gold), var(--gold-2));
+  box-shadow:0 0 14px rgba(255,209,102,0.55);
+  transition:width 0.35s ease;
+}
+
+.loading-footer-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  font-size:0.72rem;
+  color:var(--dim);
+}
+
+.sim-win-btn{
+  background:rgba(0,242,254,0.14);
+  border:1px solid rgba(0,242,254,0.4);
+  color:var(--neon-blue);
+  border-radius:10px;
+  padding:4px 9px;
+  font-size:0.7rem;
+  font-weight:800;
+  cursor:pointer;
+}
+.sim-win-btn:active{transform:scale(0.96)}
+
+/* Milestone List */
+.milestones-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.milestone-card{
+  background:var(--panel);
+  border:1.5px solid var(--line);
+  border-radius:20px;
+  padding:12px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  box-shadow:0 8px 22px rgba(0,0,0,0.45);
+}
+
+.milestone-card.reached{
+  border-color:rgba(255,209,102,0.55);
+}
+
+.milestone-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+
+.milestone-target{
+  font-family:'Orbitron','Poppins',sans-serif;
+  font-size:0.86rem;
+  font-weight:900;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.milestone-target i{color:var(--gold)}
+
+.milestone-state{
+  font-size:0.68rem;
+  font-weight:800;
+  padding:3px 9px;
+  border-radius:999px;
+}
+.state-unlocked{
+  background:rgba(46,204,113,0.16);
+  color:var(--neon-green);
+  border:1px solid rgba(46,204,113,0.4);
+}
+.state-locked{
+  background:rgba(255,255,255,0.06);
+  color:var(--dim);
+  border:1px solid rgba(255,255,255,0.12);
+}
+
+.reward-lanes{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.lane-box{
+  border-radius:15px;
+  padding:10px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  gap:8px;
+  background:rgba(7,11,22,0.72);
+  border:1px solid rgba(255,255,255,0.09);
+}
+
+.lane-box.pro-lane{
+  background:linear-gradient(145deg,rgba(168,85,247,0.1),rgba(10,14,26,0.85));
+  border-color:rgba(255,209,102,0.28);
+}
+
+.lane-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  font-size:0.68rem;
+  font-weight:800;
+}
+.free-tag{color:var(--neon-green)}
+.pro-tag{color:var(--gold)}
+
+.reward-items-preview{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.reward-chip{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:11px;
+  padding:6px 8px;
+}
+
+.chip-icon-piece{
+  width:26px;
+  height:26px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  font-size:0.82rem;
+  flex-shrink:0;
+}
+
+.chip-icon-av{
+  width:26px;
+  height:26px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:rgba(255,209,102,0.16);
+  border:1px solid var(--gold);
+  color:var(--gold);
+  font-size:0.82rem;
+  flex-shrink:0;
+}
+
+.chip-icon-coin{
+  width:26px;
+  height:26px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:rgba(255,209,102,0.16);
+  color:var(--gold);
+  font-size:0.85rem;
+  flex-shrink:0;
+}
+
+.chip-text{
+  min-width:0;
+  flex:1;
+}
+.chip-text b{
+  display:block;
+  font-size:0.74rem;
+  color:#fff;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.chip-text small{
+  display:block;
+  font-size:0.62rem;
+  color:var(--dim);
+}
+
+.claim-btn{
+  width:100%;
+  border:0;
+  border-radius:11px;
+  padding:7px 10px;
+  font-weight:800;
+  font-size:0.74rem;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  transition:transform 0.12s ease;
+}
+.claim-btn:active{transform:scale(0.96)}
+.claim-btn.ready{
+  background:linear-gradient(135deg,#ffe08a,#ff9f1c);
+  color:#111;
+  box-shadow:0 4px 12px rgba(255,159,28,0.3);
+}
+.claim-btn.claimed{
+  background:rgba(46,204,113,0.16);
+  color:var(--neon-green);
+  border:1px solid rgba(46,204,113,0.35);
+  cursor:default;
+}
+.claim-btn.disabled{
+  background:rgba(255,255,255,0.06);
+  color:var(--dim);
+  cursor:not-allowed;
+}
+
+/* Toast */
+#toast{
+  position:fixed;
+  bottom:22px;
+  left:50%;
+  transform:translate(-50%,120px);
+  opacity:0;
+  background:linear-gradient(135deg,#182238,#0b101d);
+  border:1.5px solid var(--gold);
+  color:#f8f9fa;
+  border-radius:30px;
+  padding:10px 20px;
+  z-index:150;
+  transition:transform 0.25s ease,opacity 0.25s ease;
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:0.86rem;
+  box-shadow:0 10px 25px rgba(0,0,0,0.65);
+}
+#toast.show{
+  transform:translate(-50%,0);
+  opacity:1;
+}
+
+@media (min-width: 680px) {
+  .app{max-width:720px;margin:0 auto;left:50%;transform:translateX(-50%)}
+  .app.page-leaving{transform:translateX(-50%) scale(0.985)}
+}
+</style>
+</head>
+<body>
+<div class="app" id="appRoot">
+ <div class="event-top">
+  <button type="button" class="back-btn" id="backHomeBtn" title="මුල් පිටුවට" aria-label="මුල් පිටුවට යන්න">
+   <i class="fa-solid fa-arrow-left"></i>
+  </button>
+  <div class="event-title-box">
+   <b>MONTHLY COIN EVENT</b>
+   <small>මාසයක් ඇතුළත දිනන Coins වලින් Rewards ලබාගන්න</small>
+  </div>
+  <div class="coin-pill"><i class="fa-solid fa-coins"></i><span id="userCoinBalance">500</span></div>
+ </div>
+
+ <main>
+  <!-- Center Coin Win Loading Bar + Free / Pro Pass Split -->
+  <section class="coin-win-hero">
+   <div class="hero-header-row">
+    <span class="month-badge"><i class="fa-solid fa-calendar-days"></i> 30-DAY SEASON PASS</span>
+    <span class="days-left-badge" id="seasonDaysLeft"><i class="fa-solid fa-hourglass-half"></i> දින 30ක් ඉතිරියි</span>
+   </div>
+
+   <div class="tracks-split-bar">
+    <div class="track-side free-side">
+     <div class="track-side-top">
+      <b><i class="fa-solid fa-seedling"></i> FREE</b>
+     </div>
+     <span>Normal Coins, Normal Themes & Normal Avatars</span>
+    </div>
+
+    <div class="track-side pro-side">
+     <div class="track-side-top">
+      <b><i class="fa-solid fa-crown"></i> PRO PASS</b>
+     </div>
+     <span>Bonus Coins, Pro Themes & Pro Avatars</span>
+     <button type="button" class="pro-buy-btn" id="buyProPassBtn">
+      <i class="fa-solid fa-coins"></i> Buy Pro (100,000)
+     </button>
+    </div>
+   </div>
+
+   <div class="center-loading-wrap">
+    <div class="loading-stats-row">
+     <span class="earned-label"><i class="fa-solid fa-trophy" style="color:var(--gold)"></i> මාසයේ දිනූ Coins (Coin Win Progress)</span>
+     <span class="earned-amount" id="monthlyEarnedDisplay">0 <small>/ 720,000</small></span>
+    </div>
+    <div class="coin-progress-track">
+     <div class="coin-progress-fill" id="coinProgressFill"></div>
+    </div>
+    <div class="loading-footer-row">
+     <span id="progressPercentText">0% Completed</span>
+     <button type="button" class="sim-win-btn" id="simulateMatchWinBtn" title="තරඟයකින් දිනූ Coins එකතු කර පරීක්ෂා කරන්න">
+      <i class="fa-solid fa-plus"></i> +5,000 Win Test
+     </button>
+    </div>
+   </div>
+  </section>
+
+  <!-- Milestones List -->
+  <section class="milestones-list" id="milestonesContainer"></section>
+ </main>
+</div>
+
+<div id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script>
+'use strict';
+const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
+const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user';
+const PRO_PASS_PRICE=100000;
+const MONTH_MS=30*24*60*60*1000;
+
+let auth,db,fbUser,isNavigating=false;
+let user={
+ name:'',
+ points:500,
+ wins:0,
+ losses:0,
+ uid:null,
+ pieceIndex:0,
+ unlockedPieces:[0],
+ avatarIcon:'fa-user',
+ unlockedAvatars:['fa-user'],
+ eventSeasonStart:0,
+ monthlyWonCoins:0,
+ hasProPass:false,
+ claimedEventRewards:[]
+};
+
+const EVENT_MILESTONES=[
+ {
+  target:1000,
+  free:{
+   coins:200,
+   piece:{id:'ev_p_1k_free',name:'Bronze Mist Piece',bg:'radial-gradient(circle at 30% 30%,#e6b89c,#9c6644)',border:'#ddb892',color:'#fff',icon:'◈'},
+   avatar:{id:'fa-chess-pawn',name:'Pawn Starter',icon:'fa-chess-pawn'}
+  },
+  pro:{
+   coins:600,
+   piece:{id:'ev_p_1k_pro',name:'Aurelia Gold Piece',bg:'linear-gradient(135deg,#fff3b0,#f59e0b)',border:'#fde68a',color:'#111',icon:'♛'},
+   avatar:{id:'fa-chess-queen',name:'Queen Vanguard',icon:'fa-chess-queen'}
+  }
+ },
+ {
+  target:10000,
+  free:{
+   coins:800,
+   piece:{id:'ev_p_10k_free',name:'Jade Forest Piece',bg:'radial-gradient(circle at 30% 30%,#6ee7b7,#047857)',border:'#34d399',color:'#fff',icon:'❖'},
+   avatar:{id:'fa-leaf',name:'Emerald Scout',icon:'fa-leaf'}
+  },
+  pro:{
+   coins:2500,
+   piece:{id:'ev_p_10k_pro',name:'Cyber Plasma Piece',bg:'radial-gradient(circle at 30% 30%,#67e8f9,#0284c7)',border:'#00f2fe',color:'#fff',icon:'✦'},
+   avatar:{id:'fa-user-astronaut',name:'Astro Commander',icon:'fa-user-astronaut'}
+  }
+ },
+ {
+  target:30000,
+  free:{
+   coins:1500,
+   piece:{id:'ev_p_30k_free',name:'Cobalt Wave Piece',bg:'radial-gradient(circle at 30% 30%,#93c5fd,#1d4ed8)',border:'#60a5fa',color:'#fff',icon:'▲'},
+   avatar:{id:'fa-water',name:'Tide Runner',icon:'fa-water'}
+  },
+  pro:{
+   coins:4500,
+   piece:{id:'ev_p_30k_pro',name:'Crimson Flare Piece',bg:'radial-gradient(circle at 30% 30%,#fda4af,#be123c)',border:'#fb7185',color:'#fff',icon:'☀'},
+   avatar:{id:'fa-fire-flame-curved',name:'Inferno Lord',icon:'fa-fire-flame-curved'}
+  }
+ },
+ {
+  target:45000,
+  free:{
+   coins:2200,
+   piece:{id:'ev_p_45k_free',name:'Silver Moon Piece',bg:'radial-gradient(circle at 30% 30%,#f1f5f9,#64748b)',border:'#cbd5e1',color:'#0f172a',icon:'☾'},
+   avatar:{id:'fa-moon',name:'Night Watcher',icon:'fa-moon'}
+  },
+  pro:{
+   coins:6500,
+   piece:{id:'ev_p_45k_pro',name:'Royal Amethyst Piece',bg:'radial-gradient(circle at 30% 30%,#e9d5ff,#7e22ce)',border:'#c084fc',color:'#fff',icon:'❖'},
+   avatar:{id:'fa-wand-sparkles',name:'Arcane Sovereign',icon:'fa-wand-sparkles'}
+  }
+ },
+ {
+  target:75000,
+  free:{
+   coins:3500,
+   piece:{id:'ev_p_75k_free',name:'Amber Sun Piece',bg:'radial-gradient(circle at 30% 30%,#fde68a,#d97706)',border:'#fbbf24',color:'#111',icon:'☀'},
+   avatar:{id:'fa-sun',name:'Solar Striker',icon:'fa-sun'}
+  },
+  pro:{
+   coins:10000,
+   piece:{id:'ev_p_75k_pro',name:'Dragon Fang Piece',bg:'linear-gradient(135deg,#f87171,#7f1d1d)',border:'#ffd166',color:'#ffd166',icon:'🐉'},
+   avatar:{id:'fa-dragon',name:'Dragon Emperor',icon:'fa-dragon'}
+  }
+ },
+ {
+  target:100000,
+  free:{
+   coins:5000,
+   piece:{id:'ev_p_100k_free',name:'Mint Frost Piece',bg:'radial-gradient(circle at 30% 30%,#ccfbf1,#0f766e)',border:'#5eead4',color:'#fff',icon:'❄'},
+   avatar:{id:'fa-snowflake',name:'Frost Warden',icon:'fa-snowflake'}
+  },
+  pro:{
+   coins:15000,
+   piece:{id:'ev_p_100k_pro',name:'Volt Titan Piece',bg:'radial-gradient(circle at 30% 30%,#fef08a,#ca8a04)',border:'#00f2fe',color:'#111',icon:'⚡'},
+   avatar:{id:'fa-bolt-lightning',name:'Thunder Titan',icon:'fa-bolt-lightning'}
+  }
+ },
+ {
+  target:200000,
+  free:{
+   coins:8000,
+   piece:{id:'ev_p_200k_free',name:'Copper Shield Piece',bg:'radial-gradient(circle at 30% 30%,#fdba74,#9a3412)',border:'#fb923c',color:'#fff',icon:'🛡'},
+   avatar:{id:'fa-shield-halved',name:'Iron Guardian',icon:'fa-shield-halved'}
+  },
+  pro:{
+   coins:25000,
+   piece:{id:'ev_p_200k_pro',name:'Diamond Nova Piece',bg:'radial-gradient(circle at 30% 30%,#e0f2fe,#0369a1)',border:'#ffd166',color:'#fff',icon:'◆'},
+   avatar:{id:'fa-gem',name:'Diamond Legend',icon:'fa-gem'}
+  }
+ },
+ {
+  target:245000,
+  free:{
+   coins:10000,
+   piece:{id:'ev_p_245k_free',name:'Crimson Rose Piece',bg:'radial-gradient(circle at 30% 30%,#fecdd3,#be123c)',border:'#fda4af',color:'#fff',icon:'✿'},
+   avatar:{id:'fa-award',name:'Champion Honor',icon:'fa-award'}
+  },
+  pro:{
+   coins:30000,
+   piece:{id:'ev_p_245k_pro',name:'Meteor Core Piece',bg:'radial-gradient(circle at 30% 30%,#c084fc,#312e81)',border:'#ffd166',color:'#ffd166',icon:'☄'},
+   avatar:{id:'fa-meteor',name:'Cosmic Overlord',icon:'fa-meteor'}
+  }
+ },
+ {
+  target:545000,
+  free:{
+   coins:18000,
+   piece:{id:'ev_p_545k_free',name:'Obsidian Edge Piece',bg:'radial-gradient(circle at 30% 30%,#475569,#0f172a)',border:'#94a3b8',color:'#ffd166',icon:'♠'},
+   avatar:{id:'fa-chess-rook',name:'Citadel Master',icon:'fa-chess-rook'}
+  },
+  pro:{
+   coins:55000,
+   piece:{id:'ev_p_545k_pro',name:'Phantom Crown Piece',bg:'linear-gradient(135deg,#a855f7,#0f172a)',border:'#ffd166',color:'#fff',icon:'♕'},
+   avatar:{id:'fa-crown',name:'Mythic Monarch',icon:'fa-crown'}
+  }
+ },
+ {
+  target:720000,
+  free:{
+   coins:25000,
+   piece:{id:'ev_p_720k_free',name:'Grand Star Piece',bg:'radial-gradient(circle at 30% 30%,#fde047,#b45309)',border:'#ffd166',color:'#111',icon:'★'},
+   avatar:{id:'fa-trophy',name:'Grand Finale Hero',icon:'fa-trophy'}
+  },
+  pro:{
+   coins:80000,
+   piece:{id:'ev_p_720k_pro',name:'Immortal King Piece',bg:'linear-gradient(135deg,#ffd166,#ff4757,#7e22ce)',border:'#fff',color:'#fff',icon:'♔'},
+   avatar:{id:'fa-chess-king',name:'Immortal Grandmaster',icon:'fa-chess-king'}
+  }
+ }
+];
+
+function normalizeList(val, fallback) {
+ if (Array.isArray(val)) return val.length ? val : fallback;
+ if (val && typeof val === 'object') {
+  const arr = Object.values(val);
+  return arr.length ? arr : fallback;
+ }
+ return fallback;
+}
+
+function toast(s, icon='fa-circle-info'){
+ const t=$('toast');
+ t.replaceChildren();
+ const iconEl=document.createElement('i');iconEl.className=`fa-solid ${icon}`;iconEl.style.color='var(--gold)';
+ const textEl=document.createElement('span');textEl.textContent=String(s);
+ t.append(iconEl,textEl);
+ t.classList.add('show');
+ setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+function smoothNavigate(url){
+ if(isNavigating)return;
+ isNavigating=true;
+ const app=$('appRoot');
+ if(app)app.classList.add('page-leaving');
+ setTimeout(()=>{window.location.href=url;},110);
+}
+
+function ensureMonthlyCycle(){
+ const now=Date.now();
+ const start=Number(user.eventSeasonStart)||0;
+ if(!start || (now - start) >= MONTH_MS){
+  user.eventSeasonStart=now;
+  user.monthlyWonCoins=0;
+  user.claimedEventRewards=[];
+ }
+}
+
+function persistEventState(){
+ user.points=Number(user.points)||0;
+ user.monthlyWonCoins=Number(user.monthlyWonCoins)||0;
+ user.unlockedPieces=Array.from(new Set(normalizeList(user.unlockedPieces,[0])));
+ user.unlockedAvatars=Array.from(new Set(normalizeList(user.unlockedAvatars,['fa-user']).map(String)));
+ user.claimedEventRewards=Array.from(new Set(Array.isArray(user.claimedEventRewards)?user.claimedEventRewards:[]));
+ localStorage.setItem(KEY,JSON.stringify(user));
+
+ if(db && fbUser){
+  const payload={
+   points:user.points,
+   pieceIndex:Number(user.pieceIndex)||0,
+   unlockedPieces:user.unlockedPieces,
+   avatarIcon:user.avatarIcon||'fa-user',
+   unlockedAvatars:user.unlockedAvatars,
+   eventSeasonStart:Number(user.eventSeasonStart)||Date.now(),
+   monthlyWonCoins:user.monthlyWonCoins,
+   hasProPass:Boolean(user.hasProPass),
+   claimedEventRewards:user.claimedEventRewards
+  };
+  db.ref('users_v6/'+fbUser.uid).update(payload).catch(()=>{});
+  db.ref('publicProfiles_v6/'+fbUser.uid).update(payload).catch(()=>{});
+ }
+}
+
+function addEventRewardToShopConfig(type, itemObj){
+ if(!db || !itemObj) return;
+ const path = type === 'piece' ? 'shopConfig_v6/customPieces' : 'shopConfig_v6/customAvatars';
+ db.ref(path).once('value').then(snap=>{
+  const val=snap.val();
+  const list=Array.isArray(val)?val.filter(Boolean):(val&&typeof val==='object'?Object.values(val).filter(Boolean):[]);
+  const exists=list.some(x=>String(x.id)===String(itemObj.id));
+  if(!exists){
+   list.push({
+    ...itemObj,
+    price: itemObj.price || 0,
+    isEventReward: true
+   });
+   db.ref(path).set(list).catch(()=>{});
+  }
+ }).catch(()=>{});
+}
+
+function claimMilestoneReward(target, track){
+ const m=EVENT_MILESTONES.find(x=>x.target===target);
+ if(!m)return;
+ const won=Number(user.monthlyWonCoins)||0;
+ if(won < target){
+  return toast(`මෙම Reward එකට තව Coins ${(target - won).toLocaleString()}ක් දිනිය යුතුයි!`,'fa-lock');
+ }
+ if(track === 'pro' && !user.hasProPass){
+  return toast('Pro Pass Rewards ලබාගැනීමට Pro Pass (100,000 Coins) මිලදී ගන්න!','fa-crown');
+ }
+ const claimKey=`${target}_${track}`;
+ const claimed=Array.isArray(user.claimedEventRewards)?user.claimedEventRewards:[];
+ if(claimed.includes(claimKey)){
+  return toast('මෙම ත්‍යාගය දැනටමත් ලබාගෙන ඇත.');
+ }
+
+ const rewardData=m[track];
+ user.points=(Number(user.points)||0) + (Number(rewardData.coins)||0);
+
+ if(rewardData.avatar){
+  const avId=String(rewardData.avatar.id);
+  const uAv=normalizeList(user.unlockedAvatars,['fa-user']).map(String);
+  if(!uAv.includes(avId))uAv.push(avId);
+  user.unlockedAvatars=uAv;
+  addEventRewardToShopConfig('avatar', rewardData.avatar);
+ }
+
+ if(rewardData.piece){
+  const pId=String(rewardData.piece.id);
+  const uP=normalizeList(user.unlockedPieces,[0]).map(String);
+  if(!uP.includes(pId))uP.push(pId);
+  user.unlockedPieces=uP;
+  addEventRewardToShopConfig('piece', rewardData.piece);
+ }
+
+ user.claimedEventRewards=[...claimed, claimKey];
+ persistEventState();
+ renderEventUI();
+ toast(`${target.toLocaleString()} (${track.toUpperCase()}) Event Reward ලැබුණි! Profile එකේ පෙන්වයි.`,'fa-trophy');
+}
+
+function renderRewardLaneHtml(m, track){
+ const data=m[track];
+ const won=Number(user.monthlyWonCoins)||0;
+ const unlockedMilestone=won >= m.target;
+ const proAllowed=(track === 'free') || Boolean(user.hasProPass);
+ const claimKey=`${m.target}_${track}`;
+ const isClaimed=(user.claimedEventRewards||[]).includes(claimKey);
+
+ let btnClass='claim-btn disabled';
+ let btnLabel='<i class="fa-solid fa-lock"></i> Locked';
+ if(isClaimed){
+  btnClass='claim-btn claimed';
+  btnLabel='<i class="fa-solid fa-check"></i> Claimed';
+ }else if(unlockedMilestone && proAllowed){
+  btnClass='claim-btn ready';
+  btnLabel='<i class="fa-solid fa-gift"></i> Claim Reward';
+ }else if(unlockedMilestone && !proAllowed){
+  btnClass='claim-btn disabled';
+  btnLabel='<i class="fa-solid fa-crown"></i> Pro Pass Required';
+ }
+
+ const p=data.piece;
+ const av=data.avatar;
+
+ return `
+  <div class="lane-box ${track==='pro'?'pro-lane':''}">
+   <div class="lane-head">
+    <span class="${track==='free'?'free-tag':'pro-tag'}">${track==='free'?'FREE NORMAL':'PRO PASS'}</span>
+    <span style="color:var(--gold)">+${Number(data.coins||0).toLocaleString()}</span>
+   </div>
+   <div class="reward-items-preview">
+    <div class="reward-chip">
+     <div class="chip-icon-coin"><i class="fa-solid fa-coins"></i></div>
+     <div class="chip-text">
+      <b>+${Number(data.coins||0).toLocaleString()} Coins</b>
+      <small>Bonus Coins</small>
+     </div>
+    </div>
+    <div class="reward-chip">
+     <div class="chip-icon-piece" style="background:${p.bg};border:1.5px solid ${p.border};color:${p.color}">${p.icon}</div>
+     <div class="chip-text">
+      <b>${p.name}</b>
+      <small>Piece Theme</small>
+     </div>
+    </div>
+    <div class="reward-chip">
+     <div class="chip-icon-av"><i class="fa-solid ${av.icon}"></i></div>
+     <div class="chip-text">
+      <b>${av.name}</b>
+      <small>Profile Avatar</small>
+     </div>
+    </div>
+   </div>
+   <button type="button" class="${btnClass}" onclick="claimMilestoneReward(${m.target}, '${track}')">${btnLabel}</button>
+  </div>
+ `;
+}
+
+function renderEventUI(){
+ ensureMonthlyCycle();
+ const won=Number(user.monthlyWonCoins)||0;
+ const maxTarget=EVENT_MILESTONES[EVENT_MILESTONES.length-1].target;
+ const pct=Math.min(100, Math.round((won / maxTarget) * 1000) / 10);
+ const elapsed=Date.now() - (Number(user.eventSeasonStart)||Date.now());
+ const daysRem=Math.max(1, Math.ceil((MONTH_MS - elapsed) / (24*60*60*1000)));
+
+ $('userCoinBalance').textContent=(Number(user.points)||0).toLocaleString();
+ $('seasonDaysLeft').innerHTML=`<i class="fa-solid fa-hourglass-half"></i> දින ${daysRem}ක් ඉතිරියි`;
+ $('monthlyEarnedDisplay').innerHTML=`${won.toLocaleString()} <small>/ ${maxTarget.toLocaleString()}</small>`;
+ $('coinProgressFill').style.width=`${pct}%`;
+ $('progressPercentText').textContent=`${pct}% Completed`;
+
+ const proBtn=$('buyProPassBtn');
+ if(user.hasProPass){
+  proBtn.className='pro-buy-btn owned';
+  proBtn.innerHTML='<i class="fa-solid fa-circle-check"></i> Pro Pass Active';
+  proBtn.onclick=null;
+ }else{
+  proBtn.className='pro-buy-btn';
+  proBtn.innerHTML='<i class="fa-solid fa-crown"></i> Buy Pro (100,000)';
+  proBtn.onclick=()=>{
+   const bal=Number(user.points)||0;
+   if(bal < PRO_PASS_PRICE){
+    return toast(`Pro Pass මිලදී ගැනීමට Coins ${PRO_PASS_PRICE.toLocaleString()}ක් අවශ්‍යයි!`,'fa-coins');
+   }
+   user.points=bal - PRO_PASS_PRICE;
+   user.hasProPass=true;
+   persistEventState();
+   renderEventUI();
+   toast('Pro Pass සාර්ථකව සක්‍රිය කරන ලදී!','fa-crown');
+  };
+ }
+
+ const container=$('milestonesContainer');
+ container.innerHTML='';
+ EVENT_MILESTONES.forEach(m=>{
+  const reached=won >= m.target;
+  const card=document.createElement('div');
+  card.className='milestone-card'+(reached?' reached':'');
+  card.innerHTML=`
+   <div class="milestone-top">
+    <div class="milestone-target"><i class="fa-solid fa-coins"></i> ${m.target.toLocaleString()} Coins Win</div>
+    <span class="milestone-state ${reached?'state-unlocked':'state-locked'}">${reached?'UNLOCKED':'TARGET '+m.target.toLocaleString()}</span>
+   </div>
+   <div class="reward-lanes">
+    ${renderRewardLaneHtml(m, 'free')}
+    ${renderRewardLaneHtml(m, 'pro')}
+   </div>
+  `;
+  container.appendChild(card);
+ });
+}
+
+$('simulateMatchWinBtn').onclick=()=>{
+ const gain=5000;
+ user.monthlyWonCoins=(Number(user.monthlyWonCoins)||0)+gain;
+ user.points=(Number(user.points)||0)+gain;
+ persistEventState();
+ renderEventUI();
+ toast(`+${gain.toLocaleString()} Win Coins එකතු කරන ලදී!`,'fa-coins');
+};
+
+$('backHomeBtn').onclick=()=>smoothNavigate('index.html');
+
+try{
+ const cached=localStorage.getItem(KEY);
+ if(cached){
+  const parsed=JSON.parse(cached);
+  if(parsed&&typeof parsed==='object'){
+   user={...user,...parsed};
+  }
+ }
+}catch(e){}
+renderEventUI();
+
+try{
+ if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
+ auth=firebase.auth();
+ db=firebase.database();
+}catch(e){console.error('Firebase init error:',e);}
+
+if(auth && db){
+ auth.onAuthStateChanged(async u=>{
+  fbUser=u||null;
+  if(!u)return;
+  db.ref('users_v6/'+u.uid).on('value',snap=>{
+   const d=snap.val();
+   if(!d)return;
+   user={
+    ...user,
+    ...d,
+    uid:u.uid,
+    points:Number.isFinite(Number(d.points))?Number(d.points):user.points,
+    monthlyWonCoins:Number(d.monthlyWonCoins)||0,
+    hasProPass:Boolean(d.hasProPass),
+    eventSeasonStart:Number(d.eventSeasonStart)||user.eventSeasonStart||Date.now(),
+    claimedEventRewards:Array.isArray(d.claimedEventRewards)?d.claimedEventRewards:[],
+    unlockedPieces:normalizeList(d.unlockedPieces,[0]),
+    unlockedAvatars:normalizeList(d.unlockedAvatars,['fa-user']).map(String)
+   };
+   localStorage.setItem(KEY,JSON.stringify(user));
+   renderEventUI();
+  });
+ });
+}
+</script>
+<script src="./invite-global.js"></script>
+</body>
+</html>
