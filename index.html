@@ -11,8 +11,29 @@
 html,body{width:100%;height:100%;background:radial-gradient(circle at 50% 20%,#1a103c 0%,#080b18 60%,#03050a 100%);color:#f8f9fa;overflow:hidden}
 body{min-height:100dvh;display:flex;flex-direction:column;justify-content:center;align-items:center}
 
-.app{width:100%;height:100dvh;max-width:768px;margin:0 auto;padding:14px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;opacity:1;transform:scale(1);transition:opacity 0.16s ease-out,transform 0.16s ease-out;will-change:opacity,transform}
-.app.page-leaving{opacity:0;transform:scale(0.985)}
+/* Professional Instant (0ms) Transition Sweep */
+.page-sweep{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:3px;
+  background:linear-gradient(90deg,var(--neon-blue),var(--gold),#ff9f1c,var(--neon-blue));
+  box-shadow:0 0 14px rgba(255,209,102,0.85), 0 0 24px rgba(0,242,254,0.65);
+  z-index:300;
+  opacity:0;
+  transform:scaleX(0);
+  transform-origin:left center;
+  pointer-events:none;
+}
+.page-sweep.active{
+  opacity:1;
+  transform:scaleX(1);
+  transition:transform 0.14s cubic-bezier(0.22,1,0.36,1), opacity 0.14s ease-out;
+}
+
+.app{width:100%;height:100dvh;max-width:768px;margin:0 auto;padding:14px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;opacity:1;transform:scale(1);transition:opacity 0s linear,transform 0s linear;will-change:opacity,transform}
+.app.page-leaving{opacity:0.92;transform:scale(0.992);transition:opacity 0s linear,transform 0s linear}
 
 .home-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 20px;background:linear-gradient(135deg,rgba(22,30,56,0.95),rgba(10,14,28,0.95));border:2px solid rgba(255,209,102,0.4);border-radius:22px;box-shadow:0 8px 25px rgba(0,0,0,0.6);backdrop-filter:blur(10px)}
 .profile-float{display:flex;align-items:center;gap:12px;cursor:pointer}
@@ -27,12 +48,12 @@ body{min-height:100dvh;display:flex;flex-direction:column;justify-content:center
 main{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;width:100%;position:relative;margin:8px 0;overflow:hidden}
 .lobby{width:100%;height:100%;display:flex;flex-direction:column;gap:14px;padding:14px;background:linear-gradient(145deg,rgba(18,24,40,0.85),rgba(12,16,28,0.9));border:2px solid rgba(255,209,102,0.2);border-radius:24px;backdrop-filter:blur(12px);box-shadow:0 10px 30px rgba(0,0,0,0.5);overflow-y:auto}
 
-.reward-banner{width:100%;min-height:72px;border-radius:18px;border:2px solid rgba(255,255,255,0.5);background:linear-gradient(135deg,#f39a08,#ffb10d);color:#111;font-size:1.25rem;font-weight:800;letter-spacing:0.5px;box-shadow:0 6px 20px rgba(243,154,8,0.35);display:flex;align-items:center;justify-content:center;gap:12px;cursor:pointer;transition:transform 0.16s ease}
+.reward-banner{width:100%;min-height:72px;border-radius:18px;border:2px solid rgba(255,255,255,0.5);background:linear-gradient(135deg,#f39a08,#ffb10d);color:#111;font-size:1.25rem;font-weight:800;letter-spacing:0.5px;box-shadow:0 6px 20px rgba(243,154,8,0.35);display:flex;align-items:center;justify-content:center;gap:12px;cursor:pointer;transition:transform 0.12s ease}
 .reward-banner:active{transform:scale(0.98)}
 .reward-banner i{font-size:1.6rem}
 
 .mode-grid{display:grid;grid-template-columns:1fr;gap:12px}
-.mode{min-height:86px;border-radius:18px;border:2px solid rgba(255,255,255,0.15);padding:14px 18px;text-align:left;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,0.5);cursor:pointer;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}
+.mode{min-height:86px;border-radius:18px;border:2px solid rgba(255,255,255,0.15);padding:14px 18px;text-align:left;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,0.5);cursor:pointer;transition:transform .14s ease,border-color .14s ease,box-shadow .14s ease}
 .mode:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 8px 22px rgba(255,209,102,0.2)}
 .mode:active{transform:scale(0.985)}
 .mode:after{position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:2.8rem;opacity:0.85}
@@ -43,7 +64,7 @@ main{flex:1;display:flex;flex-direction:column;justify-content:center;align-item
 .mode-free{background:linear-gradient(135deg,#b36b00,#f19a00)}.mode-free:after{content:'🎯'}
 
 .bottom-nav{width:100%;min-height:66px;background:rgba(14,20,38,0.95);border:2px solid rgba(255,209,102,0.3);border-radius:24px;display:flex;align-items:center;justify-content:space-around;padding:6px 4px;backdrop-filter:blur(10px);box-shadow:0 10px 30px rgba(0,0,0,0.8)}
-.nav-item{background:none;border:0;color:#aab4c7;text-decoration:none;display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:0.72rem;font-weight:700;cursor:pointer;transition:color 0.15s ease,transform 0.15s ease}
+.nav-item{background:none;border:0;color:#aab4c7;text-decoration:none;display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:0.72rem;font-weight:700;cursor:pointer;transition:color 0.12s ease,transform 0.12s ease}
 .nav-item:active{transform:scale(0.93)}
 .nav-item i{font-size:1.3rem}
 .nav-item.active{color:var(--gold)}
@@ -76,6 +97,7 @@ input:focus{border-color:var(--gold)}
 </style>
 </head>
 <body>
+<div class="page-sweep" id="pageSweep" aria-hidden="true"></div>
 <div class="app" id="appRoot">
  <div class="home-top" id="homeTop">
   <div class="profile-float" id="openProfile" title="ප්‍රොෆයිලය">
@@ -253,9 +275,23 @@ function smoothNavigate(url){
  if(isNavigating)return;
  isNavigating=true;
  const app=$('appRoot');
+ const sweep=$('pageSweep');
+ if(sweep){
+  sweep.classList.remove('active');
+  void sweep.offsetWidth;
+  sweep.classList.add('active');
+ }
  if(app)app.classList.add('page-leaving');
- setTimeout(()=>{window.location.href=url;},110);
+ window.location.href=url;
 }
+
+window.addEventListener('pageshow',()=>{
+ isNavigating=false;
+ const app=$('appRoot');
+ const sweep=$('pageSweep');
+ if(app)app.classList.remove('page-leaving');
+ if(sweep)sweep.classList.remove('active');
+});
 
 try{
  const cached=localStorage.getItem(KEY);
