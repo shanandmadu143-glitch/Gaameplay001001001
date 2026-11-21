@@ -229,6 +229,8 @@ const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomai
 const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user';
 const EVENT_MONTH_MS=30*24*60*60*1000;
 const BRIDGE_SLICE_BYTES=256*1024;
+const INSTALLED_APK_VERSION_KEY='sinhala_draughts_installed_apk_version';
+const INSTALLED_APK_CODE_KEY='sinhala_draughts_installed_apk_code';
 
 let auth,db,firestore,fbUser,isNavigating=false;
 let customPieces=[];
@@ -387,7 +389,87 @@ try{
  firestore=firebase.firestore();
 }catch(e){console.error('Firebase initialization failed:',e);}
 
-/* Cloud Firestore APK Update Listener, Install & Reset App Flow */
+/* Native Package Version Check + Cloud Firestore APK Update Listener */
+function getNativeAppVersionInfo(){
+ try{
+  const bridge=window.AndroidApkBridge;
+  if(bridge && typeof bridge.getInstalledAppVersionInfo === 'function'){
+   const raw=bridge.getInstalledAppVersionInfo();
+   const parsed=typeof raw === 'string' ? JSON.parse(raw) : raw;
+   if(parsed && typeof parsed === 'object'){
+    return {
+     versionCode:Number(parsed.versionCode)||0,
+     versionName:String(parsed.versionName||'').trim()
+    };
+   }
+  }
+ }catch(_){}
+ return {versionCode:0, versionName:''};
+}
+
+function normalizeVerParts(verStr){
+ return String(verStr||'')
+  .trim()
+  .replace(/^v/i,'')
+  .split(/[^0-9]+/)
+  .filter(Boolean)
+  .map(n=>Number(n));
+}
+
+function compareVersionStrings(a, b){
+ const pa=normalizeVerParts(a);
+ const pb=normalizeVerParts(b);
+ const len=Math.max(pa.length, pb.length);
+ for(let i=0;i<len;i++){
+  const va=pa[i] ?? 0;
+  const vb=pb[i] ?? 0;
+  if(va > vb) return 1;
+  if(va < vb) return -1;
+ }
+ return 0;
+}
+
+function isApkAlreadyInstalled(meta){
+ if(!meta)return false;
+ const remoteVer=String(meta.version||'').trim();
+ const remoteCode=Number(meta.versionCode)||0;
+ const nativeInfo=getNativeAppVersionInfo();
+
+ if(remoteCode > 0 && nativeInfo.versionCode > 0){
+  if(nativeInfo.versionCode >= remoteCode)return true;
+ }else if(remoteVer && nativeInfo.versionName){
+  if(compareVersionStrings(nativeInfo.versionName, remoteVer) >= 0)return true;
+ }
+
+ try{
+  if(remoteVer){
+   const markedVer=localStorage.getItem(INSTALLED_APK_VERSION_KEY);
+   if(markedVer && (markedVer===remoteVer || compareVersionStrings(markedVer, remoteVer) >= 0)){
+    return true;
+   }
+  }
+  if(remoteCode > 0){
+   const markedCode=Number(localStorage.getItem(INSTALLED_APK_CODE_KEY))||0;
+   if(markedCode >= remoteCode)return true;
+  }
+ }catch(_){}
+
+ return false;
+}
+
+function markApkAsInstalled(meta){
+ if(!meta)return;
+ try{
+  if(meta.version){
+   localStorage.setItem(INSTALLED_APK_VERSION_KEY, String(meta.version).trim());
+   sessionStorage.removeItem('dismissed_apk_v_'+meta.version);
+  }
+  if(Number(meta.versionCode) > 0){
+   localStorage.setItem(INSTALLED_APK_CODE_KEY, String(Number(meta.versionCode)));
+  }
+ }catch(_){}
+}
+
 function resetApkModalState(meta){
  isInstallCompleted=false;
  $('apkSuccessBox').classList.remove('show');
@@ -411,6 +493,13 @@ function attachFirestoreApkListener(){
   if(!docSnap.exists)return;
   const meta=docSnap.data();
   if(!meta || !meta.version || !meta.totalChunks)return;
+
+  // APK එක දැනටමත් install වී ඇත්නම් New Update popup එක යලි නොපෙන්වයි
+  if(isApkAlreadyInstalled(meta)){
+   modal('apkUpdateModal',false);
+   return;
+  }
+
   if(sessionStorage.getItem('dismissed_apk_v_'+meta.version)==='1')return;
 
   latestApkMeta=meta;
@@ -560,6 +649,8 @@ $('installApkBtn').onclick=async()=>{
    progStatus.textContent=msg;
   });
 
+  markApkAsInstalled(latestApkMeta);
+
   progFill.style.width='100%';
   progPct.textContent='100%';
   progStatus.textContent=usedNative ? 'Android Installer විවෘත විය!' : 'APK Download ආරම්භ විය!';
@@ -568,8 +659,8 @@ $('installApkBtn').onclick=async()=>{
   isInstallCompleted=true;
   $('apkPreInstallActions').style.display='none';
   $('apkSuccessDesc').textContent=usedNative
-   ? `${fileName} (${formatMb(apkBlob.size)} MB) සාර්ථකව සැකසී Android Installer වෙත යවන ලදී. Install අවසන් වූ පසු "Reset App" ඔබන්න.`
-   : `${fileName} (${formatMb(apkBlob.size)} MB) සාර්ථකව සැකසී download ආරම්භ විය. Install අවසන් වූ පසු "Reset App" ඔබන්න.`;
+   ? `${fileName} (${formatMb(apkBlob.size)} MB) සාර්ථකව සැකසී Android Installer වෙත යවන ලදී. Install අවසන් වූ පසු Reset App ඔබන්න.`
+   : `${fileName} (${formatMb(apkBlob.size)} MB) සාර්ථකව සැකසී download ආරම්භ විය. Install අවසන් වූ පසු Reset App ඔබන්න.`;
   $('apkSuccessBox').classList.add('show');
   $('apkPostInstallActions').style.display='flex';
 
@@ -589,14 +680,19 @@ $('resetAppBtn').onclick=async()=>{
  $('resetAppBtn').disabled=true;
  toast('App Reset වෙමින්...','fa-rotate-right');
  try{
+  if(latestApkMeta){
+   markApkAsInstalled(latestApkMeta);
+  }
   if(userRefListener){
    try{userRefListener.ref.off('value',userRefListener.fn);}catch(_){}
    userRefListener=null;
   }
-  if(latestApkMeta?.version){
-   sessionStorage.removeItem('dismissed_apk_v_'+latestApkMeta.version);
-  }
+  const savedInstalledVer=localStorage.getItem(INSTALLED_APK_VERSION_KEY);
+  const savedInstalledCode=localStorage.getItem(INSTALLED_APK_CODE_KEY);
   localStorage.removeItem(KEY);
+  if(savedInstalledVer)localStorage.setItem(INSTALLED_APK_VERSION_KEY, savedInstalledVer);
+  if(savedInstalledCode)localStorage.setItem(INSTALLED_APK_CODE_KEY, savedInstalledCode);
+
   if('caches' in window){
    const keys=await caches.keys();
    await Promise.all(keys.map(k=>caches.delete(k).catch(()=>{})));
