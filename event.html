@@ -701,6 +701,7 @@ const COIN_AMOUNTS={
 
 let auth,db,fbUser,isNavigating=false;
 let lastObservedPoints=null;
+let lastSyncedMonthlyWon=0;
 let user={
  name:'',
  points:500,
@@ -764,6 +765,7 @@ function ensureMonthlyCycle(){
   user.eventSeasonNumber=(Number(user.eventSeasonNumber)||1) + completedCycles;
   user.eventSeasonStart=Number(user.eventSeasonStart) + (completedCycles * MONTH_MS);
   user.monthlyWonCoins=0;
+  lastSyncedMonthlyWon=0;
   user.claimedEventRewards=[];
   toast(`නව දින 30 Event Season #${user.eventSeasonNumber} ආරම්භ විය! නව Rewards සූදානම්.`,'fa-rotate');
  }
@@ -811,8 +813,9 @@ function buildSeasonMilestones(seasonNum){
 }
 
 function persistEventState(){
- user.points=Number(user.points)||0;
- user.monthlyWonCoins=Number(user.monthlyWonCoins)||0;
+ user.points=Math.max(0, Number(user.points)||0);
+ user.monthlyWonCoins=Math.max(0, Number(user.monthlyWonCoins)||0);
+ lastSyncedMonthlyWon=user.monthlyWonCoins;
  user.eventSeasonNumber=Number(user.eventSeasonNumber)||1;
  user.unlockedPieces=Array.from(new Set(normalizeList(user.unlockedPieces,[0])));
  user.unlockedAvatars=Array.from(new Set(normalizeList(user.unlockedAvatars,['fa-user']).map(String)));
@@ -856,18 +859,30 @@ function addEventRewardToShopConfig(type, itemObj){
  }).catch(()=>{});
 }
 
-function syncAutoCoinWinFromBalance(newPoints){
+function syncAutoCoinWinFromBalance(newPoints, remoteMonthlyWon=null){
  ensureMonthlyCycle();
- const currentPts=Number(newPoints)||0;
+ const currentPts=Math.max(0, Number(newPoints)||0);
+ let changed=false;
+
+ if(typeof remoteMonthlyWon === 'number' && Number.isFinite(remoteMonthlyWon)){
+  if(remoteMonthlyWon > (Number(user.monthlyWonCoins)||0)){
+   user.monthlyWonCoins=remoteMonthlyWon;
+   changed=true;
+  }
+ }
+
  if(lastObservedPoints !== null && currentPts > lastObservedPoints){
   const gained=currentPts - lastObservedPoints;
   user.monthlyWonCoins=(Number(user.monthlyWonCoins)||0) + gained;
-  user.points=currentPts;
-  persistEventState();
- }else{
-  user.points=currentPts;
+  changed=true;
  }
+
+ user.points=currentPts;
  lastObservedPoints=currentPts;
+
+ if(changed){
+  persistEventState();
+ }
 }
 
 function claimMilestoneReward(target, track){
@@ -892,6 +907,7 @@ function claimMilestoneReward(target, track){
 
  const rewardData=m[track];
  const bonusCoins=Number(rewardData.coins)||0;
+
  user.points=(Number(user.points)||0) + bonusCoins;
  lastObservedPoints=user.points;
 
@@ -979,7 +995,7 @@ function renderEventUI(){
  ensureMonthlyCycle();
  const seasonNum=Number(user.eventSeasonNumber)||1;
  const milestones=buildSeasonMilestones(seasonNum);
- const won=Number(user.monthlyWonCoins)||0;
+ const won=Math.max(0, Number(user.monthlyWonCoins)||0);
  const maxTarget=milestones[milestones.length-1].target;
  const pct=Math.min(100, Math.round((won / maxTarget) * 1000) / 10);
  const elapsed=Date.now() - (Number(user.eventSeasonStart)||Date.now());
@@ -1037,6 +1053,21 @@ function renderEventUI(){
 
 $('backHomeBtn').onclick=()=>smoothNavigate('index.html');
 
+window.addEventListener('storage', e=>{
+ if(e.key === KEY && e.newValue){
+  try{
+   const next=JSON.parse(e.newValue);
+   if(next && typeof next === 'object'){
+    const nextPts=Number.isFinite(Number(next.points))?Number(next.points):(Number(user.points)||0);
+    const nextWon=Number.isFinite(Number(next.monthlyWonCoins))?Number(next.monthlyWonCoins):null;
+    user={...user,...next};
+    syncAutoCoinWinFromBalance(nextPts, nextWon);
+    renderEventUI();
+   }
+  }catch(_){}
+ }
+});
+
 try{
  const cached=localStorage.getItem(KEY);
  if(cached){
@@ -1048,7 +1079,8 @@ try{
 }catch(e){}
 ensureMonthlyCycle();
 lastObservedPoints=Number(user.points)||0;
-persistEventState();
+lastSyncedMonthlyWon=Number(user.monthlyWonCoins)||0;
+localStorage.setItem(KEY,JSON.stringify(user));
 renderEventUI();
 
 try{
@@ -1065,12 +1097,13 @@ if(auth && db){
    const d=snap.val();
    if(!d)return;
    const incomingPts=Number.isFinite(Number(d.points))?Number(d.points):(Number(user.points)||0);
+   const incomingWon=Number.isFinite(Number(d.monthlyWonCoins))?Number(d.monthlyWonCoins):null;
    user={
     ...user,
     ...d,
     uid:u.uid,
     points:incomingPts,
-    monthlyWonCoins:Number(d.monthlyWonCoins)||0,
+    monthlyWonCoins:Math.max(Number(user.monthlyWonCoins)||0, Number(d.monthlyWonCoins)||0),
     eventSeasonStart:Number(d.eventSeasonStart)||user.eventSeasonStart||Date.now(),
     eventSeasonNumber:Number(d.eventSeasonNumber)||user.eventSeasonNumber||1,
     hasProPass:Boolean(d.hasProPass),
@@ -1078,7 +1111,7 @@ if(auth && db){
     unlockedPieces:normalizeList(d.unlockedPieces,[0]),
     unlockedAvatars:normalizeList(d.unlockedAvatars,['fa-user']).map(String)
    };
-   syncAutoCoinWinFromBalance(incomingPts);
+   syncAutoCoinWinFromBalance(incomingPts, incomingWon);
    localStorage.setItem(KEY,JSON.stringify(user));
    renderEventUI();
   });
