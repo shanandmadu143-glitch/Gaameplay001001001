@@ -74,6 +74,51 @@ html,body{
   transform:scale(0.985);
 }
 
+/* Top-Left Back Icon Bar */
+.top-back-bar{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-shrink:0;
+}
+
+.top-back-btn{
+  width:42px;
+  height:42px;
+  border-radius:14px;
+  border:1.5px solid rgba(255,209,102,0.45);
+  background:linear-gradient(135deg,rgba(24,33,62,0.96),rgba(12,17,34,0.96));
+  color:var(--gold);
+  font-size:1.05rem;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  box-shadow:0 6px 18px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.12);
+  transition:transform 0.12s ease,border-color 0.15s ease,background 0.15s ease,box-shadow 0.15s ease;
+}
+.top-back-btn:hover{
+  border-color:var(--gold);
+  background:linear-gradient(135deg,rgba(255,209,102,0.2),rgba(20,28,54,0.96));
+  box-shadow:0 0 16px rgba(255,209,102,0.28);
+}
+.top-back-btn:active{
+  transform:scale(0.94);
+}
+
+.top-screen-tag{
+  font-family:'Orbitron','Gemunu Libre',sans-serif;
+  font-size:0.72rem;
+  font-weight:800;
+  letter-spacing:0.8px;
+  color:var(--dim);
+  padding:6px 12px;
+  border-radius:12px;
+  background:rgba(13,19,36,0.78);
+  border:1px solid rgba(255,255,255,0.08);
+}
+
 /* Full Screen Scrollable Main Area */
 main{
   flex:1;
@@ -445,11 +490,11 @@ main{
   border-radius:14px;
 }
 
-/* Gaming Icon Action Bar */
+/* Gaming Icon Action Bar: Save / Logout */
 .icon-actions-bar{
   width:100%;
   display:grid;
-  grid-template-columns:1.35fr 1fr 0.85fr;
+  grid-template-columns:1.4fr 1fr;
   gap:10px;
   padding-top:2px;
 }
@@ -495,18 +540,6 @@ main{
   background:linear-gradient(135deg,#ffe08a,#ff9f1c);
   color:#111;
   box-shadow:0 0 12px rgba(255,209,102,0.45);
-}
-
-.btn-home-ic{
-  background:linear-gradient(135deg,rgba(0,242,254,0.16),rgba(21,30,54,0.88));
-  border:1.5px solid rgba(0,242,254,0.45);
-  color:var(--neon-blue);
-  box-shadow:0 6px 18px rgba(0,242,254,0.16);
-}
-.btn-home-ic .ic-wrap{
-  background:rgba(0,242,254,0.18);
-  color:var(--neon-blue);
-  border:1px solid rgba(0,242,254,0.4);
 }
 
 .btn-logout-ic{
@@ -558,6 +591,13 @@ main{
 <body>
 <div class="app" id="appRoot">
  <header class="top-hud" aria-hidden="true"></header>
+
+ <div class="top-back-bar">
+  <button type="button" class="top-back-btn" id="topBackBtn" title="මුල් පිටුවට (Back)" aria-label="මුල් පිටුවට යන්න">
+   <i class="fa-solid fa-arrow-left"></i>
+  </button>
+  <span class="top-screen-tag">GAMER PROFILE</span>
+ </div>
 
  <main>
   <div class="profile-scroll">
@@ -632,15 +672,11 @@ main{
     <div class="pieces-grid" id="piecesGrid"></div>
    </section>
 
-   <!-- Gaming Icon Action Bar: Save / Home / Logout -->
+   <!-- Gaming Icon Action Bar: Save / Logout -->
    <div class="icon-actions-bar">
     <button type="button" class="icon-action-btn btn-save-ic" id="saveProfile" title="සුරකින්න (Save)">
      <span class="ic-wrap"><i class="fa-solid fa-shield-check"></i></span>
      <span class="ic-label">SAVE</span>
-    </button>
-    <button type="button" class="icon-action-btn btn-home-ic" id="backHomeBtn" title="Home">
-     <span class="ic-wrap"><i class="fa-solid fa-house-chimney"></i></span>
-     <span class="ic-label">HOME</span>
     </button>
     <button type="button" class="icon-action-btn btn-logout-ic" id="logoutBtn" title="Logout">
      <span class="ic-wrap"><i class="fa-solid fa-power-off"></i></span>
@@ -1018,7 +1054,7 @@ $('saveProfile').onclick=async()=>{
  toast('Gaming Profile Loadout සුරකින ලදී!', 'fa-shield-check');
 };
 
-$('backHomeBtn').onclick=()=>smoothNavigate('index.html');
+$('topBackBtn').onclick=()=>smoothNavigate('index.html');
 $('goShopFromAvatars').onclick=()=>smoothNavigate('shopandreward.html');
 $('goShopFromPieces').onclick=()=>smoothNavigate('shopandreward.html');
 
