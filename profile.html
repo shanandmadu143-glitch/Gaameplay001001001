@@ -747,7 +747,7 @@ const EVENT_REWARD_PIECES=[
  {id:'ev_p_10k_free',name:'Jade Forest Piece',bg:'radial-gradient(circle at 30% 30%,#6ee7b7,#047857)',border:'#34d399',color:'#fff',icon:'❖'},
  {id:'ev_p_10k_pro',name:'Cyber Plasma Piece',bg:'radial-gradient(circle at 30% 30%,#67e8f9,#0284c7)',border:'#00f2fe',color:'#fff',icon:'✦'},
  {id:'ev_p_30k_free',name:'Cobalt Wave Piece',bg:'radial-gradient(circle at 30% 30%,#93c5fd,#1d4ed8)',border:'#60a5fa',color:'#fff',icon:'▲'},
- {id:100:'ev_p_30k_pro',name:'Crimson Flare Piece',bg:'radial-gradient(circle at 30% 30%,#fda4af,#be123c)',border:'#fb7185',color:'#fff',icon:'☀'},
+ {id:'ev_p_30k_pro',name:'Crimson Flare Piece',bg:'radial-gradient(circle at 30% 30%,#fda4af,#be123c)',border:'#fb7185',color:'#fff',icon:'☀'},
  {id:'ev_p_45k_free',name:'Silver Moon Piece',bg:'radial-gradient(circle at 30% 30%,#f1f5f9,#64748b)',border:'#cbd5e1',color:'#0f172a',icon:'☾'},
  {id:'ev_p_45k_pro',name:'Royal Amethyst Piece',bg:'radial-gradient(circle at 30% 30%,#e9d5ff,#7e22ce)',border:'#c084fc',color:'#fff',icon:'❖'},
  {id:'ev_p_75k_free',name:'Amber Sun Piece',bg:'radial-gradient(circle at 30% 30%,#fde68a,#d97706)',border:'#fbbf24',color:'#111',icon:'☀'},
@@ -762,17 +762,17 @@ const EVENT_REWARD_PIECES=[
  {id:'ev_p_545k_pro',name:'Phantom Crown Piece',bg:'linear-gradient(135deg,#a855f7,#0f172a)',border:'#ffd166',color:'#fff',icon:'♕'},
  {id:'ev_p_720k_free',name:'Grand Star Piece',bg:'radial-gradient(circle at 30% 30%,#fde047,#b45309)',border:'#ffd166',color:'#111',icon:'★'},
  {id:'ev_p_720k_pro',name:'Immortal King Piece',bg:'linear-gradient(135deg,#ffd166,#ff4757,#7e22ce)',border:'#fff',color:'#fff',icon:'♔'}
-].filter(item => item && item.name);
+];
 
 const DEFAULT_AVATARS=[
  {id:'fa-user',name:'සම්මත (Default)',icon:'fa-user'},
  {id:'fa-chess-knight',name:'චෙස් නයිට්',icon:'fa-chess-knight'},
  {id:'fa-dragon',name:'ගිනියම් ඩ්‍රැගන්',icon:'fa-dragon'},
  {id:'fa-robot',name:'රොබෝ යන්ත්‍රය',icon:'fa-robot'},
+ {id:100,name:'මහා ගින්න',icon:'fa-fire'},
  {id:'fa-ghost',name:'අපූර්ව හොල්මන',icon:'fa-ghost'},
  {id:'fa-shield-halved',name:'රජකීය පලිහ',icon:'fa-shield-halved'},
  {id:'fa-crown',name:'රජකීය ඔටුන්න',icon:'fa-crown'},
- {id:100:'fa-fire',name:'මහා ගින්න',icon:'fa-fire'},
  {id:'fa-bolt',name:'අකුණු සැණැල්ල',icon:'fa-bolt'},
  {id:'fa-skull',name:'හිස්කබල',icon:'fa-skull'},
  {id:'fa-star',name:'රන් තරුව',icon:'fa-star'},
@@ -784,7 +784,7 @@ const DEFAULT_AVATARS=[
  {id:'fa-paw',name:'සිංහ පාදය',icon:'fa-paw'},
  {id:'fa-crosshairs',name:'ඉලක්කය',icon:'fa-crosshairs'},
  {id:'fa-hat-wizard',name:'මායාකාරයා',icon:'fa-hat-wizard'}
-].filter(item => item && item.name);
+];
 
 const EVENT_REWARD_AVATARS=[
  {id:'fa-chess-pawn',name:'Pawn Starter',icon:'fa-chess-pawn'},
@@ -804,6 +804,29 @@ const EVENT_REWARD_AVATARS=[
  {id:'fa-chess-king',name:'Immortal Grandmaster',icon:'fa-chess-king'}
 ];
 
+const SEASON_PIECE_THEMES=[
+ {name:'Bronze Mist Piece',bg:'radial-gradient(circle at 30% 30%,#e6b89c,#9c6644)',border:'#ddb892',color:'#fff',icon:'◈'},
+ {name:'Jade Forest Piece',bg:'radial-gradient(circle at 30% 30%,#6ee7b7,#047857)',border:'#34d399',color:'#fff',icon:'❖'},
+ {name:'Cobalt Wave Piece',bg:'radial-gradient(circle at 30% 30%,#93c5fd,#1d4ed8)',border:'#60a5fa',color:'#fff',icon:'▲'},
+ {name:'Silver Moon Piece',bg:'radial-gradient(circle at 30% 30%,#f1f5f9,#64748b)',border:'#cbd5e1',color:'#0f172a',icon:'☾'},
+ {name:'Amber Sun Piece',bg:'radial-gradient(circle at 30% 30%,#fde68a,#d97706)',border:'#fbbf24',color:'#111',icon:'☀'},
+ {name:'Mint Frost Piece',bg:'radial-gradient(circle at 30% 30%,#ccfbf1,#0f766e)',border:'#5eead4',color:'#fff',icon:'❄'},
+ {name:'Copper Shield Piece',bg:'radial-gradient(circle at 30% 30%,#fdba74,#9a3412)',border:'#fb923c',color:'#fff',icon:'🛡'},
+ {name:'Crimson Rose Piece',bg:'radial-gradient(circle at 30% 30%,#fecdd3,#be123c)',border:'#fda4af',color:'#fff',icon:'✿'},
+ {name:'Obsidian Edge Piece',bg:'radial-gradient(circle at 30% 30%,#475569,#0f172a)',border:'#94a3b8',color:'#ffd166',icon:'♠'},
+ {name:'Grand Star Piece',bg:'radial-gradient(circle at 30% 30%,#fde047,#b45309)',border:'#ffd166',color:'#111',icon:'★'},
+ {name:'Aurelia Gold Piece',bg:'linear-gradient(135deg,#fff3b0,#f59e0b)',border:'#fde68a',color:'#111',icon:'♛'},
+ {name:'Cyber Plasma Piece',bg:'radial-gradient(circle at 30% 30%,#67e8f9,#0284c7)',border:'#00f2fe',color:'#fff',icon:'✦'},
+ {name:'Crimson Flare Piece',bg:'radial-gradient(circle at 30% 30%,#fda4af,#be123c)',border:'#fb7185',color:'#fff',icon:'☀'},
+ {name:'Royal Amethyst Piece',bg:'radial-gradient(circle at 30% 30%,#e9d5ff,#7e22ce)',border:'#c084fc',color:'#fff',icon:'❖'},
+ {name:'Dragon Fang Piece',bg:'linear-gradient(135deg,#f87171,#7f1d1d)',border:'#ffd166',color:'#ffd166',icon:'🐉'},
+ {name:'Volt Titan Piece',bg:'radial-gradient(circle at 30% 30%,#fef08a,#ca8a04)',border:'#00f2fe',color:'#111',icon:'⚡'},
+ {name:'Diamond Nova Piece',bg:'radial-gradient(circle at 30% 30%,#e0f2fe,#0369a1)',border:'#ffd166',color:'#fff',icon:'◆'},
+ {name:'Meteor Core Piece',bg:'radial-gradient(circle at 30% 30%,#c084fc,#312e81)',border:'#ffd166',color:'#ffd166',icon:'☄'},
+ {name:'Phantom Crown Piece',bg:'linear-gradient(135deg,#a855f7,#0f172a)',border:'#ffd166',color:'#fff',icon:'♕'},
+ {name:'Immortal King Piece',bg:'linear-gradient(135deg,#ffd166,#ff4757,#7e22ce)',border:'#fff',color:'#fff',icon:'♔'}
+];
+
 function normalizeList(val, fallback) {
  if (Array.isArray(val)) return val.length ? val : fallback;
  if (val && typeof val === 'object') {
@@ -813,9 +836,60 @@ function normalizeList(val, fallback) {
  return fallback;
 }
 
+function buildDynamicSeasonPieces(){
+ const unlocked = normalizeList(user.unlockedPieces, [0]).map(String);
+ const knownIds = new Set([
+  ...DEFAULT_PIECE_DESIGNS.map((p, i) => String(p.id !== undefined ? p.id : i)),
+  ...customPieces.map((p, i) => String(p && p.id !== undefined ? p.id : i)),
+  ...EVENT_REWARD_PIECES.map(p => String(p.id))
+ ]);
+ const extra = [];
+ unlocked.forEach((rawId, idx) => {
+  if (!knownIds.has(rawId) && rawId.startsWith('ev_')) {
+   const tmpl = SEASON_PIECE_THEMES[idx % SEASON_PIECE_THEMES.length];
+   const sMatch = rawId.match(/_s(\d+)_/i);
+   const seasonTag = sMatch ? ` (S${sMatch[1]})` : ' (Event)';
+   extra.push({
+    id: rawId,
+    name: `${tmpl.name}${seasonTag}`,
+    bg: tmpl.bg,
+    border: tmpl.border,
+    color: tmpl.color,
+    icon: tmpl.icon
+   });
+   knownIds.add(rawId);
+  }
+ });
+ return extra;
+}
+
+function buildDynamicSeasonAvatars(){
+ const unlocked = normalizeList(user.unlockedAvatars, ['fa-user']).map(String);
+ const known = new Set([
+  ...DEFAULT_AVATARS.map(a => String(a.id || a.icon)),
+  ...customAvatars.map(a => String(a && (a.id || a.icon))),
+  ...EVENT_REWARD_AVATARS.map(a => String(a.id || a.icon))
+ ]);
+ const extra = [];
+ unlocked.forEach(rawId => {
+  if (!known.has(rawId)) {
+   const baseIcon = rawId.replace(/_s\d+_[fp]$/i, '').replace(/^fa-solid\s+/, '') || 'fa-award';
+   const sMatch = rawId.match(/_s(\d+)_/i);
+   const niceLabel = baseIcon.replace(/^fa-/, '').replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+   extra.push({
+    id: rawId,
+    name: `${niceLabel}${sMatch ? ` (S${sMatch[1]})` : ' (Event)'}`,
+    icon: baseIcon
+   });
+   known.add(rawId);
+  }
+ });
+ return extra;
+}
+
 function getAllPieces(){
  const map = new Map();
- [...DEFAULT_PIECE_DESIGNS, ...customPieces, ...EVENT_REWARD_PIECES].forEach((p, i) => {
+ [...DEFAULT_PIECE_DESIGNS, ...customPieces, ...EVENT_REWARD_PIECES, ...buildDynamicSeasonPieces()].forEach((p, i) => {
   if(!p || !p.name) return;
   const key = String(p.id !== undefined ? p.id : i);
   if(!map.has(key)) map.set(key, { ...p, _key: key, _idx: i });
@@ -825,7 +899,7 @@ function getAllPieces(){
 
 function getAllAvatars(){
  const map = new Map();
- [...DEFAULT_AVATARS, ...customAvatars, ...EVENT_REWARD_AVATARS].forEach((a, i) => {
+ [...DEFAULT_AVATARS, ...customAvatars, ...EVENT_REWARD_AVATARS, ...buildDynamicSeasonAvatars()].forEach((a, i) => {
   if(!a || !a.name) return;
   const key = String(a.id || a.icon || i);
   if(!map.has(key)) map.set(key, { ...a, _key: key });
@@ -860,7 +934,7 @@ function resolveIconClass(rawIcon){
  const s = String(rawIcon || 'fa-user').trim();
  const found = allAvatars.find(a => String(a.id) === s || String(a.icon) === s);
  if(found && found.icon) return String(found.icon).replace(/^fa-solid\s+/, '');
- return s.replace(/^fa-solid\s+/, '') || 'fa-user';
+ return s.replace(/_s\d+_[fp]$/i, '').replace(/^fa-solid\s+/, '') || 'fa-user';
 }
 
 function getRankInfo(wins, points){
@@ -1140,6 +1214,9 @@ $('goShopFromPieces').onclick=()=>smoothNavigate('shopandreward.html');
 $('logoutBtn').onclick=async()=>{
  localStorage.removeItem(KEY);
  sessionStorage.removeItem('sinhala_draughts_admin_auth');
+ user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user',unlockedAvatars:['fa-user']};
+ tempSelectedPiece='0';
+ tempSelectedAvatar='fa-user';
  if(auth)await auth.signOut().catch(()=>{});
  smoothNavigate('index.html');
 };
