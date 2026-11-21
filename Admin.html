@@ -64,10 +64,12 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold)}
 .apk-dropzone:hover{border-color:var(--gold);background:rgba(255,209,102,0.07)}
 .apk-status-card{background:rgba(255,255,255,0.04);border:1.5px solid rgba(46,204,113,0.35);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:8px}
 
-.upload-prog-box{display:none;flex-direction:column;gap:6px;background:rgba(0,0,0,0.45);border:1px solid rgba(0,242,254,0.35);border-radius:14px;padding:12px}
+.upload-prog-box{display:none;flex-direction:column;gap:8px;background:rgba(0,0,0,0.5);border:1.5px solid rgba(0,242,254,0.4);border-radius:16px;padding:14px}
 .upload-prog-box.active{display:flex}
-.upload-prog-track{width:100%;height:12px;border-radius:999px;background:rgba(255,255,255,0.08);overflow:hidden}
-.upload-prog-fill{height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,var(--neon-blue),var(--neon-green),var(--gold));transition:width 0.2s ease}
+.upload-prog-header{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:0.86rem;font-weight:700}
+.upload-prog-track{width:100%;height:14px;border-radius:999px;background:rgba(255,255,255,0.08);overflow:hidden}
+.upload-prog-fill{height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,var(--neon-blue),var(--neon-green),var(--gold));transition:width 0.18s ease}
+.upload-prog-meta{display:flex;justify-content:space-between;align-items:center;font-size:0.82rem;color:#e2e8f0}
 
 .modal{position:fixed;inset:0;background:rgba(3,5,12,0.85);backdrop-filter:blur(8px);display:none;place-items:center;z-index:120;padding:15px}
 .modal.show{display:grid}
@@ -215,12 +217,16 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold)}
   </button>
 
   <div class="upload-prog-box" id="apkUploadProgBox">
-   <div style="display:flex;justify-content:space-between;font-size:0.84rem;font-weight:700">
+   <div class="upload-prog-header">
     <span style="color:var(--neon-blue)" id="apkUploadStatusText">Firebase Storage වෙත Upload වෙමින්...</span>
     <span style="color:var(--gold)" id="apkUploadPctText">0%</span>
    </div>
    <div class="upload-prog-track">
     <div class="upload-prog-fill" id="apkUploadProgFill"></div>
+   </div>
+   <div class="upload-prog-meta">
+    <span>Upload වූ ප්‍රමාණය: <strong id="apkUploadedSizeText" style="color:var(--neon-green)">0.00 MB / 0.00 MB</strong></span>
+    <span id="apkUploadStateBadge" style="color:var(--dim)">Uploading</span>
    </div>
   </div>
 
@@ -272,6 +278,10 @@ let isNavigating=false;
 let listenersAttached=false;
 let lastDbError='';
 let pendingDeleteAction=null;
+
+function formatMb(bytes){
+ return (Math.max(0, Number(bytes) || 0) / (1024 * 1024)).toFixed(2);
+}
 
 function toast(s, icon='fa-circle-info'){
  const t=$('toast');
@@ -644,7 +654,7 @@ function renderCustomLists(){
  });
 }
 
-/* Firebase Storage APK Upload & Notification Trigger */
+/* Firebase Storage APK Upload & Live Progress */
 $('apkDropzone').onclick=()=>$('apkFileInput').click();
 $('apkDropzone').addEventListener('dragover',e=>{
  e.preventDefault();
@@ -666,8 +676,7 @@ $('apkFileInput').addEventListener('change',e=>{
 
 function setSelectedApkFile(file){
  selectedApkFile=file;
- const sizeMb=(file.size/(1024*1024)).toFixed(2);
- $('selectedApkMeta').textContent=`${file.name} (${sizeMb} MB)`;
+ $('selectedApkMeta').textContent=`${file.name} (${formatMb(file.size)} MB)`;
  if(!$('apkFileNameInput').value.trim()){
   $('apkFileNameInput').value=file.name;
  }
@@ -680,16 +689,20 @@ $('uploadApkToFirebaseBtn').onclick=()=>{
  const version=$('apkVersionInput').value.trim() || ('1.0.' + Math.floor(Date.now()/100000));
  const cleanFileName=($('apkFileNameInput').value.trim() || selectedApkFile.name).replace(/[^a-zA-Z0-9._-]/g,'_');
  const finalFileName=cleanFileName.toLowerCase().endsWith('.apk') ? cleanFileName : cleanFileName + '.apk';
- const notes=$('apkNotesInput').value.trim() || `New Update v${version} is available! Tap Install to update.`;
+ const notes=$('apkNotesInput').value.trim() || `New Update v${version} is available! Tap Install to update the game.`;
 
  const progBox=$('apkUploadProgBox');
  const progFill=$('apkUploadProgFill');
  const progPct=$('apkUploadPctText');
  const progStatus=$('apkUploadStatusText');
+ const progSize=$('apkUploadedSizeText');
+ const progState=$('apkUploadStateBadge');
 
  progBox.classList.add('active');
  progFill.style.width='0%';
  progPct.textContent='0%';
+ progSize.textContent=`0.00 MB / ${formatMb(selectedApkFile.size)} MB`;
+ progState.textContent='ආරම්භ වෙමින්...';
  progStatus.textContent='Firebase Storage වෙත APK Upload වෙමින්...';
  $('uploadApkToFirebaseBtn').disabled=true;
 
@@ -701,9 +714,12 @@ $('uploadApkToFirebaseBtn').onclick=()=>{
   const pct=snap.totalBytes > 0 ? Math.round((snap.bytesTransferred / snap.totalBytes) * 100) : 0;
   progFill.style.width=pct+'%';
   progPct.textContent=pct+'%';
+  progSize.textContent=`${formatMb(snap.bytesTransferred)} MB / ${formatMb(snap.totalBytes)} MB`;
+  progState.textContent=snap.state==='paused' ? 'Paused' : 'Uploading...';
  }, err=>{
   console.error('APK upload failed:',err);
   $('uploadApkToFirebaseBtn').disabled=false;
+  progState.textContent='Failed';
   progStatus.textContent='Upload අසාර්ථක විය: '+(err.message||'');
   toast('APK Upload කිරීමට නොහැකි විය: '+(err.message||''));
  }, async()=>{
@@ -721,10 +737,15 @@ $('uploadApkToFirebaseBtn').onclick=()=>{
    };
    await db.ref('adminConfig_v6/apkUpdate').set(updatePayload);
    await db.ref('adminConfig_v6/apkHistory').push(updatePayload).catch(()=>{});
+   progFill.style.width='100%';
+   progPct.textContent='100%';
+   progSize.textContent=`${formatMb(selectedApkFile.size)} MB / ${formatMb(selectedApkFile.size)} MB`;
+   progState.textContent='Completed';
    progStatus.textContent='Upload සම්පූර්ණයි! ක්‍රීඩකයන්ට New Update යවන ලදී.';
    toast(`APK v${version} Firebase වෙත Upload කර New Update යවන ලදී!`,'fa-circle-check');
   }catch(err){
    console.error(err);
+   progState.textContent='Error';
    toast('Download URL / Database update අසාර්ථක විය.');
   }finally{
    $('uploadApkToFirebaseBtn').disabled=false;
@@ -750,7 +771,7 @@ function renderApkStatus(){
   el.textContent='දැනට Upload කළ APK update එකක් නොමැත.';
   return;
  }
- const mb=activeApkData.sizeBytes ? ` (${(activeApkData.sizeBytes/(1024*1024)).toFixed(2)} MB)` : '';
+ const mb=activeApkData.sizeBytes ? ` (${formatMb(activeApkData.sizeBytes)} MB)` : '';
  el.textContent=`Version: v${activeApkData.version} • File: ${activeApkData.fileName||'game.apk'}${mb} • Notes: ${activeApkData.notes||'-'}`;
 }
 
