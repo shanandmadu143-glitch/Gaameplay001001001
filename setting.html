@@ -457,11 +457,11 @@ html,body{
 <div class="page-sweep" id="pageSweep" aria-hidden="true"></div>
 <div class="app" id="appRoot">
  <div class="top-bar">
-  <button type="button" class="icon-nav-btn" id="backToProfileBtn" title="Profile වෙත (Back)">
+  <button type="button" class="icon-nav-btn" id="backToProfileBtn" title="Profile වෙත (Back)" aria-label="Profile වෙත යන්න">
    <i class="fa-solid fa-arrow-left"></i>
   </button>
   <span class="screen-tag">GAME SETTINGS & UPDATE</span>
-  <button type="button" class="icon-nav-btn" id="goHomeBtn" title="Lobby">
+  <button type="button" class="icon-nav-btn" id="goHomeBtn" title="Lobby" aria-label="මුල් පිටුවට යන්න">
    <i class="fa-solid fa-house"></i>
   </button>
  </div>
@@ -605,6 +605,19 @@ function normalizeVer(v){
  return String(v || '').trim().replace(/^v/i, '');
 }
 
+function compareVersions(a, b){
+ const pa = normalizeVer(a).split(/[^0-9]+/).filter(Boolean).map(Number);
+ const pb = normalizeVer(b).split(/[^0-9]+/).filter(Boolean).map(Number);
+ const len = Math.max(pa.length, pb.length);
+ for(let i = 0; i < len; i++){
+  const na = Number.isFinite(pa[i]) ? pa[i] : 0;
+  const nb = Number.isFinite(pb[i]) ? pb[i] : 0;
+  if(na > nb) return 1;
+  if(na < nb) return -1;
+ }
+ return normalizeVer(a).localeCompare(normalizeVer(b));
+}
+
 function getInstalledVersion(){
  let fallback = normalizeVer(localStorage.getItem(INSTALLED_VER_KEY) || '1.0.0') || '1.0.0';
  try{
@@ -667,8 +680,16 @@ function smoothNavigate(url){
  window.location.href=url;
 }
 
+window.addEventListener('pageshow',()=>{
+ isNavigating=false;
+ const app=$('appRoot');
+ const sweep=$('pageSweep');
+ if(app)app.classList.remove('page-leaving');
+ if(sweep)sweep.classList.remove('active');
+});
+
 function triggerResetApp(){
- if(resetTimer) clearTimeout(resetTimer);
+ if(resetTimer){ clearTimeout(resetTimer); resetTimer = null; }
  try{
   if(window.AndroidNative && typeof window.AndroidNative.resetApp === 'function'){
    window.AndroidNative.resetApp();
@@ -683,9 +704,10 @@ window.onNativeApkInstallCompleted = function(ver){
 };
 
 window.onNativeApkInstallError = function(msg){
- if(resetTimer) clearTimeout(resetTimer);
+ if(resetTimer){ clearTimeout(resetTimer); resetTimer = null; }
  $('apkInstallModal').classList.remove('show');
  isBusy = false;
+ pendingVersionToMark = null;
  $('checkUpdateBtn').disabled = false;
  refreshApkUi();
  toast(msg || 'APK Install කිරීමට නොහැකි විය.', 'fa-circle-exclamation');
@@ -728,14 +750,14 @@ function refreshApkUi(){
  }
 
  const serverVer = normalizeVer(latestApk.version);
- const alreadyInstalled = serverVer && (serverVer === normalizeVer(installedVer));
+ const cmp = compareVersions(serverVer, installedVer);
 
  $('latestVerText').textContent = 'v' + serverVer;
  $('apkFileNameText').textContent = latestApk.fileName || 'SinhalaDraughts.apk';
  $('apkSizeText').textContent = formatMb(latestApk.sizeBytes);
  $('apkNotesText').textContent = latestApk.notes || 'New game update available.';
 
- if(alreadyInstalled){
+ if(cmp === 0){
   banner.classList.add('is-installed');
   badge.classList.add('badge-installed');
   badge.textContent = 'ALREADY INSTALLED';
@@ -744,7 +766,7 @@ function refreshApkUi(){
   installBtn.disabled = isBusy;
   installBtn.className = 'btn-green';
   installBtn.innerHTML = '<i class="fa-solid fa-circle-check"></i> Reinstall APK';
- } else {
+ } else if(cmp > 0){
   banner.classList.add('is-latest');
   badge.classList.add('badge-latest');
   badge.textContent = 'LATEST UPDATE';
@@ -753,6 +775,15 @@ function refreshApkUi(){
   installBtn.disabled = isBusy;
   installBtn.className = 'btn-cyan';
   installBtn.innerHTML = '<i class="fa-solid fa-download"></i> Install Latest APK';
+ } else {
+  banner.classList.add('is-installed');
+  badge.classList.add('badge-installed');
+  badge.textContent = 'UP TO DATE';
+  headline.textContent = `ඔබ සතුව ඇත්තේ ඊටත් අලුත් Version එකකි (v${installedVer})`;
+  compareNote.textContent = `v${installedVer} (Server v${serverVer})`;
+  installBtn.disabled = isBusy;
+  installBtn.className = 'btn';
+  installBtn.innerHTML = '<i class="fa-solid fa-download"></i> Install Server APK';
  }
 }
 
@@ -792,7 +823,8 @@ async function fetchLatestApkMeta(showMsg=false){
 }
 
 function base64ToBlob(base64, mime='application/vnd.android.package-archive'){
- const binary = atob(base64);
+ const cleanB64 = String(base64 || '').replace(/\s+/g, '');
+ const binary = atob(cleanB64);
  const len = binary.length;
  const bytes = new Uint8Array(len);
  for(let i=0;i<len;i++){
@@ -846,6 +878,9 @@ function setPopupStage(stage, pct, title, sub, label){
 function completeInstallAndReset(ver){
  const cleanVer = normalizeVer(ver || (latestApk && latestApk.version) || getInstalledVersion());
  setInstalledVersion(cleanVer);
+ isBusy = false;
+ pendingVersionToMark = null;
+ $('checkUpdateBtn').disabled = false;
  refreshApkUi();
 
  setPopupStage(
@@ -867,9 +902,10 @@ $('popupConfirmInstalledBtn').onclick = () => {
 };
 
 $('popupCloseBtn').onclick = () => {
- if(resetTimer) clearTimeout(resetTimer);
+ if(resetTimer){ clearTimeout(resetTimer); resetTimer = null; }
  $('apkInstallModal').classList.remove('show');
  isBusy = false;
+ pendingVersionToMark = null;
  $('checkUpdateBtn').disabled = false;
  refreshApkUi();
 };
@@ -883,8 +919,8 @@ $('installApkBtn').onclick = async () => {
  $('checkUpdateBtn').disabled = true;
  $('apkInstallModal').classList.add('show');
 
- const fileName = (latestApk.fileName || `SinhalaDraughts_v${normalizeVer(latestApk.version)}.apk`);
  const verClean = normalizeVer(latestApk.version);
+ const fileName = (latestApk.fileName || `SinhalaDraughts_v${verClean}.apk`);
  const directUrl = (typeof latestApk.downloadUrl === 'string' && /^https?:\/\//i.test(latestApk.downloadUrl.trim()))
   ? latestApk.downloadUrl.trim()
   : '';
@@ -898,7 +934,6 @@ $('installApkBtn').onclick = async () => {
  );
 
  try{
-  // If direct HTTP/HTTPS URL exists and native installApkFromUrl is available, pass http(s) URL (never blob:)
   if(directUrl && hasUrlInstallBridge()){
    setPopupStage(
     'installing',
@@ -932,7 +967,7 @@ $('installApkBtn').onclick = async () => {
   for(const doc of chunksSnap.docs){
    const data = doc.data();
    if(data && data.data){
-    const b64 = String(data.data);
+    const b64 = String(data.data).replace(/\s+/g, '');
     if(useChunkWriter){
      window.AndroidNative.writeApkChunk(b64);
     } else if(hasUrlInstallBridge()){
@@ -985,8 +1020,10 @@ $('installApkBtn').onclick = async () => {
   }, 6000);
  }catch(err){
   console.error('Install APK error:',err);
+  if(resetTimer){ clearTimeout(resetTimer); resetTimer = null; }
   $('apkInstallModal').classList.remove('show');
   isBusy = false;
+  pendingVersionToMark = null;
   $('checkUpdateBtn').disabled = false;
   refreshApkUi();
   toast(err.message || 'APK ලබාගැනීමට නොහැකි විය.', 'fa-circle-exclamation');
@@ -1011,20 +1048,21 @@ syncSoundChip();
 $('soundToggleChip').onclick = () => {
  soundOn = !soundOn;
  localStorage.setItem(SOUND_PREF_KEY, soundOn ? '1' : '0');
+ window.dispatchEvent(new CustomEvent('draughts-sound-change', { detail: { enabled: soundOn } }));
  syncSoundChip();
  toast(soundOn ? 'Sound ON' : 'Sound OFF');
 };
 
 if(firestore){
  firestore.collection('apk_updates_v6').doc('latest_meta').onSnapshot(docSnap => {
-  latestApk = docSnap.exists ? docSnap.data() : null;
+  latestApk = (docSnap && docSnap.exists && docSnap.data() && docSnap.data().version) ? docSnap.data() : null;
   if(!isBusy) refreshApkUi();
  }, () => {});
 }
 
 fetchLatestApkMeta(false);
 
-$('backToProfileBtn').onclick = () => smoothNavigate('Profile.html');
+$('backToProfileBtn').onclick = () => smoothNavigate('profile.html');
 $('goHomeBtn').onclick = () => smoothNavigate('index.html');
 </script>
 </body>
