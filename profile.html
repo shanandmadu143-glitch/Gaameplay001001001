@@ -94,7 +94,7 @@ html,body{
   transform:scale(0.992);
 }
 
-/* Top Back Icon Bar */
+/* Top Back & Settings Bar */
 .top-back-bar{
   width:100%;
   display:flex;
@@ -102,6 +102,12 @@ html,body{
   justify-content:space-between;
   gap:8px;
   flex-shrink:0;
+}
+
+.top-nav-right{
+  display:flex;
+  align-items:center;
+  gap:8px;
 }
 
 .top-back-btn{
@@ -126,6 +132,32 @@ html,body{
   transform:scale(0.94);
 }
 
+.top-settings-btn{
+  width:36px;
+  height:36px;
+  border-radius:12px;
+  border:1.5px solid rgba(0,242,254,0.45);
+  background:linear-gradient(135deg,rgba(16,35,54,0.96),rgba(11,17,32,0.96));
+  color:var(--neon-blue);
+  font-size:0.95rem;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  box-shadow:0 4px 12px rgba(0,0,0,0.45), 0 0 10px rgba(0,242,254,0.15);
+  transition:transform 0.12s ease,border-color 0.15s ease,background 0.15s ease;
+}
+.top-settings-btn:hover{
+  border-color:var(--neon-blue);
+  background:linear-gradient(135deg,rgba(0,242,254,0.2),rgba(16,32,54,0.96));
+}
+.top-settings-btn:hover i{
+  transform:rotate(45deg);
+  transition:transform 0.25s ease;
+}
+.top-settings-btn:active{
+  transform:scale(0.94);
+}
+
 .top-screen-tag{
   font-family:'Orbitron','Gemunu Libre',sans-serif;
   font-size:0.66rem;
@@ -147,7 +179,6 @@ main{
   overflow:hidden;
 }
 
-/* No vertical page scroll: fits all sections cleanly inside 100dvh */
 .profile-scroll{
   flex:1;
   width:100%;
@@ -160,7 +191,6 @@ main{
   gap:8px;
 }
 
-/* Gamer Banner Card */
 .gamer-banner{
   width:100%;
   flex-shrink:0;
@@ -307,7 +337,6 @@ main{
   font-weight:700;
 }
 
-/* Stats Grid */
 .stats-grid{
   display:grid;
   grid-template-columns:repeat(4,1fr);
@@ -342,7 +371,6 @@ main{
   font-weight:700;
 }
 
-/* Live Loadout Preview Card */
 .loadout-card{
   width:100%;
   flex-shrink:0;
@@ -414,7 +442,6 @@ main{
   box-shadow:0 4px 10px rgba(0,0,0,0.6), inset 0 2px 3px rgba(255,255,255,0.45);
 }
 
-/* Section Panels */
 .panel-box{
   width:100%;
   flex:1;
@@ -471,7 +498,6 @@ main{
   transform:scale(0.96);
 }
 
-/* Horizontal row inside panel so vertical page never needs to scroll */
 .pieces-grid{
   flex:1;
   min-height:0;
@@ -537,7 +563,6 @@ main{
   color:var(--dim);
 }
 
-/* Action Bar: Save / Logout */
 .icon-actions-bar{
   width:100%;
   flex-shrink:0;
@@ -600,7 +625,6 @@ main{
   border:1px solid rgba(255,71,87,0.42);
 }
 
-/* Toast */
 #toast{
   position:fixed;
   bottom:16px;
@@ -640,12 +664,16 @@ main{
   <button type="button" class="top-back-btn" id="topBackBtn" title="මුල් පිටුවට (Back)" aria-label="මුල් පිටුවට යන්න">
    <i class="fa-solid fa-arrow-left"></i>
   </button>
-  <span class="top-screen-tag">GAMER PROFILE</span>
+  <div class="top-nav-right">
+   <span class="top-screen-tag">GAMER PROFILE</span>
+   <button type="button" class="top-settings-btn" id="topSettingsBtn" title="සැකසුම් & APK Update (Settings)" aria-label="Settings පිටුවට යන්න">
+    <i class="fa-solid fa-gear"></i>
+   </button>
+  </div>
  </div>
 
  <main>
   <div class="profile-scroll">
-   <!-- Gamer Identity & Stats -->
    <section class="gamer-banner">
     <div class="gamer-top-row">
      <div class="avatar-ring-wrap" id="avatarFrameWrap">
@@ -685,7 +713,6 @@ main{
     </div>
    </section>
 
-   <!-- Live Loadout Preview -->
    <section class="loadout-card">
     <div class="loadout-info">
      <small><i class="fa-solid fa-eye"></i> ACTIVE LOADOUT PREVIEW</small>
@@ -698,7 +725,6 @@ main{
     </div>
    </section>
 
-   <!-- Unlocked Avatars Grid -->
    <section class="panel-box">
     <div class="section-head">
      <p><i class="fa-solid fa-id-badge"></i> UNLOCKED AVATARS</p>
@@ -707,7 +733,6 @@ main{
     <div class="pieces-grid" id="avatarGrid"></div>
    </section>
 
-   <!-- Unlocked Piece Themes Grid -->
    <section class="panel-box">
     <div class="section-head">
      <p><i class="fa-solid fa-chess-board"></i> UNLOCKED PIECE THEMES</p>
@@ -716,7 +741,6 @@ main{
     <div class="pieces-grid" id="piecesGrid"></div>
    </section>
 
-   <!-- Action Bar: Save / Logout -->
    <div class="icon-actions-bar">
     <button type="button" class="icon-action-btn btn-save-ic" id="saveProfile" title="සුරකින්න (Save)">
      <span class="ic-wrap"><i class="fa-solid fa-shield-check"></i></span>
@@ -780,7 +804,7 @@ const EVENT_REWARD_PIECES=[
  {id:'ev_p_10k_free',name:'Jade Forest Piece',bg:'radial-gradient(circle at 30% 30%,#6ee7b7,#047857)',border:'#34d399',color:'#fff',icon:'❖'},
  {id:'ev_p_10k_pro',name:'Cyber Plasma Piece',bg:'radial-gradient(circle at 30% 30%,#67e8f9,#0284c7)',border:'#00f2fe',color:'#fff',icon:'✦'},
  {id:'ev_p_30k_free',name:'Cobalt Wave Piece',bg:'radial-gradient(circle at 30% 30%,#93c5fd,#1d4ed8)',border:'#60a5fa',color:'#fff',icon:'▲'},
- {id:'ev_p_30k_pro',name:'Crimson Flare Piece',bg:'radial-gradient(circle at 30% 30%,#fda4af,#be123c)',border:'#fb7185',color:'#fff',icon:'☀'},
+ {id:30+'k_pro',name:'Crimson Flare Piece',bg:'radial-gradient(circle at 30% 30%,#fda4af,#be123c)',border:'#fb7185',color:'#fff',icon:'☀'},
  {id:'ev_p_45k_free',name:'Silver Moon Piece',bg:'radial-gradient(circle at 30% 30%,#f1f5f9,#64748b)',border:'#cbd5e1',color:'#0f172a',icon:'☾'},
  {id:'ev_p_45k_pro',name:'Royal Amethyst Piece',bg:'radial-gradient(circle at 30% 30%,#e9d5ff,#7e22ce)',border:'#c084fc',color:'#fff',icon:'❖'},
  {id:'ev_p_75k_free',name:'Amber Sun Piece',bg:'radial-gradient(circle at 30% 30%,#fde68a,#d97706)',border:'#fbbf24',color:'#111',icon:'☀'},
@@ -795,7 +819,7 @@ const EVENT_REWARD_PIECES=[
  {id:'ev_p_545k_pro',name:'Phantom Crown Piece',bg:'linear-gradient(135deg,#a855f7,#0f172a)',border:'#ffd166',color:'#fff',icon:'♕'},
  {id:'ev_p_720k_free',name:'Grand Star Piece',bg:'radial-gradient(circle at 30% 30%,#fde047,#b45309)',border:'#ffd166',color:'#111',icon:'★'},
  {id:'ev_p_720k_pro',name:'Immortal King Piece',bg:'linear-gradient(135deg,#ffd166,#ff4757,#7e22ce)',border:'#fff',color:'#fff',icon:'♔'}
-];
+].map(p=>({...p,id:String(p.id).startsWith('ev_')?String(p.id):'ev_p_'+String(p.id)}));
 
 const DEFAULT_AVATARS=[
  {id:'fa-user',name:'සම්මත (Default)',icon:'fa-user'},
@@ -810,14 +834,14 @@ const DEFAULT_AVATARS=[
  {id:'fa-skull',name:'හිස්කබල',icon:'fa-skull'},
  {id:'fa-star',name:'රන් තරුව',icon:'fa-star'},
  {id:'fa-gem',name:'දියමන්ති මැණික',icon:'fa-gem'},
- {id:100,name:'ජෙට් යානය',icon:'fa-fighter-jet'},
+ {id:'fa-fighter-jet',name:'ජෙට් යානය',icon:'fa-fighter-jet'},
  {id:'fa-meteor',name:'උල්කාපාතය',icon:'fa-meteor'},
  {id:'fa-cat',name:'කූට බළලා',icon:'fa-cat'},
  {id:'fa-dog',name:'බල්ලා',icon:'fa-dog'},
  {id:'fa-paw',name:'සිංහ පාදය',icon:'fa-paw'},
  {id:'fa-crosshairs',name:'ඉලක්කය',icon:'fa-crosshairs'},
  {id:'fa-hat-wizard',name:'මායාකාරයා',icon:'fa-hat-wizard'}
-].map(a => a && a.name ? a : null).filter(Boolean);
+];
 
 const EVENT_REWARD_AVATARS=[
  {id:'fa-chess-pawn',name:'Pawn Starter',icon:'fa-chess-pawn'},
@@ -1259,6 +1283,7 @@ $('saveProfile').onclick=async()=>{
 };
 
 $('topBackBtn').onclick=()=>smoothNavigate('index.html');
+$('topSettingsBtn').onclick=()=>smoothNavigate('setting.html');
 $('goShopFromAvatars').onclick=()=>smoothNavigate('shopandreward.html');
 $('goShopFromPieces').onclick=()=>smoothNavigate('shopandreward.html');
 
