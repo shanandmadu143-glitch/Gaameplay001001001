@@ -1,15 +1,46 @@
 <!DOCTYPE html>
 <html lang="si">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>ශ්‍රී ලංකීය දාම් - Sinhala Draughts Pro Gaming</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Sinhala Draughts Pro - Lobby</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Gemunu+Libre:wght@400;600;700;800&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Gemunu+Libre:wght@400;600;700;800&family=Orbitron:wght@600;700;800;900&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#05070e;--panel:rgba(14,20,38,.92);--gold:#ffd166;--neon-blue:#00f2fe;--neon-green:#2ecc71;--red:#ff4757;--dim:#a0aec0}
-*{box-sizing:border-box;margin:0;padding:0;font-family:'Gemunu Libre','Poppins',sans-serif;user-select:none;-webkit-tap-highlight-color:transparent}
-html,body{width:100%;height:100%;background:radial-gradient(circle at 50% 20%,#1a103c 0%,#080b18 60%,#03050a 100%);color:#f8f9fa;overflow:hidden}
-body{min-height:100dvh;display:flex;flex-direction:column;justify-content:center;align-items:center}
+:root{
+  --bg:#05070e;
+  --panel:rgba(13,19,36,0.92);
+  --card:rgba(21,30,54,0.84);
+  --gold:#ffd166;
+  --gold-2:#ff9f1c;
+  --neon-blue:#00f2fe;
+  --neon-green:#2ecc71;
+  --purple:#9b59b6;
+  --red:#ff4757;
+  --dim:#9fb0c7;
+  --line:rgba(255,209,102,0.22);
+}
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:'Gemunu Libre','Poppins',sans-serif;
+  user-select:none;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+  width:100vw;
+  min-height:100dvh;
+  overflow-x:hidden;
+  background:
+    radial-gradient(circle at 15% 12%, rgba(0,242,254,0.14), transparent 36%),
+    radial-gradient(circle at 85% 18%, rgba(255,209,102,0.16), transparent 40%),
+    radial-gradient(circle at 50% 85%, rgba(108,92,231,0.18), transparent 45%),
+    linear-gradient(180deg, #060913 0%, #04060c 100%);
+  color:#f8fafc;
+}
 
 .page-sweep{
   position:fixed;
@@ -31,193 +62,285 @@ body{min-height:100dvh;display:flex;flex-direction:column;justify-content:center
   transition:transform 0.14s cubic-bezier(0.22,1,0.36,1), opacity 0.14s ease-out;
 }
 
-.app{width:100%;height:100dvh;max-width:768px;margin:0 auto;padding:14px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;opacity:1;transform:scale(1);transition:opacity 0s linear,transform 0s linear;will-change:opacity,transform}
-.app.page-leaving{opacity:0.92;transform:scale(0.992);transition:opacity 0s linear,transform 0s linear}
+.app{
+  width:100%;
+  max-width:560px;
+  min-height:100dvh;
+  margin:0 auto;
+  padding:
+    calc(env(safe-area-inset-top, 0px) + 12px)
+    calc(env(safe-area-inset-right, 0px) + 14px)
+    calc(env(safe-area-inset-bottom, 0px) + 18px)
+    calc(env(safe-area-inset-left, 0px) + 14px);
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  opacity:1;
+  transform:scale(1);
+  transition:opacity 0.15s ease,transform 0.15s ease;
+}
+.app.page-leaving{
+  opacity:0.92;
+  transform:scale(0.992);
+}
 
-.home-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 20px;background:linear-gradient(135deg,rgba(22,30,56,0.95),rgba(10,14,28,0.95));border:2px solid rgba(255,209,102,0.4);border-radius:22px;box-shadow:0 8px 25px rgba(0,0,0,0.6);backdrop-filter:blur(10px)}
-.profile-float{display:flex;align-items:center;gap:12px;cursor:pointer}
-.avatar{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe08a,#ffb52e);color:#18213e;font-size:1.4rem;border:2px solid #ffd166;box-shadow:0 0 12px rgba(255,209,102,0.5);flex-shrink:0}
-#headerName{font-size:1.15rem;color:#fff;font-weight:800;line-height:1.2}
+.top-bar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
 
-.coin-pill{display:flex;align-items:center;gap:6px;border:1.5px solid rgba(255,209,102,0.4);border-radius:20px;background:rgba(5,8,18,0.85);padding:4px 10px 4px 10px;box-shadow:inset 0 2px 4px rgba(0,0,0,0.8)}
-.coin-pill>i{font-size:1.05rem;color:var(--gold);filter:drop-shadow(0 0 4px rgba(255,209,102,0.6))}
-.coin-pill b{font-size:1rem;letter-spacing:0.5px;color:#fff}
-.coin-pill button{width:24px;height:24px;border:0;border-radius:50%;background:linear-gradient(135deg,#2ecc71,#20c978);color:#fff;font-size:0.95rem;font-weight:800;cursor:pointer;box-shadow:0 0 8px rgba(46,204,113,0.5);display:grid;place-items:center}
+.brand-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:7px 12px;
+  border-radius:14px;
+  background:var(--panel);
+  border:1.5px solid var(--line);
+  font-family:'Orbitron','Gemunu Libre',sans-serif;
+  font-size:0.72rem;
+  font-weight:800;
+  color:var(--gold);
+}
 
-main{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;width:100%;position:relative;margin:8px 0;overflow:hidden}
-.lobby{width:100%;height:100%;display:flex;flex-direction:column;gap:14px;padding:14px;background:linear-gradient(145deg,rgba(18,24,40,0.85),rgba(12,16,28,0.9));border:2px solid rgba(255,209,102,0.2);border-radius:24px;backdrop-filter:blur(12px);box-shadow:0 10px 30px rgba(0,0,0,0.5);overflow-y:auto}
+.ver-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 10px;
+  border-radius:12px;
+  background:rgba(0,242,254,0.1);
+  border:1px solid rgba(0,242,254,0.35);
+  color:var(--neon-blue);
+  font-family:'Orbitron','Poppins',sans-serif;
+  font-size:0.66rem;
+  font-weight:800;
+}
 
-.reward-banner{width:100%;min-height:72px;border-radius:18px;border:2px solid rgba(255,255,255,0.5);background:linear-gradient(135deg,#f39a08,#ffb10d);color:#111;font-size:1.25rem;font-weight:800;letter-spacing:0.5px;box-shadow:0 6px 20px rgba(243,154,8,0.35);display:flex;align-items:center;justify-content:center;gap:12px;cursor:pointer;transition:transform 0.12s ease}
-.reward-banner:active{transform:scale(0.98)}
-.reward-banner i{font-size:1.6rem}
+.top-actions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
 
-.mode-grid{display:grid;grid-template-columns:1fr;gap:12px}
-.mode{min-height:86px;border-radius:18px;border:2px solid rgba(255,255,255,0.15);padding:14px 18px;text-align:left;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,0.5);cursor:pointer;transition:transform .14s ease,border-color .14s ease,box-shadow .14s ease}
-.mode:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 8px 22px rgba(255,209,102,0.2)}
-.mode:active{transform:scale(0.985)}
-.mode:after{position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:2.8rem;opacity:0.85}
-.mode b{font-family:'Poppins',sans-serif;font-size:1.3rem;line-height:1.1;color:#fff}
-.mode p{font-size:0.8rem;color:#d1d8e0;margin-top:3px}
-.mode-single{background:linear-gradient(135deg,#1b4f91,#1252b5)}.mode-single:after{content:'🤖'}
-.mode-multi{background:linear-gradient(135deg,#0d7c48,#08a85c)}.mode-multi:after{content:'⚔️'}
-.mode-free{background:linear-gradient(135deg,#b36b00,#f19a00)}.mode-free:after{content:'🎯'}
+.icon-btn{
+  width:38px;
+  height:38px;
+  border-radius:12px;
+  border:1.5px solid rgba(255,209,102,0.42);
+  background:linear-gradient(135deg,rgba(24,33,62,0.96),rgba(12,17,34,0.96));
+  color:var(--gold);
+  font-size:0.95rem;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  transition:transform 0.12s ease,border-color 0.15s ease;
+}
+.icon-btn:hover{border-color:var(--gold)}
+.icon-btn:active{transform:scale(0.94)}
 
-.bottom-nav{width:100%;min-height:66px;background:rgba(14,20,38,0.95);border:2px solid rgba(255,209,102,0.3);border-radius:24px;display:flex;align-items:center;justify-content:space-around;padding:6px 4px;backdrop-filter:blur(10px);box-shadow:0 10px 30px rgba(0,0,0,0.8)}
-.nav-item{background:none;border:0;color:#aab4c7;text-decoration:none;display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:0.72rem;font-weight:700;cursor:pointer;transition:color 0.12s ease,transform 0.12s ease}
-.nav-item:active{transform:scale(0.93)}
-.nav-item i{font-size:1.3rem}
-.nav-item.active{color:var(--gold)}
-.nav-item span{line-height:1}
+.lobby-hero{
+  background:linear-gradient(135deg,rgba(26,37,68,0.95),rgba(13,19,36,0.96) 65%,rgba(16,44,49,0.92));
+  border:1.5px solid rgba(255,209,102,0.35);
+  border-radius:22px;
+  padding:16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  box-shadow:0 10px 26px rgba(0,0,0,0.55);
+}
 
-.modal{position:fixed;inset:0;background:rgba(3,5,12,0.85);backdrop-filter:blur(8px);display:none;place-items:center;z-index:100;padding:15px}
-.modal.show{display:grid}
-#apkUpdateModal{z-index:220}
-.modalbox{width:min(100%,420px);background:linear-gradient(145deg,#121828,#1b243f);border:2px solid var(--gold);border-radius:24px;padding:22px;display:grid;gap:14px;max-height:85vh;overflow-y:auto;box-shadow:0 20px 40px rgba(0,0,0,0.8)}
-.modalbox h2,.modalbox h3{text-align:center;color:var(--gold);font-weight:700;font-size:1.2rem}
-.apk-badge{width:54px;height:54px;margin:0 auto;border-radius:50%;display:grid;place-items:center;background:rgba(46,204,113,0.16);border:2px solid var(--neon-green);color:var(--neon-green);font-size:1.5rem}
-.apk-version{text-align:center;font-weight:800;color:var(--neon-blue);font-size:0.92rem}
-.apk-notes{background:rgba(0,0,0,0.35);border-radius:14px;padding:10px 12px;color:#d1d8e0;font-size:0.9rem;line-height:1.45;text-align:center}
+.player-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-width:0;
+}
 
-.apk-dl-prog{display:none;flex-direction:column;gap:6px;background:rgba(0,0,0,0.45);border:1px solid rgba(0,242,254,0.35);border-radius:14px;padding:10px 12px}
-.apk-dl-prog.active{display:flex}
-.apk-dl-top{display:flex;justify-content:space-between;align-items:center;font-size:0.82rem;font-weight:700}
-.apk-dl-track{width:100%;height:11px;border-radius:999px;background:rgba(255,255,255,0.08);overflow:hidden}
-.apk-dl-fill{height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,var(--neon-blue),var(--neon-green),var(--gold));transition:width 0.16s ease}
-.apk-dl-sub{display:flex;justify-content:space-between;font-size:0.78rem;color:var(--dim)}
+.player-avatar{
+  width:54px;
+  height:54px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#ffe08a,#ff9f1c);
+  color:#111;
+  border:2px solid var(--gold);
+  display:grid;
+  place-items:center;
+  font-size:1.35rem;
+  flex-shrink:0;
+}
 
-.apk-success-box{display:none;flex-direction:column;align-items:center;gap:8px;background:rgba(46,204,113,0.14);border:1.5px solid var(--neon-green);border-radius:16px;padding:12px;text-align:center}
-.apk-success-box.show{display:flex}
-.apk-success-title{color:var(--neon-green);font-weight:800;font-size:1.05rem;display:flex;align-items:center;gap:7px}
-.apk-success-desc{color:#e2e8f0;font-size:0.84rem;line-height:1.4}
+.player-meta h1{
+  font-size:1.2rem;
+  font-weight:800;
+  color:#fff;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.player-meta p{
+  font-size:0.78rem;
+  color:var(--dim);
+  margin-top:2px;
+}
 
-input{width:100%;padding:11px 14px;background:rgba(0,0,0,0.5);border:1.5px solid rgba(255,209,102,0.4);border-radius:12px;color:white;font-size:0.95rem;outline:none}
-input:focus{border-color:var(--gold)}
-.btn,.btn-gold,.btn-green{border:0;border-radius:12px;padding:10px 14px;cursor:pointer;font-weight:700;display:inline-flex;align-items:center;gap:6px;justify-content:center;transition:transform 0.12s ease}
-.btn:active,.btn-gold:active,.btn-green:active{transform:scale(0.97)}
-.btn{background:rgba(255,255,255,0.1);color:white;border:1px solid rgba(255,255,255,0.2)}
-.btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;box-shadow:0 4px 15px rgba(255,173,98,0.4)}
-.btn-green{background:linear-gradient(135deg,#2ecc71,#20b863);color:#0b1910;box-shadow:0 4px 15px rgba(46,204,113,0.4)}
-.row{display:flex;gap:10px;align-items:center}
+.coins-badge{
+  padding:7px 12px;
+  border-radius:14px;
+  background:rgba(6,10,20,0.75);
+  border:1.5px solid rgba(255,209,102,0.45);
+  color:var(--gold);
+  font-family:'Orbitron','Poppins',sans-serif;
+  font-size:0.8rem;
+  font-weight:800;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  flex-shrink:0;
+}
 
-#toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,120px);opacity:0;background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--gold);color:#f8f9fa;border-radius:30px;padding:10px 20px;z-index:150;transition:.25s ease;font-weight:600;display:flex;align-items:center;gap:8px;font-size:0.9rem}
-#toast.show{transform:translate(-50%,0);opacity:1}
+.menu-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
 
-@media (min-width: 600px) {
-  .app { max-width: 600px; padding: 20px; }
-  .home-top { padding: 14px 24px; }
-  .lobby { padding: 20px; gap: 16px; }
-  .mode { min-height: 94px; padding: 16px 22px; }
-  .mode b { font-size: 1.4rem; }
-  .mode p { font-size: 0.85rem; }
-  .reward-banner { min-height: 78px; font-size: 1.35rem; }
+.menu-card{
+  background:var(--panel);
+  border:1.5px solid var(--line);
+  border-radius:18px;
+  padding:15px 14px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:8px;
+  cursor:pointer;
+  text-align:left;
+  color:#fff;
+  box-shadow:0 8px 20px rgba(0,0,0,0.45);
+  transition:transform 0.12s ease,border-color 0.15s ease;
+}
+.menu-card:hover{border-color:var(--gold)}
+.menu-card:active{transform:scale(0.97)}
+
+.menu-card.primary{
+  grid-column:1 / -1;
+  background:linear-gradient(135deg,rgba(255,159,28,0.22),rgba(21,30,54,0.94));
+  border-color:var(--gold);
+}
+
+.menu-ic{
+  width:40px;
+  height:40px;
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  font-size:1.1rem;
+  background:rgba(255,209,102,0.14);
+  color:var(--gold);
+}
+.menu-card.primary .menu-ic{
+  background:linear-gradient(135deg,#ffe08a,#ff9f1c);
+  color:#111;
+}
+
+.menu-card b{font-size:1rem;font-weight:800}
+.menu-card span{font-size:0.74rem;color:var(--dim)}
+
+.update-strip{
+  background:var(--card);
+  border:1.5px solid rgba(0,242,254,0.32);
+  border-radius:16px;
+  padding:11px 14px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.update-strip b{display:block;font-size:0.86rem;color:#fff}
+.update-strip small{display:block;font-size:0.72rem;color:var(--dim)}
+
+.btn-cyan{
+  border:0;
+  border-radius:12px;
+  padding:9px 13px;
+  background:linear-gradient(135deg,#00f2fe,#0984e3);
+  color:#06101d;
+  font-weight:800;
+  font-size:0.78rem;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  flex-shrink:0;
 }
 </style>
 </head>
 <body>
 <div class="page-sweep" id="pageSweep" aria-hidden="true"></div>
 <div class="app" id="appRoot">
- <div class="home-top" id="homeTop">
-  <div class="profile-float" id="openProfile" title="ප්‍රොෆයිලය">
-   <span class="avatar" id="headerAvatar"><i class="fa-solid fa-user"></i></span>
-   <div><b id="headerName">ක්‍රීඩකයා</b></div>
+ <div class="top-bar">
+  <div class="brand-pill">
+   <i class="fa-solid fa-chess-board"></i>
+   <span>SINHALA DRAUGHTS PRO</span>
   </div>
-  <div class="coin-pill"><i class="fa-solid fa-coins"></i><b><span id="points">500</span></b><button id="coinShop" aria-label="Shop">+</button></div>
+  <div class="top-actions">
+   <span class="ver-pill" id="appVersionBadge"><i class="fa-solid fa-code-branch"></i> v1.0.0</span>
+   <button type="button" class="icon-btn" id="openSettingsBtn" title="Settings">
+    <i class="fa-solid fa-gear"></i>
+   </button>
+  </div>
  </div>
 
- <main>
-  <section class="lobby" id="lobby">
-   <button class="reward-banner" id="collectRewards"><i class="fa-solid fa-shield-halved"></i> දෛනික ත්‍යාග ලබාගන්න</button>
-   <div class="mode-grid">
-    <div class="mode mode-single" id="single" role="button" tabindex="0"><b>SINGLE PLAYER</b><p>AI පරිගණකය සමඟ තරඟ කරන්න</p></div>
-    <div class="mode mode-multi" id="multi" role="button" tabindex="0"><b>MULTIPLAYER</b><p>ඔන්ලයින් යහළුවන් සමඟ සෙල්ලම් කරන්න</p></div>
-    <div class="mode mode-free" id="freestyle" role="button" tabindex="0"><b>PLAY FREESTYLE</b><p>ඔට්ටු රහිත පුහුණු ක්‍රීඩාව</p></div>
+ <section class="lobby-hero">
+  <div class="player-row">
+   <div class="player-avatar" id="lobbyAvatar">
+    <i class="fa-solid fa-user"></i>
    </div>
-  </section>
- </main>
-
- <footer class="bottom-nav" id="bottomNav">
-  <a class="nav-item active" href="index.html" data-nav="index.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
-  <a class="nav-item" href="friends.html" data-nav="friends.html"><i class="fa-solid fa-user-group"></i><span>Friends</span></a>
-  <a class="nav-item" href="profile.html" id="navProfile" data-nav="profile.html"><i class="fa-solid fa-circle-user"></i><span>Profile</span></a>
-  <a class="nav-item" href="event.html" id="navEvents" data-nav="event.html"><i class="fa-solid fa-trophy"></i><span>Events</span></a>
-  <a class="nav-item" href="shopandreward.html" data-nav="shopandreward.html"><i class="fa-solid fa-cart-shopping"></i><span>Shop</span></a>
- </footer>
-</div>
-
-<div class="modal" id="singleBetModal">
- <div class="modalbox">
-  <h3>Single Player - ඔට්ටු තැබීම</h3>
-  <label for="singleBetInput">ඔට්ටු අල්ලන Point ගණන (උපරිම: <span id="maxSinglePoints">500</span>)</label>
-  <input id="singleBetInput" type="number" min="10" step="1" inputmode="numeric" value="50">
-  <div class="row">
-   <button class="btn-gold" id="startSingleGame" style="flex:1">ක්‍රීඩාව අරඹන්න</button>
-   <button class="btn" id="closeSingleBet" style="flex:1">අවලංගු කරන්න</button>
-  </div>
- </div>
-</div>
-
-<div class="modal" id="betModal">
- <div class="modalbox">
-  <h3>Multiplayer - ඔට්ටු තැබීම</h3>
-  <label for="betAmountInput">ඔට්ටු අල්ලන Point ගණන (උපරිම: <span id="maxUserPoints">500</span>)</label>
-  <input id="betAmountInput" type="number" min="10" step="1" inputmode="numeric" value="50">
-  <div class="row">
-   <button class="btn-gold" id="proceedToInvite" style="flex:1">යහළුවන් සොයන්න</button>
-   <button class="btn" id="closeBetModal" style="flex:1">අවලංගු කරන්න</button>
-  </div>
- </div>
-</div>
-
-<div class="modal" id="authModal">
- <div class="modalbox">
-  <h2>ඇතුළු වන්න / ගිණුම සාදන්න</h2>
-  <label>ක්‍රීඩක නම (ඉංග්‍රීසි අකුරු සහ ඉලක්කම් පමණි)</label><input id="username" minlength="3" placeholder="Username (උදා: kasun123)">
-  <label>මුරපදය (අවම අකුරු 6)</label><input id="password" type="password" minlength="6" placeholder="Password">
-  <div class="row">
-   <button class="btn-gold" id="login" style="flex:1">ඇතුළු වන්න</button>
-   <button class="btn" id="register" style="flex:1">ගිණුම සාදන්න</button>
-  </div>
- </div>
-</div>
-
-<div class="modal" id="apkUpdateModal" role="dialog" aria-modal="true" aria-labelledby="apkUpdateHeading">
- <div class="modalbox">
-  <div class="apk-badge"><i class="fa-brands fa-android"></i></div>
-  <h3 id="apkUpdateHeading">New Update</h3>
-  <div class="apk-version" id="apkUpdateVersion">Version v1.0.0</div>
-  <div class="apk-notes" id="apkUpdateNotes">අලුත් Game APK Update එකක් ලබා ගත හැක. Install ඔබා install කරන්න.</div>
-
-  <div class="apk-dl-prog" id="apkDownloadProgBox">
-   <div class="apk-dl-top">
-    <span style="color:var(--neon-blue)" id="apkDownloadStatusText">APK සකසමින්...</span>
-    <span style="color:var(--gold)" id="apkDownloadPctText">0%</span>
-   </div>
-   <div class="apk-dl-track">
-    <div class="apk-dl-fill" id="apkDownloadProgFill"></div>
-   </div>
-   <div class="apk-dl-sub">
-    <span id="apkDownloadSizeText">0.00 MB</span>
-    <span id="apkDownloadChunksText">0 / 0 chunks</span>
+   <div class="player-meta">
+    <h1 id="lobbyPlayerName">ක්‍රීඩකයා</h1>
+    <p id="lobbyVersionSub">Installed App Version: v1.0.0</p>
    </div>
   </div>
-
-  <div class="apk-success-box" id="apkSuccessBox">
-   <div class="apk-success-title"><i class="fa-solid fa-circle-check"></i> Successful Install</div>
-   <div class="apk-success-desc" id="apkSuccessDesc">APK සාර්ථකව install screen එකට යවන ලදී. Install අවසන් වූ පසු Reset App ඔබන්න.</div>
+  <div class="coins-badge">
+   <i class="fa-solid fa-coins"></i>
+   <span id="lobbyPoints">500</span>
   </div>
+ </section>
 
-  <div class="row" id="apkPreInstallActions">
-   <button class="btn-gold" id="installApkBtn" style="flex:1"><i class="fa-solid fa-download"></i> Install</button>
-   <button class="btn" id="dismissApkBtn" style="flex:1">පසුවට</button>
-  </div>
+ <section class="menu-grid">
+  <button type="button" class="menu-card primary" id="goMultiplayBtn">
+   <div class="menu-ic"><i class="fa-solid fa-gamepad"></i></div>
+   <b>Play Multiplayer / Arena</b>
+   <span>Host / Guest rooms සහ live matches ආරම්භ කරන්න</span>
+  </button>
 
-  <div class="row" id="apkPostInstallActions" style="display:none">
-   <button class="btn-green" id="resetAppBtn" style="flex:1"><i class="fa-solid fa-rotate-right"></i> Reset App</button>
+  <button type="button" class="menu-card" id="goProfileBtn">
+   <div class="menu-ic"><i class="fa-solid fa-id-badge"></i></div>
+   <b>Gaming Profile</b>
+   <span>Avatars, piece themes සහ stats</span>
+  </button>
+
+  <button type="button" class="menu-card" id="goShopBtn">
+   <div class="menu-ic"><i class="fa-solid fa-store"></i></div>
+   <b>Shop & Rewards</b>
+   <span>Themes & rewards unlock කරන්න</span>
+  </button>
+ </section>
+
+ <section class="update-strip">
+  <div>
+   <b id="lobbyUpdateTitle">App Version & Update Status</b>
+   <small id="lobbyUpdateDesc">Settings තුළින් නව APK updates පරීක්ෂා කළ හැක</small>
   </div>
- </div>
+  <button type="button" class="btn-cyan" id="goUpdateSettingsBtn">
+   <i class="fa-solid fa-download"></i> Updates
+  </button>
+ </section>
 </div>
-
-<div id="toast"></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
@@ -226,827 +349,110 @@ input:focus{border-color:var(--gold)}
 <script>
 'use strict';
 const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
-const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user';
-const EVENT_MONTH_MS=30*24*60*60*1000;
-const BRIDGE_SLICE_BYTES=256*1024;
-const INSTALLED_APK_VERSION_KEY='sinhala_draughts_installed_apk_version';
-const INSTALLED_APK_CODE_KEY='sinhala_draughts_installed_apk_code';
+const $=id=>document.getElementById(id);
+const USER_KEY='sinhala_draughts_v7_user';
+const INSTALLED_VER_KEY='sinhala_draughts_installed_apk_version';
 
-let auth,db,firestore,fbUser,isNavigating=false;
-let customPieces=[];
-let userRefListener=null;
-let firestoreApkListenerAttached=false;
-let latestApkMeta=null;
-let isDownloadingApk=false;
-let isInstallCompleted=false;
-let lastTrackedPoints=null;
-let user={
- name:'',
- points:500,
- wins:0,
- losses:0,
- uid:null,
- pieceIndex:0,
- unlockedPieces:[0],
- avatarIcon:'fa-user',
- unlockedAvatars:['fa-user'],
- eventSeasonStart:0,
- eventSeasonNumber:1,
- monthlyWonCoins:0,
- hasProPass:false,
- claimedEventRewards:[]
-};
+let isNavigating=false;
 
-const DEFAULT_PIECE_DESIGNS=[
- {id:0,name:'මුතු සුදු (Default)',bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●',free:true},
- {id:1,name:'රන් ඔටුන්න',bg:'linear-gradient(135deg,#ffeaa7,#fdcb6e)',border:'#e1b12c',color:'#2d3436',icon:'★'},
- {id:2,name:'රුධිර රතු',bg:'radial-gradient(circle at 30% 30%,#ff7675,#d63031)',border:'#c0392b',color:'#fff',icon:'◆'},
- {id:3,name:'මරකත කොළ',bg:'radial-gradient(circle at 30% 30%,#55efc4,#00b894)',border:'#00a8ff',color:'#fff',icon:'▲'},
- {id:4,name:'නියෝන් නිල්',bg:'radial-gradient(circle at 30% 30%,#74b9ff,#0984e3)',border:'#00f2fe',color:'#fff',icon:'✦'},
- {id:5,name:'රාජකීය දම්',bg:'radial-gradient(circle at 30% 30%,#a29bfe,#6c5ce7)',border:'#fd79a8',color:'#fff',icon:'❖'},
- {id:6,name:'අඳුරු කාබන්',bg:'radial-gradient(circle at 30% 30%,#636e72,#2d3436)',border:'#b2bec3',color:'#ffd166',icon:'♠'},
- {id:7,name:'සූර්ය රන්',bg:'radial-gradient(circle at 30% 30%,#fab1a0,#e17055)',border:'#d63031',color:'#fff',icon:'☀'},
- {id:8,name:'මැජෙන්ටා රෝස',bg:'radial-gradient(circle at 30% 30%,#ff7979,#eb4d4b)',border:'#ff7979',color:'#fff',icon:'✿'},
- {id:9,name:'සැහැල්ලු සිල්වර්',bg:'radial-gradient(circle at 30% 30%,#dfe6e9,#b2bec3)',border:'#636e72',color:'#2d3436',icon:'⚙'},
- {id:10,name:'කොස්මික් වයලට්',bg:'radial-gradient(circle at 30% 30%,#8e44ad,#3498db)',border:'#9b59b6',color:'#fff',icon:'☄'},
- {id:11,name:'නියෝන් ලෙමන්',bg:'radial-gradient(circle at 30% 30%,#f1c40f,#f39c12)',border:'#f1c40f',color:'#111',icon:'⚡'},
- {id:12,name:'ටර්කියුයිස්',bg:'radial-gradient(circle at 30% 30%,#1abc9c,#16a085)',border:'#1abc9c',color:'#fff',icon:'🌊'},
- {id:13,name:'චොක්ලට් බ්‍රවුන්',bg:'radial-gradient(circle at 30% 30%,#d35400,#a04000)',border:'#e67e22',color:'#fff',icon:'☕'},
- {id:14,name:'රෝස් ගෝල්ඩ්',bg:'radial-gradient(circle at 30% 30%,#f5b041,#eb984e)',border:'#f39c12',color:'#fff',icon:'♕'},
- {id:15,name:'ගැඹුරු මිනිරන්',bg:'radial-gradient(circle at 30% 30%,#34495e,#2c3e50)',border:'#7f8c8d',color:'#ffd166',icon:'🛡'},
- {id:16,name:'අයිස් මින්ට්',bg:'radial-gradient(circle at 30% 30%,#a3e4d7,#48c9b0)',border:'#17a589',color:'#111',icon:'❄'},
- {id:17,name:'සැණකෙළි පර්පල්',bg:'radial-gradient(circle at 30% 30%,#d98880,#c0392b)',border:'#e74c3c',color:'#fff',icon:'🔮'},
- {id:18,name:'විදුලි ලෙමන්',bg:'radial-gradient(circle at 30% 30%,#f7dc6f,#f9e79f)',border:'#f1c40f',color:'#111',icon:'✨'},
- {id:19,name:'අමරණීය අඳුර',bg:'radial-gradient(circle at 30% 30%,#2c3e50,#000000)',border:'#ffd166',color:'#ffd166',icon:'♔'}
-];
-
-function normalizeList(val, fallback) {
- if (Array.isArray(val)) return val.length ? val : fallback;
- if (val && typeof val === 'object') {
-  const arr = Object.values(val);
-  return arr.length ? arr : fallback;
- }
- return fallback;
+function normalizeVer(v){
+ return String(v || '').trim().replace(/^v/i, '');
 }
 
-function getAllPieces(){return [...DEFAULT_PIECE_DESIGNS,...customPieces];}
-
-function findPieceDesign(keyOrIdx){
- const all=getAllPieces();
- const str=String(keyOrIdx ?? '0');
- const byId=all.find(p=>p && String(p.id)===str);
- if(byId)return byId;
- const num=Number(str);
- if(Number.isFinite(num) && all[num])return all[num];
- return all[0];
+function readNativeAppVersionInfo(){
+ let fallbackVer = normalizeVer(localStorage.getItem(INSTALLED_VER_KEY) || '1.0.0') || '1.0.0';
+ let versionCode = '';
+ try{
+  if(window.AndroidNative && typeof window.AndroidNative.getInstalledAppVersionInfo === 'function'){
+   const raw = window.AndroidNative.getInstalledAppVersionInfo();
+   if(raw){
+    try{
+     const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+     if(parsed && typeof parsed === 'object'){
+      const vName = normalizeVer(parsed.versionName || parsed.version || parsed.name);
+      if(vName) fallbackVer = vName;
+      if(parsed.versionCode !== undefined && parsed.versionCode !== null){
+       versionCode = String(parsed.versionCode);
+      }
+     } else {
+      const vStr = normalizeVer(raw);
+      if(vStr) fallbackVer = vStr;
+     }
+    }catch(_){
+     const vStr = normalizeVer(raw);
+     if(vStr) fallbackVer = vStr;
+    }
+   }
+  }
+ }catch(_){}
+ localStorage.setItem(INSTALLED_VER_KEY, fallbackVer);
+ return { versionName: fallbackVer, versionCode };
 }
 
-function syncEventWinCycle(currentPoints){
- const now=Date.now();
- if(!user.eventSeasonStart){
-  user.eventSeasonStart=now;
-  user.eventSeasonNumber=Number(user.eventSeasonNumber)||1;
- }
- const elapsed=now - Number(user.eventSeasonStart);
- if(elapsed >= EVENT_MONTH_MS){
-  const cycles=Math.floor(elapsed / EVENT_MONTH_MS);
-  user.eventSeasonNumber=(Number(user.eventSeasonNumber)||1) + cycles;
-  user.eventSeasonStart=Number(user.eventSeasonStart) + (cycles * EVENT_MONTH_MS);
-  user.monthlyWonCoins=0;
-  user.claimedEventRewards=[];
- }
- const pts=Number(currentPoints)||0;
- if(lastTrackedPoints !== null && pts > lastTrackedPoints){
-  user.monthlyWonCoins=(Number(user.monthlyWonCoins)||0) + (pts - lastTrackedPoints);
- }
- lastTrackedPoints=pts;
+function renderVersionUi(){
+ const info = readNativeAppVersionInfo();
+ const codeSuffix = info.versionCode ? ` (${info.versionCode})` : '';
+ $('appVersionBadge').innerHTML = `<i class="fa-solid fa-code-branch"></i> v${info.versionName}${codeSuffix}`;
+ $('lobbyVersionSub').textContent = `Installed App Version: v${info.versionName}${codeSuffix}`;
 }
 
-function formatMb(bytes){
- return (Math.max(0, Number(bytes) || 0) / (1024 * 1024)).toFixed(2);
+function renderCachedUser(){
+ try{
+  const raw = localStorage.getItem(USER_KEY);
+  if(!raw) return;
+  const u = JSON.parse(raw);
+  if(u && typeof u === 'object'){
+   if(u.name) $('lobbyPlayerName').textContent = u.name;
+   if(Number.isFinite(Number(u.points))) $('lobbyPoints').textContent = Number(u.points);
+   if(u.avatarIcon){
+    const cleanIcon = String(u.avatarIcon).replace(/^fa-solid\s+/, '');
+    $('lobbyAvatar').innerHTML = `<i class="fa-solid ${cleanIcon}"></i>`;
+   }
+  }
+ }catch(_){}
 }
-
-function toast(s, icon='fa-circle-info'){
- const t=$('toast');
- t.replaceChildren();
- const iconEl=document.createElement('i');iconEl.className=`fa-solid ${icon}`;iconEl.style.color='var(--gold)';
- const textEl=document.createElement('span');textEl.textContent=String(s);
- t.append(iconEl,textEl);
- t.classList.add('show');
- setTimeout(()=>t.classList.remove('show'),3000);
-}
-function modal(id,on){$(id).classList.toggle('show',on);}
 
 function smoothNavigate(url){
- if(isNavigating)return;
- isNavigating=true;
- const app=$('appRoot');
- const sweep=$('pageSweep');
+ if(isNavigating) return;
+ isNavigating = true;
+ const app = $('appRoot');
+ const sweep = $('pageSweep');
  if(sweep){
   sweep.classList.remove('active');
   void sweep.offsetWidth;
   sweep.classList.add('active');
  }
- if(app)app.classList.add('page-leaving');
- window.location.href=url;
+ if(app) app.classList.add('page-leaving');
+ window.location.href = url;
 }
-
-window.addEventListener('pageshow',()=>{
- isNavigating=false;
- const app=$('appRoot');
- const sweep=$('pageSweep');
- if(app)app.classList.remove('page-leaving');
- if(sweep)sweep.classList.remove('active');
-});
 
 try{
- const cached=localStorage.getItem(KEY);
- if(cached){
-  const parsed=JSON.parse(cached);
-  if(parsed&&typeof parsed==='object'){
-   user={
-    ...user,
-    ...parsed,
-    pieceIndex:parsed.pieceIndex ?? 0,
-    unlockedPieces:normalizeList(parsed.unlockedPieces,[0]),
-    avatarIcon:parsed.avatarIcon||'fa-user',
-    unlockedAvatars:normalizeList(parsed.unlockedAvatars,['fa-user']).map(String),
-    eventSeasonStart:Number(parsed.eventSeasonStart)||0,
-    eventSeasonNumber:Number(parsed.eventSeasonNumber)||1,
-    monthlyWonCoins:Number(parsed.monthlyWonCoins)||0,
-    hasProPass:Boolean(parsed.hasProPass),
-    claimedEventRewards:Array.isArray(parsed.claimedEventRewards)?parsed.claimedEventRewards:[]
-   };
-  }
- }
-}catch(e){}
-syncEventWinCycle(user.points);
-
-try{
- if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
- auth=firebase.auth();
- db=firebase.database();
- firestore=firebase.firestore();
-}catch(e){console.error('Firebase initialization failed:',e);}
-
-/* Native Package Version Check + Cloud Firestore APK Update Listener */
-function getNativeAppVersionInfo(){
- try{
-  const bridge=window.AndroidApkBridge;
-  if(bridge && typeof bridge.getInstalledAppVersionInfo === 'function'){
-   const raw=bridge.getInstalledAppVersionInfo();
-   const parsed=typeof raw === 'string' ? JSON.parse(raw) : raw;
-   if(parsed && typeof parsed === 'object'){
-    return {
-     versionCode:Number(parsed.versionCode)||0,
-     versionName:String(parsed.versionName||'').trim()
-    };
+ if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+ const firestore = firebase.firestore();
+ firestore.collection('apk_updates_v6').doc('latest_meta').get().then(doc => {
+  if(doc.exists && doc.data() && doc.data().version){
+   const serverVer = normalizeVer(doc.data().version);
+   const currentVer = readNativeAppVersionInfo().versionName;
+   if(serverVer && serverVer !== currentVer){
+    $('lobbyUpdateTitle').textContent = `නව APK Update (v${serverVer}) ලබා ගත හැක`;
+    $('lobbyUpdateDesc').textContent = `දැනට v${currentVer} — Update කිරීමට Updates ඔබන්න`;
+   } else {
+    $('lobbyUpdateTitle').textContent = `App එක Latest Version (v${currentVer}) හි ඇත`;
+    $('lobbyUpdateDesc').textContent = 'නවතම update එක install කර ඇත';
    }
   }
- }catch(_){}
- return {versionCode:0, versionName:''};
-}
+ }).catch(()=>{});
+}catch(_){}
 
-function normalizeVerParts(verStr){
- return String(verStr||'')
-  .trim()
-  .replace(/^v/i,'')
-  .split(/[^0-9]+/)
-  .filter(Boolean)
-  .map(n=>Number(n));
-}
+renderCachedUser();
+renderVersionUi();
 
-function compareVersionStrings(a, b){
- const pa=normalizeVerParts(a);
- const pb=normalizeVerParts(b);
- const len=Math.max(pa.length, pb.length);
- for(let i=0;i<len;i++){
-  const va=pa[i] ?? 0;
-  const vb=pb[i] ?? 0;
-  if(va > vb) return 1;
-  if(va < vb) return -1;
- }
- return 0;
-}
-
-function isApkAlreadyInstalled(meta){
- if(!meta)return false;
- const remoteVer=String(meta.version||'').trim();
- const remoteCode=Number(meta.versionCode)||0;
- const nativeInfo=getNativeAppVersionInfo();
-
- if(remoteCode > 0 && nativeInfo.versionCode > 0){
-  if(nativeInfo.versionCode >= remoteCode)return true;
- }else if(remoteVer && nativeInfo.versionName){
-  if(compareVersionStrings(nativeInfo.versionName, remoteVer) >= 0)return true;
- }
-
- try{
-  if(remoteVer){
-   const markedVer=localStorage.getItem(INSTALLED_APK_VERSION_KEY);
-   if(markedVer && (markedVer===remoteVer || compareVersionStrings(markedVer, remoteVer) >= 0)){
-    return true;
-   }
-  }
-  if(remoteCode > 0){
-   const markedCode=Number(localStorage.getItem(INSTALLED_APK_CODE_KEY))||0;
-   if(markedCode >= remoteCode)return true;
-  }
- }catch(_){}
-
- return false;
-}
-
-function markApkAsInstalled(meta){
- if(!meta)return;
- try{
-  if(meta.version){
-   localStorage.setItem(INSTALLED_APK_VERSION_KEY, String(meta.version).trim());
-   sessionStorage.removeItem('dismissed_apk_v_'+meta.version);
-  }
-  if(Number(meta.versionCode) > 0){
-   localStorage.setItem(INSTALLED_APK_CODE_KEY, String(Number(meta.versionCode)));
-  }
- }catch(_){}
-}
-
-function resetApkModalState(meta){
- isInstallCompleted=false;
- $('apkSuccessBox').classList.remove('show');
- $('apkPreInstallActions').style.display='flex';
- $('apkPostInstallActions').style.display='none';
- $('installApkBtn').disabled=false;
- $('dismissApkBtn').disabled=false;
- $('apkDownloadProgBox').classList.remove('active');
- $('apkDownloadProgFill').style.width='0%';
- $('apkDownloadPctText').textContent='0%';
- if(meta){
-  $('apkDownloadChunksText').textContent=`0 / ${meta.totalChunks} chunks`;
- }
-}
-
-function attachFirestoreApkListener(){
- if(!firestore || firestoreApkListenerAttached)return;
- firestoreApkListenerAttached=true;
-
- firestore.collection('apk_updates_v6').doc('latest_meta').onSnapshot(docSnap=>{
-  if(!docSnap.exists)return;
-  const meta=docSnap.data();
-  if(!meta || !meta.version || !meta.totalChunks)return;
-
-  // APK එක දැනටමත් install වී ඇත්නම් New Update popup එක යලි නොපෙන්වයි
-  if(isApkAlreadyInstalled(meta)){
-   modal('apkUpdateModal',false);
-   return;
-  }
-
-  if(sessionStorage.getItem('dismissed_apk_v_'+meta.version)==='1')return;
-
-  latestApkMeta=meta;
-  const mbStr=meta.sizeBytes ? ` (${formatMb(meta.sizeBytes)} MB)` : '';
-  $('apkUpdateVersion').textContent=`Version v${meta.version} • ${meta.fileName||'SinhalaDraughts.apk'}${mbStr}`;
-  $('apkUpdateNotes').textContent=meta.notes || 'අලුත් Game APK Update එකක් ලබා ගත හැක. Install ඔබා install කරන්න.';
-  resetApkModalState(meta);
-  modal('apkUpdateModal',true);
- },err=>{
-  console.error('Firestore apk listener error:',err);
- });
-}
-attachFirestoreApkListener();
-
-$('dismissApkBtn').onclick=()=>{
- if(isDownloadingApk || isInstallCompleted)return;
- if(latestApkMeta?.version){
-  sessionStorage.setItem('dismissed_apk_v_'+latestApkMeta.version,'1');
- }
- modal('apkUpdateModal',false);
-};
-
-function base64ToUint8Array(base64){
- const binary=atob(base64);
- const len=binary.length;
- const bytes=new Uint8Array(len);
- for(let i=0;i<len;i++){
-  bytes[i]=binary.charCodeAt(i);
- }
- return bytes;
-}
-
-function uint8ArrayToBase64(bytes){
- let binary='';
- const step=0x8000;
- for(let i=0;i<bytes.length;i+=step){
-  binary+=String.fromCharCode.apply(null, bytes.subarray(i, i+step));
- }
- return btoa(binary);
-}
-
-async function sendBlobToAndroidNativeInstaller(apkBlob, fileName, onStatus){
- const bridge=window.AndroidApkBridge;
- if(bridge && typeof bridge.installApkChunk === 'function' && typeof bridge.finishAndInstallApk === 'function'){
-  const totalBytes=apkBlob.size;
-  const totalSlices=Math.max(1, Math.ceil(totalBytes / BRIDGE_SLICE_BYTES));
-  if(typeof bridge.beginApkTransfer === 'function'){
-   bridge.beginApkTransfer(fileName, totalBytes);
-  }
-  for(let i=0;i<totalSlices;i++){
-   const start=i * BRIDGE_SLICE_BYTES;
-   const end=Math.min(totalBytes, start + BRIDGE_SLICE_BYTES);
-   const buf=await apkBlob.slice(start, end).arrayBuffer();
-   const b64=uint8ArrayToBase64(new Uint8Array(buf));
-   bridge.installApkChunk(i, totalSlices, b64, fileName);
-   if(typeof onStatus==='function'){
-    onStatus(Math.round(((i+1)/totalSlices)*100), `APK Installer වෙත යවමින් (${i+1}/${totalSlices})...`);
-   }
-  }
-  bridge.finishAndInstallApk(fileName);
-  return true;
- }
-
- if(bridge && typeof bridge.installApkFromUrl === 'function'){
-  const reader=new FileReader();
-  const dataUrl=await new Promise((res,rej)=>{
-   reader.onloadend=()=>res(reader.result);
-   reader.onerror=rej;
-   reader.readAsDataURL(apkBlob);
-  });
-  bridge.installApkFromUrl(dataUrl, fileName);
-  return true;
- }
-
- const blobUrl=URL.createObjectURL(apkBlob);
- const link=document.createElement('a');
- link.href=blobUrl;
- link.download=fileName;
- link.rel='noopener';
- document.body.appendChild(link);
- link.click();
- link.remove();
- setTimeout(()=>URL.revokeObjectURL(blobUrl), 120000);
- return false;
-}
-
-$('installApkBtn').onclick=async()=>{
- if(!firestore || !latestApkMeta || isDownloadingApk || isInstallCompleted)return;
- isDownloadingApk=true;
- $('installApkBtn').disabled=true;
- $('dismissApkBtn').disabled=true;
- $('apkSuccessBox').classList.remove('show');
- $('apkPostInstallActions').style.display='none';
-
- const progBox=$('apkDownloadProgBox');
- const progFill=$('apkDownloadProgFill');
- const progPct=$('apkDownloadPctText');
- const progStatus=$('apkDownloadStatusText');
- const progSize=$('apkDownloadSizeText');
- const progChunks=$('apkDownloadChunksText');
-
- const totalChunks=Number(latestApkMeta.totalChunks)||1;
- progBox.classList.add('active');
- progFill.style.width='0%';
- progPct.textContent='0%';
- progStatus.textContent='Firestore වෙතින් APK කොටස් ලබාගනිමින්...';
- progChunks.textContent=`0 / ${totalChunks} chunks`;
- progSize.textContent='0.00 MB';
-
- try{
-  const chunksSnap=await firestore
-   .collection('apk_updates_v6')
-   .doc('latest_meta')
-   .collection('chunks')
-   .orderBy('index','asc')
-   .get();
-
-  const docs=chunksSnap.docs;
-  if(!docs.length){
-   throw new Error('APK chunks හමු නොවීය.');
-  }
-
-  const parts=[];
-  let assembledBytes=0;
-
-  for(let i=0;i<docs.length;i++){
-   const d=docs[i].data();
-   if(d && typeof d.data==='string'){
-    const bytes=base64ToUint8Array(d.data);
-    parts.push(bytes);
-    assembledBytes+=bytes.length;
-   }
-   const pct=Math.min(90, Math.round(((i+1) / docs.length) * 90));
-   progFill.style.width=pct+'%';
-   progPct.textContent=pct+'%';
-   progChunks.textContent=`${i+1} / ${docs.length} chunks`;
-   progSize.textContent=`${formatMb(assembledBytes)} MB`;
-  }
-
-  const apkBlob=new Blob(parts, {type:'application/vnd.android.package-archive'});
-  const fileName=latestApkMeta.fileName || `SinhalaDraughts_v${latestApkMeta.version}.apk`;
-
-  const usedNative=await sendBlobToAndroidNativeInstaller(apkBlob, fileName, (transferPct, msg)=>{
-   const overall=90 + Math.round((transferPct / 100) * 10);
-   progFill.style.width=overall+'%';
-   progPct.textContent=overall+'%';
-   progStatus.textContent=msg;
-  });
-
-  markApkAsInstalled(latestApkMeta);
-
-  progFill.style.width='100%';
-  progPct.textContent='100%';
-  progStatus.textContent=usedNative ? 'Android Installer විවෘත විය!' : 'APK Download ආරම්භ විය!';
-  progSize.textContent=`${formatMb(apkBlob.size)} MB`;
-
-  isInstallCompleted=true;
-  $('apkPreInstallActions').style.display='none';
-  $('apkSuccessDesc').textContent=usedNative
-   ? `${fileName} (${formatMb(apkBlob.size)} MB) සාර්ථකව සැකසී Android Installer වෙත යවන ලදී. Install අවසන් වූ පසු Reset App ඔබන්න.`
-   : `${fileName} (${formatMb(apkBlob.size)} MB) සාර්ථකව සැකසී download ආරම්භ විය. Install අවසන් වූ පසු Reset App ඔබන්න.`;
-  $('apkSuccessBox').classList.add('show');
-  $('apkPostInstallActions').style.display='flex';
-
-  toast('Successful Install! දැන් Reset App ඔබන්න.','fa-circle-check');
- }catch(err){
-  console.error('APK assembly/install error:',err);
-  progStatus.textContent='Install අසාර්ථක විය.';
-  $('installApkBtn').disabled=false;
-  $('dismissApkBtn').disabled=false;
-  toast('APK install කිරීමට නොහැකි විය: '+(err.message||''),'fa-circle-exclamation');
- }finally{
-  isDownloadingApk=false;
- }
-};
-
-$('resetAppBtn').onclick=async()=>{
- $('resetAppBtn').disabled=true;
- toast('App Reset වෙමින්...','fa-rotate-right');
- try{
-  if(latestApkMeta){
-   markApkAsInstalled(latestApkMeta);
-  }
-  if(userRefListener){
-   try{userRefListener.ref.off('value',userRefListener.fn);}catch(_){}
-   userRefListener=null;
-  }
-  const savedInstalledVer=localStorage.getItem(INSTALLED_APK_VERSION_KEY);
-  const savedInstalledCode=localStorage.getItem(INSTALLED_APK_CODE_KEY);
-  localStorage.removeItem(KEY);
-  if(savedInstalledVer)localStorage.setItem(INSTALLED_APK_VERSION_KEY, savedInstalledVer);
-  if(savedInstalledCode)localStorage.setItem(INSTALLED_APK_CODE_KEY, savedInstalledCode);
-
-  if('caches' in window){
-   const keys=await caches.keys();
-   await Promise.all(keys.map(k=>caches.delete(k).catch(()=>{})));
-  }
-  if(window.AndroidApkBridge && typeof window.AndroidApkBridge.resetApp === 'function'){
-   window.AndroidApkBridge.resetApp();
-   return;
-  }
- }catch(e){
-  console.warn('Reset cleanup warning:',e);
- }
- window.location.replace('index.html?reset='+Date.now());
-};
-
-function applyAvatarToBox(elementId, designIndex, customIcon){
- const el=$(elementId);if(!el)return;
- const design=findPieceDesign(designIndex);
- el.style.background=design.bg;el.style.borderColor=design.border;el.style.color=design.color;
- const cleanIcon=String(customIcon||'fa-user').replace(/^fa-solid\s+/,'');
- el.innerHTML=customIcon ? `<i class="fa-solid ${cleanIcon}"></i>` : design.icon;
-}
-
-function updateHeader(){
- $('headerName').textContent=user.name||'ක්‍රීඩකයා';
- $('points').textContent=user.points!==undefined?user.points:500;
- applyAvatarToBox('headerAvatar', user.pieceIndex ?? 0, user.avatarIcon||'fa-user');
-}
-
-updateHeader();
-
-let shopListenersBound=false;
-function attachShopListeners(){
- if(!db||shopListenersBound)return;
- shopListenersBound=true;
- db.ref('shopConfig_v6/customPieces').on('value',snap=>{
-  const val=snap.val();
-  customPieces=Array.isArray(val)?val.filter(Boolean):(val&&typeof val==='object'?Object.values(val).filter(Boolean):[]);
-  updateHeader();
- },()=>{});
-}
-
-function attachLiveUserListener(uid){
- if(!db||!uid)return;
- if(userRefListener){
-  try{userRefListener.ref.off('value',userRefListener.fn);}catch(e){}
-  userRefListener=null;
- }
- const ref=db.ref('users_v6/'+uid);
- const fn=snap=>{
-  const d=snap.val();
-  if(!d)return;
-  const incomingPts=Number.isFinite(Number(d.points))?Number(d.points):(Number(user.points)||500);
-  user={
-   ...user,
-   ...d,
-   name:d.name||user.name,
-   points:incomingPts,
-   wins:Number(d.wins)||0,
-   losses:Number(d.losses)||0,
-   uid:uid,
-   pieceIndex:d.pieceIndex ?? 0,
-   unlockedPieces:normalizeList(d.unlockedPieces,[0]),
-   avatarIcon:d.avatarIcon||'fa-user',
-   unlockedAvatars:normalizeList(d.unlockedAvatars,['fa-user']).map(String),
-   lastRewardTime:Number(d.lastRewardTime)||0,
-   eventSeasonStart:Number(d.eventSeasonStart)||user.eventSeasonStart||Date.now(),
-   eventSeasonNumber:Number(d.eventSeasonNumber)||user.eventSeasonNumber||1,
-   monthlyWonCoins:Number(d.monthlyWonCoins)||0,
-   hasProPass:Boolean(d.hasProPass),
-   claimedEventRewards:Array.isArray(d.claimedEventRewards)?d.claimedEventRewards:[]
-  };
-  syncEventWinCycle(incomingPts);
-  localStorage.setItem(KEY,JSON.stringify(user));
-  updateHeader();
- };
- ref.on('value',fn);
- userRefListener={ref,fn};
-}
-
-(async()=>{
- try{
-  if(!auth||!db)return;
-  auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(()=>{});
-  auth.onAuthStateChanged(async u=>{
-   fbUser=u;
-   attachFirestoreApkListener();
-   if(u){
-    attachShopListeners();
-    modal('authModal',false);
-    if((u.email||'').toLowerCase()==='admin@sinhala-draughts.app'){
-     sessionStorage.setItem('sinhala_draughts_admin_auth','1');
-     return;
-    }
-    await loadSignedInUser();
-    attachLiveUserListener(u.uid);
-
-    const userStatusRef = db.ref('status_v6/' + u.uid);
-    db.ref('.info/connected').on('value', snapshot => {
-     if (snapshot.val() === false) return;
-     userStatusRef.onDisconnect().set({ state: 'offline', last_changed: firebase.database.ServerValue.TIMESTAMP });
-     userStatusRef.set({ state: 'online', last_changed: firebase.database.ServerValue.TIMESTAMP });
-    });
-   }else{
-    if(userRefListener){
-     try{userRefListener.ref.off('value',userRefListener.fn);}catch(e){}
-     userRefListener=null;
-    }
-    if(!user.uid){
-     user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user',unlockedAvatars:['fa-user'],eventSeasonStart:Date.now(),eventSeasonNumber:1,monthlyWonCoins:0,hasProPass:false,claimedEventRewards:[]};
-     lastTrackedPoints=500;
-     updateHeader();
-    }
-   }
-  });
- }catch(e){
-  console.error('Authentication initialization failed:',e);
- }
-})();
-
-async function syncDatabaseIndices(oldName) {
- if(!db||!fbUser||!user.name)return;
- const cleanNewName=user.name.trim().toLowerCase();
- const cleanOldName=oldName?oldName.trim().toLowerCase():null;
- try {
-  if(cleanOldName && cleanOldName !== cleanNewName){
-   await db.ref('usernameIndex_v6/'+cleanOldName).remove().catch(()=>{});
-  }
-  await db.ref('usernameIndex_v6/'+cleanNewName).set(fbUser.uid);
-  await db.ref('publicProfiles_v6/'+fbUser.uid).set({
-   ...user,
-   name: user.name,
-   points: Number(user.points)||500,
-   wins: Number(user.wins)||0,
-   losses: Number(user.losses)||0,
-   pieceIndex: user.pieceIndex ?? 0,
-   unlockedPieces: normalizeList(user.unlockedPieces,[0]),
-   avatarIcon: user.avatarIcon||'fa-user',
-   unlockedAvatars: normalizeList(user.unlockedAvatars,['fa-user']).map(String),
-   eventSeasonStart: Number(user.eventSeasonStart)||Date.now(),
-   eventSeasonNumber: Number(user.eventSeasonNumber)||1,
-   monthlyWonCoins: Number(user.monthlyWonCoins)||0,
-   hasProPass: Boolean(user.hasProPass),
-   claimedEventRewards: Array.isArray(user.claimedEventRewards)?user.claimedEventRewards:[]
-  });
- } catch(e){
-  console.error('Index sync error:', e);
- }
-}
-
-function saveUser(){
- syncEventWinCycle(user.points);
- user.pieceIndex = user.pieceIndex ?? 0;
- user.avatarIcon = user.avatarIcon || 'fa-user';
- user.unlockedPieces = normalizeList(user.unlockedPieces, [0]);
- user.unlockedAvatars = normalizeList(user.unlockedAvatars, ['fa-user']).map(String);
-
- localStorage.setItem(KEY,JSON.stringify(user));
- if(db&&fbUser){
-  const oldName=user.name;
-  db.ref('users_v6/'+fbUser.uid).update({
-   name:user.name,
-   points:user.points,
-   wins:Number(user.wins)||0,
-   losses:Number(user.losses)||0,
-   pieceIndex:user.pieceIndex,
-   unlockedPieces:user.unlockedPieces,
-   avatarIcon:user.avatarIcon,
-   unlockedAvatars:user.unlockedAvatars,
-   lastRewardTime:Number(user.lastRewardTime)||0,
-   eventSeasonStart:Number(user.eventSeasonStart)||Date.now(),
-   eventSeasonNumber:Number(user.eventSeasonNumber)||1,
-   monthlyWonCoins:Number(user.monthlyWonCoins)||0,
-   hasProPass:Boolean(user.hasProPass),
-   claimedEventRewards:Array.isArray(user.claimedEventRewards)?user.claimedEventRewards:[]
-  }).then(()=>{
-   syncDatabaseIndices(oldName);
-  }).catch(e=>{
-   console.error('User sync failed:',e);
-  });
- }
- updateHeader();
-}
-
-async function loadSignedInUser(){
- try{
-  const s=await db.ref('users_v6/'+fbUser.uid).once('value');
-  let d=s.val();
-  if(!d||!d.name){
-   const fallbackName=(fbUser.email||'').split('@')[0]||$('username').value.trim().replace(/\s+/g,'_')||'Player_'+fbUser.uid.slice(0,5);
-   d={name:fallbackName,points:500,wins:0,losses:0,uid:fbUser.uid,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user',unlockedAvatars:['fa-user'],lastRewardTime:0,eventSeasonStart:Date.now(),eventSeasonNumber:1,monthlyWonCoins:0,hasProPass:false,claimedEventRewards:[]};
-   await db.ref('users_v6/'+fbUser.uid).set(d);
-  }
-  const loadedPts=Number.isFinite(Number(d.points))?Number(d.points):500;
-  lastTrackedPoints=loadedPts;
-  user={
-   ...d,
-   name:d.name,
-   points:loadedPts,
-   wins:Number(d.wins)||0,
-   losses:Number(d.losses)||0,
-   uid:fbUser.uid,
-   pieceIndex:d.pieceIndex ?? 0,
-   unlockedPieces:normalizeList(d.unlockedPieces,[0]),
-   avatarIcon:d.avatarIcon||'fa-user',
-   unlockedAvatars:normalizeList(d.unlockedAvatars,['fa-user']).map(String),
-   lastRewardTime:Number(d.lastRewardTime)||0,
-   eventSeasonStart:Number(d.eventSeasonStart)||Date.now(),
-   eventSeasonNumber:Number(d.eventSeasonNumber)||1,
-   monthlyWonCoins:Number(d.monthlyWonCoins)||0,
-   hasProPass:Boolean(d.hasProPass),
-   claimedEventRewards:Array.isArray(d.claimedEventRewards)?d.claimedEventRewards:[]
-  };
-  syncEventWinCycle(loadedPts);
-  localStorage.setItem(KEY,JSON.stringify(user));
-  $('username').value=user.name;
-  updateHeader();
-  syncDatabaseIndices(null);
- }catch(e){
-  console.error('loadSignedInUser error:',e);
- }
-}
-
-$('login').onclick=async()=>{
- const rawName=$('username').value.trim();
- const name=rawName.toLowerCase();
- const pass=$('password').value;
-
- if(name==='admin' && pass==='yomal8281'){
-  sessionStorage.setItem('sinhala_draughts_admin_auth','1');
-  if(auth){
-   try{
-    await auth.signInWithEmailAndPassword('admin@sinhala-draughts.app',pass);
-   }catch(e){
-    console.warn('Admin Firebase Auth sign-in fallback:',e.message||e);
-   }
-  }
-  modal('authModal',false);
-  toast('Admin Panel වෙත පිවිසෙමින්...','fa-shield-halved');
-  smoothNavigate('Admin.html');
-  return;
- }
-
- const cleanName=rawName.replace(/\s+/g,'_').toLowerCase();
- if(!auth)return toast('Firebase සම්බන්ධතාවය නොමැත.');
- if(!/^[a-zA-Z0-9_]{3,20}$/.test(cleanName)||pass.length<6)return toast('නම (ඉංග්‍රීසි අකුරු 3-20) සහ මුරපදය (අකුරු 6+) නිවැරදිව ඇතුළත් කරන්න.');
- try{
-  await auth.signInWithEmailAndPassword(cleanName+'@sinhala-draughts.app',pass);
-  modal('authModal',false);
-  toast('සාර්ථකව ඇතුළු විය!','fa-circle-check');
- }catch(e){
-  console.error('Login error:',e);
-  toast('ඇතුල්වීම අසාර්ථකයි: '+(e.message||'නැවත උත්සාහ කරන්න'));
- }
-};
-
-$('register').onclick=async()=>{
- const rawName=$('username').value.trim().replace(/\s+/g,'_');
- const name=rawName.toLowerCase();
- const pass=$('password').value;
- if(name==='admin')return toast('මෙම නම භාවිතා කළ නොහැක.');
- if(!auth||!db)return toast('Firebase සම්බන්ධතාවය නොමැත.');
- if(!/^[a-zA-Z0-9_]{3,20}$/.test(name)||pass.length<6)return toast('නම (ඉංග්‍රීසි අකුරු 3-20) සහ මුරපදය (අකුරු 6+) නිවැරදිව ඇතුළත් කරන්න.');
- try{
-  const indexSnap = await db.ref('usernameIndex_v6/'+name).once('value').catch(()=>null);
-  if(indexSnap && indexSnap.exists()){
-   return toast('මෙම නම දැනටමත් භාවිතයේ ඇත. වෙනත් නමක් තෝරන්න.');
-  }
-
-  const cred=await auth.createUserWithEmailAndPassword(name+'@sinhala-draughts.app',pass);
-  fbUser=cred.user;
-  lastTrackedPoints=500;
-  user={name:rawName,points:500,wins:0,losses:0,uid:fbUser.uid,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user',unlockedAvatars:['fa-user'],lastRewardTime:0,eventSeasonStart:Date.now(),eventSeasonNumber:1,monthlyWonCoins:0,hasProPass:false,claimedEventRewards:[]};
-  
-  await db.ref('users_v6/'+fbUser.uid).set(user);
-  await syncDatabaseIndices(null);
-
-  localStorage.setItem(KEY,JSON.stringify(user));
-  updateHeader();
-  modal('authModal',false);
-  toast('ගිණුම සාර්ථකව සාදන ලදී!','fa-circle-check');
- }catch(e){
-  console.error('Register error:',e);
-  toast('ගිණුම සෑදීමට නොහැකි විය: '+(e.message||'නැවත උත්සාහ කරන්න'));
- }
-};
-
-function openProfilePage(){
- if(!fbUser && !user.uid){
-  modal('authModal',true);
-  return;
- }
- smoothNavigate('profile.html');
-}
-
-function launchArena(params) {
- saveUser();
- const query = new URLSearchParams(params).toString();
- smoothNavigate(`arena.html?${query}`);
-}
-
-$('single').onclick=()=>{
- $('maxSinglePoints').textContent=user.points;
- modal('singleBetModal',true);
-};
-$('closeSingleBet').onclick=()=>modal('singleBetModal',false);
-
-$('freestyle').onclick=()=>{
- launchArena({ mode: 'freestyle', bet: 0 });
-};
-
-$('startSingleGame').onclick=()=>{
- const bet=Number($('singleBetInput').value);
- if(!Number.isInteger(bet)||bet<10||bet>user.points)return toast('Points 10 සිට ඔබ සතු උපරිම Points දක්වා ඇතුළත් කරන්න.');
- modal('singleBetModal',false);
- sessionStorage.setItem('sinhala_draughts_bet', bet);
- launchArena({ mode: 'single', bet: bet });
-};
-
-$('multi').onclick = () => {
- if(!fbUser && !user.uid) {
-  modal('authModal',true);
-  return toast('කරුණාකර පළමුව ගිණුමට ඇතුළු වන්න.');
- }
- $('maxUserPoints').textContent = user.points;
- modal('betModal', true);
-};
-
-$('closeBetModal').onclick = () => modal('betModal', false);
-
-$('proceedToInvite').onclick = () => {
- const bet = Number($('betAmountInput').value);
- if(!Number.isInteger(bet) || bet < 10 || bet > user.points) return toast('Points 10 සිට ඔබ සතු උපරිම Points දක්වා ඇතුළත් කරන්න.');
- 
- saveUser();
- modal('betModal', false);
- sessionStorage.setItem('sinhala_draughts_bet', bet);
- smoothNavigate(`friends.html?bet=${encodeURIComponent(bet)}`);
-};
-
-document.querySelectorAll('a.nav-item[href]').forEach(link => {
- link.addEventListener('click', e => {
-  const href = link.getAttribute('href');
-  if(!href || href.startsWith('#'))return;
-  e.preventDefault();
-  smoothNavigate(href);
- });
-});
-
-$('collectRewards').onclick=()=>smoothNavigate('shopandreward.html');
-$('coinShop').onclick=()=>smoothNavigate('shopandreward.html');
-$('openProfile').onclick=openProfilePage;
+$('openSettingsBtn').onclick = () => smoothNavigate('setting.html');
+$('goUpdateSettingsBtn').onclick = () => smoothNavigate('setting.html');
+$('goProfileBtn').onclick = () => smoothNavigate('Profile.html');
+$('goShopBtn').onclick = () => smoothNavigate('shopandreward.html');
+$('goMultiplayBtn').onclick = () => smoothNavigate('multiplay.html');
 </script>
-
 <script src="./invite-global.js"></script>
-
 </body>
 </html>
