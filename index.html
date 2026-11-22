@@ -232,6 +232,25 @@ const BRIDGE_SLICE_BYTES=256*1024;
 const INSTALLED_APK_VERSION_KEY='sinhala_draughts_installed_apk_version';
 const INSTALLED_APK_CODE_KEY='sinhala_draughts_installed_apk_code';
 
+let __liveDataNotifiedToAndroid=false;
+
+function getAndroidNativeBridge(){
+ return window.AndroidNative || window.AndroidApkBridge || null;
+}
+
+function notifyAndroidLiveDataReady(){
+ if(__liveDataNotifiedToAndroid)return;
+ __liveDataNotifiedToAndroid=true;
+ const bridge=getAndroidNativeBridge();
+ if(bridge && typeof bridge.notifyLiveDataLoaded === 'function'){
+  try{
+   bridge.notifyLiveDataLoaded();
+  }catch(e){
+   console.warn('notifyLiveDataLoaded error:',e);
+  }
+ }
+}
+
 let auth,db,firestore,fbUser,isNavigating=false;
 let customPieces=[];
 let userRefListener=null;
@@ -392,7 +411,7 @@ try{
 /* Native Package Version Check + Cloud Firestore APK Update Listener */
 function getNativeAppVersionInfo(){
  try{
-  const bridge=window.AndroidApkBridge;
+  const bridge=getAndroidNativeBridge();
   if(bridge && typeof bridge.getInstalledAppVersionInfo === 'function'){
    const raw=bridge.getInstalledAppVersionInfo();
    const parsed=typeof raw === 'string' ? JSON.parse(raw) : raw;
@@ -494,7 +513,6 @@ function attachFirestoreApkListener(){
   const meta=docSnap.data();
   if(!meta || !meta.version || !meta.totalChunks)return;
 
-  // APK එක දැනටමත් install වී ඇත්නම් New Update popup එක යලි නොපෙන්වයි
   if(isApkAlreadyInstalled(meta)){
    modal('apkUpdateModal',false);
    return;
@@ -542,7 +560,7 @@ function uint8ArrayToBase64(bytes){
 }
 
 async function sendBlobToAndroidNativeInstaller(apkBlob, fileName, onStatus){
- const bridge=window.AndroidApkBridge;
+ const bridge=getAndroidNativeBridge();
  if(bridge && typeof bridge.installApkChunk === 'function' && typeof bridge.finishAndInstallApk === 'function'){
   const totalBytes=apkBlob.size;
   const totalSlices=Math.max(1, Math.ceil(totalBytes / BRIDGE_SLICE_BYTES));
@@ -570,7 +588,7 @@ async function sendBlobToAndroidNativeInstaller(apkBlob, fileName, onStatus){
    reader.onerror=rej;
    reader.readAsDataURL(apkBlob);
   });
-  bridge.installApkFromUrl(dataUrl, fileName);
+  bridge.installApkFromUrl(dataUrl, fileName, String(latestApkMeta?.version || ''));
   return true;
  }
 
@@ -697,8 +715,9 @@ $('resetAppBtn').onclick=async()=>{
    const keys=await caches.keys();
    await Promise.all(keys.map(k=>caches.delete(k).catch(()=>{})));
   }
-  if(window.AndroidApkBridge && typeof window.AndroidApkBridge.resetApp === 'function'){
-   window.AndroidApkBridge.resetApp();
+  const bridge=getAndroidNativeBridge();
+  if(bridge && typeof bridge.resetApp === 'function'){
+   bridge.resetApp();
    return;
   }
  }catch(e){
@@ -767,6 +786,7 @@ function attachLiveUserListener(uid){
   syncEventWinCycle(incomingPts);
   localStorage.setItem(KEY,JSON.stringify(user));
   updateHeader();
+  notifyAndroidLiveDataReady();
  };
  ref.on('value',fn);
  userRefListener={ref,fn};
@@ -784,6 +804,7 @@ function attachLiveUserListener(uid){
     modal('authModal',false);
     if((u.email||'').toLowerCase()==='admin@sinhala-draughts.app'){
      sessionStorage.setItem('sinhala_draughts_admin_auth','1');
+     notifyAndroidLiveDataReady();
      return;
     }
     await loadSignedInUser();
@@ -805,10 +826,12 @@ function attachLiveUserListener(uid){
      lastTrackedPoints=500;
      updateHeader();
     }
+    notifyAndroidLiveDataReady();
    }
   });
  }catch(e){
   console.error('Authentication initialization failed:',e);
+  notifyAndroidLiveDataReady();
  }
 })();
 
@@ -909,9 +932,11 @@ async function loadSignedInUser(){
   localStorage.setItem(KEY,JSON.stringify(user));
   $('username').value=user.name;
   updateHeader();
+  notifyAndroidLiveDataReady();
   syncDatabaseIndices(null);
  }catch(e){
   console.error('loadSignedInUser error:',e);
+  notifyAndroidLiveDataReady();
  }
 }
 
