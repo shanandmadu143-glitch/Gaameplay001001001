@@ -64,12 +64,33 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold)}
 .apk-dropzone:hover{border-color:var(--gold);background:rgba(255,209,102,0.07)}
 .apk-status-card{background:rgba(255,255,255,0.04);border:1.5px solid rgba(46,204,113,0.35);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:8px}
 
-.upload-prog-box{display:none;flex-direction:column;gap:8px;background:rgba(0,0,0,0.55);border:1.5px solid rgba(0,242,254,0.4);border-radius:16px;padding:14px}
+.upload-prog-box{display:none;flex-direction:column;gap:10px;background:rgba(0,0,0,0.58);border:1.5px solid rgba(0,242,254,0.45);border-radius:16px;padding:14px;box-shadow:0 8px 24px rgba(0,0,0,0.45)}
 .upload-prog-box.active{display:flex}
-.upload-prog-header{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:0.86rem;font-weight:700}
-.upload-prog-track{width:100%;height:14px;border-radius:999px;background:rgba(255,255,255,0.08);overflow:hidden}
+.upload-prog-box.success-state{border-color:var(--neon-green);background:rgba(46,204,113,0.1)}
+.upload-prog-box.delete-state{border-color:rgba(255,71,87,0.55);background:rgba(255,71,87,0.08)}
+
+.upload-prog-header{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:0.88rem;font-weight:700}
+.anim-status-wrap{display:flex;align-items:center;gap:10px;color:var(--neon-blue)}
+.anim-ring{width:24px;height:24px;border-radius:50%;border:3px solid rgba(0,242,254,0.22);border-top-color:var(--neon-blue);animation:spinLoader 0.8s linear infinite;flex-shrink:0}
+.upload-prog-box.delete-state .anim-ring{border-color:rgba(255,71,87,0.22);border-top-color:var(--red)}
+.upload-prog-box.success-state .anim-ring{display:none}
+.success-check-icon{display:none;color:var(--neon-green);font-size:1.25rem;animation:popIn 0.28s ease}
+.upload-prog-box.success-state .success-check-icon{display:inline-flex}
+.upload-prog-box.success-state .anim-status-wrap{color:var(--neon-green)}
+.upload-prog-box.delete-state .anim-status-wrap{color:#ff7675}
+
+@keyframes spinLoader{to{transform:rotate(360deg)}}
+@keyframes popIn{0%{transform:scale(0.6);opacity:0}100%{transform:scale(1);opacity:1}}
+
+.upload-prog-track{width:100%;height:14px;border-radius:999px;background:rgba(255,255,255,0.08);overflow:hidden;position:relative}
 .upload-prog-fill{height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,var(--neon-blue),var(--neon-green),var(--gold));transition:width 0.18s ease}
+.upload-prog-box.delete-state .upload-prog-fill{background:linear-gradient(90deg,#ff6b81,var(--red))}
+.upload-prog-box.success-state .upload-prog-fill{background:linear-gradient(90deg,#2ecc71,#00f2fe)}
+
 .upload-prog-meta{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;font-size:0.82rem;color:#e2e8f0}
+.status-pill-badge{padding:3px 10px;border-radius:999px;font-size:0.75rem;font-weight:800;background:rgba(0,242,254,0.14);color:var(--neon-blue)}
+.upload-prog-box.success-state .status-pill-badge{background:rgba(46,204,113,0.22);color:var(--neon-green)}
+.upload-prog-box.delete-state .status-pill-badge{background:rgba(255,71,87,0.2);color:#ff7675}
 .upload-err-hint{color:#ff7675;font-size:0.8rem;line-height:1.4;word-break:break-word}
 
 .modal{position:fixed;inset:0;background:rgba(3,5,12,0.85);backdrop-filter:blur(8px);display:none;place-items:center;z-index:120;padding:15px}
@@ -219,15 +240,19 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold)}
 
   <div class="upload-prog-box" id="apkUploadProgBox">
    <div class="upload-prog-header">
-    <span style="color:var(--neon-blue)" id="apkUploadStatusText">Cloud Firestore වෙත APK Upload වෙමින්...</span>
+    <div class="anim-status-wrap">
+     <div class="anim-ring" aria-hidden="true"></div>
+     <i class="fa-solid fa-circle-check success-check-icon" aria-hidden="true"></i>
+     <span id="apkUploadStatusText">Cloud Firestore වෙත APK Upload වෙමින්...</span>
+    </div>
     <span style="color:var(--gold)" id="apkUploadPctText">0%</span>
    </div>
    <div class="upload-prog-track">
     <div class="upload-prog-fill" id="apkUploadProgFill"></div>
    </div>
    <div class="upload-prog-meta">
-    <span>Upload වූ ප්‍රමාණය: <strong id="apkUploadedSizeText" style="color:var(--neon-green)">0.00 MB / 0.00 MB</strong></span>
-    <span id="apkUploadStateBadge" style="color:var(--dim)">Uploading...</span>
+    <span id="apkUploadedSizeText" style="color:var(--neon-green);font-weight:700">0.00 MB / 0.00 MB</span>
+    <span class="status-pill-badge" id="apkUploadStateBadge">Uploading...</span>
    </div>
    <div class="upload-err-hint" id="apkUploadErrorHint"></div>
   </div>
@@ -281,6 +306,7 @@ let isNavigating=false;
 let listenersAttached=false;
 let lastDbError='';
 let pendingDeleteAction=null;
+let isApkBusy=false;
 
 function formatMb(bytes){
  return (Math.max(0, Number(bytes) || 0) / (1024 * 1024)).toFixed(2);
@@ -657,7 +683,21 @@ function renderCustomLists(){
  });
 }
 
-/* Cloud Firestore Chunked APK Upload */
+/* Cloud Firestore Chunked APK Upload & Delete with Loading Animation + Successful State */
+function setApkBoxMode(mode){
+ const progBox=$('apkUploadProgBox');
+ progBox.classList.add('active');
+ progBox.classList.remove('success-state','delete-state');
+ if(mode==='success') progBox.classList.add('success-state');
+ if(mode==='delete') progBox.classList.add('delete-state');
+}
+
+function setApkControlsLocked(locked){
+ isApkBusy=locked;
+ $('uploadApkToFirestoreBtn').disabled=locked;
+ $('clearApkUpdateBtn').disabled=locked;
+}
+
 $('apkDropzone').onclick=()=>$('apkFileInput').click();
 $('apkDropzone').addEventListener('dragover',e=>{
  e.preventDefault();
@@ -696,18 +736,23 @@ function arrayBufferToBase64(buffer){
  return btoa(binary);
 }
 
-async function clearExistingChunks(metaDocRef){
+async function clearExistingChunks(metaDocRef, onStep){
  const snap=await metaDocRef.collection('chunks').get().catch(()=>null);
  if(!snap || snap.empty)return;
  const docs=snap.docs;
  for(let i=0;i<docs.length;i+=300){
   const batch=firestore.batch();
-  docs.slice(i,i+300).forEach(d=>batch.delete(d.ref));
+  const slice=docs.slice(i,i+300);
+  slice.forEach(d=>batch.delete(d.ref));
   await batch.commit();
+  if(typeof onStep==='function'){
+   onStep(Math.min(80, Math.round(((i+slice.length)/docs.length)*80)));
+  }
  }
 }
 
 $('uploadApkToFirestoreBtn').onclick=async()=>{
+ if(isApkBusy)return;
  if(!firestore)return toast('Cloud Firestore සම්බන්ධතාවය නොමැත.');
  if(!selectedApkFile)return toast('කරුණාකර .APK file එකක් තෝරන්න.');
 
@@ -716,7 +761,6 @@ $('uploadApkToFirestoreBtn').onclick=async()=>{
  const finalFileName=cleanFileName.toLowerCase().endsWith('.apk') ? cleanFileName : cleanFileName + '.apk';
  const notes=$('apkNotesInput').value.trim() || `New Update v${version} is available! Tap Install to update the game.`;
 
- const progBox=$('apkUploadProgBox');
  const progFill=$('apkUploadProgFill');
  const progPct=$('apkUploadPctText');
  const progStatus=$('apkUploadStatusText');
@@ -727,14 +771,14 @@ $('uploadApkToFirestoreBtn').onclick=async()=>{
  const totalBytes=selectedApkFile.size;
  const totalChunks=Math.max(1, Math.ceil(totalBytes / CHUNK_RAW_BYTES));
 
- progBox.classList.add('active');
- progFill.style.width='0%';
- progPct.textContent='0%';
+ setApkControlsLocked(true);
+ setApkBoxMode('upload');
+ progFill.style.width='3%';
+ progPct.textContent='3%';
  progSize.textContent=`0.00 MB / ${formatMb(totalBytes)} MB`;
  progState.textContent='Uploading...';
  progStatus.textContent='Cloud Firestore වෙත APK Upload වෙමින්...';
  errHint.textContent='';
- $('uploadApkToFirestoreBtn').disabled=true;
 
  try{
   const metaRef=firestore.collection('apk_updates_v6').doc('latest_meta');
@@ -754,11 +798,11 @@ $('uploadApkToFirestoreBtn').onclick=async()=>{
    });
 
    uploadedBytes=end;
-   const pct=Math.min(99, Math.round((uploadedBytes / totalBytes) * 100));
+   const pct=Math.min(99, Math.max(4, Math.round((uploadedBytes / totalBytes) * 99)));
    progFill.style.width=pct+'%';
    progPct.textContent=pct+'%';
    progSize.textContent=`${formatMb(uploadedBytes)} MB / ${formatMb(totalBytes)} MB`;
-   progStatus.textContent=`Chunk ${idx+1} / ${totalChunks} Firestore වෙත යැවෙමින්...`;
+   progStatus.textContent=`Uploading Chunk ${idx+1} / ${totalChunks}...`;
   }
 
   const updatePayload={
@@ -777,34 +821,75 @@ $('uploadApkToFirestoreBtn').onclick=async()=>{
    await db.ref('adminConfig_v6/apkUpdate').set(updatePayload).catch(()=>{});
   }
 
+  setApkBoxMode('success');
   progFill.style.width='100%';
   progPct.textContent='100%';
   progSize.textContent=`${formatMb(totalBytes)} MB / ${formatMb(totalBytes)} MB`;
-  progState.textContent='Completed';
-  progStatus.textContent='Cloud Firestore Upload සම්පූර්ණයි! ක්‍රීඩකයන්ට New Update යවන ලදී.';
-  toast(`APK v${version} Firestore වෙත Upload කර New Update යවන ලදී!`,'fa-circle-check');
+  progState.textContent='Successful';
+  progStatus.textContent='Successful! APK Upload සම්පූර්ණයි.';
+  toast(`Successful! APK v${version} Upload විය.`,'fa-circle-check');
  }catch(err){
   console.error('Firestore APK upload error:',err);
+  $('apkUploadProgBox').classList.remove('success-state');
   progState.textContent='Failed';
   progStatus.textContent='Upload අසාර්ථක විය.';
   errHint.textContent=`Error (${err.code||'firestore_error'}): ${err.message||'Firestore Rules Publish කර ඇත්දැයි පරීක්ෂා කරන්න.'}`;
-  toast('Firestore Upload අසාර්ථක විය.','fa-circle-exclamation');
+  toast('APK Upload අසාර්ථක විය.','fa-circle-exclamation');
  }finally{
-  $('uploadApkToFirestoreBtn').disabled=false;
+  setApkControlsLocked(false);
  }
 };
 
 $('clearApkUpdateBtn').onclick=()=>{
- if(!firestore)return;
- askConfirm('Cloud Firestore හි ඇති Active APK Update එක ඉවත් කිරීමට අවශ්‍යද?', async()=>{
+ if(isApkBusy)return;
+ if(!firestore)return toast('Cloud Firestore සම්බන්ධතාවය නොමැත.');
+ askConfirm('Upload කර තිබූ APK Update එක ඉවත් කිරීමට අවශ්‍යද?', async()=>{
+  const progFill=$('apkUploadProgFill');
+  const progPct=$('apkUploadPctText');
+  const progStatus=$('apkUploadStatusText');
+  const progSize=$('apkUploadedSizeText');
+  const progState=$('apkUploadStateBadge');
+  const errHint=$('apkUploadErrorHint');
+
+  setApkControlsLocked(true);
+  setApkBoxMode('delete');
+  progFill.style.width='15%';
+  progPct.textContent='15%';
+  progSize.textContent='APK ඉවත් කරමින්...';
+  progState.textContent='Deleting...';
+  progStatus.textContent='APK කොටස් ඉවත් කරමින්...';
+  errHint.textContent='';
+
   try{
    const metaRef=firestore.collection('apk_updates_v6').doc('latest_meta');
-   await clearExistingChunks(metaRef);
+   await clearExistingChunks(metaRef, p=>{
+    const val=Math.max(15, p);
+    progFill.style.width=val+'%';
+    progPct.textContent=val+'%';
+   });
+
+   progFill.style.width='90%';
+   progPct.textContent='90%';
+   progStatus.textContent='APK Metadata ඉවත් කරමින්...';
    await metaRef.delete().catch(()=>{});
    if(db)await db.ref('adminConfig_v6/apkUpdate').remove().catch(()=>{});
-   toast('Firestore APK Update ඉවත් කරන ලදී.','fa-trash');
+
+   setApkBoxMode('success');
+   progFill.style.width='100%';
+   progPct.textContent='100%';
+   progSize.textContent='APK ඉවත් කරන ලදී';
+   progState.textContent='Successful';
+   progStatus.textContent='Successful! APK සාර්ථකව ඉවත් කරන ලදී.';
+   toast('Successful! APK සාර්ථකව ඉවත් කරන ලදී.','fa-circle-check');
   }catch(err){
-   toast('ඉවත් කිරීමට නොහැකි විය.');
+   console.error('APK delete error:',err);
+   $('apkUploadProgBox').classList.remove('success-state');
+   progState.textContent='Failed';
+   progStatus.textContent='APK ඉවත් කිරීම අසාර්ථක විය.';
+   errHint.textContent=err.message||'ඉවත් කිරීමට නොහැකි විය.';
+   toast('APK ඉවත් කිරීමට නොහැකි විය.','fa-circle-exclamation');
+  }finally{
+   setApkControlsLocked(false);
   }
  });
 };
