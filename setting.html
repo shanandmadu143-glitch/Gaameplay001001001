@@ -312,7 +312,6 @@ html,body{
   color:var(--dim);
 }
 
-/* Popup Modal for Download -> Install -> Successful -> Restart */
 .popup-backdrop{
   position:fixed;
   inset:0;
@@ -354,7 +353,6 @@ html,body{
   background:rgba(0,242,254,0.12);
   border:2px solid var(--neon-blue);
   color:var(--neon-blue);
-  position:relative;
 }
 .popup-card.is-installing .popup-icon-ring{
   background:rgba(255,209,102,0.14);
@@ -542,7 +540,6 @@ html,body{
  </section>
 </div>
 
-<!-- Popup Modal for Download -> Install -> Successful -> App Restart -->
 <div class="popup-backdrop" id="apkInstallModal" role="dialog" aria-modal="true">
  <div class="popup-card" id="apkPopupCard">
   <div class="popup-icon-ring" id="apkPopupIconWrap">
@@ -573,7 +570,7 @@ html,body{
   <div class="popup-actions" id="popupActionsRow">
    <button type="button" class="btn" style="flex:1" id="popupCloseBtn">Close</button>
    <button type="button" class="btn-green" style="flex:1.4;display:none" id="popupConfirmInstalledBtn">
-    <i class="fa-solid fa-check-double"></i> Install සම්පූර්ණයි (Finish)
+    <i class="fa-solid fa-check-double"></i> Install සම්පූර්ණයි (Restart)
    </button>
   </div>
  </div>
@@ -617,6 +614,10 @@ function setInstalledVersion(v){
  localStorage.setItem(INSTALLED_VER_KEY, normalizeVer(v) || '1.0.0');
 }
 
+function hasNativeApkBridge(){
+ return !!(window.AndroidNative && typeof window.AndroidNative.beginApkWrite === 'function' && typeof window.AndroidNative.writeApkChunk === 'function' && typeof window.AndroidNative.finishAndInstallApk === 'function');
+}
+
 function toast(s, icon='fa-circle-info'){
  const t=$('toast');
  t.replaceChildren();
@@ -644,6 +645,12 @@ function smoothNavigate(url){
 function restartAppNow(){
  if(restartTimer) clearTimeout(restartTimer);
  try{
+  if(window.AndroidNative && typeof window.AndroidNative.restartApp === 'function'){
+   window.AndroidNative.restartApp();
+   return;
+  }
+ }catch(_){}
+ try{
   if(window.Android && typeof window.Android.restartApp === 'function'){
    window.Android.restartApp();
    return;
@@ -651,6 +658,10 @@ function restartAppNow(){
  }catch(_){}
  window.location.replace('index.html?restarted=' + Date.now());
 }
+
+window.onNativeApkInstallCompleted = function(ver){
+ completeInstallAndRestart(ver || pendingVersionToMark);
+};
 
 try{
  if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
@@ -813,7 +824,7 @@ function completeInstallAndRestart(ver){
   'success',
   100,
   'Successful!',
-  `APK v${cleanVer} සාර්ථකව Install විය! App එක දැන් Restart වේ...`,
+  `APK v${cleanVer} සාර්ථකව Update/Install විය! App එක දැන් Restart වේ...`,
   'Successful — Restarting App'
  );
 
@@ -845,11 +856,16 @@ $('installApkBtn').onclick = async () => {
  $('checkUpdateBtn').disabled = true;
  $('apkInstallModal').classList.add('show');
 
+ const fileName = (latestApk.fileName || `SinhalaDraughts_v${normalizeVer(latestApk.version)}.apk`);
+ const nativeBridge = hasNativeApkBridge();
+
  setPopupStage(
   'downloading',
   5,
   'APK Download වෙමින් පවතී...',
-  'Cloud Firestore වෙතින් APK කොටස් Download කරමින් පවතී.',
+  nativeBridge
+   ? 'Mobile storage වෙත APK කොටස් Download කරමින් පවතී...'
+   : 'Cloud Firestore වෙතින් APK කොටස් Download කරමින් පවතී.',
   'Downloading APK...'
  );
 
@@ -861,16 +877,25 @@ $('installApkBtn').onclick = async () => {
    throw new Error('APK file chunks හමු නොවීය.');
   }
 
+  if(nativeBridge){
+   window.AndroidNative.beginApkWrite(fileName, normalizeVer(latestApk.version));
+  }
+
   const parts = [];
   const total = chunksSnap.size;
   let i = 0;
+
   for(const doc of chunksSnap.docs){
    const data = doc.data();
    if(data && data.data){
-    parts.push(base64ToBlob(data.data));
+    if(nativeBridge){
+     window.AndroidNative.writeApkChunk(String(data.data));
+    } else {
+     parts.push(base64ToBlob(data.data));
+    }
    }
    i++;
-   const pct = Math.min(75, Math.max(8, Math.round((i / total) * 75)));
+   const pct = Math.min(78, Math.max(8, Math.round((i / total) * 78)));
    setPopupStage(
     'downloading',
     pct,
@@ -880,10 +905,21 @@ $('installApkBtn').onclick = async () => {
    );
   }
 
-  const apkBlob = new Blob(parts, { type: 'application/vnd.android.package-archive' });
-  const fileName = (latestApk.fileName || `SinhalaDraughts_v${normalizeVer(latestApk.version)}.apk`);
-  const url = URL.createObjectURL(apkBlob);
+  if(nativeBridge){
+   setPopupStage(
+    'installing',
+    90,
+    'Mobile Installer Open වෙමින්...',
+    'APK file එක mobile එකට save විය. දැන් Android "Install" තෝරා app එක update කරන්න.',
+    'Installing APK...'
+   );
+   window.AndroidNative.finishAndInstallApk(fileName, normalizeVer(latestApk.version));
+   return;
+  }
 
+  // Fallback for standard WebView / Browser
+  const apkBlob = new Blob(parts, { type: 'application/vnd.android.package-archive' });
+  const url = URL.createObjectURL(apkBlob);
   const a = document.createElement('a');
   a.href = url;
   a.download = fileName;
@@ -892,21 +928,19 @@ $('installApkBtn').onclick = async () => {
   a.remove();
   setTimeout(()=>URL.revokeObjectURL(url), 20000);
 
-  // Download completed -> Mobile Install Process stage
   setPopupStage(
    'installing',
    88,
    'Download අවසන් — Mobile Install සිදු කරන්න',
-   'Downloaded APK file එක open කර Mobile එකේ "Install" ඔබන්න. Install වූ පසු පහත බොත්තම ඔබන්න (හෝ ස්වයංක්‍රීයව Restart වේ).',
+   'Downloaded APK file එක open කර Mobile එකේ "Install" ඔබන්න. Install වූ පසු පහත බොත්තම ඔබන්න.',
    'Installing on Mobile...'
   );
 
-  // Auto-complete install & restart after short install window if user doesn't manually tap earlier
   restartTimer = setTimeout(() => {
    if($('apkInstallModal').classList.contains('show')){
     completeInstallAndRestart(pendingVersionToMark);
    }
-  }, 4500);
+  }, 5000);
  }catch(err){
   console.error('Install APK error:',err);
   $('apkInstallModal').classList.remove('show');
