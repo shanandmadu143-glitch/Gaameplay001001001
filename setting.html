@@ -279,7 +279,6 @@ html,body{
 .btn:disabled,.btn-gold:disabled,.btn-cyan:disabled,.btn-green:disabled{opacity:0.45;cursor:not-allowed}
 
 .btn{background:rgba(255,255,255,0.09);color:#fff;border:1px solid rgba(255,255,255,0.18)}
-.btn-gold{background:linear-gradient(135deg,#ffe08a,#ff9f1c);color:#111;box-shadow:0 4px 14px rgba(255,159,28,0.25)}
 .btn-cyan{background:linear-gradient(135deg,#00f2fe,#0984e3);color:#06101d;box-shadow:0 4px 14px rgba(0,242,254,0.25)}
 .btn-green{background:linear-gradient(135deg,#2ecc71,#20b863);color:#09180f;box-shadow:0 4px 14px rgba(46,204,113,0.25)}
 
@@ -532,10 +531,10 @@ html,body{
   </div>
   <div class="pref-item">
    <div>
-    <b>Mark Installed Version</b>
-    <small>දැනට ඇති version එක Install වූ ලෙස සලකන්න</small>
+    <b>Reset App State</b>
+    <small>App එක reset කර නැවත ආරම්භ කරන්න</small>
    </div>
-   <button type="button" class="btn" style="padding:6px 10px;font-size:0.74rem" id="markInstalledBtn">Mark Installed</button>
+   <button type="button" class="btn" style="padding:6px 10px;font-size:0.74rem" id="resetAppBtn">Reset App</button>
   </div>
  </section>
 </div>
@@ -570,7 +569,7 @@ html,body{
   <div class="popup-actions" id="popupActionsRow">
    <button type="button" class="btn" style="flex:1" id="popupCloseBtn">Close</button>
    <button type="button" class="btn-green" style="flex:1.4;display:none" id="popupConfirmInstalledBtn">
-    <i class="fa-solid fa-check-double"></i> Install සම්පූර්ණයි (Restart)
+    <i class="fa-solid fa-check-double"></i> Install සම්පූර්ණයි (Reset)
    </button>
   </div>
  </div>
@@ -594,7 +593,7 @@ let latestApk = null;
 let isBusy = false;
 let isNavigating = false;
 let pendingVersionToMark = null;
-let restartTimer = null;
+let resetTimer = null;
 
 function formatMb(bytes){
  const n = Number(bytes) || 0;
@@ -607,15 +606,28 @@ function normalizeVer(v){
 }
 
 function getInstalledVersion(){
- return localStorage.getItem(INSTALLED_VER_KEY) || '1.0.0';
+ let fallback = normalizeVer(localStorage.getItem(INSTALLED_VER_KEY) || '1.0.0') || '1.0.0';
+ try{
+  if(window.AndroidNative && typeof window.AndroidNative.getInstalledAppVersionInfo === 'function'){
+   const raw = window.AndroidNative.getInstalledAppVersionInfo();
+   if(raw){
+    try{
+     const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+     const v = normalizeVer(parsed && typeof parsed === 'object' ? (parsed.versionName || parsed.version || parsed.name) : raw);
+     if(v) fallback = v;
+    }catch(_){
+     const v = normalizeVer(raw);
+     if(v) fallback = v;
+    }
+   }
+  }
+ }catch(_){}
+ localStorage.setItem(INSTALLED_VER_KEY, fallback);
+ return fallback;
 }
 
 function setInstalledVersion(v){
  localStorage.setItem(INSTALLED_VER_KEY, normalizeVer(v) || '1.0.0');
-}
-
-function hasNativeApkBridge(){
- return !!(window.AndroidNative && typeof window.AndroidNative.beginApkWrite === 'function' && typeof window.AndroidNative.writeApkChunk === 'function' && typeof window.AndroidNative.finishAndInstallApk === 'function');
 }
 
 function toast(s, icon='fa-circle-info'){
@@ -642,25 +654,19 @@ function smoothNavigate(url){
  window.location.href=url;
 }
 
-function restartAppNow(){
- if(restartTimer) clearTimeout(restartTimer);
+function triggerResetApp(){
+ if(resetTimer) clearTimeout(resetTimer);
  try{
-  if(window.AndroidNative && typeof window.AndroidNative.restartApp === 'function'){
-   window.AndroidNative.restartApp();
+  if(window.AndroidNative && typeof window.AndroidNative.resetApp === 'function'){
+   window.AndroidNative.resetApp();
    return;
   }
  }catch(_){}
- try{
-  if(window.Android && typeof window.Android.restartApp === 'function'){
-   window.Android.restartApp();
-   return;
-  }
- }catch(_){}
- window.location.replace('index.html?restarted=' + Date.now());
+ window.location.replace('index.html?reset=' + Date.now());
 }
 
 window.onNativeApkInstallCompleted = function(ver){
- completeInstallAndRestart(ver || pendingVersionToMark);
+ completeInstallAndReset(ver || pendingVersionToMark);
 };
 
 try{
@@ -815,7 +821,7 @@ function setPopupStage(stage, pct, title, sub, label){
  $('popupBarFill').style.width = pct + '%';
 }
 
-function completeInstallAndRestart(ver){
+function completeInstallAndReset(ver){
  const cleanVer = normalizeVer(ver || (latestApk && latestApk.version) || getInstalledVersion());
  setInstalledVersion(cleanVer);
  refreshApkUi();
@@ -824,22 +830,22 @@ function completeInstallAndRestart(ver){
   'success',
   100,
   'Successful!',
-  `APK v${cleanVer} සාර්ථකව Update/Install විය! App එක දැන් Restart වේ...`,
-  'Successful — Restarting App'
+  `APK v${cleanVer} සාර්ථකව Install විය! App එක දැන් Reset වේ...`,
+  'Successful — Resetting App'
  );
 
- toast(`Successful! App Restart වෙමින්...`, 'fa-circle-check');
- restartTimer = setTimeout(() => {
-  restartAppNow();
+ toast('Successful! App Reset වෙමින්...', 'fa-circle-check');
+ resetTimer = setTimeout(() => {
+  triggerResetApp();
  }, 1400);
 }
 
 $('popupConfirmInstalledBtn').onclick = () => {
- completeInstallAndRestart(pendingVersionToMark);
+ completeInstallAndReset(pendingVersionToMark);
 };
 
 $('popupCloseBtn').onclick = () => {
- if(restartTimer) clearTimeout(restartTimer);
+ if(resetTimer) clearTimeout(resetTimer);
  $('apkInstallModal').classList.remove('show');
  isBusy = false;
  $('checkUpdateBtn').disabled = false;
@@ -848,7 +854,6 @@ $('popupCloseBtn').onclick = () => {
 
 $('installApkBtn').onclick = async () => {
  if(isBusy || !latestApk) return;
- if(!firestore) return toast('Cloud Firestore සම්බන්ධතාවය නොමැත.');
 
  isBusy = true;
  pendingVersionToMark = latestApk.version;
@@ -857,90 +862,81 @@ $('installApkBtn').onclick = async () => {
  $('apkInstallModal').classList.add('show');
 
  const fileName = (latestApk.fileName || `SinhalaDraughts_v${normalizeVer(latestApk.version)}.apk`);
- const nativeBridge = hasNativeApkBridge();
+ const verClean = normalizeVer(latestApk.version);
 
  setPopupStage(
   'downloading',
-  5,
+  10,
   'APK Download වෙමින් පවතී...',
-  nativeBridge
-   ? 'Mobile storage වෙත APK කොටස් Download කරමින් පවතී...'
-   : 'Cloud Firestore වෙතින් APK කොටස් Download කරමින් පවතී.',
+  'APK file එක සකස් කර Download කරමින් පවතී.',
   'Downloading APK...'
  );
 
  try{
-  const metaRef = firestore.collection('apk_updates_v6').doc('latest_meta');
-  const chunksSnap = await metaRef.collection('chunks').orderBy('index').get();
+  let apkUrl = typeof latestApk.downloadUrl === 'string' && latestApk.downloadUrl.trim()
+   ? latestApk.downloadUrl.trim()
+   : '';
 
-  if(chunksSnap.empty){
-   throw new Error('APK file chunks හමු නොවීය.');
-  }
+  if(!apkUrl){
+   if(!firestore) throw new Error('Cloud Firestore සම්බන්ධතාවය නොමැත.');
+   const metaRef = firestore.collection('apk_updates_v6').doc('latest_meta');
+   const chunksSnap = await metaRef.collection('chunks').orderBy('index').get();
 
-  if(nativeBridge){
-   window.AndroidNative.beginApkWrite(fileName, normalizeVer(latestApk.version));
-  }
+   if(chunksSnap.empty){
+    throw new Error('APK file chunks හමු නොවීය.');
+   }
 
-  const parts = [];
-  const total = chunksSnap.size;
-  let i = 0;
-
-  for(const doc of chunksSnap.docs){
-   const data = doc.data();
-   if(data && data.data){
-    if(nativeBridge){
-     window.AndroidNative.writeApkChunk(String(data.data));
-    } else {
+   const parts = [];
+   const total = chunksSnap.size;
+   let i = 0;
+   for(const doc of chunksSnap.docs){
+    const data = doc.data();
+    if(data && data.data){
      parts.push(base64ToBlob(data.data));
     }
+    i++;
+    const pct = Math.min(78, Math.max(10, Math.round((i / total) * 78)));
+    setPopupStage(
+     'downloading',
+     pct,
+     'APK Download වෙමින් පවතී...',
+     `Download වෙමින් (${i} / ${total} chunks)...`,
+     'Downloading...'
+    );
    }
-   i++;
-   const pct = Math.min(78, Math.max(8, Math.round((i / total) * 78)));
-   setPopupStage(
-    'downloading',
-    pct,
-    'APK Download වෙමින් පවතී...',
-    `Download වෙමින් (${i} / ${total} chunks)...`,
-    'Downloading...'
-   );
-  }
 
-  if(nativeBridge){
-   setPopupStage(
-    'installing',
-    90,
-    'Mobile Installer Open වෙමින්...',
-    'APK file එක mobile එකට save විය. දැන් Android "Install" තෝරා app එක update කරන්න.',
-    'Installing APK...'
-   );
-   window.AndroidNative.finishAndInstallApk(fileName, normalizeVer(latestApk.version));
-   return;
+   const apkBlob = new Blob(parts, { type: 'application/vnd.android.package-archive' });
+   apkUrl = URL.createObjectURL(apkBlob);
   }
-
-  // Fallback for standard WebView / Browser
-  const apkBlob = new Blob(parts, { type: 'application/vnd.android.package-archive' });
-  const url = URL.createObjectURL(apkBlob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = fileName;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(()=>URL.revokeObjectURL(url), 20000);
 
   setPopupStage(
    'installing',
-   88,
+   90,
    'Download අවසන් — Mobile Install සිදු කරන්න',
-   'Downloaded APK file එක open කර Mobile එකේ "Install" ඔබන්න. Install වූ පසු පහත බොත්තම ඔබන්න.',
-   'Installing on Mobile...'
+   'Mobile එකේ Install prompt එක මඟින් APK update කරන්න. සම්පූර්ණ වූ පසු පහත බොත්තම ඔබන්න.',
+   'Installing APK...'
   );
 
-  restartTimer = setTimeout(() => {
+  if(window.AndroidNative && typeof window.AndroidNative.installApkFromUrl === 'function'){
+   window.AndroidNative.installApkFromUrl(apkUrl, fileName, verClean);
+  } else {
+   const a = document.createElement('a');
+   a.href = apkUrl;
+   a.download = fileName;
+   document.body.appendChild(a);
+   a.click();
+   a.remove();
+  }
+
+  if(apkUrl.startsWith('blob:')){
+   setTimeout(() => URL.revokeObjectURL(apkUrl), 25000);
+  }
+
+  resetTimer = setTimeout(() => {
    if($('apkInstallModal').classList.contains('show')){
-    completeInstallAndRestart(pendingVersionToMark);
+    completeInstallAndReset(pendingVersionToMark);
    }
-  }, 5000);
+  }, 5500);
  }catch(err){
   console.error('Install APK error:',err);
   $('apkInstallModal').classList.remove('show');
@@ -953,11 +949,9 @@ $('installApkBtn').onclick = async () => {
 
 $('checkUpdateBtn').onclick = () => fetchLatestApkMeta(true);
 
-$('markInstalledBtn').onclick = () => {
- if(!latestApk || !latestApk.version) return toast('සලකුණු කිරීමට APK update එකක් නොමැත.');
- setInstalledVersion(latestApk.version);
- refreshApkUi();
- toast(`v${normalizeVer(latestApk.version)} Installed ලෙස සලකුණු කරන ලදී.`, 'fa-check');
+$('resetAppBtn').onclick = () => {
+ toast('App Reset වෙමින්...', 'fa-rotate');
+ setTimeout(() => triggerResetApp(), 400);
 };
 
 let soundOn = localStorage.getItem(SOUND_PREF_KEY) !== '0';
