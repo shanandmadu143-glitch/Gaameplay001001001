@@ -630,6 +630,19 @@ function setInstalledVersion(v){
  localStorage.setItem(INSTALLED_VER_KEY, normalizeVer(v) || '1.0.0');
 }
 
+function hasChunkWriterBridge(){
+ return !!(
+  window.AndroidNative &&
+  typeof window.AndroidNative.beginApkWrite === 'function' &&
+  typeof window.AndroidNative.writeApkChunk === 'function' &&
+  typeof window.AndroidNative.finishAndInstallApk === 'function'
+ );
+}
+
+function hasUrlInstallBridge(){
+ return !!(window.AndroidNative && typeof window.AndroidNative.installApkFromUrl === 'function');
+}
+
 function toast(s, icon='fa-circle-info'){
  const t=$('toast');
  t.replaceChildren();
@@ -667,6 +680,15 @@ function triggerResetApp(){
 
 window.onNativeApkInstallCompleted = function(ver){
  completeInstallAndReset(ver || pendingVersionToMark);
+};
+
+window.onNativeApkInstallError = function(msg){
+ if(resetTimer) clearTimeout(resetTimer);
+ $('apkInstallModal').classList.remove('show');
+ isBusy = false;
+ $('checkUpdateBtn').disabled = false;
+ refreshApkUi();
+ toast(msg || 'APK Install කිරීමට නොහැකි විය.', 'fa-circle-exclamation');
 };
 
 try{
@@ -863,50 +885,71 @@ $('installApkBtn').onclick = async () => {
 
  const fileName = (latestApk.fileName || `SinhalaDraughts_v${normalizeVer(latestApk.version)}.apk`);
  const verClean = normalizeVer(latestApk.version);
+ const directUrl = (typeof latestApk.downloadUrl === 'string' && /^https?:\/\//i.test(latestApk.downloadUrl.trim()))
+  ? latestApk.downloadUrl.trim()
+  : '';
 
  setPopupStage(
   'downloading',
-  10,
+  8,
   'APK Download වෙමින් පවතී...',
   'APK file එක සකස් කර Download කරමින් පවතී.',
   'Downloading APK...'
  );
 
  try{
-  let apkUrl = typeof latestApk.downloadUrl === 'string' && latestApk.downloadUrl.trim()
-   ? latestApk.downloadUrl.trim()
-   : '';
+  // If direct HTTP/HTTPS URL exists and native installApkFromUrl is available, pass http(s) URL (never blob:)
+  if(directUrl && hasUrlInstallBridge()){
+   setPopupStage(
+    'installing',
+    90,
+    'Download & Install ආරම්භ වෙමින්...',
+    'APK file එක mobile එකට download වී Installer open වේ. සම්පූර්ණ වූ පසු පහත බොත්තම ඔබන්න.',
+    'Installing APK...'
+   );
+   window.AndroidNative.installApkFromUrl(directUrl, fileName, verClean);
+   return;
+  }
 
-  if(!apkUrl){
-   if(!firestore) throw new Error('Cloud Firestore සම්බන්ධතාවය නොමැත.');
-   const metaRef = firestore.collection('apk_updates_v6').doc('latest_meta');
-   const chunksSnap = await metaRef.collection('chunks').orderBy('index').get();
+  if(!firestore) throw new Error('Cloud Firestore සම්බන්ධතාවය නොමැත.');
+  const metaRef = firestore.collection('apk_updates_v6').doc('latest_meta');
+  const chunksSnap = await metaRef.collection('chunks').orderBy('index').get();
 
-   if(chunksSnap.empty){
-    throw new Error('APK file chunks හමු නොවීය.');
-   }
+  if(chunksSnap.empty){
+   throw new Error('APK file chunks හමු නොවීය.');
+  }
 
-   const parts = [];
-   const total = chunksSnap.size;
-   let i = 0;
-   for(const doc of chunksSnap.docs){
-    const data = doc.data();
-    if(data && data.data){
-     parts.push(base64ToBlob(data.data));
+  const useChunkWriter = hasChunkWriterBridge();
+  if(useChunkWriter){
+   window.AndroidNative.beginApkWrite(fileName, verClean);
+  }
+
+  const parts = [];
+  const base64Chunks = [];
+  const total = chunksSnap.size;
+  let i = 0;
+
+  for(const doc of chunksSnap.docs){
+   const data = doc.data();
+   if(data && data.data){
+    const b64 = String(data.data);
+    if(useChunkWriter){
+     window.AndroidNative.writeApkChunk(b64);
+    } else if(hasUrlInstallBridge()){
+     base64Chunks.push(b64);
+    } else {
+     parts.push(base64ToBlob(b64));
     }
-    i++;
-    const pct = Math.min(78, Math.max(10, Math.round((i / total) * 78)));
-    setPopupStage(
-     'downloading',
-     pct,
-     'APK Download වෙමින් පවතී...',
-     `Download වෙමින් (${i} / ${total} chunks)...`,
-     'Downloading...'
-    );
    }
-
-   const apkBlob = new Blob(parts, { type: 'application/vnd.android.package-archive' });
-   apkUrl = URL.createObjectURL(apkBlob);
+   i++;
+   const pct = Math.min(78, Math.max(10, Math.round((i / total) * 78)));
+   setPopupStage(
+    'downloading',
+    pct,
+    'APK Download වෙමින් පවතී...',
+    `Download වෙමින් (${i} / ${total} chunks)...`,
+    'Downloading...'
+   );
   }
 
   setPopupStage(
@@ -917,26 +960,29 @@ $('installApkBtn').onclick = async () => {
    'Installing APK...'
   );
 
-  if(window.AndroidNative && typeof window.AndroidNative.installApkFromUrl === 'function'){
-   window.AndroidNative.installApkFromUrl(apkUrl, fileName, verClean);
+  if(useChunkWriter){
+   window.AndroidNative.finishAndInstallApk(fileName, verClean);
+  } else if(hasUrlInstallBridge()){
+   const fullBase64 = base64Chunks.join('');
+   const dataUri = 'data:application/vnd.android.package-archive;base64,' + fullBase64;
+   window.AndroidNative.installApkFromUrl(dataUri, fileName, verClean);
   } else {
+   const apkBlob = new Blob(parts, { type: 'application/vnd.android.package-archive' });
+   const blobUrl = URL.createObjectURL(apkBlob);
    const a = document.createElement('a');
-   a.href = apkUrl;
+   a.href = blobUrl;
    a.download = fileName;
    document.body.appendChild(a);
    a.click();
    a.remove();
-  }
-
-  if(apkUrl.startsWith('blob:')){
-   setTimeout(() => URL.revokeObjectURL(apkUrl), 25000);
+   setTimeout(() => URL.revokeObjectURL(blobUrl), 25000);
   }
 
   resetTimer = setTimeout(() => {
    if($('apkInstallModal').classList.contains('show')){
     completeInstallAndReset(pendingVersionToMark);
    }
-  }, 5500);
+  }, 6000);
  }catch(err){
   console.error('Install APK error:',err);
   $('apkInstallModal').classList.remove('show');
