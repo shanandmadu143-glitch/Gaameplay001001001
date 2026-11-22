@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Settings & APK Update - Sinhala Draughts Pro</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Gemunu+Libre:wght@400;600;700;800&family=Orbitron:wght@600;700;800;900&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#05070e;
+  --panel:rgba(13,19,36,0.92);
+  --card:rgba(21,30,54,0.84);
+  --gold:#ffd166;
+  --gold-2:#ff9f1c;
+  --neon-blue:#00f2fe;
+  --neon-green:#2ecc71;
+  --purple:#9b59b6;
+  --red:#ff4757;
+  --dim:#9fb0c7;
+  --line:rgba(255,209,102,0.22);
+}
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:'Gemunu Libre','Poppins',sans-serif;
+  user-select:none;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+  width:100vw;
+  min-height:100dvh;
+  overflow-x:hidden;
+  background:
+    radial-gradient(circle at 15% 12%, rgba(0,242,254,0.14), transparent 36%),
+    radial-gradient(circle at 85% 18%, rgba(255,209,102,0.16), transparent 40%),
+    radial-gradient(circle at 50% 85%, rgba(108,92,231,0.18), transparent 45%),
+    linear-gradient(180deg, #060913 0%, #04060c 100%);
+  color:#f8fafc;
+}
+
+.page-sweep{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:3px;
+  background:linear-gradient(90deg,var(--neon-blue),var(--gold),#ff9f1c,var(--neon-blue));
+  box-shadow:0 0 14px rgba(255,209,102,0.85), 0 0 24px rgba(0,242,254,0.65);
+  z-index:300;
+  opacity:0;
+  transform:scaleX(0);
+  transform-origin:left center;
+  pointer-events:none;
+}
+.page-sweep.active{
+  opacity:1;
+  transform:scaleX(1);
+  transition:transform 0.14s cubic-bezier(0.22,1,0.36,1), opacity 0.14s ease-out;
+}
+
+.app{
+  width:100%;
+  max-width:560px;
+  min-height:100dvh;
+  margin:0 auto;
+  padding:
+    calc(env(safe-area-inset-top, 0px) + 10px)
+    calc(env(safe-area-inset-right, 0px) + 14px)
+    calc(env(safe-area-inset-bottom, 0px) + 18px)
+    calc(env(safe-area-inset-left, 0px) + 14px);
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  opacity:1;
+  transform:scale(1);
+  transition:opacity 0.15s ease,transform 0.15s ease;
+}
+.app.page-leaving{
+  opacity:0.92;
+  transform:scale(0.992);
+}
+
+.top-bar{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.icon-nav-btn{
+  width:38px;
+  height:38px;
+  border-radius:12px;
+  border:1.5px solid rgba(255,209,102,0.45);
+  background:linear-gradient(135deg,rgba(24,33,62,0.96),rgba(12,17,34,0.96));
+  color:var(--gold);
+  font-size:0.95rem;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  box-shadow:0 4px 12px rgba(0,0,0,0.45);
+  transition:transform 0.12s ease,border-color 0.15s ease;
+}
+.icon-nav-btn:hover{border-color:var(--gold)}
+.icon-nav-btn:active{transform:scale(0.94)}
+
+.screen-tag{
+  font-family:'Orbitron','Gemunu Libre',sans-serif;
+  font-size:0.7rem;
+  font-weight:800;
+  letter-spacing:0.9px;
+  color:var(--neon-blue);
+  padding:6px 12px;
+  border-radius:11px;
+  background:rgba(13,19,36,0.88);
+  border:1px solid rgba(0,242,254,0.3);
+}
+
+.hero-card{
+  background:linear-gradient(135deg,rgba(26,37,68,0.95),rgba(13,19,36,0.96));
+  border:1.5px solid rgba(255,209,102,0.35);
+  border-radius:20px;
+  padding:14px 16px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.5);
+}
+
+.hero-gear{
+  width:48px;
+  height:48px;
+  border-radius:15px;
+  background:linear-gradient(135deg,#ffe08a,#ff9f1c);
+  color:#111;
+  display:grid;
+  place-items:center;
+  font-size:1.35rem;
+  box-shadow:0 0 16px rgba(255,209,102,0.35);
+  flex-shrink:0;
+}
+
+.hero-card h1{
+  font-size:1.15rem;
+  font-weight:800;
+  color:#fff;
+  line-height:1.2;
+}
+.hero-card p{
+  font-size:0.78rem;
+  color:var(--dim);
+  margin-top:2px;
+}
+
+.panel-card{
+  background:var(--panel);
+  border:1.5px solid var(--line);
+  border-radius:20px;
+  padding:14px 16px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  box-shadow:0 8px 22px rgba(0,0,0,0.45);
+}
+
+.panel-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+.panel-title h2{
+  font-size:0.96rem;
+  font-weight:800;
+  color:var(--gold);
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.apk-banner{
+  background:rgba(6,10,20,0.72);
+  border:1.5px solid rgba(255,255,255,0.1);
+  border-radius:16px;
+  padding:12px 14px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.apk-banner.is-latest{
+  border-color:rgba(0,242,254,0.55);
+  box-shadow:0 0 18px rgba(0,242,254,0.12);
+}
+.apk-banner.is-installed{
+  border-color:rgba(46,204,113,0.55);
+  box-shadow:0 0 18px rgba(46,204,113,0.12);
+}
+
+.apk-top-line{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.state-badge{
+  font-family:'Orbitron','Poppins',sans-serif;
+  font-size:0.62rem;
+  font-weight:800;
+  padding:4px 9px;
+  border-radius:999px;
+  letter-spacing:0.4px;
+}
+.badge-checking{background:rgba(159,176,199,0.16);color:var(--dim);border:1px solid rgba(159,176,199,0.3)}
+.badge-latest{background:rgba(0,242,254,0.16);color:var(--neon-blue);border:1px solid rgba(0,242,254,0.5)}
+.badge-installed{background:rgba(46,204,113,0.18);color:var(--neon-green);border:1px solid rgba(46,204,113,0.5)}
+.badge-none{background:rgba(255,209,102,0.14);color:var(--gold);border:1px solid rgba(255,209,102,0.35)}
+
+.apk-meta-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  font-size:0.78rem;
+}
+.apk-meta-cell{
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.07);
+  border-radius:11px;
+  padding:7px 9px;
+}
+.apk-meta-cell small{
+  display:block;
+  font-size:0.64rem;
+  color:var(--dim);
+}
+.apk-meta-cell b{
+  display:block;
+  font-size:0.84rem;
+  color:#fff;
+  margin-top:1px;
+  word-break:break-all;
+}
+
+.apk-notes-box{
+  font-size:0.78rem;
+  color:#cbd5e1;
+  background:rgba(255,255,255,0.03);
+  border-radius:10px;
+  padding:8px 10px;
+  line-height:1.35;
+}
+
+.btn-row{
+  display:grid;
+  grid-template-columns:1fr 1.5fr;
+  gap:8px;
+}
+
+.btn,.btn-gold,.btn-cyan,.btn-green{
+  border:0;
+  border-radius:13px;
+  padding:10px 12px;
+  cursor:pointer;
+  font-weight:800;
+  font-size:0.82rem;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  transition:transform 0.12s ease,opacity 0.15s ease;
+}
+.btn:active,.btn-gold:active,.btn-cyan:active,.btn-green:active{transform:scale(0.96)}
+.btn:disabled,.btn-gold:disabled,.btn-cyan:disabled,.btn-green:disabled{opacity:0.45;cursor:not-allowed}
+
+.btn{background:rgba(255,255,255,0.09);color:#fff;border:1px solid rgba(255,255,255,0.18)}
+.btn-gold{background:linear-gradient(135deg,#ffe08a,#ff9f1c);color:#111;box-shadow:0 4px 14px rgba(255,159,28,0.25)}
+.btn-cyan{background:linear-gradient(135deg,#00f2fe,#0984e3);color:#06101d;box-shadow:0 4px 14px rgba(0,242,254,0.25)}
+.btn-green{background:linear-gradient(135deg,#2ecc71,#20b863);color:#09180f;box-shadow:0 4px 14px rgba(46,204,113,0.25)}
+
+.dl-progress-box{
+  display:none;
+  flex-direction:column;
+  gap:7px;
+  background:rgba(0,0,0,0.45);
+  border:1px solid rgba(0,242,254,0.35);
+  border-radius:13px;
+  padding:10px 12px;
+}
+.dl-progress-box.active{display:flex}
+.dl-track{
+  width:100%;
+  height:10px;
+  border-radius:999px;
+  background:rgba(255,255,255,0.08);
+  overflow:hidden;
+}
+.dl-fill{
+  height:100%;
+  width:0%;
+  border-radius:999px;
+  background:linear-gradient(90deg,var(--neon-blue),var(--neon-green),var(--gold));
+  transition:width 0.15s ease;
+}
+.dl-meta{
+  display:flex;
+  justify-content:space-between;
+  font-size:0.75rem;
+  color:var(--dim);
+  font-weight:700;
+}
+
+.pref-item{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:8px 4px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.pref-item:last-child{border-bottom:0}
+.pref-item b{display:block;font-size:0.88rem;color:#fff}
+.pref-item small{display:block;font-size:0.72rem;color:var(--dim)}
+
+.toggle-chip{
+  padding:6px 12px;
+  border-radius:11px;
+  border:1.5px solid rgba(46,204,113,0.45);
+  background:rgba(46,204,113,0.16);
+  color:var(--neon-green);
+  font-family:'Orbitron','Poppins',sans-serif;
+  font-size:0.65rem;
+  font-weight:800;
+  cursor:pointer;
+}
+.toggle-chip.off{
+  border-color:rgba(255,255,255,0.18);
+  background:rgba(255,255,255,0.06);
+  color:var(--dim);
+}
+
+#toast{
+  position:fixed;
+  bottom:18px;
+  left:50%;
+  transform:translate(-50%,120px);
+  opacity:0;
+  background:linear-gradient(135deg,#182238,#0b101d);
+  border:1.5px solid var(--gold);
+  color:#f8f9fa;
+  border-radius:30px;
+  padding:9px 18px;
+  z-index:150;
+  transition:transform 0.2s ease,opacity 0.2s ease;
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:0.84rem;
+}
+#toast.show{
+  transform:translate(-50%,0);
+  opacity:1;
+}
+</style>
+</head>
+<body>
+<div class="page-sweep" id="pageSweep" aria-hidden="true"></div>
+<div class="app" id="appRoot">
+ <div class="top-bar">
+  <button type="button" class="icon-nav-btn" id="backToProfileBtn" title="Profile වෙත (Back)">
+   <i class="fa-solid fa-arrow-left"></i>
+  </button>
+  <span class="screen-tag">GAME SETTINGS & UPDATE</span>
+  <button type="button" class="icon-nav-btn" id="goHomeBtn" title="Lobby">
+   <i class="fa-solid fa-house"></i>
+  </button>
+ </div>
+
+ <section class="hero-card">
+  <div class="hero-gear"><i class="fa-solid fa-sliders"></i></div>
+  <div>
+   <h1>සැකසුම් සහ APK යාවත්කාලීන</h1>
+   <p>Admin APK Update පරීක්ෂා කර Install කරගන්න</p>
+  </div>
+ </section>
+
+ <section class="panel-card">
+  <div class="panel-title">
+   <h2><i class="fa-brands fa-android" style="color:var(--neon-green)"></i> Game APK Update Checker</h2>
+   <span class="state-badge badge-checking" id="apkStateBadge">CHECKING...</span>
+  </div>
+
+  <div class="apk-banner" id="apkBannerCard">
+   <div class="apk-top-line">
+    <b id="apkHeadline" style="font-size:0.95rem;color:#fff">Update තොරතුරු පරීක්ෂා කරමින්...</b>
+    <span id="apkCompareNote" style="font-size:0.74rem;color:var(--dim);font-weight:700"></span>
+   </div>
+
+   <div class="apk-meta-grid">
+    <div class="apk-meta-cell">
+     <small>Admin Latest Version</small>
+     <b id="latestVerText">-</b>
+    </div>
+    <div class="apk-meta-cell">
+     <small>Installed Version</small>
+     <b id="installedVerText">-</b>
+    </div>
+    <div class="apk-meta-cell">
+     <small>File Name</small>
+     <b id="apkFileNameText">-</b>
+    </div>
+    <div class="apk-meta-cell">
+     <small>File Size</small>
+     <b id="apkSizeText">-</b>
+    </div>
+   </div>
+
+   <div class="apk-notes-box" id="apkNotesText">Update විස්තර පූරණය වෙමින්...</div>
+  </div>
+
+  <div class="dl-progress-box" id="dlProgressBox">
+   <div class="dl-meta">
+    <span id="dlStatusText" style="color:var(--neon-blue)">APK සකස් කරමින්...</span>
+    <span id="dlPctText" style="color:var(--gold)">0%</span>
+   </div>
+   <div class="dl-track">
+    <div class="dl-fill" id="dlFill"></div>
+   </div>
+  </div>
+
+  <div class="btn-row">
+   <button type="button" class="btn" id="checkUpdateBtn">
+    <i class="fa-solid fa-rotate"></i> Check Update
+   </button>
+   <button type="button" class="btn-cyan" id="installApkBtn" disabled>
+    <i class="fa-solid fa-download"></i> Install APK
+   </button>
+  </div>
+ </section>
+
+ <section class="panel-card">
+  <div class="panel-title">
+   <h2><i class="fa-solid fa-gear"></i> General Preferences</h2>
+  </div>
+  <div class="pref-item">
+   <div>
+    <b>Sound & Voice Effects</b>
+    <small>Arena හඬ සහ voice announcements</small>
+   </div>
+   <button type="button" class="toggle-chip" id="soundToggleChip">ON</button>
+  </div>
+  <div class="pref-item">
+   <div>
+    <b>Mark Installed Version</b>
+    <small>දැනට ඇති version එක Install වූ ලෙස සලකන්න</small>
+   </div>
+   <button type="button" class="btn" style="padding:6px 10px;font-size:0.74rem" id="markInstalledBtn">Mark Installed</button>
+  </div>
+ </section>
+</div>
+
+<div id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script>
+'use strict';
+const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
+const $=id=>document.getElementById(id);
+const INSTALLED_VER_KEY='sinhala_draughts_installed_apk_version';
+const SOUND_PREF_KEY='sinhala_draughts_sound_enabled';
+
+let db, firestore;
+let latestApk = null;
+let isDownloading = false;
+let isNavigating = false;
+
+function formatMb(bytes){
+ const n = Number(bytes) || 0;
+ if(!n) return '-';
+ return (n / (1024 * 1024)).toFixed(2) + ' MB';
+}
+
+function normalizeVer(v){
+ return String(v || '').trim().replace(/^v/i, '');
+}
+
+function getInstalledVersion(){
+ return localStorage.getItem(INSTALLED_VER_KEY) || '1.0.0';
+}
+
+function setInstalledVersion(v){
+ localStorage.setItem(INSTALLED_VER_KEY, normalizeVer(v) || '1.0.0');
+}
+
+function toast(s, icon='fa-circle-info'){
+ const t=$('toast');
+ t.replaceChildren();
+ const iconEl=document.createElement('i');iconEl.className=`fa-solid ${icon}`;iconEl.style.color='var(--gold)';
+ const textEl=document.createElement('span');textEl.textContent=String(s);
+ t.append(iconEl,textEl);
+ t.classList.add('show');
+ setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+function smoothNavigate(url){
+ if(isNavigating)return;
+ isNavigating=true;
+ const app=$('appRoot');
+ const sweep=$('pageSweep');
+ if(sweep){
+  sweep.classList.remove('active');
+  void sweep.offsetWidth;
+  sweep.classList.add('active');
+ }
+ if(app)app.classList.add('page-leaving');
+ window.location.href=url;
+}
+
+try{
+ if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
+ db=firebase.database();
+ firestore=firebase.firestore();
+}catch(e){
+ console.error('Firebase init error:',e);
+}
+
+function refreshApkUi(){
+ const banner=$('apkBannerCard');
+ const badge=$('apkStateBadge');
+ const headline=$('apkHeadline');
+ const compareNote=$('apkCompareNote');
+ const installBtn=$('installApkBtn');
+
+ const installedVer = getInstalledVersion();
+ $('installedVerText').textContent = 'v' + installedVer;
+
+ banner.classList.remove('is-latest','is-installed');
+ badge.className = 'state-badge';
+
+ if(!latestApk || !latestApk.version){
+  badge.classList.add('badge-none');
+  badge.textContent = 'NO UPDATE';
+  headline.textContent = 'Admin විසින් Upload කළ APK එකක් නොමැත';
+  compareNote.textContent = '';
+  $('latestVerText').textContent = '-';
+  $('apkFileNameText').textContent = '-';
+  $('apkSizeText').textContent = '-';
+  $('apkNotesText').textContent = 'දැනට නව APK update එකක් publish කර නොමැත.';
+  installBtn.disabled = true;
+  installBtn.className = 'btn-cyan';
+  installBtn.innerHTML = '<i class="fa-solid fa-download"></i> Install APK';
+  return;
+ }
+
+ const serverVer = normalizeVer(latestApk.version);
+ const alreadyInstalled = serverVer && (serverVer === normalizeVer(installedVer));
+
+ $('latestVerText').textContent = 'v' + serverVer;
+ $('apkFileNameText').textContent = latestApk.fileName || 'SinhalaDraughts.apk';
+ $('apkSizeText').textContent = formatMb(latestApk.sizeBytes);
+ $('apkNotesText').textContent = latestApk.notes || 'New game update available.';
+
+ if(alreadyInstalled){
+  banner.classList.add('is-installed');
+  badge.classList.add('badge-installed');
+  badge.textContent = 'ALREADY INSTALLED';
+  headline.textContent = 'මෙම Update එක දැනටමත් Install කර ඇත';
+  compareNote.textContent = `v${serverVer} Installed`;
+  installBtn.disabled = isDownloading;
+  installBtn.className = 'btn-green';
+  installBtn.innerHTML = '<i class="fa-solid fa-circle-check"></i> Reinstall APK';
+ } else {
+  banner.classList.add('is-latest');
+  badge.classList.add('badge-latest');
+  badge.textContent = 'LATEST UPDATE';
+  headline.textContent = `නවතම Update එක පවතී (v${serverVer})`;
+  compareNote.textContent = `v${installedVer} → v${serverVer}`;
+  installBtn.disabled = isDownloading;
+  installBtn.className = 'btn-cyan';
+  installBtn.innerHTML = '<i class="fa-solid fa-download"></i> Install Latest APK';
+ }
+}
+
+async function fetchLatestApkMeta(showMsg=false){
+ $('apkStateBadge').className = 'state-badge badge-checking';
+ $('apkStateBadge').textContent = 'CHECKING...';
+ $('apkHeadline').textContent = 'Latest APK Update පරීක්ෂා කරමින්...';
+
+ try{
+  if(firestore){
+   const doc = await firestore.collection('apk_updates_v6').doc('latest_meta').get();
+   if(doc.exists && doc.data() && doc.data().version){
+    latestApk = doc.data();
+    refreshApkUi();
+    if(showMsg) toast('APK Update තොරතුරු යාවත්කාලීන විය.', 'fa-circle-check');
+    return;
+   }
+  }
+  if(db){
+   const snap = await db.ref('adminConfig_v6/apkUpdate').once('value');
+   if(snap.exists() && snap.val() && snap.val().version){
+    latestApk = snap.val();
+    refreshApkUi();
+    if(showMsg) toast('APK Update තොරතුරු යාවත්කාලීන විය.', 'fa-circle-check');
+    return;
+   }
+  }
+  latestApk = null;
+  refreshApkUi();
+  if(showMsg) toast('නව APK update එකක් හමු නොවීය.');
+ }catch(err){
+  console.error('Check update error:',err);
+  latestApk = null;
+  refreshApkUi();
+  if(showMsg) toast('Update පරීක්ෂා කිරීමට නොහැකි විය.');
+ }
+}
+
+function base64ToBlob(base64, mime='application/vnd.android.package-archive'){
+ const binary = atob(base64);
+ const len = binary.length;
+ const bytes = new Uint8Array(len);
+ for(let i=0;i<len;i++){
+  bytes[i] = binary.charCodeAt(i);
+ }
+ return new Blob([bytes], { type: mime });
+}
+
+$('installApkBtn').onclick = async () => {
+ if(isDownloading || !latestApk) return;
+ if(!firestore) return toast('Cloud Firestore සම්බන්ධතාවය නොමැත.');
+
+ const dlBox = $('dlProgressBox');
+ const dlFill = $('dlFill');
+ const dlPct = $('dlPctText');
+ const dlStatus = $('dlStatusText');
+
+ isDownloading = true;
+ $('installApkBtn').disabled = true;
+ $('checkUpdateBtn').disabled = true;
+ dlBox.classList.add('active');
+ dlFill.style.width = '5%';
+ dlPct.textContent = '5%';
+ dlStatus.textContent = 'APK chunks ලබාගනිමින්...';
+
+ try{
+  const metaRef = firestore.collection('apk_updates_v6').doc('latest_meta');
+  const chunksSnap = await metaRef.collection('chunks').orderBy('index').get();
+
+  if(chunksSnap.empty){
+   throw new Error('APK file chunks හමු නොවීය.');
+  }
+
+  const parts = [];
+  const total = chunksSnap.size;
+  let i = 0;
+  for(const doc of chunksSnap.docs){
+   const data = doc.data();
+   if(data && data.data){
+    parts.push(base64ToBlob(data.data));
+   }
+   i++;
+   const pct = Math.min(92, Math.max(8, Math.round((i / total) * 92)));
+   dlFill.style.width = pct + '%';
+   dlPct.textContent = pct + '%';
+   dlStatus.textContent = `Downloading Chunk ${i} / ${total}...`;
+  }
+
+  const apkBlob = new Blob(parts, { type: 'application/vnd.android.package-archive' });
+  const fileName = (latestApk.fileName || `SinhalaDraughts_v${normalizeVer(latestApk.version)}.apk`);
+  const url = URL.createObjectURL(apkBlob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 15000);
+
+  setInstalledVersion(latestApk.version);
+  dlFill.style.width = '100%';
+  dlPct.textContent = '100%';
+  dlStatus.textContent = 'APK Download ආරම්භ විය! Install කරන්න.';
+  refreshApkUi();
+  toast(`APK v${normalizeVer(latestApk.version)} Download/Install ආරම්භ විය!`, 'fa-circle-check');
+ }catch(err){
+  console.error('Install APK error:',err);
+  dlStatus.textContent = 'Download අසාර්ථක විය.';
+  toast(err.message || 'APK ලබාගැනීමට නොහැකි විය.', 'fa-circle-exclamation');
+ }finally{
+  isDownloading = false;
+  $('checkUpdateBtn').disabled = false;
+  refreshApkUi();
+ }
+};
+
+$('checkUpdateBtn').onclick = () => fetchLatestApkMeta(true);
+
+$('markInstalledBtn').onclick = () => {
+ if(!latestApk || !latestApk.version) return toast('සලකුණු කිරීමට APK update එකක් නොමැත.');
+ setInstalledVersion(latestApk.version);
+ refreshApkUi();
+ toast(`v${normalizeVer(latestApk.version)} Installed ලෙස සලකුණු කරන ලදී.`, 'fa-check');
+};
+
+let soundOn = localStorage.getItem(SOUND_PREF_KEY) !== '0';
+function syncSoundChip(){
+ const chip = $('soundToggleChip');
+ chip.textContent = soundOn ? 'ON' : 'OFF';
+ chip.classList.toggle('off', !soundOn);
+}
+syncSoundChip();
+
+$('soundToggleChip').onclick = () => {
+ soundOn = !soundOn;
+ localStorage.setItem(SOUND_PREF_KEY, soundOn ? '1' : '0');
+ syncSoundChip();
+ toast(soundOn ? 'Sound ON' : 'Sound OFF');
+};
+
+if(firestore){
+ firestore.collection('apk_updates_v6').doc('latest_meta').onSnapshot(docSnap => {
+  latestApk = docSnap.exists ? docSnap.data() : null;
+  refreshApkUi();
+ }, () => {});
+}
+
+fetchLatestApkMeta(false);
+
+$('backToProfileBtn').onclick = () => smoothNavigate('Profile.html');
+$('goHomeBtn').onclick = () => smoothNavigate('index.html');
+</script>
+</body>
+</html>
