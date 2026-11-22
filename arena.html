@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Gemunu+Libre:wght@400;600;700;800&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#05070e;--gold:#ffd166;--neon-blue:#00f2fe;--neon-green:#2ecc71;--red:#ff4757;--dim:#a0aec0}
+:root{--bg:#05070e;--panel:rgba(14,20,38,.92);--gold:#ffd166;--neon-blue:#00f2fe;--neon-green:#2ecc71;--red:#ff4757;--dim:#a0aec0}
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Gemunu Libre','Poppins',sans-serif;user-select:none;-webkit-tap-highlight-color:transparent}
 html,body{width:100%;height:100%;overflow:hidden}
 body{
@@ -259,13 +259,14 @@ body{
 <script>
 'use strict';
 const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
-const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user';
+const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user',AI_UPGRADE_KEY='sinhala_draughts_ai_master_v3';
 let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,avatarIcon:'fa-user'};
 let board=[],turn=1,selected=null,moves=[],single=true,roomId=null,roomRef=null,roomValueHandler=null,chatAddedHandler=null,role=null,gameOver=false,aiTimer=null,processing=false,turnClockTimer=null,turnDeadline=0,forcedContinuation=null;
 let userSide=1,nextStartingSide=1,gameMode='single';
 let lastMove = null;
 let thoughtBubbleTimeout = null;
 let mySessionId = 'player_' + Math.random().toString(36).substring(2, 9);
+let aiNameLabel = 'දාම් Master';
 
 let soundEnabled = true;
 let mediaRecorder = null;
@@ -294,6 +295,227 @@ const PIECE_DESIGNS=[
  {id:18,name:'විදුලි ලෙමන්',bg:'radial-gradient(circle at 30% 30%,#f7dc6f,#f9e79f)',border:'#f1c40f',color:'#111',icon:'✨'},
  {id:19,name:'අමරණීය අඳුර',bg:'radial-gradient(circle at 30% 30%,#2c3e50,#000000)',border:'#ffd166',color:'#ffd166',icon:'♔'}
 ];
+
+/* Self-Upgrading Planned Tactical AI Engine */
+function loadAiMasterState(){
+ const def={
+  level:1,
+  turnsPlanned:0,
+  aiWins:0,
+  playerWins:0,
+  searchDepth:4,
+  aggression:0.95,
+  trapAvoidance:1.05,
+  kingPriority:1.45,
+  centerControl:0.75
+ };
+ try{
+  const raw=localStorage.getItem(AI_UPGRADE_KEY);
+  if(!raw)return def;
+  const p=JSON.parse(raw);
+  return {
+   ...def,
+   ...p,
+   level:Math.max(1,Number(p.level)||1),
+   turnsPlanned:Math.max(0,Number(p.turnsPlanned)||0),
+   aiWins:Math.max(0,Number(p.aiWins)||0),
+   playerWins:Math.max(0,Number(p.playerWins)||0),
+   searchDepth:Math.min(6,Math.max(4,Number(p.searchDepth)||4)),
+   aggression:Math.min(1.6,Math.max(0.9,Number(p.aggression)||0.95)),
+   trapAvoidance:Math.min(1.75,Math.max(1.0,Number(p.trapAvoidance)||1.05)),
+   kingPriority:Math.min(2.3,Math.max(1.3,Number(p.kingPriority)||1.45)),
+   centerControl:Math.min(1.5,Math.max(0.6,Number(p.centerControl)||0.75))
+  };
+ }catch(_){
+  return def;
+ }
+}
+
+function saveAiMasterState(st){
+ try{localStorage.setItem(AI_UPGRADE_KEY,JSON.stringify(st));}catch(_){}
+}
+
+let aiMasterState=loadAiMasterState();
+
+function updateAiSubLabel(){
+ const subEl=$('p2sub');
+ if(subEl && single){
+  subEl.textContent=`AI Lv.${aiMasterState.level} (D${aiMasterState.searchDepth})`;
+ }
+}
+
+function upgradeAiOnTurn(){
+ aiMasterState.turnsPlanned += 1;
+ if(aiMasterState.turnsPlanned % 4 === 0){
+  aiMasterState.level += 1;
+  aiMasterState.searchDepth = Math.min(6, 4 + Math.floor((aiMasterState.level - 1) / 3));
+  aiMasterState.aggression = Math.min(1.6, Number((aiMasterState.aggression + 0.03).toFixed(2)));
+  aiMasterState.trapAvoidance = Math.min(1.75, Number((aiMasterState.trapAvoidance + 0.03).toFixed(2)));
+  aiMasterState.kingPriority = Math.min(2.3, Number((aiMasterState.kingPriority + 0.04).toFixed(2)));
+  aiMasterState.centerControl = Math.min(1.5, Number((aiMasterState.centerControl + 0.03).toFixed(2)));
+ }
+ saveAiMasterState(aiMasterState);
+ updateAiSubLabel();
+}
+
+function upgradeAiOnMatchEnd(aiWon){
+ if(aiWon){
+  aiMasterState.aiWins += 1;
+  aiMasterState.level += 1;
+ }else{
+  aiMasterState.playerWins += 1;
+  aiMasterState.level += 2;
+ }
+ aiMasterState.searchDepth = Math.min(6, 4 + Math.floor((aiMasterState.level - 1) / 2));
+ aiMasterState.aggression = Math.min(1.6, Number((aiMasterState.aggression + 0.06).toFixed(2)));
+ aiMasterState.trapAvoidance = Math.min(1.75, Number((aiMasterState.trapAvoidance + 0.06).toFixed(2)));
+ aiMasterState.kingPriority = Math.min(2.3, Number((aiMasterState.kingPriority + 0.08).toFixed(2)));
+ aiMasterState.centerControl = Math.min(1.5, Number((aiMasterState.centerControl + 0.05).toFixed(2)));
+ saveAiMasterState(aiMasterState);
+ updateAiSubLabel();
+}
+
+function cloneBoard8(b){
+ return b.map(row=>row.slice());
+}
+
+function simulateBoardMove(b, m){
+ const next=cloneBoard8(b);
+ const p=next[m.fromR][m.fromC];
+ next[m.fromR][m.fromC]=0;
+ next[m.toR][m.toC]=p;
+ if(m.capture && inside(m.capR, m.capC)){
+  next[m.capR][m.capC]=0;
+ }
+ if(p===1 && m.toR===0) next[m.toR][m.toC]=2;
+ if(p===-1 && m.toR===7) next[m.toR][m.toC]=-2;
+ return next;
+}
+
+function evaluateBoardForSide(b, aiSide, cfg){
+ const humanSide=-aiSide;
+ let score=0;
+
+ for(let r=0;r<8;r++){
+  for(let c=0;c<8;c++){
+   const val=b[r][c];
+   if(!val)continue;
+   const side=Math.sign(val);
+   const isKing=Math.abs(val)===2;
+   const pieceBase=isKing ? (100 * cfg.kingPriority) : 100;
+
+   // ඉදිරියට යන සැලසුම (forward advance toward king promotion)
+   const adv=(side === -1) ? (r / 7) : ((7 - r) / 7);
+   const advanceBonus=isKing ? 22 : (adv * 34 * cfg.aggression);
+
+   // මැද කොටු පාලනය (center control)
+   const centerDist=Math.abs(3.5 - c) + Math.abs(3.5 - r);
+   const centerBonus=Math.max(0, 7 - centerDist) * 5.5 * cfg.centerControl;
+
+   // පැති ආරක්ෂාව (edge safety)
+   const edgeBonus=(c===0 || c===7) ? 12 : 0;
+
+   const totalPiece=pieceBase + advanceBonus + centerBonus + edgeBonus;
+   score += (side === aiSide) ? totalPiece : -(totalPiece * 1.12);
+  }
+ }
+
+ const aiMovesCount=allMoves(aiSide, b).length;
+ const humanMovesCount=allMoves(humanSide, b).length;
+ score += (aiMovesCount - humanMovesCount) * 8;
+ return score;
+}
+
+function scoreMovePlan(m, b, aiSide, cfg){
+ let s=0;
+ if(m.capture){
+  s += 280 * cfg.aggression;
+  const afterCapBoard=simulateBoardMove(b, m);
+  const chainCaps=pieceMoves(m.toR, m.toC, afterCapBoard).filter(x=>x.capture);
+  if(chainCaps.length) s += 190 * cfg.aggression;
+ }
+ const p=b[m.fromR][m.fromC];
+ if((p===1 && m.toR===0) || (p===-1 && m.toR===7)){
+  s += 210 * cfg.kingPriority;
+ }
+ const forwardGain=(aiSide === -1) ? (m.toR - m.fromR) : (m.fromR - m.toR);
+ s += forwardGain * 24 * cfg.aggression;
+ const centerProximity=4 - Math.abs(3.5 - m.toC);
+ s += centerProximity * 7 * cfg.centerControl;
+ return s;
+}
+
+function alphaBetaPlan(b, depth, alpha, beta, maximizingAi, aiSide, cfg){
+ const currentSide=maximizingAi ? aiSide : -aiSide;
+ const movesList=allMoves(currentSide, b);
+
+ if(depth <= 0 || !movesList.length){
+  if(!movesList.length){
+   return maximizingAi ? -5000 : 5000;
+  }
+  return evaluateBoardForSide(b, aiSide, cfg);
+ }
+
+ if(maximizingAi){
+  let value=-Infinity;
+  for(const m of movesList){
+   const child=simulateBoardMove(b, m);
+   value=Math.max(value, alphaBetaPlan(child, depth - 1, alpha, beta, false, aiSide, cfg));
+   alpha=Math.max(alpha, value);
+   if(alpha >= beta) break;
+  }
+  return value;
+ }else{
+  let value=Infinity;
+  for(const m of movesList){
+   const child=simulateBoardMove(b, m);
+   value=Math.min(value, alphaBetaPlan(child, depth - 1, alpha, beta, true, aiSide, cfg));
+   beta=Math.min(beta, value);
+   if(alpha >= beta) break;
+  }
+  return value;
+ }
+}
+
+function choosePlannedAiMove(legalMoves, aiSide){
+ const cfg=loadAiMasterState();
+ if(!legalMoves.length)return null;
+ if(legalMoves.length===1)return legalMoves[0];
+
+ const depth=Math.min(4, Math.max(2, cfg.searchDepth - 2));
+ const humanSide=-aiSide;
+ let bestMove=legalMoves[0];
+ let bestScore=-Infinity;
+
+ for(const m of legalMoves){
+  const planScore=scoreMovePlan(m, board, aiSide, cfg);
+  const afterBoard=simulateBoardMove(board, m);
+  const futureVal=alphaBetaPlan(afterBoard, depth, -Infinity, Infinity, false, aiSide, cfg);
+
+  // ක්‍රීඩකයාට AI ගේ ඉත්තා කැපීමට ඇති අවස්ථා වළක්වා ගැනීම
+  const humanNextMoves=allMoves(humanSide, afterBoard);
+  let humanCaptureThreat=0;
+  for(const hm of humanNextMoves){
+   if(hm.capture){
+    humanCaptureThreat += 260 * cfg.trapAvoidance;
+   }
+  }
+
+  const total=planScore + (futureVal * 0.7) - humanCaptureThreat;
+  if(total > bestScore){
+   bestScore=total;
+   bestMove=m;
+  }
+ }
+
+ return bestMove;
+}
+
+window.DamMasterArenaAI={
+ chooseMove:(b, legalMoves, aiSide=-1)=>choosePlannedAiMove(legalMoves, aiSide),
+ getState:()=>loadAiMasterState(),
+ upgradeMatch:upgradeAiOnMatchEnd
+};
 
 function playVoice(text) {
  if (!soundEnabled || !('speechSynthesis' in window)) return;
@@ -456,11 +678,15 @@ async function initGameFromURL(){
  const params = new URLSearchParams(window.location.search);
  let storedMulti = null;
  try { storedMulti = JSON.parse(sessionStorage.getItem('sinhala_draughts_multi_room') || 'null'); } catch(e){}
+ let storedAiCfg = null;
+ try { storedAiCfg = JSON.parse(sessionStorage.getItem('sinhala_draughts_ai_config') || 'null'); } catch(e){}
 
  gameMode = params.get('mode') || ((params.get('roomId') || (storedMulti && storedMulti.roomId)) ? 'multi' : 'single');
  const bet = Number(params.get('bet')) || (storedMulti && Number(storedMulti.bet)) || Number(sessionStorage.getItem('sinhala_draughts_bet')) || 0;
  window.currentBetPoints = bet;
  $('arenaBetDisplay').textContent = gameMode === 'freestyle' ? 'FREE' : bet;
+
+ aiNameLabel = params.get('aiName') || (storedAiCfg && storedAiCfg.name) || 'දාම් Master';
 
  const saved = localStorage.getItem(KEY);
  if(saved) { try { user = Object.assign(user, JSON.parse(saved)); } catch(e){} }
@@ -468,10 +694,12 @@ async function initGameFromURL(){
  const startByMode = async () => {
   if(gameMode === 'single' || gameMode === 'freestyle') {
    single = true; role = null; roomId = null;
+   aiMasterState = loadAiMasterState();
    $('p1name').textContent = user.name || 'ඔබ'; $('p1sub').textContent = 'Player';
-   $('p2name').textContent = 'AI පරිගණකය'; $('p2sub').textContent = 'AI';
+   $('p2name').textContent = aiNameLabel;
+   updateAiSubLabel();
    applyAvatarToBox('p1AvatarBox', user.pieceIndex||0, user.avatarIcon||'fa-user');
-   applyAvatarToBox('p2AvatarBox', 2, 'fa-robot');
+   applyAvatarToBox('p2AvatarBox', 2, 'fa-chess-king');
    initBoard();
   } else if(gameMode === 'multi') {
    single = false;
@@ -546,7 +774,7 @@ function initBoard(){
   playVoice("System online. Forest ambient active. Good luck!");
  }, 800);
 
- if(single && turn !== userSide) aiTimer = setTimeout(aiMove, 600);
+ if(single && turn !== userSide) aiTimer = setTimeout(aiMove, 450);
 }
 
 const inside=(r,c)=>r>=0&&r<8&&c>=0&&c<8;
@@ -664,7 +892,7 @@ async function playMove(m){
  if(followUps.length){
   forcedContinuation={r:m.toR,c:m.toC};turn=Math.sign(landed);render();processing=false;setTurnUI();
   if(!single && roomRef) syncMultiplayerState();
-  if(single&&turn!==userSide)aiTimer=setTimeout(aiMove,450);
+  if(single&&turn!==userSide)aiTimer=setTimeout(aiMove,400);
   return;
  }
 
@@ -676,7 +904,7 @@ async function playMove(m){
  }
  setTurnUI();
  if(!single && roomRef) syncMultiplayerState();
- if(single&&turn!==userSide)aiTimer=setTimeout(aiMove,500);
+ if(single&&turn!==userSide)aiTimer=setTimeout(aiMove,420);
 }
 
 function setTurnUI(){
@@ -697,7 +925,7 @@ function startTurnClock(deadline){
   if(remaining<=0){
    clearInterval(turnClockTimer);
    if(single&&turn===userSide){
-    turn=-userSide;selected=null;moves=[];render();setTurnUI();aiTimer=setTimeout(aiMove,350);
+    turn=-userSide;selected=null;moves=[];render();setTurnUI();aiTimer=setTimeout(aiMove,320);
    } else if(!single&&turn===userSide&&!gameOver){
     finish(-userSide,'ඔබගේ වාරයේ කාලය අවසන් විය.');
    }
@@ -712,14 +940,16 @@ function aiMove(){
  if(!legal.length)return finish(userSide,'AI පරිගණකයට Move නොමැත.');
  if(forcedContinuation)legal=pieceMoves(forcedContinuation.r,forcedContinuation.c).filter(m=>m.capture);
  if(!legal.length){forcedContinuation=null;legal=allMoves(aiSide);}
- const m=legal[Math.floor(Math.random()*legal.length)];
+
+ upgradeAiOnTurn();
+ const m=choosePlannedAiMove(legal, aiSide) || legal[0];
  lastMove = { fromR: m.fromR, fromC: m.fromC, toR: m.toR, toC: m.toC };
 
  const moving=board[m.fromR][m.fromC];
  applyMove(board,m);
  const landed=board[m.toR][m.toC];
- const followUps=m.capture&&Math.abs(landed)===Math.abs(moving)?pieceMoves(m.toR,m.toC).filter(x=>m.capture):[];
- if(followUps.length){forcedContinuation={r:m.toR,c:m.toC};turn=aiSide;render();setTurnUI();aiTimer=setTimeout(aiMove,450);return;}
+ const followUps=m.capture&&Math.abs(landed)===Math.abs(moving)?pieceMoves(m.toR,m.toC).filter(x=>x.capture):[];
+ if(followUps.length){forcedContinuation={r:m.toR,c:m.toC};turn=aiSide;render();setTurnUI();aiTimer=setTimeout(aiMove,380);return;}
  forcedContinuation=null;render();turn=userSide;
  if(!allMoves(userSide).length)finish(aiSide,'ඔබට නීත්‍යානුකූල Move නොමැත.');else setTurnUI();
 }
@@ -728,6 +958,10 @@ function finish(winner,message){
  if(gameOver)return;gameOver=true;clearInterval(aiTimer);clearInterval(turnClockTimer);
  const won=(winner===userSide);
  const bet=Number(window.currentBetPoints)||0;
+
+ if(single){
+  upgradeAiOnMatchEnd(!won);
+ }
 
  if(gameMode==='freestyle'){
   $('overPoints').textContent='පුහුණු තරඟය - Points වෙනස් නොවේ';
@@ -793,9 +1027,9 @@ function sendQuickChat(msg){
   }).catch(()=>{});
  } else {
   setTimeout(()=>{
-   const replies = ["Good game! 👍", "Epic move! 🔥", "Well played! 😊", "Interesting strategy! 🤔", "Your turn! ⚡"];
+   const replies = [`Lv.${aiMasterState.level} plan active! 👑`, "No easy wins here! 🔥", "Calculated move! ⚡", "Watching your trap! 🛡️", "Your turn! 🎯"];
    const replyText = replies[Math.floor(Math.random()*replies.length)];
-   appendChatMessage("AI: " + replyText, false);
+   appendChatMessage(`${aiNameLabel}: ${replyText}`, false);
    showOpponentThought(replyText);
   }, 900);
  }
