@@ -62,6 +62,45 @@ main{flex:1;display:flex;flex-direction:column;justify-content:center;align-item
 .mode-multi{background:linear-gradient(135deg,#0d7c48,#08a85c)}.mode-multi:after{content:'⚔️'}
 .mode-free{background:linear-gradient(135deg,#b36b00,#f19a00)}.mode-free:after{content:'🎯'}
 
+/* Home Popup Inbox Icon above bottom menu on the right */
+.home-inbox-fab{
+  position:fixed;
+  right:18px;
+  bottom:96px;
+  width:54px;
+  height:54px;
+  border-radius:50%;
+  border:2px solid var(--gold);
+  background:linear-gradient(135deg,#ffe08a,#ffad62);
+  color:#111;
+  font-size:1.3rem;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  z-index:95;
+  box-shadow:0 10px 24px rgba(0,0,0,0.65),0 0 18px rgba(255,209,102,0.35);
+  transition:transform 0.14s ease,box-shadow 0.14s ease;
+}
+.home-inbox-fab:hover{transform:scale(1.06)}
+.home-inbox-fab:active{transform:scale(0.94)}
+.home-inbox-badge{
+  position:absolute;
+  top:-4px;
+  right:-4px;
+  min-width:21px;
+  height:21px;
+  padding:0 5px;
+  border-radius:999px;
+  background:var(--red);
+  color:#fff;
+  border:2px solid #0d1326;
+  font-size:0.72rem;
+  font-weight:800;
+  display:none;
+  place-items:center;
+}
+.home-inbox-badge.show{display:grid}
+
 .bottom-nav{width:100%;min-height:66px;background:rgba(14,20,38,0.95);border:2px solid rgba(255,209,102,0.3);border-radius:24px;display:flex;align-items:center;justify-content:space-around;padding:6px 4px;backdrop-filter:blur(10px);box-shadow:0 10px 30px rgba(0,0,0,0.8)}
 .nav-item{background:none;border:0;color:#aab4c7;text-decoration:none;display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:0.72rem;font-weight:700;cursor:pointer;transition:color 0.12s ease,transform 0.12s ease}
 .nav-item:active{transform:scale(0.93)}
@@ -71,9 +110,47 @@ main{flex:1;display:flex;flex-direction:column;justify-content:center;align-item
 
 .modal{position:fixed;inset:0;background:rgba(3,5,12,0.85);backdrop-filter:blur(8px);display:none;place-items:center;z-index:100;padding:15px}
 .modal.show{display:grid}
+#homeInboxModal{z-index:160}
 #apkUpdateModal{z-index:220}
 .modalbox{width:min(100%,420px);background:linear-gradient(145deg,#121828,#1b243f);border:2px solid var(--gold);border-radius:24px;padding:22px;display:grid;gap:14px;max-height:85vh;overflow-y:auto;box-shadow:0 20px 40px rgba(0,0,0,0.8)}
 .modalbox h2,.modalbox h3{text-align:center;color:var(--gold);font-weight:700;font-size:1.2rem}
+
+.inbox-modal-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.inbox-storage-tag{font-size:0.75rem;font-weight:700;color:var(--neon-blue);background:rgba(0,242,254,0.12);border:1px solid rgba(0,242,254,0.3);padding:4px 9px;border-radius:999px}
+.inbox-msg-list{display:flex;flex-direction:column;gap:8px;max-height:50dvh;overflow-y:auto;padding-right:2px}
+.inbox-msg-item{background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,255,255,0.09);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:4px;cursor:pointer}
+.inbox-msg-item.unread{border-color:rgba(255,209,102,0.55);background:rgba(255,209,102,0.08)}
+.inbox-msg-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.inbox-msg-from{font-weight:800;font-size:0.92rem;color:#fff;display:flex;align-items:center;gap:6px}
+.inbox-unread-dot{width:8px;height:8px;border-radius:50%;background:var(--neon-green)}
+.inbox-msg-time{font-size:0.72rem;color:var(--dim)}
+.inbox-msg-text{font-size:0.88rem;color:#e2e8f0;line-height:1.35;word-break:break-word}
+.inbox-reply-row{display:flex;gap:8px}
+
+.msg-notif-banner{
+  position:fixed;
+  top:14px;
+  left:50%;
+  transform:translate(-50%,-160%);
+  width:min(92vw,430px);
+  background:linear-gradient(135deg,#17223b,#0c1324);
+  border:2px solid var(--neon-blue);
+  border-radius:18px;
+  padding:11px 14px;
+  display:flex;
+  align-items:center;
+  gap:11px;
+  z-index:210;
+  box-shadow:0 14px 32px rgba(0,0,0,0.75);
+  transition:transform 0.25s cubic-bezier(0.22,1,0.36,1);
+  cursor:pointer;
+}
+.msg-notif-banner.show{transform:translate(-50%,0)}
+.msg-notif-icon{width:36px;height:36px;border-radius:50%;background:rgba(0,242,254,0.16);border:1.5px solid var(--neon-blue);color:var(--neon-blue);display:grid;place-items:center;flex-shrink:0}
+.msg-notif-body{flex:1;min-width:0}
+.msg-notif-title{font-weight:800;font-size:0.9rem;color:#fff}
+.msg-notif-text{font-size:0.8rem;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
 .apk-badge{width:54px;height:54px;margin:0 auto;border-radius:50%;display:grid;place-items:center;background:rgba(46,204,113,0.16);border:2px solid var(--neon-green);color:var(--neon-green);font-size:1.5rem}
 .apk-version{text-align:center;font-weight:800;color:var(--neon-blue);font-size:0.92rem}
 .apk-notes{background:rgba(0,0,0,0.35);border-radius:14px;padding:10px 12px;color:#d1d8e0;font-size:0.9rem;line-height:1.45;text-align:center}
@@ -114,6 +191,14 @@ input:focus{border-color:var(--gold)}
 </style>
 </head>
 <body>
+<div class="msg-notif-banner" id="homeMsgNotif" role="alert">
+ <div class="msg-notif-icon"><i class="fa-solid fa-envelope"></i></div>
+ <div class="msg-notif-body">
+  <div class="msg-notif-title" id="homeMsgNotifTitle">නව Message එකක්</div>
+  <div class="msg-notif-text" id="homeMsgNotifText"></div>
+ </div>
+</div>
+
 <div class="page-sweep" id="pageSweep" aria-hidden="true"></div>
 <div class="app" id="appRoot">
  <div class="home-top" id="homeTop">
@@ -135,6 +220,11 @@ input:focus{border-color:var(--gold)}
   </section>
  </main>
 
+ <button type="button" class="home-inbox-fab" id="homeInboxFab" title="Inbox" aria-label="Inbox විවෘත කරන්න">
+  <i class="fa-solid fa-inbox"></i>
+  <span class="home-inbox-badge" id="homeInboxBadge">0</span>
+ </button>
+
  <footer class="bottom-nav" id="bottomNav">
   <a class="nav-item active" href="index.html" data-nav="index.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
   <a class="nav-item" href="friends.html" data-nav="friends.html"><i class="fa-solid fa-user-group"></i><span>Friends</span></a>
@@ -142,6 +232,24 @@ input:focus{border-color:var(--gold)}
   <a class="nav-item" href="event.html" id="navEvents" data-nav="event.html"><i class="fa-solid fa-trophy"></i><span>Events</span></a>
   <a class="nav-item" href="shopandreward.html" data-nav="shopandreward.html"><i class="fa-solid fa-cart-shopping"></i><span>Shop</span></a>
  </footer>
+</div>
+
+<!-- Home Popup Inbox Modal -->
+<div class="modal" id="homeInboxModal">
+ <div class="modalbox">
+  <div class="inbox-modal-head">
+   <h3><i class="fa-solid fa-inbox"></i> Messages</h3>
+   <span class="inbox-storage-tag" id="homeInboxStorage">0.00 MB / 2.00 MB</span>
+   <button type="button" class="btn" id="closeHomeInboxBtn" style="padding:6px 10px"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="inbox-msg-list" id="homeInboxList">
+   <div style="text-align:center;padding:20px;color:var(--dim)">Messages නොමැත.</div>
+  </div>
+  <div class="inbox-reply-row" id="homeReplyRow" style="display:none">
+   <input id="homeReplyInput" placeholder="පිළිතුර ලියන්න...">
+   <button type="button" class="btn-gold" id="homeSendReplyBtn"><i class="fa-solid fa-paper-plane"></i></button>
+  </div>
+ </div>
 </div>
 
 <div class="modal" id="singleBetModal">
@@ -231,6 +339,7 @@ const EVENT_MONTH_MS=30*24*60*60*1000;
 const BRIDGE_SLICE_BYTES=256*1024;
 const INSTALLED_APK_VERSION_KEY='sinhala_draughts_installed_apk_version';
 const INSTALLED_APK_CODE_KEY='sinhala_draughts_installed_apk_code';
+const MAX_INBOX_BYTES=2*1024*1024; // 2 MB
 
 let __liveDataNotifiedToAndroid=false;
 
@@ -254,11 +363,17 @@ function notifyAndroidLiveDataReady(){
 let auth,db,firestore,fbUser,isNavigating=false;
 let customPieces=[];
 let userRefListener=null;
+let inboxRefListener=null;
 let firestoreApkListenerAttached=false;
 let latestApkMeta=null;
 let isDownloadingApk=false;
 let isInstallCompleted=false;
 let lastTrackedPoints=null;
+let knownHomeMsgKeys=new Set();
+let isHomeInboxInitialLoad=true;
+let activeHomeReplyTarget=null;
+let homeNotifTimer=null;
+
 let user={
  name:'',
  points:500,
@@ -344,6 +459,151 @@ function syncEventWinCycle(currentPoints){
 function formatMb(bytes){
  return (Math.max(0, Number(bytes) || 0) / (1024 * 1024)).toFixed(2);
 }
+
+function getMsgBytes(msgObj){
+ return new TextEncoder().encode(JSON.stringify(msgObj || {})).length;
+}
+
+function showHomeMessageNotification(msg){
+ const banner=$('homeMsgNotif');
+ $('homeMsgNotifTitle').textContent=`නව Message: ${msg.fromName || 'Player'}`;
+ $('homeMsgNotifText').textContent=msg.text || '';
+ banner.classList.add('show');
+ if(homeNotifTimer)clearTimeout(homeNotifTimer);
+ homeNotifTimer=setTimeout(()=>banner.classList.remove('show'),4000);
+
+ if('Notification' in window && Notification.permission === 'granted'){
+  try{
+   new Notification(`Message - ${msg.fromName || 'Player'}`,{body:msg.text || ''});
+  }catch(_){}
+ }
+}
+
+if('Notification' in window && Notification.permission === 'default'){
+ Notification.requestPermission().catch(()=>{});
+}
+
+$('homeMsgNotif').onclick=()=>{
+ $('homeMsgNotif').classList.remove('show');
+ modal('homeInboxModal',true);
+};
+
+async function enforce2MbInboxLimit(uid, items){
+ let sorted=[...items].sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
+ let totalBytes=sorted.reduce((sum,item)=>sum+getMsgBytes(item.data),0);
+ while(totalBytes > MAX_INBOX_BYTES && sorted.length > 0){
+  const oldest=sorted.shift();
+  totalBytes-=getMsgBytes(oldest.data);
+  if(oldest && oldest.key && db){
+   await db.ref(`inbox_v6/${uid}/${oldest.key}`).remove().catch(()=>{});
+  }
+ }
+ return {sorted, totalBytes};
+}
+
+function renderHomeInbox(sortedItems, totalBytes){
+ $('homeInboxStorage').textContent=`${formatMb(totalBytes)} MB / 2.00 MB`;
+ const unreadCount=sortedItems.filter(m=>!m.data.read).length;
+ const badge=$('homeInboxBadge');
+ badge.textContent=String(unreadCount);
+ badge.classList.toggle('show', unreadCount > 0);
+
+ const listEl=$('homeInboxList');
+ listEl.innerHTML='';
+ const newestFirst=[...sortedItems].reverse();
+
+ if(!newestFirst.length){
+  listEl.innerHTML='<div style="text-align:center;padding:20px;color:var(--dim)">Messages නොමැත.</div>';
+  return;
+ }
+
+ newestFirst.forEach(item=>{
+  const d=item.data||{};
+  const timeStr=d.timestamp ? new Date(d.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '';
+  const row=document.createElement('div');
+  row.className=`inbox-msg-item ${d.read ? '' : 'unread'}`;
+  row.innerHTML=`
+   <div class="inbox-msg-top">
+    <span class="inbox-msg-from">${!d.read ? '<span class="inbox-unread-dot"></span>' : ''}${d.fromName || 'Player'}</span>
+    <span class="inbox-msg-time">${timeStr}</span>
+   </div>
+   <div class="inbox-msg-text">${d.text || ''}</div>
+  `;
+  row.onclick=async()=>{
+   if(!d.read && fbUser && db){
+    await db.ref(`inbox_v6/${fbUser.uid}/${item.key}/read`).set(true).catch(()=>{});
+   }
+   if(d.fromUid){
+    activeHomeReplyTarget={uid:d.fromUid, name:d.fromName || 'Player'};
+    $('homeReplyRow').style.display='flex';
+    $('homeReplyInput').placeholder=`${activeHomeReplyTarget.name} වෙත reply කරන්න...`;
+   }
+  };
+  listEl.appendChild(row);
+ });
+}
+
+function attachHomeInboxListener(uid){
+ if(!db||!uid)return;
+ if(inboxRefListener){
+  try{inboxRefListener.ref.off('value',inboxRefListener.fn);}catch(_){}
+  inboxRefListener=null;
+ }
+ isHomeInboxInitialLoad=true;
+ knownHomeMsgKeys=new Set();
+
+ const ref=db.ref('inbox_v6/'+uid);
+ const fn=async snap=>{
+  const raw=snap.val()||{};
+  const entries=Object.keys(raw).map(key=>({
+   key,
+   timestamp:Number(raw[key].timestamp)||0,
+   data:raw[key]
+  }));
+
+  if(!isHomeInboxInitialLoad){
+   entries.forEach(entry=>{
+    if(!knownHomeMsgKeys.has(entry.key) && entry.data.fromUid !== uid){
+     showHomeMessageNotification(entry.data);
+    }
+   });
+  }
+
+  knownHomeMsgKeys=new Set(entries.map(e=>e.key));
+  isHomeInboxInitialLoad=false;
+
+  const {sorted, totalBytes}=await enforce2MbInboxLimit(uid, entries);
+  renderHomeInbox(sorted, totalBytes);
+ };
+ ref.on('value',fn);
+ inboxRefListener={ref,fn};
+}
+
+$('homeInboxFab').onclick=()=>{
+ if(!fbUser && !user.uid){
+  modal('authModal',true);
+  return toast('කරුණාකර පළමුව ගිණුමට ඇතුළු වන්න.');
+ }
+ modal('homeInboxModal',true);
+};
+$('closeHomeInboxBtn').onclick=()=>modal('homeInboxModal',false);
+
+$('homeSendReplyBtn').onclick=async()=>{
+ if(!fbUser || !activeHomeReplyTarget || !activeHomeReplyTarget.uid || !db)return;
+ const txt=String($('homeReplyInput').value||'').trim();
+ if(!txt)return;
+ await db.ref('inbox_v6/'+activeHomeReplyTarget.uid).push().set({
+  fromUid:fbUser.uid,
+  fromName:user.name || 'Player',
+  toUid:activeHomeReplyTarget.uid,
+  toName:activeHomeReplyTarget.name,
+  text:txt,
+  read:false,
+  timestamp:Date.now()
+ });
+ $('homeReplyInput').value='';
+ toast(`${activeHomeReplyTarget.name} වෙත පිළිතුර යවන ලදී!`,'fa-paper-plane');
+};
 
 function toast(s, icon='fa-circle-info'){
  const t=$('toast');
@@ -704,6 +964,10 @@ $('resetAppBtn').onclick=async()=>{
    try{userRefListener.ref.off('value',userRefListener.fn);}catch(_){}
    userRefListener=null;
   }
+  if(inboxRefListener){
+   try{inboxRefListener.ref.off('value',inboxRefListener.fn);}catch(_){}
+   inboxRefListener=null;
+  }
   const savedInstalledVer=localStorage.getItem(INSTALLED_APK_VERSION_KEY);
   const savedInstalledCode=localStorage.getItem(INSTALLED_APK_CODE_KEY);
   localStorage.removeItem(KEY);
@@ -808,6 +1072,7 @@ function attachLiveUserListener(uid){
     }
     await loadSignedInUser();
     attachLiveUserListener(u.uid);
+    attachHomeInboxListener(u.uid);
 
     const userStatusRef = db.ref('status_v6/' + u.uid);
     db.ref('.info/connected').on('value', snapshot => {
@@ -819,6 +1084,10 @@ function attachLiveUserListener(uid){
     if(userRefListener){
      try{userRefListener.ref.off('value',userRefListener.fn);}catch(e){}
      userRefListener=null;
+    }
+    if(inboxRefListener){
+     try{inboxRefListener.ref.off('value',inboxRefListener.fn);}catch(e){}
+     inboxRefListener=null;
     }
     if(!user.uid){
      user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user',unlockedAvatars:['fa-user'],eventSeasonStart:Date.now(),eventSeasonNumber:1,monthlyWonCoins:0,hasProPass:false,claimedEventRewards:[]};
