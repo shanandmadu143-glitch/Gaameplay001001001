@@ -103,6 +103,7 @@ textarea:focus{border-color:var(--gold)}
 
 .btn{border:0;border-radius:12px;padding:10px 14px;cursor:pointer;font-weight:700;display:inline-flex;align-items:center;gap:6px;justify-content:center;background:rgba(255,255,255,0.1);color:white;border:1px solid rgba(255,255,255,0.2)}
 .btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;box-shadow:0 4px 15px rgba(255,173,98,0.4);border:0;border-radius:12px;padding:10px 14px;cursor:pointer;font-weight:700}
+button:disabled{opacity:0.6;cursor:not-allowed}
 
 #toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,120px);opacity:0;background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--gold);color:#f8f9fa;border-radius:30px;padding:10px 20px;z-index:150;transition:.3s;font-weight:600;display:flex;align-items:center;gap:8px;font-size:0.9rem;max-width:92vw}
 #toast.show{transform:translate(-50%,0);opacity:1}
@@ -213,6 +214,7 @@ sessionStorage.setItem('sinhala_draughts_bet', String(currentBet));
 let activeInviteWatcher=null;
 let isNavigating=false;
 let selectedPlayer=null;
+let isSendingMsg=false;
 
 const PIECE_DESIGNS=[
  {id:0,name:'මුතු සුදු (Default)',bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●'},
@@ -250,7 +252,7 @@ function toast(s, icon='fa-circle-info'){
  const textEl=document.createElement('span');textEl.textContent=String(s);
  t.append(iconEl,textEl);
  t.classList.add('show');
- setTimeout(()=>t.classList.remove('show'),3000);
+ setTimeout(()=>t.classList.remove('show'),3400);
 }
 function modal(id,on){$(id).classList.toggle('show',on);}
 
@@ -275,7 +277,7 @@ auth.onAuthStateChanged(async u=>{
    const snap=await db.ref('users_v6/'+u.uid).once('value');
    const d=snap.val();
    if(d) {
-    user={name:d.name,points:Number(d.points)||500,wins:Number(d.wins)||0,losses:Number(d.losses)||0,uid:u.uid,pieceIndex:Number(d.pieceIndex)||0,avatarIcon:d.avatarIcon||'fa-user'};
+    user={name:d.name||(u.email||'').split('@')[0]||'Player',points:Number(d.points)||500,wins:Number(d.wins)||0,losses:Number(d.losses)||0,uid:u.uid,pieceIndex:Number(d.pieceIndex)||0,avatarIcon:d.avatarIcon||'fa-user'};
    } else {
     user.name = (u.email||'').split('@')[0] || 'Player';
     user.uid = u.uid;
@@ -362,55 +364,102 @@ function openPlayerProfile(playerObj) {
 $('closePlayerProfileBtn').onclick = () => modal('playerProfileModal', false);
 
 $('vpCallBtn').onclick = async () => {
- if (!selectedPlayer || !fbUser || !db) return;
+ if (!selectedPlayer || !selectedPlayer.uid) return toast('ක්‍රීඩක තොරතුරු හමු නොවීය.');
+ const senderUid = (fbUser && fbUser.uid) || user.uid || 'guest';
+ const senderName = user.name || (fbUser && fbUser.email ? fbUser.email.split('@')[0] : 'Player');
+ const callPayload = {
+  fromUid: senderUid,
+  fromName: senderName,
+  fromAvatar: user.avatarIcon || 'fa-user',
+  toUid: selectedPlayer.uid,
+  toName: selectedPlayer.name,
+  status: 'ringing',
+  timestamp: Date.now()
+ };
+
  try {
-  const callRef = db.ref('calls_v6/' + selectedPlayer.uid).push();
-  await callRef.set({
-   fromUid: fbUser.uid,
-   fromName: user.name,
-   fromAvatar: user.avatarIcon || 'fa-user',
-   toUid: selectedPlayer.uid,
-   toName: selectedPlayer.name,
-   status: 'ringing',
-   timestamp: Date.now()
-  });
+  if (db) {
+   await db.ref('calls_v6/' + selectedPlayer.uid).push().set(callPayload);
+  }
   toast(`${selectedPlayer.name} වෙත Call එකක් යවන ලදී...`, 'fa-phone');
  } catch (e) {
   console.error('Call error:', e);
-  toast('Call එක යැවීමට නොහැකි විය.', 'fa-circle-exclamation');
+  toast(`Call දෝෂය: ${e.code || e.message || 'Permission denied'}`, 'fa-circle-exclamation');
  }
 };
 
 $('vpMessageBtn').onclick = () => {
- if (!selectedPlayer) return;
+ if (!selectedPlayer || !selectedPlayer.uid) return toast('ක්‍රීඩක තොරතුරු හමු නොවීය.');
  $('msgModalTitle').textContent = `${selectedPlayer.name} වෙත Message`;
  $('directMsgInput').value = '';
  modal('directMsgModal', true);
+ setTimeout(() => $('directMsgInput').focus(), 60);
 };
 
-$('cancelDirectMsgBtn').onclick = () => modal('directMsgModal', false);
+$('cancelDirectMsgBtn').onclick = () => {
+ if (!isSendingMsg) modal('directMsgModal', false);
+};
+
+function saveLocalInboxFallback(targetUid, payload) {
+ try {
+  const key = 'sinhala_draughts_inbox_local_' + targetUid;
+  const existing = JSON.parse(localStorage.getItem(key) || '[]');
+  const arr = Array.isArray(existing) ? existing : [];
+  arr.push({ key: 'local_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7), timestamp: payload.timestamp, data: payload });
+  localStorage.setItem(key, JSON.stringify(arr));
+  try {
+   const ch = new BroadcastChannel('sinhala_draughts_inbox_channel');
+   ch.postMessage({ targetUid, payload });
+   ch.close();
+  } catch (_) {}
+ } catch (_) {}
+}
 
 $('sendDirectMsgBtn').onclick = async () => {
- if (!selectedPlayer || !fbUser || !db) return;
+ if (isSendingMsg) return;
+ if (!selectedPlayer || !selectedPlayer.uid) {
+  return toast('ක්‍රීඩකයා තෝරාගෙන නොමැත.', 'fa-circle-exclamation');
+ }
  const text = String($('directMsgInput').value || '').trim();
- if (!text) return toast('කරුණාකර message එකක් ලියන්න.');
+ if (!text) {
+  return toast('කරුණාකර message එකක් ලියන්න.');
+ }
+
+ const senderUid = (fbUser && fbUser.uid) || user.uid || '';
+ const senderName = user.name || (fbUser && fbUser.email ? fbUser.email.split('@')[0] : 'Player');
+ const payload = {
+  fromUid: senderUid,
+  fromName: senderName,
+  fromAvatar: user.avatarIcon || 'fa-user',
+  toUid: selectedPlayer.uid,
+  toName: selectedPlayer.name,
+  text: text,
+  read: false,
+  timestamp: Date.now()
+ };
+
+ isSendingMsg = true;
+ $('sendDirectMsgBtn').disabled = true;
+
  try {
-  const payload = {
-   fromUid: fbUser.uid,
-   fromName: user.name,
-   fromAvatar: user.avatarIcon || 'fa-user',
-   toUid: selectedPlayer.uid,
-   toName: selectedPlayer.name,
-   text: text,
-   read: false,
-   timestamp: Date.now()
-  };
-  await db.ref('inbox_v6/' + selectedPlayer.uid).push().set(payload);
+  if (!db) {
+   throw new Error('Database සම්බන්ධ වී නොමැත.');
+  }
+  const msgRef = db.ref('inbox_v6/' + selectedPlayer.uid).push();
+  await msgRef.set(payload);
+  saveLocalInboxFallback(selectedPlayer.uid, payload);
+
+  $('directMsgInput').value = '';
   modal('directMsgModal', false);
   toast(`${selectedPlayer.name} වෙත Message එක යවන ලදී!`, 'fa-paper-plane');
  } catch (e) {
   console.error('Send message error:', e);
-  toast('Message එක යැවීමට නොහැකි විය.', 'fa-circle-exclamation');
+  saveLocalInboxFallback(selectedPlayer.uid, payload);
+  const reason = e && (e.code || e.message) ? ` (${e.code || e.message})` : '';
+  toast(`Message යැවීමේ ගැටලුව${reason}`, 'fa-circle-exclamation');
+ } finally {
+  isSendingMsg = false;
+  $('sendDirectMsgBtn').disabled = false;
  }
 };
 
