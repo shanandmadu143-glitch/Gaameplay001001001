@@ -11,6 +11,7 @@
 html,body{width:100%;height:100%;background:radial-gradient(circle at 50% 15%,rgba(255,159,28,0.2) 0%,rgba(42,20,76,0.9) 38%,#080c1c 72%,#03050a 100%);color:#f8f9fa;overflow:hidden}
 body{min-height:100dvh;display:flex;flex-direction:column;justify-content:center;align-items:center}
 
+/* Incoming Message Notification Banner */
 .msg-notif-banner{
  position:fixed;top:14px;left:50%;transform:translate3d(-50%,-150%,0);
  width:min(92vw,440px);background:linear-gradient(135deg,#182442,#0c1324);
@@ -37,9 +38,7 @@ body{min-height:100dvh;display:flex;flex-direction:column;justify-content:center
 
 main{flex:1;display:flex;flex-direction:column;width:100%;margin:8px 0;overflow:hidden}
 .inbox-panel{width:100%;height:100%;display:flex;flex-direction:column;gap:10px;padding:14px;background:linear-gradient(145deg,rgba(19,26,48,0.94),rgba(10,14,26,0.97));border:2px solid rgba(255,209,102,0.34);border-radius:24px;overflow:hidden}
-.inbox-top-bar{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.inbox-top-bar h2{color:var(--gold);font-size:1.2rem}
-.storage-pill{font-size:0.75rem;color:var(--neon-blue);background:rgba(0,242,254,0.1);border:1px solid rgba(0,242,254,0.35);padding:3px 9px;border-radius:999px;font-weight:700}
+.inbox-panel h2{text-align:center;color:var(--gold);font-size:1.25rem}
 
 .chat-stream{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:6px;background:rgba(0,0,0,0.28);border-radius:16px}
 .bubble{max-width:82%;padding:9px 13px;border-radius:14px;font-size:0.9rem;word-break:break-word}
@@ -53,6 +52,7 @@ input{flex:1;padding:10px 14px;background:rgba(0,0,0,0.5);border:1.5px solid rgb
 .btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111}
 .btn{background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2)}
 
+/* Popup Inbox Floating Icon Above Bottom Menu (Right Side - ONLY in inbox.html) */
 .floating-inbox-btn{
  position:fixed;right:20px;bottom:92px;width:54px;height:54px;border-radius:50%;
  border:2px solid var(--gold);background:linear-gradient(135deg,#ffd166,#ff9f1c);
@@ -92,6 +92,7 @@ input{flex:1;padding:10px 14px;background:rgba(0,0,0,0.5);border:1.5px solid rgb
 </head>
 <body>
 
+<!-- Incoming Message Notification -->
 <div class="msg-notif-banner" id="msgNotifBanner" role="alert">
  <div class="msg-notif-icon"><i class="fa-solid fa-envelope"></i></div>
  <div class="msg-notif-body">
@@ -111,10 +112,7 @@ input{flex:1;padding:10px 14px;background:rgba(0,0,0,0.5);border:1.5px solid rgb
 
  <main>
   <section class="inbox-panel">
-   <div class="inbox-top-bar">
-    <h2 id="chatWithTitle"><i class="fa-solid fa-inbox"></i> Messages Inbox</h2>
-    <span class="storage-pill" id="inboxSizeBadge">0.00 / 2.00 MB</span>
-   </div>
+   <h2 id="chatWithTitle"><i class="fa-solid fa-inbox"></i> Messages Inbox</h2>
    <div class="chat-stream" id="chatStream"></div>
    <div class="send-bar">
     <input id="msgInput" placeholder="පණිවිඩයක් ලියන්න..." autocomplete="off">
@@ -123,6 +121,7 @@ input{flex:1;padding:10px 14px;background:rgba(0,0,0,0.5);border:1.5px solid rgb
   </section>
  </main>
 
+ <!-- Popup Inbox Icon Above Bottom Menu (Right Side) -->
  <button class="floating-inbox-btn" id="openPopupInboxBtn" title="Popup Inbox">
   <i class="fa-solid fa-envelope-open-text"></i>
   <span class="floating-badge" id="popupInboxBadge">0</span>
@@ -137,10 +136,11 @@ input{flex:1;padding:10px 14px;background:rgba(0,0,0,0.5);border:1.5px solid rgb
  </footer>
 </div>
 
+<!-- Popup Inbox Modal -->
 <div class="popup-inbox-modal" id="popupInboxModal" role="dialog" aria-modal="true">
  <div class="popup-inbox-box">
   <div style="display:flex;justify-content:space-between;align-items:center">
-   <h3 style="color:var(--gold)">ක්‍රීඩකයන් එවන Messages (Max 2MB)</h3>
+   <h3 style="color:var(--gold)">ක්‍රීඩකයන් එවන Messages</h3>
    <button class="btn" id="closePopupInboxBtn" style="padding:5px 10px">✕</button>
   </div>
   <div class="popup-inbox-list" id="popupInboxList">
@@ -156,82 +156,12 @@ input{flex:1;padding:10px 14px;background:rgba(0,0,0,0.5);border:1.5px solid rgb
 'use strict';
 const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
 const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user';
-const MAX_INBOX_BYTES = 2 * 1024 * 1024; // 2MB limit for received messages
 
-let auth,db,fbUser,notifTimer=null,unreadCount=0,isPruning=false;
+let auth,db,fbUser,notifTimer=null,unreadCount=0;
 let user={name:'ක්‍රීඩකයා',points:500,uid:null};
 let activePeerUid='';
 let activePeerName='';
-let allIncomingMessages=[];
-
-function getRecordBytes(val){
- try{
-  return new Blob([JSON.stringify(val||{})]).size;
- }catch(_){
-  return String(val?.text||'').length * 2;
- }
-}
-
-function updateStorageBadge(totalBytes){
- const mb=(Math.max(0, totalBytes) / (1024 * 1024)).toFixed(2);
- const badge=$('inboxSizeBadge');
- if(badge)badge.textContent=`${mb} / 2.00 MB`;
-}
-
-/**
- * Keeps received messages (toUid === myUid) within 2MB.
- * Oldest messages are deleted from Firebase when total size exceeds 2MB.
- */
-async function enforce2MbInboxLimit(myUid){
- if(!db || !myUid || isPruning)return;
- isPruning=true;
- try{
-  const snap=await db.ref('directMessages_v6').orderByChild('timestamp').once('value');
-  if(!snap.exists()){
-   allIncomingMessages=[];
-   updateStorageBadge(0);
-   return;
-  }
-
-  const receivedEntries=[];
-  snap.forEach(child=>{
-   const val=child.val()||{};
-   if(val.toUid === myUid && val.fromUid !== myUid){
-    receivedEntries.push({
-     key:child.key,
-     data:val,
-     bytes:getRecordBytes(val),
-     ts:Number(val.timestamp)||0
-    });
-   }
-  });
-
-  receivedEntries.sort((a,b)=>a.ts - b.ts);
-
-  let totalBytes=receivedEntries.reduce((acc, item)=>acc + item.bytes, 0);
-  const kept=[];
-
-  // Remove oldest messages while total exceeds 2MB
-  let idx=0;
-  while(totalBytes > MAX_INBOX_BYTES && idx < receivedEntries.length){
-   const oldest=receivedEntries[idx++];
-   totalBytes -= oldest.bytes;
-   await db.ref('directMessages_v6/'+oldest.key).remove().catch(()=>{});
-  }
-
-  for(let i=idx;i<receivedEntries.length;i++){
-   kept.push(receivedEntries[i].data);
-  }
-
-  allIncomingMessages=kept;
-  updateStorageBadge(totalBytes);
-  renderPopupInboxList();
- }catch(e){
-  console.error('2MB inbox cleanup error:',e);
- }finally{
-  isPruning=false;
- }
-}
+const allIncomingMessages=[];
 
 function showIncomingMessageNotification(senderName, text, senderUid){
  const banner=$('msgNotifBanner');
@@ -267,7 +197,7 @@ function renderPopupInboxList(){
  const list=$('popupInboxList');
  list.innerHTML='';
  if(!allIncomingMessages.length){
-  list.innerHTML='<small style="color:var(--dim);text-align:center">තවම messages ලැබී නොමැත (2MB සීමාව ඇතුළත).</small>';
+  list.innerHTML='<small style="color:var(--dim);text-align:center">තවම messages ලැබී නොමැත.</small>';
   return;
  }
  const latestBySender=new Map();
@@ -304,7 +234,7 @@ function loadConversation(){
  stream.innerHTML='';
  if(!db || !fbUser)return;
 
- db.ref('directMessages_v6').orderByChild('timestamp').limitToLast(80).once('value').then(snap=>{
+ db.ref('directMessages_v6').limitToLast(60).once('value').then(snap=>{
   stream.innerHTML='';
   if(!snap.exists())return;
   snap.forEach(child=>{
@@ -366,13 +296,13 @@ try{
   $('headerName').textContent=user.name||'ක්‍රීඩකයා';
   $('points').textContent=user.points ?? 500;
 
-  await enforce2MbInboxLimit(u.uid);
   loadConversation();
 
-  db.ref('directMessages_v6').limitToLast(40).on('child_added', async snap=>{
+  db.ref('directMessages_v6').limitToLast(40).on('child_added', snap=>{
    const m=snap.val()||{};
    if(m.toUid===u.uid && m.fromUid!==u.uid){
-    await enforce2MbInboxLimit(u.uid);
+    allIncomingMessages.push(m);
+    renderPopupInboxList();
     if((Number(m.timestamp)||0) >= startTime - 2000){
      unreadCount += 1;
      updateUnreadBadge();
