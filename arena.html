@@ -2,7 +2,7 @@
 <html lang="si">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>ශ්‍රී ලංකීය දාම් - Top 3D Arena</title>
+<title>ශ්‍රී ලංකීය දාම් - 3D UI & Pieces Arena</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Gemunu+Libre:wght@400;600;700;800&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -24,41 +24,70 @@ body{
   width: 100vw; height: 100dvh;
   padding: env(safe-area-inset-top, 12px) 14px env(safe-area-inset-bottom, 14px) 14px;
   display: flex; flex-direction: column; justify-content: space-between; align-items: center; position: relative; overflow: hidden;
+  perspective: 1100px;
 }
 
+/* 3D Top Header */
 .arena-top-header {
   display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; width: 100%; max-width: 520px;
-  background: rgba(10, 25, 15, 0.85); padding: 9px 14px; border-radius: 20px; border: 1.5px solid rgba(46, 204, 113, 0.4); box-shadow: 0 6px 20px rgba(0,0,0,0.6); margin-top: 4px;
-  backdrop-filter: blur(6px); z-index: 10;
+  background: linear-gradient(180deg, rgba(18, 46, 29, 0.94), rgba(8, 21, 13, 0.96));
+  padding: 9px 14px; border-radius: 20px;
+  border-top: 2px solid rgba(110, 231, 183, 0.55);
+  border-left: 1px solid rgba(46, 204, 113, 0.35);
+  border-right: 1px solid rgba(46, 204, 113, 0.35);
+  border-bottom: 5px solid #040d07;
+  box-shadow: 0 12px 24px rgba(0,0,0,0.72), inset 0 1px 0 rgba(255,255,255,0.14);
+  transform: rotateX(4deg);
+  margin-top: 4px; backdrop-filter: blur(6px); z-index: 10;
 }
-.arena-player-card { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 3px; position: relative; }
-.arena-avatar-box { width: 46px; height: 46px; border-radius: 50%; border: 2px solid #2ecc71; background: #0f2b1c; display: grid; place-items: center; font-size: 1.25rem; color: #2ecc71; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; }
-.arena-player-card.active .arena-avatar-box { border-color: #ffd166; box-shadow: 0 0 20px rgba(255, 209, 102, 0.8); transform: scale(1.08); }
-.arena-player-card b { font-size: 0.88rem; color: #fff; max-width: 105px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.arena-player-card { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 3px; position: relative; transition: transform 0.2s; }
+.arena-avatar-box {
+  width: 46px; height: 46px; border-radius: 50%;
+  border: 2px solid #2ecc71; border-bottom: 4px solid #092214;
+  background: #0f2b1c; display: grid; place-items: center; font-size: 1.25rem; color: #2ecc71; overflow: hidden;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.6), inset 0 2px 4px rgba(255,255,255,0.22);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.arena-player-card.active .arena-avatar-box {
+  border-color: #ffd166; border-bottom-color: #996c00;
+  box-shadow: 0 0 20px rgba(255, 209, 102, 0.85), 0 8px 16px rgba(0,0,0,0.7);
+  transform: translateY(-3px) scale(1.08);
+}
+.arena-player-card b { font-size: 0.88rem; color: #fff; max-width: 105px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
 .arena-player-card small { font-size: 0.7rem; color: #a0aec0; }
 
-.arena-coins-center { display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(46, 204, 113, 0.12); padding: 6px 15px; border-radius: 16px; border: 1px solid rgba(46, 204, 113, 0.35); }
-.arena-coins-center i { font-size: 1.2rem; color: #2ecc71; }
-.arena-coins-center b { font-size: 0.98rem; color: #fff; }
+.arena-coins-center {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: linear-gradient(180deg, rgba(46, 204, 113, 0.22), rgba(15, 55, 30, 0.35));
+  padding: 6px 15px; border-radius: 16px;
+  border-top: 1px solid rgba(167, 243, 208, 0.45);
+  border-bottom: 3px solid rgba(5, 25, 14, 0.9);
+  box-shadow: 0 5px 12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.15);
+}
+.arena-coins-center i { font-size: 1.2rem; color: #ffd166; text-shadow: 0 2px 6px rgba(0,0,0,0.6); }
+.arena-coins-center b { font-size: 0.98rem; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.7); }
 
+/* 3D Mid Voice Bar */
 .mid-voice-bar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  background: rgba(10, 25, 15, 0.72);
-  padding: 5px 16px;
-  border-radius: 26px;
-  border: 1px solid rgba(46, 204, 113, 0.32);
-  backdrop-filter: blur(5px);
-  margin: 4px 0;
-  z-index: 10;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  background: linear-gradient(180deg, rgba(16, 40, 26, 0.88), rgba(7, 19, 12, 0.94));
+  padding: 5px 16px; border-radius: 26px;
+  border-top: 1px solid rgba(110, 231, 183, 0.35);
+  border-bottom: 4px solid #040d07;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.6);
+  transform: rotateX(3deg);
+  backdrop-filter: blur(5px); margin: 4px 0; z-index: 10;
 }
 .arena-voice-mic-btn {
-  width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--red);
-  background: rgba(255, 71, 87, 0.2); color: var(--red); font-size: 0.95rem;
-  display: grid; place-items: center; cursor: pointer; transition: all 0.2s; flex-shrink: 0;
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 2px solid var(--red); border-bottom: 4px solid #7f121d;
+  background: linear-gradient(180deg, rgba(255, 95, 109, 0.32), rgba(180, 25, 40, 0.35));
+  color: #ff8a95; font-size: 0.95rem;
+  display: grid; place-items: center; cursor: pointer;
+  box-shadow: 0 5px 10px rgba(0,0,0,0.55), inset 0 1px 2px rgba(255,255,255,0.25);
+  transition: all 0.15s;
 }
+.arena-voice-mic-btn:active { transform: translateY(2px); border-bottom-width: 2px; }
 .arena-voice-mic-btn.active-rec {
   background: var(--red); color: #fff; border-color: var(--red);
   animation: pulseRec 1s infinite;
@@ -68,17 +97,16 @@ body{
   70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(255, 71, 87, 0); }
   100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
 }
-.mid-voice-label {
-  font-size: 0.76rem;
-  color: #cbd5e1;
-  font-weight: 600;
-}
+.mid-voice-label { font-size: 0.76rem; color: #cbd5e1; font-weight: 600; }
 
+/* 3D Thought Bubble */
 .thought-bubble {
   position: absolute; top: 74px; left: 50%; transform: translateX(-50%) scale(0);
-  background: rgba(14, 20, 38, 0.95); border: 2px solid var(--neon-blue); color: #fff;
+  background: linear-gradient(180deg, rgba(20, 30, 56, 0.98), rgba(10, 15, 30, 0.98));
+  border: 2px solid var(--neon-blue); border-bottom: 4px solid #007b82; color: #fff;
   padding: 6px 12px; border-radius: 14px; font-size: 0.78rem; white-space: nowrap; max-width: 160px;
-  overflow: hidden; text-overflow: ellipsis; box-shadow: 0 4px 20px rgba(0,242,254,0.5);
+  overflow: hidden; text-overflow: ellipsis;
+  box-shadow: 0 8px 22px rgba(0,242,254,0.45), 0 6px 14px rgba(0,0,0,0.75);
   z-index: 50; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none;
 }
 .thought-bubble.show { transform: translateX(-50%) scale(1); }
@@ -95,93 +123,179 @@ body{
   100% { border-color: #ff4757; box-shadow: 0 0 24px rgba(255, 71, 87, 0.65), inset 0 0 12px rgba(255, 71, 87, 0.35); }
 }
 
+/* Flat 2D Draughts Board + 3D Pieces Overlay */
 .board-wrap { 
   width: min(92vw, 54vh, 430px); aspect-ratio: 1; position: relative; margin: auto; 
   background: linear-gradient(135deg, rgba(16, 40, 26, 0.92), rgba(7, 18, 12, 0.96)); padding: 8px; border-radius: 24px; 
   border: 3px solid #2ecc71; animation: rgbGlow 6s linear infinite;
-  box-shadow: 0 16px 38px rgba(0,0,0,0.85);
-  overflow: hidden;
+  box-shadow: 0 14px 30px rgba(0,0,0,0.8);
 }
-
-#threeStage {
+.board-stage {
   position: relative;
   width: 100%;
   height: 100%;
-  border-radius: 16px;
+  border-radius: 12px;
   overflow: hidden;
-  cursor: pointer;
-  touch-action: manipulation;
+  border: 2px solid #07140c;
 }
-#threeStage canvas {
+.board {
+  display: grid;
+  width: 100%; height: 100%;
+  grid-template-columns: repeat(8,1fr); grid-template-rows: repeat(8,1fr);
+}
+.sq { display: grid; place-items: center; position: relative; cursor: pointer; touch-action: manipulation; }
+.sq.light { background: #e8d7be; }
+.sq.dark { background: #4a2e18; }
+.sq.selected { background: #ffd166 !important; }
+.sq.target:after { content:''; width:32%; height:32%; border-radius:50%; background:#2ecc71; pointer-events:none; z-index:3; }
+.sq.capture:after { content:''; width:42%; height:42%; border-radius:50%; background:#ff4757; pointer-events:none; z-index:3; }
+.sq.last-move-from { background: rgba(255, 165, 2, 0.35) !important; }
+.sq.last-move-to { background: rgba(0, 242, 254, 0.35) !important; border: 2px dashed var(--neon-blue); }
+
+/* 3D Pieces Canvas Overlay on Flat 2D Board */
+#pieces3DOverlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 4;
+}
+#pieces3DOverlay canvas {
   display: block;
   width: 100% !important;
   height: 100% !important;
 }
 
-.board {
-  display: none;
-  width: 100%; height: 100%;
-  grid-template-columns: repeat(8,1fr); grid-template-rows: repeat(8,1fr);
-  border-radius: 12px; overflow: hidden; border: 2px solid #07140c;
-}
-.board-wrap.fallback-2d .board { display: grid; }
-.board-wrap.fallback-2d #threeStage { display: none; }
-
-.sq { display: grid; place-items: center; position: relative; cursor: pointer; touch-action: manipulation; }
-.sq.light { background: #e8d7be; }
-.sq.dark { background: #4a2e18; }
-.sq.selected { background: #ffd166 !important; }
-.sq.target:after { content:''; width:32%; height:32%; border-radius:50%; background:#2ecc71; }
-.sq.capture:after { content:''; width:42%; height:42%; border-radius:50%; background:#ff4757; }
-.sq.last-move-from { background: rgba(255, 165, 2, 0.35) !important; }
-.sq.last-move-to { background: rgba(0, 242, 254, 0.35) !important; border: 2px dashed var(--neon-blue); }
+/* Fallback 2D piece styling if WebGL is unavailable */
+.board-stage.fallback-3d-pieces #pieces3DOverlay { display: none; }
 .piece { width: 82%; height: 82%; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.7); display: grid; place-items: center; font-size: 1.15rem; position: relative; }
 .king:after { content:'♛'; font-size: clamp(13px,3.2vw,19px); position: absolute; bottom: 2px; right: 2px; color: #ffd166; }
 
-.arena-bottom-bar { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 520px; padding: 4px 10px; margin-bottom: 2px; z-index: 10; }
+/* 3D Bottom Bar & Controls */
+.arena-bottom-bar {
+  display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 520px;
+  padding: 6px 14px; margin-bottom: 2px; z-index: 10;
+  background: linear-gradient(180deg, rgba(16, 40, 26, 0.85), rgba(7, 19, 12, 0.92));
+  border-radius: 26px;
+  border-top: 1px solid rgba(110, 231, 183, 0.3);
+  border-bottom: 4px solid #040d07;
+  box-shadow: 0 10px 22px rgba(0,0,0,0.72);
+  transform: rotateX(4deg);
+}
 #clockPanel { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
-#clockRing { --progress: 100; width: 50px; height: 50px; border-radius: 50%; display: grid; place-items: center; position: relative; background: conic-gradient(#2ecc71 calc(var(--progress)*1%), rgba(255,255,255,0.12) 0); }
-#clockRing:before { content: ''; position: absolute; inset: 5px; border-radius: 50%; background: #0b1f13; border: 1px solid rgba(255,255,255,0.2); }
-#turnClock { position: relative; z-index: 1; font-size: 1.1rem; font-weight: 800; color: #2ecc71; }
-#clockCaption { font-size: 0.74rem; color: #2ecc71; font-weight: 700; }
+#clockRing {
+  --progress: 100; width: 50px; height: 50px; border-radius: 50%; display: grid; place-items: center; position: relative;
+  background: conic-gradient(#2ecc71 calc(var(--progress)*1%), rgba(255,255,255,0.12) 0);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.65), 0 0 12px rgba(46,204,113,0.25);
+}
+#clockRing:before {
+  content: ''; position: absolute; inset: 5px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #173d26, #07140c);
+  border: 1px solid rgba(255,255,255,0.22);
+  box-shadow: inset 0 2px 5px rgba(255,255,255,0.15), inset 0 -3px 6px rgba(0,0,0,0.8);
+}
+#turnClock { position: relative; z-index: 1; font-size: 1.1rem; font-weight: 800; color: #2ecc71; text-shadow: 0 2px 4px rgba(0,0,0,0.85); }
+#clockCaption { font-size: 0.74rem; color: #2ecc71; font-weight: 700; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
 #clockRing.urgent #turnClock { color: var(--red); }
 
-.arena-circle-btn { width: 46px; height: 46px; border-radius: 50%; border: 2px solid #2ecc71; background: linear-gradient(135deg, #2ecc71, #27ae60); color: #0b1f13; font-size: 1.2rem; display: grid; place-items: center; cursor: pointer; position: relative; }
-.arena-circle-btn.close-btn { border-color: #ff6b81; background: linear-gradient(135deg, #ff4757, #c0392b); color: #fff; }
+.arena-circle-btn {
+  width: 46px; height: 46px; border-radius: 50%;
+  border: 2px solid #5eead4; border-bottom: 5px solid #14532d;
+  background: linear-gradient(180deg, #34d399, #15803d); color: #05140b; font-size: 1.2rem;
+  display: grid; place-items: center; cursor: pointer; position: relative;
+  box-shadow: 0 7px 14px rgba(0,0,0,0.65), inset 0 2px 3px rgba(255,255,255,0.45);
+  transition: transform 0.14s, border-bottom-width 0.14s;
+}
+.arena-circle-btn:active { transform: translateY(3px); border-bottom-width: 2px; }
+.arena-circle-btn.close-btn {
+  border-color: #fda4af; border-bottom-color: #7f1d1d;
+  background: linear-gradient(180deg, #ff5c6c, #b91c1c); color: #fff;
+}
 .chat-badge {
   position: absolute; top: -4px; right: -4px; background: var(--red); color: #fff; font-size: 0.65rem;
   width: 18px; height: 18px; border-radius: 50%; display: none; place-items: center; font-weight: bold;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.6);
 }
 
-.chat-drawer { position: fixed; top: 0; right: -100%; width: min(85vw, 310px); height: 100dvh; background: rgba(10, 25, 15, 0.98); border-left: 2px solid #2ecc71; z-index: 95; display: flex; flex-direction: column; transition: right 0.3s ease; }
+/* 3D Chat Drawer */
+.chat-drawer {
+  position: fixed; top: 0; right: -100%; width: min(85vw, 310px); height: 100dvh;
+  background: linear-gradient(180deg, rgba(14, 34, 21, 0.98), rgba(6, 15, 9, 0.99));
+  border-left: 3px solid #2ecc71;
+  box-shadow: -14px 0 34px rgba(0,0,0,0.85);
+  z-index: 95; display: flex; flex-direction: column; transition: right 0.3s ease;
+}
 .chat-drawer.open { right: 0; }
-.chat-header { padding: 14px; background: rgba(0,0,0,0.4); border-bottom: 1px solid rgba(46, 204, 113, 0.2); display: flex; justify-content: space-between; align-items: center; color: #2ecc71; }
+.chat-header { padding: 14px; background: rgba(0,0,0,0.45); border-bottom: 1px solid rgba(46, 204, 113, 0.25); display: flex; justify-content: space-between; align-items: center; color: #2ecc71; }
 .chat-body { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-.chat-msg { background: rgba(255,255,255,0.06); padding: 7px 11px; border-radius: 10px; font-size: 0.85rem; max-width: 85%; word-break: break-word; user-select: text; }
-.chat-msg.me { align-self: flex-end; background: rgba(46, 204, 113, 0.25); border: 1px solid rgba(46, 204, 113, 0.5); color: #fff; }
-.chat-msg.them { align-self: flex-start; background: rgba(255,255,255,0.12); color: #fff; }
-.chat-footer { padding: 10px; display: flex; gap: 6px; background: rgba(0,0,0,0.4); align-items: center; }
-.chat-footer input { padding: 8px 10px; font-size: 0.85rem; border-radius: 12px; background: rgba(0,0,0,0.6); border: 1px solid rgba(46, 204, 113, 0.4); color: #fff; width: 100%; outline: none; user-select: text; }
-.quick-chats { display: flex; gap: 6px; overflow-x: auto; padding: 8px 10px; background: rgba(0,0,0,0.25); }
-.quick-btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-size: 0.72rem; padding: 5px 9px; border-radius: 12px; white-space: nowrap; cursor: pointer; }
+.chat-msg {
+  background: linear-gradient(180deg, rgba(255,255,255,0.11), rgba(255,255,255,0.04));
+  padding: 7px 11px; border-radius: 12px; border-bottom: 2px solid rgba(0,0,0,0.5);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  font-size: 0.85rem; max-width: 85%; word-break: break-word; user-select: text;
+}
+.chat-msg.me { align-self: flex-end; background: linear-gradient(180deg, rgba(46, 204, 113, 0.34), rgba(22, 101, 52, 0.28)); border: 1px solid rgba(46, 204, 113, 0.55); border-bottom-width: 3px; color: #fff; }
+.chat-msg.them { align-self: flex-start; background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.07)); color: #fff; }
+.chat-footer { padding: 10px; display: flex; gap: 6px; background: rgba(0,0,0,0.45); align-items: center; }
+.chat-footer input { padding: 8px 10px; font-size: 0.85rem; border-radius: 12px; background: rgba(0,0,0,0.65); border: 1px solid rgba(46, 204, 113, 0.45); box-shadow: inset 0 2px 6px rgba(0,0,0,0.7); color: #fff; width: 100%; outline: none; user-select: text; }
+.quick-chats { display: flex; gap: 6px; overflow-x: auto; padding: 8px 10px; background: rgba(0,0,0,0.28); }
+.quick-btn {
+  background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.05));
+  border: 1px solid rgba(255,255,255,0.22); border-bottom: 3px solid rgba(0,0,0,0.65);
+  color: #fff; font-size: 0.72rem; padding: 5px 9px; border-radius: 12px; white-space: nowrap; cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.45); transition: transform 0.1s;
+}
+.quick-btn:active { transform: translateY(2px); }
 
 .voice-msg-bubble {
   display: flex; align-items: center; gap: 8px; background: rgba(46, 204, 113, 0.15) !important;
   border: 1px solid rgba(46, 204, 113, 0.4); padding: 6px 10px; border-radius: 12px;
 }
-.voice-msg-bubble audio {
-  height: 30px; width: 140px;
-}
+.voice-msg-bubble audio { height: 30px; width: 140px; }
 
-.modal{position:fixed;inset:0;background:rgba(3,5,12,0.85);backdrop-filter:blur(8px);display:none;place-items:center;z-index:100;padding:15px}
+/* 3D Modal & Buttons */
+.modal{position:fixed;inset:0;background:rgba(3,5,12,0.85);backdrop-filter:blur(8px);display:none;place-items:center;z-index:100;padding:15px;perspective:1000px}
 .modal.show{display:grid}
-.modalbox{width:min(100%,420px);background:linear-gradient(145deg,#0a190f,#132e1e);border:2px solid #2ecc71;border-radius:24px;padding:20px;display:grid;gap:12px;max-height:85vh;overflow-y:auto;box-shadow:0 20px 40px rgba(0,0,0,0.8)}
-.modalbox h2,.modalbox h3{text-align:center;color:#2ecc71;font-weight:700}
-.btn,.btn-gold{border:0;border-radius:12px;padding:10px 14px;cursor:pointer;font-weight:700;display:inline-flex;align-items:center;gap:6px;justify-content:center}
-.btn{background:rgba(255,255,255,0.1);color:white;border:1px solid rgba(255,255,255,0.2)}
-.btn-gold{background:linear-gradient(135deg,#2ecc71,#27ae60);color:#111;box-shadow:0 4px 15px rgba(46,204,113,0.4)}
+.modalbox{
+  width:min(100%,420px);
+  background:linear-gradient(165deg,#13331f,#08170e);
+  border-top:2px solid rgba(110,231,183,0.6);
+  border-left:1px solid rgba(46,204,113,0.35);
+  border-right:1px solid rgba(46,204,113,0.35);
+  border-bottom:7px solid #040d07;
+  border-radius:24px;padding:22px;display:grid;gap:12px;max-height:85vh;overflow-y:auto;
+  box-shadow:0 24px 48px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.18);
+  transform:rotateX(3deg);
+}
+.modalbox h2,.modalbox h3{text-align:center;color:#2ecc71;font-weight:700;text-shadow:0 3px 6px rgba(0,0,0,0.8)}
+.btn,.btn-gold{
+  border:0;border-radius:12px;padding:10px 14px;cursor:pointer;font-weight:700;
+  display:inline-flex;align-items:center;gap:6px;justify-content:center;
+  transition:transform 0.12s, border-bottom-width 0.12s;
+}
+.btn:active,.btn-gold:active{transform:translateY(2px)}
+.btn{
+  background:linear-gradient(180deg,rgba(255,255,255,0.16),rgba(255,255,255,0.06));
+  color:white;border:1px solid rgba(255,255,255,0.22);border-bottom:4px solid rgba(0,0,0,0.7);
+  box-shadow:0 6px 12px rgba(0,0,0,0.5);
+}
+.btn-gold{
+  background:linear-gradient(180deg,#34d399,#16a34a);color:#06170c;
+  border:1px solid #6ee7b7;border-bottom:4px solid #14532d;
+  box-shadow:0 6px 16px rgba(46,204,113,0.45), inset 0 1px 2px rgba(255,255,255,0.45);
+}
 .row{display:flex;gap:10px;align-items:center}
-#toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,120px);opacity:0;background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid #2ecc71;color:#f8f9fa;border-radius:30px;padding:10px 20px;z-index:150;transition:.3s;font-weight:600;display:flex;align-items:center;gap:8px;font-size:0.9rem}
+
+/* 3D Toast */
+#toast{
+  position:fixed;bottom:20px;left:50%;transform:translate(-50%,120px);opacity:0;
+  background:linear-gradient(180deg,#1e293b,#0f172a);
+  border:1px solid #2ecc71;border-bottom:4px solid #064e3b;
+  color:#f8f9fa;border-radius:30px;padding:10px 20px;z-index:150;
+  transition:.3s;font-weight:600;display:flex;align-items:center;gap:8px;font-size:0.9rem;
+  box-shadow:0 12px 24px rgba(0,0,0,0.8);
+}
 #toast.show{transform:translate(-50%,0);opacity:1}
 </style>
 </head>
@@ -216,8 +330,10 @@ body{
  </div>
 
  <div class="board-wrap" id="boardWrap">
-  <div id="threeStage" aria-label="Top 3D Draughts Board"></div>
-  <div class="board" id="board"></div>
+  <div class="board-stage" id="boardStage">
+   <div class="board" id="board"></div>
+   <div id="pieces3DOverlay" aria-hidden="true"></div>
+  </div>
  </div>
 
  <div class="arena-bottom-bar">
@@ -291,14 +407,10 @@ let mediaRecorder = null;
 let audioChunks = [];
 let isRecording = false;
 
-/* Top 3D Arena State */
-let threeReady = false;
-let scene3D, camera3D, renderer3D, boardGroup3D, piecesGroup3D, markersGroup3D;
-let squareMeshes3D = [];
-let raycaster3D = null;
-let pointerDownPos = null;
+/* 3D Pieces Overlay State (Board stays Flat 2D) */
+let pieces3DReady = false;
+let scene3DPieces, camera3DPieces, renderer3DPieces, piecesGroup3D;
 let animatedPieceMeshes = [];
-const TOP_3D_CAM_POS = new THREE.Vector3(0, 11.4, 0.01);
 
 const PIECE_DESIGNS=[
  {id:0,name:'මුතු සුදු (Default)',bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●',hex:0xf8fafc,accentHex:0x94a3b8,emblem:'disc',free:true},
@@ -342,76 +454,71 @@ function create3DPieceMesh(val, design, isSelected){
  const group = new THREE.Group();
  const isKing = Math.abs(val) === 2;
 
- // 1. Beveled base disc (3D depth + rim)
  const baseGeo = new THREE.CylinderGeometry(0.35, 0.41, 0.22, 36);
  const baseMat = new THREE.MeshStandardMaterial({
   color: design.hex,
-  roughness: 0.24,
-  metalness: 0.45
+  roughness: 0.22,
+  metalness: 0.48
  });
  const baseMesh = new THREE.Mesh(baseGeo, baseMat);
  baseMesh.position.y = 0.14;
  baseMesh.castShadow = true;
- baseMesh.receiveShadow = true;
  group.add(baseMesh);
 
- // 2. Raised top cap disc
  const topCapGeo = new THREE.CylinderGeometry(0.31, 0.34, 0.06, 36);
  const topCapMat = new THREE.MeshStandardMaterial({
   color: design.hex,
   emissive: design.hex,
-  emissiveIntensity: 0.14,
-  roughness: 0.2,
-  metalness: 0.55
+  emissiveIntensity: 0.16,
+  roughness: 0.18,
+  metalness: 0.58
  });
  const topCapMesh = new THREE.Mesh(topCapGeo, topCapMat);
  topCapMesh.position.y = 0.27;
  topCapMesh.castShadow = true;
  group.add(topCapMesh);
 
- // 3. Metallic outer accent ring
  const ringGeo = new THREE.TorusGeometry(0.28, 0.028, 14, 32);
  const ringMat = new THREE.MeshStandardMaterial({
-  color: design.accentHex,
-  emissive: design.accentHex,
-  emissiveIntensity: 0.22,
-  roughness: 0.25,
-  metalness: 0.78
- });
- const ringMesh = new THREE.Mesh(ringGeo, ringMat);
- ringMesh.rotation.x = Math.PI / 2;
- ringMesh.position.y = 0.305;
- group.add(ringMesh);
-
- // 4. Design-specific 3D center emblem
- const emblemMat = new THREE.MeshStandardMaterial({
   color: design.accentHex,
   emissive: design.accentHex,
   emissiveIntensity: 0.25,
   roughness: 0.22,
   metalness: 0.8
  });
+ const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+ ringMesh.rotation.x = Math.PI / 2;
+ ringMesh.position.y = 0.305;
+ group.add(ringMesh);
+
+ const emblemMat = new THREE.MeshStandardMaterial({
+  color: design.accentHex,
+  emissive: design.accentHex,
+  emissiveIntensity: 0.28,
+  roughness: 0.2,
+  metalness: 0.82
+ });
 
  if(design.emblem === 'star'){
-  const starGeo = new THREE.OctahedronGeometry(0.13, 0);
+  const starGeo = new THREE.OctahedronGeometry(0.135, 0);
   const starMesh = new THREE.Mesh(starGeo, emblemMat);
-  starMesh.scale.set(1, 0.45, 1);
+  starMesh.scale.set(1, 0.48, 1);
   starMesh.position.y = 0.33;
   group.add(starMesh);
  } else if(design.emblem === 'diamond'){
-  const diaGeo = new THREE.BoxGeometry(0.16, 0.06, 0.16);
+  const diaGeo = new THREE.BoxGeometry(0.165, 0.065, 0.165);
   const diaMesh = new THREE.Mesh(diaGeo, emblemMat);
   diaMesh.rotation.y = Math.PI / 4;
   diaMesh.position.y = 0.32;
   group.add(diaMesh);
  } else if(design.emblem === 'ring'){
-  const innerRingGeo = new THREE.TorusGeometry(0.13, 0.025, 12, 24);
+  const innerRingGeo = new THREE.TorusGeometry(0.13, 0.026, 12, 24);
   const innerRingMesh = new THREE.Mesh(innerRingGeo, emblemMat);
   innerRingMesh.rotation.x = Math.PI / 2;
   innerRingMesh.position.y = 0.315;
   group.add(innerRingMesh);
  } else if(design.emblem === 'crown'){
-  const cGeo = new THREE.ConeGeometry(0.13, 0.14, 6);
+  const cGeo = new THREE.ConeGeometry(0.135, 0.15, 6);
   const cMesh = new THREE.Mesh(cGeo, emblemMat);
   cMesh.position.y = 0.35;
   group.add(cMesh);
@@ -423,7 +530,6 @@ function create3DPieceMesh(val, design, isSelected){
   group.add(knobMesh);
  }
 
- // 5. Extra gold 3D King crown if promoted to King (|val| === 2)
  if(isKing){
   const kingGoldMat = new THREE.MeshStandardMaterial({
    color: 0xffd166,
@@ -443,154 +549,87 @@ function create3DPieceMesh(val, design, isSelected){
  return group;
 }
 
-function initThreeArena(){
- const stage = $('threeStage');
- const wrap = $('boardWrap');
- if(!stage || typeof THREE === 'undefined'){
-  if(wrap) wrap.classList.add('fallback-2d');
+function init3DPiecesOverlay(){
+ const overlay = $('pieces3DOverlay');
+ const stage = $('boardStage');
+ if(!overlay || typeof THREE === 'undefined'){
+  if(stage) stage.classList.add('fallback-3d-pieces');
   return;
  }
 
  try{
-  const w = stage.clientWidth || 380;
-  const h = stage.clientHeight || 380;
+  const w = overlay.clientWidth || 380;
+  const h = overlay.clientHeight || 380;
 
-  scene3D = new THREE.Scene();
-  camera3D = new THREE.PerspectiveCamera(42, w / h, 0.1, 100);
-  camera3D.position.copy(TOP_3D_CAM_POS);
-  camera3D.lookAt(0, 0, 0);
+  scene3DPieces = new THREE.Scene();
+  // Orthographic camera mapped cleanly to [-4..+4] across the 8x8 flat board
+  const frustum = 4.0;
+  const aspect = w / h;
+  camera3DPieces = new THREE.OrthographicCamera(
+   -frustum * aspect, frustum * aspect, frustum, -frustum, 0.1, 50
+  );
+  camera3DPieces.position.set(1.35, 6.2, 2.4);
+  camera3DPieces.lookAt(0, 0.1, 0);
 
-  renderer3D = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-  renderer3D.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-  renderer3D.setSize(w, h);
-  renderer3D.shadowMap.enabled = true;
-  renderer3D.shadowMap.type = THREE.PCFSoftShadowMap;
-  renderer3D.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer3D.toneMappingExposure = 1.15;
+  renderer3DPieces = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer3DPieces.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer3DPieces.setSize(w, h);
+  renderer3DPieces.shadowMap.enabled = true;
+  renderer3DPieces.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer3DPieces.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer3DPieces.toneMappingExposure = 1.15;
 
-  stage.innerHTML = '';
-  stage.appendChild(renderer3D.domElement);
+  overlay.innerHTML = '';
+  overlay.appendChild(renderer3DPieces.domElement);
 
-  const ambient = new THREE.AmbientLight(0xe6fff2, 0.78);
-  scene3D.add(ambient);
+  const ambient = new THREE.AmbientLight(0xffffff, 0.75);
+  scene3DPieces.add(ambient);
 
-  const dirLight = new THREE.DirectionalLight(0xfff6dc, 1.2);
-  dirLight.position.set(3.5, 13, 3.5);
-  dirLight.castShadow = true;
-  dirLight.shadow.mapSize.width = 1024;
-  dirLight.shadow.mapSize.height = 1024;
-  scene3D.add(dirLight);
+  const keyLight = new THREE.DirectionalLight(0xfff6dc, 1.25);
+  keyLight.position.set(4, 9, 5);
+  keyLight.castShadow = true;
+  keyLight.shadow.mapSize.width = 1024;
+  keyLight.shadow.mapSize.height = 1024;
+  scene3DPieces.add(keyLight);
 
-  const rimLight = new THREE.PointLight(0x00f2fe, 0.75, 18);
-  rimLight.position.set(-4.5, 5, -4.5);
-  scene3D.add(rimLight);
+  const rimLight = new THREE.PointLight(0x00f2fe, 0.7, 16);
+  rimLight.position.set(-4, 4, -4);
+  scene3DPieces.add(rimLight);
 
-  const goldLight = new THREE.PointLight(0xffd166, 0.65, 18);
-  goldLight.position.set(4.5, 5, 4.5);
-  scene3D.add(goldLight);
-
-  boardGroup3D = new THREE.Group();
   piecesGroup3D = new THREE.Group();
-  markersGroup3D = new THREE.Group();
-  scene3D.add(boardGroup3D, markersGroup3D, piecesGroup3D);
+  scene3DPieces.add(piecesGroup3D);
 
-  const frameGeo = new THREE.BoxGeometry(8.7, 0.42, 8.7);
-  const frameMat = new THREE.MeshStandardMaterial({
-   color: 0x0b2416,
-   roughness: 0.38,
-   metalness: 0.38
-  });
-  const frameMesh = new THREE.Mesh(frameGeo, frameMat);
-  frameMesh.position.y = -0.26;
-  frameMesh.receiveShadow = true;
-  boardGroup3D.add(frameMesh);
-
-  const sqGeo = new THREE.BoxGeometry(0.98, 0.14, 0.98);
-  const lightMat = new THREE.MeshStandardMaterial({ color: 0xe8d7be, roughness: 0.52, metalness: 0.06 });
-  const darkMat = new THREE.MeshStandardMaterial({ color: 0x4a2e18, roughness: 0.58, metalness: 0.12 });
-
-  squareMeshes3D = [];
-  for(let r=0; r<8; r++){
-   for(let c=0; c<8; c++){
-    const isDark = (r + c) % 2 === 1;
-    const mesh = new THREE.Mesh(sqGeo, isDark ? darkMat.clone() : lightMat.clone());
-    mesh.position.set(c - 3.5, -0.02, r - 3.5);
-    mesh.receiveShadow = true;
-    mesh.userData = { r, c, baseColor: isDark ? 0x4a2e18 : 0xe8d7be };
-    boardGroup3D.add(mesh);
-    squareMeshes3D.push(mesh);
-   }
-  }
-
-  raycaster3D = new THREE.Raycaster();
-  stage.addEventListener('pointerdown', e => {
-   pointerDownPos = { x: e.clientX, y: e.clientY };
-  });
-  stage.addEventListener('pointerup', e => {
-   if(!pointerDownPos) return;
-   const dist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
-   pointerDownPos = null;
-   if(dist > 14) return;
-   handleThreeClick(e.clientX, e.clientY);
-  });
-
-  window.addEventListener('resize', resizeThreeArena);
-  threeReady = true;
-  syncThreeBoard();
-  animateThreeLoop();
+  window.addEventListener('resize', resize3DPiecesOverlay);
+  pieces3DReady = true;
+  sync3DPieces();
+  animate3DPiecesLoop();
  }catch(err){
-  console.warn('Three.js fallback to 2D:', err);
-  if(wrap) wrap.classList.add('fallback-2d');
+  console.warn('3D pieces fallback:', err);
+  if(stage) stage.classList.add('fallback-3d-pieces');
  }
 }
 
-function resizeThreeArena(){
- const stage = $('threeStage');
- if(!threeReady || !renderer3D || !camera3D || !stage) return;
- const w = stage.clientWidth || 380;
- const h = stage.clientHeight || 380;
- camera3D.aspect = w / h;
- camera3D.updateProjectionMatrix();
- renderer3D.setSize(w, h);
+function resize3DPiecesOverlay(){
+ const overlay = $('pieces3DOverlay');
+ if(!pieces3DReady || !renderer3DPieces || !camera3DPieces || !overlay) return;
+ const w = overlay.clientWidth || 380;
+ const h = overlay.clientHeight || 380;
+ const frustum = 4.0;
+ const aspect = w / h;
+ camera3DPieces.left = -frustum * aspect;
+ camera3DPieces.right = frustum * aspect;
+ camera3DPieces.top = frustum;
+ camera3DPieces.bottom = -frustum;
+ camera3DPieces.updateProjectionMatrix();
+ renderer3DPieces.setSize(w, h);
 }
 
-function handleThreeClick(clientX, clientY){
- if(!threeReady || !renderer3D || !camera3D) return;
- const rect = renderer3D.domElement.getBoundingClientRect();
- if(!rect.width || !rect.height) return;
- const ndc = new THREE.Vector2(
-  ((clientX - rect.left) / rect.width) * 2 - 1,
-  -((clientY - rect.top) / rect.height) * 2 + 1
- );
- raycaster3D.setFromCamera(ndc, camera3D);
- const targets = [...squareMeshes3D, ...piecesGroup3D.children];
- const hits = raycaster3D.intersectObjects(targets, true);
- if(!hits.length) return;
+function sync3DPieces(){
+ if(!pieces3DReady || !board || !board.length) return;
 
- for(const hit of hits){
-  let obj = hit.object;
-  while(obj){
-   if(obj.userData && typeof obj.userData.r === 'number' && typeof obj.userData.c === 'number'){
-    clickSquare(obj.userData.r, obj.userData.c);
-    return;
-   }
-   obj = obj.parent;
-  }
+ while(piecesGroup3D.children.length > 0){
+  piecesGroup3D.remove(piecesGroup3D.children[0]);
  }
-}
-
-function clearGroup3D(grp){
- if(!grp) return;
- while(grp.children.length > 0){
-  grp.remove(grp.children[0]);
- }
-}
-
-function syncThreeBoard(){
- if(!threeReady || !board || !board.length) return;
-
- clearGroup3D(markersGroup3D);
- clearGroup3D(piecesGroup3D);
  animatedPieceMeshes = [];
 
  const myPieceIdx = getSelectedPieceIndex();
@@ -599,39 +638,6 @@ function syncThreeBoard(){
  const flip = single ? (userSide === -1) : (role === 'guest');
  const toWorldX = c => (flip ? (7 - c) : c) - 3.5;
  const toWorldZ = r => (flip ? (7 - r) : r) - 3.5;
-
- for(const sqMesh of squareMeshes3D){
-  const { r, c, baseColor } = sqMesh.userData;
-  sqMesh.material.color.setHex(baseColor);
-  sqMesh.material.emissive.setHex(0x000000);
-
-  if(lastMove){
-   if(lastMove.fromR === r && lastMove.fromC === c){
-    sqMesh.material.emissive.setHex(0x553800);
-   }
-   if(lastMove.toR === r && lastMove.toC === c){
-    sqMesh.material.emissive.setHex(0x004455);
-   }
-  }
-  if(selected && selected.r === r && selected.c === c){
-   sqMesh.material.color.setHex(0xffd166);
-   sqMesh.material.emissive.setHex(0x554000);
-  }
- }
-
- const markerGeo = new THREE.CylinderGeometry(0.22, 0.22, 0.08, 24);
- for(const m of moves){
-  const isCap = !!m.capture;
-  const mat = new THREE.MeshStandardMaterial({
-   color: isCap ? 0xff4757 : 0x2ecc71,
-   emissive: isCap ? 0x550011 : 0x004418,
-   roughness: 0.3
-  });
-  const marker = new THREE.Mesh(markerGeo, mat);
-  marker.position.set(toWorldX(m.toC), 0.09, toWorldZ(m.toR));
-  marker.userData = { r: m.toR, c: m.toC };
-  markersGroup3D.add(marker);
- }
 
  for(let r=0; r<8; r++){
   for(let c=0; c<8; c++){
@@ -646,7 +652,7 @@ function syncThreeBoard(){
 
    const isSel = !!(selected && selected.r === r && selected.c === c);
    const pieceGroup = create3DPieceMesh(val, design, isSel);
-   pieceGroup.position.set(toWorldX(c), isSel ? 0.16 : 0, toWorldZ(r));
+   pieceGroup.position.set(toWorldX(c), isSel ? 0.22 : 0, toWorldZ(r));
    pieceGroup.userData = { r, c, isSel };
 
    piecesGroup3D.add(pieceGroup);
@@ -655,21 +661,18 @@ function syncThreeBoard(){
  }
 }
 
-function animateThreeLoop(){
- if(!threeReady) return;
- requestAnimationFrame(animateThreeLoop);
+function animate3DPiecesLoop(){
+ if(!pieces3DReady) return;
+ requestAnimationFrame(animate3DPiecesLoop);
 
  const t = performance.now() * 0.003;
- camera3D.position.copy(TOP_3D_CAM_POS);
- camera3D.lookAt(0, 0, 0);
-
  for(const grp of animatedPieceMeshes){
   if(grp.userData && grp.userData.isSel){
-   grp.position.y = 0.18 + Math.sin(t * 2.4) * 0.05;
+   grp.position.y = 0.24 + Math.sin(t * 2.5) * 0.06;
   }
  }
 
- renderer3D.render(scene3D, camera3D);
+ renderer3DPieces.render(scene3DPieces, camera3DPieces);
 }
 
 /* Self-Upgrading Planned Tactical AI Engine */
@@ -1209,13 +1212,12 @@ function allMoves(side,b=board){
 }
 
 function render(){
- if(threeReady){
-  syncThreeBoard();
-  return;
- }
  const el=$('board');el.innerHTML='';
  const flip=single?(userSide===-1):(role==='guest');
  const myPieceIdx = getSelectedPieceIndex();
+ const stage = $('boardStage');
+ const use3DPieces = pieces3DReady && !(stage && stage.classList.contains('fallback-3d-pieces'));
+
  for(let vr=0;vr<8;vr++){
   for(let vc=0;vc<8;vc++){
    const r=flip?7-vr:vr,c=flip?7-vc:vc;
@@ -1231,7 +1233,7 @@ function render(){
     if(lastMove.toR === r && lastMove.toC === c) sq.classList.add('last-move-to');
    }
 
-   if(board[r][c]){
+   if(!use3DPieces && board[r][c]){
     const val=board[r][c],p=document.createElement('div');
     const isMyPiece = single ? (Math.sign(val) === userSide) : (role === 'host' ? Math.sign(val) === 1 : Math.sign(val) === -1);
     const pieceDesignIndex = isMyPiece ? myPieceIdx : (window.opponentPieceIndex !== undefined ? window.opponentPieceIndex : 2);
@@ -1248,6 +1250,10 @@ function render(){
    sq.onclick=()=>clickSquare(r,c);
    el.appendChild(sq);
   }
+ }
+
+ if(use3DPieces){
+  sync3DPieces();
  }
 }
 
@@ -1622,7 +1628,7 @@ $('rematch').onclick = () => {
  initBoard();
 };
 
-initThreeArena();
+init3DPiecesOverlay();
 initGameFromURL();
 </script>
 
