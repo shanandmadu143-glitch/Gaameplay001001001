@@ -12,24 +12,12 @@ html,body{width:100%;height:100%;background:radial-gradient(circle at 50% 20%,#1
 body{min-height:100dvh;display:flex;flex-direction:column;justify-content:center;align-items:center}
 
 .page-sweep{
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:3px;
+  position:fixed;top:0;left:0;width:100%;height:3px;
   background:linear-gradient(90deg,var(--neon-blue),var(--gold),#ff9f1c,var(--neon-blue));
   box-shadow:0 0 14px rgba(255,209,102,0.85), 0 0 24px rgba(0,242,254,0.65);
-  z-index:300;
-  opacity:0;
-  transform:scaleX(0);
-  transform-origin:left center;
-  pointer-events:none;
+  z-index:300;opacity:0;transform:scaleX(0);transform-origin:left center;pointer-events:none;
 }
-.page-sweep.active{
-  opacity:1;
-  transform:scaleX(1);
-  transition:transform 0.14s cubic-bezier(0.22,1,0.36,1), opacity 0.14s ease-out;
-}
+.page-sweep.active{opacity:1;transform:scaleX(1);transition:transform 0.14s cubic-bezier(0.22,1,0.36,1), opacity 0.14s ease-out}
 
 .app{width:100%;height:100dvh;max-width:768px;margin:0 auto;padding:14px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;opacity:1;transform:scale(1);transition:opacity 0s linear,transform 0s linear;will-change:opacity,transform}
 .app.page-leaving{opacity:0.92;transform:scale(0.992);transition:opacity 0s linear,transform 0s linear}
@@ -62,41 +50,20 @@ main{flex:1;display:flex;flex-direction:column;justify-content:center;align-item
 .mode-multi{background:linear-gradient(135deg,#0d7c48,#08a85c)}.mode-multi:after{content:'⚔️'}
 .mode-free{background:linear-gradient(135deg,#b36b00,#f19a00)}.mode-free:after{content:'🎯'}
 
+/* Home Popup Inbox Icon above bottom menu on the right */
 .home-inbox-fab{
-  position:fixed;
-  right:18px;
-  bottom:96px;
-  width:54px;
-  height:54px;
-  border-radius:50%;
-  border:2px solid var(--gold);
-  background:linear-gradient(135deg,#ffe08a,#ffad62);
-  color:#111;
-  font-size:1.3rem;
-  display:grid;
-  place-items:center;
-  cursor:pointer;
-  z-index:95;
+  position:fixed;right:18px;bottom:96px;width:54px;height:54px;border-radius:50%;
+  border:2px solid var(--gold);background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;
+  font-size:1.3rem;display:grid;place-items:center;cursor:pointer;z-index:95;
   box-shadow:0 10px 24px rgba(0,0,0,0.65),0 0 18px rgba(255,209,102,0.35);
   transition:transform 0.14s ease,box-shadow 0.14s ease;
 }
 .home-inbox-fab:hover{transform:scale(1.06)}
 .home-inbox-fab:active{transform:scale(0.94)}
 .home-inbox-badge{
-  position:absolute;
-  top:-4px;
-  right:-4px;
-  min-width:21px;
-  height:21px;
-  padding:0 5px;
-  border-radius:999px;
-  background:var(--red);
-  color:#fff;
-  border:2px solid #0d1326;
-  font-size:0.72rem;
-  font-weight:800;
-  display:none;
-  place-items:center;
+  position:absolute;top:-4px;right:-4px;min-width:21px;height:21px;padding:0 5px;
+  border-radius:999px;background:var(--red);color:#fff;border:2px solid #0d1326;
+  font-size:0.72rem;font-weight:800;display:none;place-items:center;
 }
 .home-inbox-badge.show{display:grid}
 
@@ -111,39 +78,41 @@ main{flex:1;display:flex;flex-direction:column;justify-content:center;align-item
 .modal.show{display:grid}
 #homeInboxModal{z-index:160}
 #apkUpdateModal{z-index:220}
-.modalbox{width:min(100%,420px);background:linear-gradient(145deg,#121828,#1b243f);border:2px solid var(--gold);border-radius:24px;padding:22px;display:grid;gap:14px;max-height:85vh;overflow-y:auto;box-shadow:0 20px 40px rgba(0,0,0,0.8)}
-.modalbox h2,.modalbox h3{text-align:center;color:var(--gold);font-weight:700;font-size:1.2rem}
+.modalbox{width:min(100%,440px);background:linear-gradient(145deg,#121828,#1b243f);border:2px solid var(--gold);border-radius:24px;padding:20px;display:flex;flex-direction:column;gap:12px;max-height:86dvh;overflow:hidden;box-shadow:0 20px 40px rgba(0,0,0,0.85)}
+.modalbox h2,.modalbox h3{text-align:center;color:var(--gold);font-weight:700;font-size:1.15rem}
 
 .inbox-modal-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.inbox-storage-tag{font-size:0.75rem;font-weight:700;color:var(--neon-blue);background:rgba(0,242,254,0.12);border:1px solid rgba(0,242,254,0.3);padding:4px 9px;border-radius:999px}
-.inbox-msg-list{display:flex;flex-direction:column;gap:8px;max-height:50dvh;overflow-y:auto;padding-right:2px}
-.inbox-msg-item{background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,255,255,0.09);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:4px;cursor:pointer}
-.inbox-msg-item.unread{border-color:rgba(255,209,102,0.55);background:rgba(255,209,102,0.08)}
-.inbox-msg-item.selected-reply{border-color:var(--neon-blue);background:rgba(0,242,254,0.08)}
-.inbox-msg-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.inbox-msg-from{font-weight:800;font-size:0.92rem;color:#fff;display:flex;align-items:center;gap:6px}
-.inbox-unread-dot{width:8px;height:8px;border-radius:50%;background:var(--neon-green)}
-.inbox-msg-time{font-size:0.72rem;color:var(--dim)}
-.inbox-msg-text{font-size:0.88rem;color:#e2e8f0;line-height:1.35;word-break:break-word}
+.inbox-title-wrap{display:flex;align-items:center;gap:8px;min-width:0}
+.inbox-title-wrap h3{text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.inbox-storage-tag{font-size:0.72rem;font-weight:700;color:var(--neon-blue);background:rgba(0,242,254,0.12);border:1px solid rgba(0,242,254,0.3);padding:4px 8px;border-radius:999px;white-space:nowrap}
+
+.conv-list{display:flex;flex-direction:column;gap:8px;max-height:56dvh;overflow-y:auto;padding-right:2px}
+.conv-card{background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,255,255,0.09);border-radius:16px;padding:11px 13px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;transition:border-color 0.15s,background 0.15s}
+.conv-card:hover{border-color:rgba(255,209,102,0.45);background:rgba(255,255,255,0.07)}
+.conv-card.unread{border-color:rgba(255,209,102,0.65);background:rgba(255,209,102,0.09)}
+.conv-main{flex:1;min-width:0}
+.conv-name-row{display:flex;align-items:center;gap:7px}
+.conv-name{font-weight:800;font-size:1rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.conv-unread-badge{background:var(--neon-green);color:#06140b;font-size:0.68rem;font-weight:800;padding:1px 7px;border-radius:999px;flex-shrink:0}
+.conv-preview{font-size:0.84rem;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}
+.conv-meta{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+.conv-time{font-size:0.72rem;color:var(--dim)}
+
+.chat-thread-view{display:none;flex-direction:column;gap:10px;flex:1;min-height:0}
+.chat-thread-view.active{display:flex}
+.chat-messages-box{flex:1;min-height:180px;max-height:50dvh;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:8px;background:rgba(0,0,0,0.28);border-radius:16px;border:1px solid rgba(255,255,255,0.07)}
+.chat-bubble{max-width:82%;padding:9px 12px;border-radius:15px;font-size:0.9rem;line-height:1.35;word-break:break-word;display:flex;flex-direction:column;gap:3px}
+.chat-bubble.incoming{align-self:flex-start;background:rgba(255,255,255,0.1);color:#f8fafc;border-bottom-left-radius:4px}
+.chat-bubble.outgoing{align-self:flex-end;background:linear-gradient(135deg,rgba(255,209,102,0.25),rgba(255,173,98,0.2));border:1px solid rgba(255,209,102,0.45);color:#fff;border-bottom-right-radius:4px}
+.chat-bubble-meta{font-size:0.68rem;color:var(--dim);text-align:right}
+.chat-bubble.incoming .chat-bubble-meta{text-align:left}
 .inbox-reply-row{display:flex;gap:8px}
 
 .msg-notif-banner{
-  position:fixed;
-  top:14px;
-  left:50%;
-  transform:translate(-50%,-160%);
-  width:min(92vw,430px);
-  background:linear-gradient(135deg,#17223b,#0c1324);
-  border:2px solid var(--neon-blue);
-  border-radius:18px;
-  padding:11px 14px;
-  display:flex;
-  align-items:center;
-  gap:11px;
-  z-index:210;
-  box-shadow:0 14px 32px rgba(0,0,0,0.75);
-  transition:transform 0.25s cubic-bezier(0.22,1,0.36,1);
-  cursor:pointer;
+  position:fixed;top:14px;left:50%;transform:translate(-50%,-160%);width:min(92vw,430px);
+  background:linear-gradient(135deg,#17223b,#0c1324);border:2px solid var(--neon-blue);border-radius:18px;
+  padding:11px 14px;display:flex;align-items:center;gap:11px;z-index:210;
+  box-shadow:0 14px 32px rgba(0,0,0,0.75);transition:transform 0.25s cubic-bezier(0.22,1,0.36,1);cursor:pointer;
 }
 .msg-notif-banner.show{transform:translate(-50%,0)}
 .msg-notif-icon{width:36px;height:36px;border-radius:50%;background:rgba(0,242,254,0.16);border:1.5px solid var(--neon-blue);color:var(--neon-blue);display:grid;place-items:center;flex-shrink:0}
@@ -176,7 +145,7 @@ input:focus{border-color:var(--gold)}
 .btn-green{background:linear-gradient(135deg,#2ecc71,#20b863);color:#0b1910;box-shadow:0 4px 15px rgba(46,204,113,0.4)}
 .row{display:flex;gap:10px;align-items:center}
 
-#toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,120px);opacity:0;background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--gold);color:#f8f9fa;border-radius:30px;padding:10px 20px;z-index:150;transition:.25s ease;font-weight:600;display:flex;align-items:center;gap:8px;font-size:0.9rem;max-width:92vw}
+#toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,120px);opacity:0;background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--gold);color:#f8f9fa;border-radius:30px;padding:10px 20px;z-index:150;transition:.25s ease;font-weight:600;display:flex;align-items:center;gap:8px;font-size:0.9rem}
 #toast.show{transform:translate(-50%,0);opacity:1}
 
 @media (min-width: 600px) {
@@ -234,20 +203,28 @@ input:focus{border-color:var(--gold)}
  </footer>
 </div>
 
-<!-- Home Popup Inbox Modal -->
+<!-- Home Popup Inbox Modal (Conversations + Unified Two-Way Chat) -->
 <div class="modal" id="homeInboxModal">
  <div class="modalbox">
   <div class="inbox-modal-head">
-   <h3><i class="fa-solid fa-inbox"></i> Messages</h3>
+   <div class="inbox-title-wrap">
+    <button type="button" class="btn" id="backToConvListBtn" style="display:none;padding:6px 10px" title="ආපසු"><i class="fa-solid fa-arrow-left"></i></button>
+    <h3 id="homeInboxHeading"><i class="fa-solid fa-comments"></i> කතාබහ (Inbox)</h3>
+   </div>
    <span class="inbox-storage-tag" id="homeInboxStorage">0.00 MB / 2.00 MB</span>
    <button type="button" class="btn" id="closeHomeInboxBtn" style="padding:6px 10px"><i class="fa-solid fa-xmark"></i></button>
   </div>
-  <div class="inbox-msg-list" id="homeInboxList">
-   <div style="text-align:center;padding:20px;color:var(--dim)">Messages නොමැත.</div>
+
+  <div class="conv-list" id="homeConvList">
+   <div style="text-align:center;padding:20px;color:var(--dim)">කතාබහවල් නොමැත.</div>
   </div>
-  <div class="inbox-reply-row" id="homeReplyRow" style="display:none">
-   <input id="homeReplyInput" maxlength="500" placeholder="පිළිතුර ලියන්න...">
-   <button type="button" class="btn-gold" id="homeSendReplyBtn"><i class="fa-solid fa-paper-plane"></i></button>
+
+  <div class="chat-thread-view" id="homeChatThreadView">
+   <div class="chat-messages-box" id="homeChatMessagesBox"></div>
+   <div class="inbox-reply-row">
+    <input id="homeReplyInput" maxlength="500" placeholder="Message එකක් ලියන්න...">
+    <button type="button" class="btn-gold" id="homeSendReplyBtn"><i class="fa-solid fa-paper-plane"></i></button>
+   </div>
   </div>
  </div>
 </div>
@@ -364,14 +341,17 @@ let auth,db,firestore,fbUser,isNavigating=false;
 let customPieces=[];
 let userRefListener=null;
 let inboxRefListener=null;
+let sentInboxRefListener=null;
 let firestoreApkListenerAttached=false;
 let latestApkMeta=null;
 let isDownloadingApk=false;
 let isInstallCompleted=false;
 let lastTrackedPoints=null;
-let knownHomeMsgKeys=new Set();
-let isHomeInboxInitialLoad=true;
-let activeHomeReplyTarget=null;
+let knownIncomingMsgKeys=new Set();
+let isInboxInitialLoad=true;
+let activeChatPeer=null; // {uid, name}
+let rawIncomingList=[];
+let rawSentList=[];
 let homeNotifTimer=null;
 let isTrimmingInbox=false;
 
@@ -472,7 +452,7 @@ function toast(s, icon='fa-circle-info'){
  const textEl=document.createElement('span');textEl.textContent=String(s);
  t.append(iconEl,textEl);
  t.classList.add('show');
- setTimeout(()=>t.classList.remove('show'),3400);
+ setTimeout(()=>t.classList.remove('show'),3000);
 }
 function modal(id,on){$(id).classList.toggle('show',on);}
 
@@ -500,26 +480,10 @@ if('Notification' in window && Notification.permission === 'default'){
 $('homeMsgNotif').onclick=()=>{
  $('homeMsgNotif').classList.remove('show');
  if(fbUser || user.uid){
+  showConversationListMode();
   modal('homeInboxModal',true);
  }
 };
-
-function readLocalInbox(uid){
- if(!uid)return [];
- try{
-  const raw=JSON.parse(localStorage.getItem('sinhala_draughts_inbox_local_'+uid)||'[]');
-  return Array.isArray(raw) ? raw : [];
- }catch(_){
-  return [];
- }
-}
-
-function writeLocalInbox(uid, items){
- if(!uid)return;
- try{
-  localStorage.setItem('sinhala_draughts_inbox_local_'+uid, JSON.stringify(items));
- }catch(_){}
-}
 
 async function enforce2MbInboxLimit(uid, items){
  if(isTrimmingInbox)return {sorted:items, totalBytes:items.reduce((s,i)=>s+getMsgBytes(i.data),0)};
@@ -530,12 +494,8 @@ async function enforce2MbInboxLimit(uid, items){
   while(totalBytes > MAX_INBOX_BYTES && sorted.length > 0){
    const oldest=sorted.shift();
    totalBytes-=getMsgBytes(oldest.data);
-   if(oldest && oldest.key){
-    if(String(oldest.key).startsWith('local_')){
-     writeLocalInbox(uid, sorted.filter(x=>String(x.key).startsWith('local_')));
-    }else if(db){
-     await db.ref(`inbox_v6/${uid}/${oldest.key}`).remove().catch(()=>{});
-    }
+   if(oldest && oldest.key && db){
+    await db.ref(`inbox_v6/${uid}/${oldest.key}`).remove().catch(()=>{});
    }
   }
   return {sorted, totalBytes};
@@ -544,190 +504,299 @@ async function enforce2MbInboxLimit(uid, items){
  }
 }
 
-function renderHomeInbox(sortedItems, totalBytes){
- $('homeInboxStorage').textContent=`${formatMb(totalBytes)} MB / 2.00 MB`;
- const unreadCount=sortedItems.filter(m=>m && m.data && !m.data.read).length;
- const badge=$('homeInboxBadge');
- badge.textContent=String(unreadCount);
- badge.classList.toggle('show', unreadCount > 0);
+function buildConversations(incomingSorted, sentItems){
+ const map=new Map();
 
- const listEl=$('homeInboxList');
- listEl.replaceChildren();
- const newestFirst=[...sortedItems].reverse();
-
- if(!newestFirst.length){
-  const empty=document.createElement('div');
-  empty.style.cssText='text-align:center;padding:20px;color:var(--dim)';
-  empty.textContent='Messages නොමැත (2MB සීමාව ඇතුළත).';
-  listEl.appendChild(empty);
-  return;
- }
-
- newestFirst.forEach(item=>{
+ incomingSorted.forEach(item=>{
   const d=item.data||{};
-  const timeStr=d.timestamp ? new Date(Number(d.timestamp)).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '';
-
-  const row=document.createElement('div');
-  row.className=`inbox-msg-item ${d.read ? '' : 'unread'}${activeHomeReplyTarget && activeHomeReplyTarget.uid === d.fromUid ? ' selected-reply' : ''}`;
-
-  const top=document.createElement('div');
-  top.className='inbox-msg-top';
-
-  const fromSpan=document.createElement('span');
-  fromSpan.className='inbox-msg-from';
-  if(!d.read){
-   const dot=document.createElement('span');
-   dot.className='inbox-unread-dot';
-   fromSpan.appendChild(dot);
+  const peerUid=d.fromUid || item.key;
+  if(!peerUid)return;
+  if(!map.has(peerUid)){
+   map.set(peerUid,{
+    peerUid,
+    peerName:d.fromName || 'Player',
+    unreadCount:0,
+    lastText:'',
+    lastTimestamp:0,
+    messages:[]
+   });
   }
-  const fromIcon=document.createElement('i');
-  fromIcon.className='fa-solid fa-user-circle';
-  fromIcon.style.color='var(--gold)';
-  const fromNameText=document.createTextNode(' '+(d.fromName || 'Player'));
-  fromSpan.append(fromIcon,fromNameText);
-
-  const timeSpan=document.createElement('span');
-  timeSpan.className='inbox-msg-time';
-  timeSpan.textContent=timeStr;
-
-  top.append(fromSpan,timeSpan);
-
-  const bodyDiv=document.createElement('div');
-  bodyDiv.className='inbox-msg-text';
-  bodyDiv.textContent=String(d.text || '');
-
-  row.append(top,bodyDiv);
-
-  row.onclick=async()=>{
-   const activeUid = (fbUser && fbUser.uid) || user.uid;
-   if(!d.read && activeUid && item.key){
-    if(String(item.key).startsWith('local_')){
-     const localList=readLocalInbox(activeUid).map(x=>x.key===item.key?{...x,data:{...x.data,read:true}}:x);
-     writeLocalInbox(activeUid,localList);
-    }else if(db){
-     await db.ref(`inbox_v6/${activeUid}/${item.key}/read`).set(true).catch(()=>{});
-    }
-   }
-   if(d.fromUid){
-    activeHomeReplyTarget={uid:d.fromUid, name:d.fromName || 'Player'};
-    $('homeReplyRow').style.display='flex';
-    $('homeReplyInput').placeholder=`${activeHomeReplyTarget.name} වෙත reply කරන්න...`;
-    $('homeReplyInput').focus();
-    renderHomeInbox(sortedItems, totalBytes);
-   }
-  };
-
-  listEl.appendChild(row);
+  const conv=map.get(peerUid);
+  if(d.fromName)conv.peerName=d.fromName;
+  if(!d.read)conv.unreadCount+=1;
+  conv.messages.push({
+   key:item.key,
+   direction:'incoming',
+   senderName:d.fromName || 'Player',
+   text:String(d.text || ''),
+   timestamp:Number(d.timestamp)||0,
+   read:Boolean(d.read)
+  });
  });
+
+ sentItems.forEach(item=>{
+  const d=item.data||{};
+  const peerUid=d.toUid;
+  if(!peerUid)return;
+  if(!map.has(peerUid)){
+   map.set(peerUid,{
+    peerUid,
+    peerName:d.toName || 'Player',
+    unreadCount:0,
+    lastText:'',
+    lastTimestamp:0,
+    messages:[]
+   });
+  }
+  const conv=map.get(peerUid);
+  if(d.toName)conv.peerName=d.toName;
+  conv.messages.push({
+   key:item.key,
+   direction:'outgoing',
+   senderName:user.name || 'මම',
+   text:String(d.text || ''),
+   timestamp:Number(d.timestamp)||0,
+   read:true
+  });
+ });
+
+ const conversations=[];
+ map.forEach(conv=>{
+  conv.messages.sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
+  const latest=conv.messages[conv.messages.length-1];
+  conv.lastText=latest ? (latest.direction === 'outgoing' ? `ඔබ: ${latest.text}` : latest.text) : '';
+  conv.lastTimestamp=latest ? latest.timestamp : 0;
+  conversations.push(conv);
+ });
+
+ conversations.sort((a,b)=>(b.lastTimestamp||0)-(a.lastTimestamp||0));
+ return conversations;
 }
 
-function mergeAndRefreshInbox(uid, dbRawObj){
- const dbEntries=Object.keys(dbRawObj||{}).map(key=>({
-  key,
-  timestamp:Number(dbRawObj[key] && dbRawObj[key].timestamp)||0,
-  data:dbRawObj[key]||{}
- }));
- const localEntries=readLocalInbox(uid);
- const combined=[...dbEntries, ...localEntries];
+function showConversationListMode(){
+ activeChatPeer=null;
+ $('backToConvListBtn').style.display='none';
+ $('homeInboxHeading').innerHTML='<i class="fa-solid fa-comments"></i> කතාබහ (Inbox)';
+ $('homeConvList').style.display='flex';
+ $('homeChatThreadView').classList.remove('active');
+}
 
- if(!isHomeInboxInitialLoad){
-  combined.forEach(entry=>{
-   if(!knownHomeMsgKeys.has(entry.key) && entry.data.fromUid && entry.data.fromUid !== uid){
-    showHomeMessageNotification(entry.data);
+function openPeerChatThread(peerUid, peerName){
+ activeChatPeer={uid:peerUid, name:peerName || 'Player'};
+ $('backToConvListBtn').style.display='inline-flex';
+ $('homeInboxHeading').textContent=activeChatPeer.name;
+ $('homeConvList').style.display='none';
+ $('homeChatThreadView').classList.add('active');
+ $('homeReplyInput').placeholder=`${activeChatPeer.name} සමඟ කතා කරන්න...`;
+
+ // Mark unread incoming messages from this peer as read
+ if(fbUser && db){
+  rawIncomingList.forEach(item=>{
+   if(item.data && item.data.fromUid === peerUid && !item.data.read && item.key){
+    db.ref(`inbox_v6/${fbUser.uid}/${item.key}/read`).set(true).catch(()=>{});
    }
   });
  }
- knownHomeMsgKeys=new Set(combined.map(e=>e.key));
- isHomeInboxInitialLoad=false;
 
- enforce2MbInboxLimit(uid, combined).then(({sorted, totalBytes})=>{
-  renderHomeInbox(sorted, totalBytes);
- });
+ renderInboxViews();
+ $('homeReplyInput').focus();
 }
 
-let latestDbInboxRaw={};
-function attachHomeInboxListener(uid){
- if(!uid)return;
+function renderInboxViews(){
+ const totalBytes=rawIncomingList.reduce((sum,item)=>sum+getMsgBytes(item.data),0);
+ $('homeInboxStorage').textContent=`${formatMb(totalBytes)} MB / 2.00 MB`;
+
+ const conversations=buildConversations(rawIncomingList, rawSentList);
+ const totalUnread=conversations.reduce((sum,c)=>sum+(c.unreadCount||0),0);
+ const badge=$('homeInboxBadge');
+ badge.textContent=String(totalUnread);
+ badge.classList.toggle('show', totalUnread > 0);
+
+ const convListEl=$('homeConvList');
+ convListEl.replaceChildren();
+
+ if(!conversations.length){
+  const empty=document.createElement('div');
+  empty.style.cssText='text-align:center;padding:24px;color:var(--dim)';
+  empty.textContent='කිසිදු කතාබහක් තවම ආරම්භ වී නැත.';
+  convListEl.appendChild(empty);
+ }else{
+  conversations.forEach(conv=>{
+   const card=document.createElement('div');
+   card.className=`conv-card ${conv.unreadCount > 0 ? 'unread' : ''}`;
+
+   const main=document.createElement('div');
+   main.className='conv-main';
+
+   const nameRow=document.createElement('div');
+   nameRow.className='conv-name-row';
+
+   const icon=document.createElement('i');
+   icon.className='fa-solid fa-user-circle';
+   icon.style.color='var(--gold)';
+
+   const nameEl=document.createElement('span');
+   nameEl.className='conv-name';
+   nameEl.textContent=conv.peerName;
+
+   nameRow.append(icon,nameEl);
+
+   if(conv.unreadCount > 0){
+    const uBadge=document.createElement('span');
+    uBadge.className='conv-unread-badge';
+    uBadge.textContent=`${conv.unreadCount} නව`;
+    nameRow.appendChild(uBadge);
+   }
+
+   const previewEl=document.createElement('div');
+   previewEl.className='conv-preview';
+   previewEl.textContent=conv.lastText;
+
+   main.append(nameRow,previewEl);
+
+   const meta=document.createElement('div');
+   meta.className='conv-meta';
+   const timeEl=document.createElement('span');
+   timeEl.className='conv-time';
+   timeEl.textContent=conv.lastTimestamp ? new Date(conv.lastTimestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '';
+   meta.appendChild(timeEl);
+
+   card.append(main,meta);
+   card.onclick=()=>openPeerChatThread(conv.peerUid, conv.peerName);
+   convListEl.appendChild(card);
+  });
+ }
+
+ if(activeChatPeer){
+  const activeConv=conversations.find(c=>c.peerUid === activeChatPeer.uid);
+  const box=$('homeChatMessagesBox');
+  box.replaceChildren();
+  const msgs=activeConv ? activeConv.messages : [];
+  if(!msgs.length){
+   const emptyChat=document.createElement('div');
+   emptyChat.style.cssText='text-align:center;padding:20px;color:var(--dim)';
+   emptyChat.textContent='Messages නොමැත.';
+   box.appendChild(emptyChat);
+  }else{
+   msgs.forEach(m=>{
+    const bubble=document.createElement('div');
+    bubble.className=`chat-bubble ${m.direction}`;
+    const txt=document.createElement('div');
+    txt.textContent=m.text;
+    const meta=document.createElement('div');
+    meta.className='chat-bubble-meta';
+    const tStr=m.timestamp ? new Date(m.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '';
+    meta.textContent=`${m.direction === 'outgoing' ? 'ඔබ' : m.senderName} • ${tStr}`;
+    bubble.append(txt,meta);
+    box.appendChild(bubble);
+   });
+   box.scrollTop=box.scrollHeight;
+  }
+ }
+}
+
+function attachInboxAndSentListeners(uid){
+ if(!db||!uid)return;
  if(inboxRefListener){
   try{inboxRefListener.ref.off('value',inboxRefListener.fn);}catch(_){}
   inboxRefListener=null;
  }
- isHomeInboxInitialLoad=true;
- knownHomeMsgKeys=new Set();
- latestDbInboxRaw={};
-
- mergeAndRefreshInbox(uid, latestDbInboxRaw);
-
- if(db){
-  const ref=db.ref('inbox_v6/'+uid);
-  const fn=snap=>{
-   latestDbInboxRaw=snap.val()||{};
-   mergeAndRefreshInbox(uid, latestDbInboxRaw);
-  };
-  ref.on('value',fn);
-  inboxRefListener={ref,fn};
+ if(sentInboxRefListener){
+  try{sentInboxRefListener.ref.off('value',sentInboxRefListener.fn);}catch(_){}
+  sentInboxRefListener=null;
  }
+ isInboxInitialLoad=true;
+ knownIncomingMsgKeys=new Set();
+
+ const inRef=db.ref('inbox_v6/'+uid);
+ const inFn=async snap=>{
+  const raw=snap.val()||{};
+  const entries=Object.keys(raw).map(key=>({
+   key,
+   timestamp:Number(raw[key] && raw[key].timestamp)||0,
+   data:raw[key]||{}
+  }));
+
+  if(!isInboxInitialLoad){
+   entries.forEach(entry=>{
+    if(!knownIncomingMsgKeys.has(entry.key) && entry.data.fromUid && entry.data.fromUid !== uid){
+     showHomeMessageNotification(entry.data);
+    }
+   });
+  }
+
+  knownIncomingMsgKeys=new Set(entries.map(e=>e.key));
+  isInboxInitialLoad=false;
+
+  const {sorted}=await enforce2MbInboxLimit(uid, entries);
+  rawIncomingList=sorted;
+  renderInboxViews();
+ };
+ inRef.on('value',inFn);
+ inboxRefListener={ref:inRef,fn:inFn};
+
+ const sentRef=db.ref('sent_inbox_v6/'+uid);
+ const sentFn=snap=>{
+  const raw=snap.val()||{};
+  rawSentList=Object.keys(raw)
+   .map(key=>({
+    key,
+    timestamp:Number(raw[key] && raw[key].timestamp)||0,
+    data:raw[key]||{}
+   }))
+   .sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
+  renderInboxViews();
+ };
+ sentRef.on('value',sentFn);
+ sentInboxRefListener={ref:sentRef,fn:sentFn};
 }
 
-try{
- const bc=new BroadcastChannel('sinhala_draughts_inbox_channel');
- bc.onmessage=ev=>{
-  const activeUid=(fbUser && fbUser.uid) || user.uid;
-  if(activeUid && ev && ev.data && ev.data.targetUid===activeUid){
-   mergeAndRefreshInbox(activeUid, latestDbInboxRaw);
-  }
- };
-}catch(_){}
+$('backToConvListBtn').onclick=showConversationListMode;
 
 $('homeInboxFab').onclick=()=>{
  if(!fbUser && !user.uid){
   modal('authModal',true);
   return toast('කරුණාකර පළමුව ගිණුමට ඇතුළු වන්න.');
  }
+ showConversationListMode();
+ renderInboxViews();
  modal('homeInboxModal',true);
 };
 $('closeHomeInboxBtn').onclick=()=>modal('homeInboxModal',false);
 
-async function sendHomeReply(){
- const senderUid=(fbUser && fbUser.uid) || user.uid;
- if(!senderUid || !activeHomeReplyTarget || !activeHomeReplyTarget.uid)return;
+async function sendChatMessageToPeer(){
+ if(!fbUser || !activeChatPeer || !activeChatPeer.uid || !db)return;
  const txt=String($('homeReplyInput').value||'').trim();
  if(!txt)return toast('කරුණාකර message එකක් ලියන්න.');
+ const now=Date.now();
  const payload={
-  fromUid:senderUid,
+  fromUid:fbUser.uid,
   fromName:user.name || 'Player',
   fromAvatar:user.avatarIcon || 'fa-user',
-  toUid:activeHomeReplyTarget.uid,
-  toName:activeHomeReplyTarget.name,
+  toUid:activeChatPeer.uid,
+  toName:activeChatPeer.name,
   text:txt,
   read:false,
-  timestamp:Date.now()
+  timestamp:now
  };
  try{
-  if(db){
-   await db.ref('inbox_v6/'+activeHomeReplyTarget.uid).push().set(payload);
-  }
-  const existingLocal=readLocalInbox(activeHomeReplyTarget.uid);
-  existingLocal.push({key:'local_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),timestamp:payload.timestamp,data:payload});
-  writeLocalInbox(activeHomeReplyTarget.uid,existingLocal);
-  try{
-   const ch=new BroadcastChannel('sinhala_draughts_inbox_channel');
-   ch.postMessage({targetUid:activeHomeReplyTarget.uid,payload});
-   ch.close();
-  }catch(_){}
+  await db.ref('inbox_v6/'+activeChatPeer.uid).push().set(payload);
+  await db.ref('sent_inbox_v6/'+fbUser.uid).push().set({
+   ...payload,
+   read:true
+  });
   $('homeReplyInput').value='';
-  toast(`${activeHomeReplyTarget.name} වෙත පිළිතුර යවන ලදී!`,'fa-paper-plane');
  }catch(e){
-  console.error('Reply error:',e);
-  toast(`පිළිතුරු දෝෂය (${e.code||e.message||'Error'})`,'fa-circle-exclamation');
+  console.error('Send message error:',e);
+  toast('Message එක යැවීමට නොහැකි විය.','fa-circle-exclamation');
  }
 }
 
-$('homeSendReplyBtn').onclick=sendHomeReply;
+$('homeSendReplyBtn').onclick=sendChatMessageToPeer;
 $('homeReplyInput').addEventListener('keydown',e=>{
  if(e.key==='Enter'){
   e.preventDefault();
-  sendHomeReply();
+  sendChatMessageToPeer();
  }
 });
 
@@ -1083,6 +1152,10 @@ $('resetAppBtn').onclick=async()=>{
    try{inboxRefListener.ref.off('value',inboxRefListener.fn);}catch(_){}
    inboxRefListener=null;
   }
+  if(sentInboxRefListener){
+   try{sentInboxRefListener.ref.off('value',sentInboxRefListener.fn);}catch(_){}
+   sentInboxRefListener=null;
+  }
   const savedInstalledVer=localStorage.getItem(INSTALLED_APK_VERSION_KEY);
   const savedInstalledCode=localStorage.getItem(INSTALLED_APK_CODE_KEY);
   localStorage.removeItem(KEY);
@@ -1187,7 +1260,7 @@ function attachLiveUserListener(uid){
     }
     await loadSignedInUser();
     attachLiveUserListener(u.uid);
-    attachHomeInboxListener(u.uid);
+    attachInboxAndSentListeners(u.uid);
 
     const userStatusRef = db.ref('status_v6/' + u.uid);
     db.ref('.info/connected').on('value', snapshot => {
@@ -1203,6 +1276,10 @@ function attachLiveUserListener(uid){
     if(inboxRefListener){
      try{inboxRefListener.ref.off('value',inboxRefListener.fn);}catch(e){}
      inboxRefListener=null;
+    }
+    if(sentInboxRefListener){
+     try{sentInboxRefListener.ref.off('value',sentInboxRefListener.fn);}catch(e){}
+     sentInboxRefListener=null;
     }
     if(!user.uid){
      user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user',unlockedAvatars:['fa-user'],eventSeasonStart:Date.now(),eventSeasonNumber:1,monthlyWonCoins:0,hasProPass:false,claimedEventRewards:[]};
