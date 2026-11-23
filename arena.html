@@ -2,9 +2,9 @@
 <html lang="si">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>ශ්‍රී ලංකීය දාම් - Arena</title>
+<title>ශ්‍රී ලංකීය දාම් - 3D Arena</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Gemunu+Libre:wght@400;600;700;800&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Gemunu+Libre:wght@400;600;700;800&family=Orbitron:wght@600;700;800;900&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#05070e;--panel:rgba(14,20,38,.92);--gold:#ffd166;--neon-blue:#00f2fe;--neon-green:#2ecc71;--red:#ff4757;--dim:#a0aec0}
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Gemunu Libre','Poppins',sans-serif;user-select:none;-webkit-tap-highlight-color:transparent}
@@ -15,48 +15,57 @@ body{
   flex-direction:column;
   justify-content:center;
   align-items:center;
-  background: linear-gradient(rgba(10, 25, 15, 0.75), rgba(5, 15, 10, 0.85)), 
+  background: linear-gradient(rgba(10, 25, 15, 0.78), rgba(5, 15, 10, 0.9)), 
               url('https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?q=80&w=1920&auto=format&fit=crop') no-repeat center center/cover;
   color:#f8f9fa;
 }
 
 .arena {
   width: 100vw; height: 100dvh;
-  padding: env(safe-area-inset-top, 14px) 16px env(safe-area-inset-bottom, 16px) 16px;
+  padding: env(safe-area-inset-top, 12px) 14px env(safe-area-inset-bottom, 14px) 14px;
   display: flex; flex-direction: column; justify-content: space-between; align-items: center; position: relative; overflow: hidden;
 }
 
 .arena-top-header {
   display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; width: 100%; max-width: 520px;
-  background: rgba(10, 25, 15, 0.85); padding: 10px 14px; border-radius: 20px; border: 1.5px solid rgba(46, 204, 113, 0.4); box-shadow: 0 6px 20px rgba(0,0,0,0.6); margin-top: 6px;
-  backdrop-filter: blur(6px);
+  background: rgba(10, 25, 15, 0.85); padding: 9px 14px; border-radius: 20px; border: 1.5px solid rgba(46, 204, 113, 0.4); box-shadow: 0 6px 20px rgba(0,0,0,0.6); margin-top: 4px;
+  backdrop-filter: blur(6px); z-index: 10;
 }
-.arena-player-card { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; position: relative; }
-.arena-avatar-box { width: 48px; height: 48px; border-radius: 50%; border: 2px solid #2ecc71; background: #0f2b1c; display: grid; place-items: center; font-size: 1.3rem; color: #2ecc71; overflow: hidden; }
+.arena-player-card { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 3px; position: relative; }
+.arena-avatar-box { width: 46px; height: 46px; border-radius: 50%; border: 2px solid #2ecc71; background: #0f2b1c; display: grid; place-items: center; font-size: 1.25rem; color: #2ecc71; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; }
 .arena-player-card.active .arena-avatar-box { border-color: #ffd166; box-shadow: 0 0 20px rgba(255, 209, 102, 0.8); transform: scale(1.08); }
-.arena-player-card b { font-size: 0.9rem; color: #fff; max-width: 105px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.arena-player-card small { font-size: 0.72rem; color: #a0aec0; }
+.arena-player-card b { font-size: 0.88rem; color: #fff; max-width: 105px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.arena-player-card small { font-size: 0.7rem; color: #a0aec0; }
 
-.arena-coins-center { display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(46, 204, 113, 0.1); padding: 6px 16px; border-radius: 16px; border: 1px solid rgba(46, 204, 113, 0.3); }
-.arena-coins-center i { font-size: 1.3rem; color: #2ecc71; }
-.arena-coins-center b { font-size: 1.02rem; color: #fff; }
+.arena-coins-center { display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(46, 204, 113, 0.12); padding: 6px 15px; border-radius: 16px; border: 1px solid rgba(46, 204, 113, 0.35); }
+.arena-coins-center i { font-size: 1.2rem; color: #2ecc71; }
+.arena-coins-center b { font-size: 0.98rem; color: #fff; }
 
 .mid-voice-bar {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
-  background: rgba(10, 25, 15, 0.6);
-  padding: 6px 18px;
-  border-radius: 30px;
-  border: 1px solid rgba(46, 204, 113, 0.3);
-  backdrop-filter: blur(4px);
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  max-width: 520px;
+  background: rgba(10, 25, 15, 0.72);
+  padding: 5px 12px;
+  border-radius: 26px;
+  border: 1px solid rgba(46, 204, 113, 0.32);
+  backdrop-filter: blur(5px);
   margin: 4px 0;
+  z-index: 10;
+}
+.mid-voice-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
 }
 .arena-voice-mic-btn {
-  width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--red);
-  background: rgba(255, 71, 87, 0.2); color: var(--red); font-size: 1.1rem;
-  display: grid; place-items: center; cursor: pointer; transition: all 0.2s;
+  width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--red);
+  background: rgba(255, 71, 87, 0.2); color: var(--red); font-size: 0.95rem;
+  display: grid; place-items: center; cursor: pointer; transition: all 0.2s; flex-shrink: 0;
 }
 .arena-voice-mic-btn.active-rec {
   background: var(--red); color: #fff; border-color: var(--red);
@@ -68,13 +77,34 @@ body{
   100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
 }
 .mid-voice-label {
-  font-size: 0.78rem;
-  color: #a0aec0;
+  font-size: 0.74rem;
+  color: #cbd5e1;
   font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+.cam-toggle-btn {
+  border: 1.5px solid rgba(0, 242, 254, 0.45);
+  background: rgba(0, 242, 254, 0.14);
+  color: var(--neon-blue);
+  border-radius: 16px;
+  padding: 5px 10px;
+  font-family: 'Orbitron', 'Poppins', sans-serif;
+  font-size: 0.64rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+  transition: transform 0.12s, background 0.15s;
+}
+.cam-toggle-btn:hover { background: rgba(0, 242, 254, 0.24); }
+.cam-toggle-btn:active { transform: scale(0.95); }
 
 .thought-bubble {
-  position: absolute; top: 78px; left: 50%; transform: translateX(-50%) scale(0);
+  position: absolute; top: 74px; left: 50%; transform: translateX(-50%) scale(0);
   background: rgba(14, 20, 38, 0.95); border: 2px solid var(--neon-blue); color: #fff;
   padding: 6px 12px; border-radius: 14px; font-size: 0.78rem; white-space: nowrap; max-width: 160px;
   overflow: hidden; text-overflow: ellipsis; box-shadow: 0 4px 20px rgba(0,242,254,0.5);
@@ -87,50 +117,66 @@ body{
 }
 
 @keyframes rgbGlow {
-  0% { border-color: #ff4757; box-shadow: 0 0 25px rgba(255, 71, 87, 0.8), inset 0 0 15px rgba(255, 71, 87, 0.5); }
-  25% { border-color: #2ecc71; box-shadow: 0 0 25px rgba(46, 204, 113, 0.8), inset 0 0 15px rgba(46, 204, 113, 0.5); }
-  50% { border-color: #00f2fe; box-shadow: 0 0 25px rgba(0, 242, 254, 0.8), inset 0 0 15px rgba(0, 242, 254, 0.5); }
-  75% { border-color: #ffd166; box-shadow: 0 0 25px rgba(255, 209, 102, 0.8), inset 0 0 15px rgba(255, 209, 102, 0.5); }
-  100% { border-color: #ff4757; box-shadow: 0 0 25px rgba(255, 71, 87, 0.8), inset 0 0 15px rgba(255, 71, 87, 0.5); }
+  0% { border-color: #ff4757; box-shadow: 0 0 24px rgba(255, 71, 87, 0.65), inset 0 0 12px rgba(255, 71, 87, 0.35); }
+  25% { border-color: #2ecc71; box-shadow: 0 0 24px rgba(46, 204, 113, 0.65), inset 0 0 12px rgba(46, 204, 113, 0.35); }
+  50% { border-color: #00f2fe; box-shadow: 0 0 24px rgba(0, 242, 254, 0.65), inset 0 0 12px rgba(0, 242, 254, 0.35); }
+  75% { border-color: #ffd166; box-shadow: 0 0 24px rgba(255, 209, 102, 0.65), inset 0 0 12px rgba(255, 209, 102, 0.35); }
+  100% { border-color: #ff4757; box-shadow: 0 0 24px rgba(255, 71, 87, 0.65), inset 0 0 12px rgba(255, 71, 87, 0.35); }
 }
 
 .board-wrap { 
   width: min(92vw, 54vh, 430px); aspect-ratio: 1; position: relative; margin: auto; 
-  background: linear-gradient(135deg, #163824, #0b1f13); padding: 12px; border-radius: 24px; 
-  border: 4px solid #2ecc71; animation: rgbGlow 6s linear infinite;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+  background: linear-gradient(135deg, rgba(16, 40, 26, 0.92), rgba(7, 18, 12, 0.96)); padding: 8px; border-radius: 24px; 
+  border: 3px solid #2ecc71; animation: rgbGlow 6s linear infinite;
+  box-shadow: 0 16px 38px rgba(0,0,0,0.85);
+  overflow: hidden;
 }
 
-.board { width: 100%; height: 100%; display: grid; grid-template-columns: repeat(8,1fr); grid-template-rows: repeat(8,1fr); border-radius: 12px; overflow: hidden; border: 2px solid #07140c; }
+#threeStage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+#threeStage canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Fallback 2D grid used only if Three.js / WebGL is unavailable */
+.board {
+  display: none;
+  width: 100%; height: 100%;
+  grid-template-columns: repeat(8,1fr); grid-template-rows: repeat(8,1fr);
+  border-radius: 12px; overflow: hidden; border: 2px solid #07140c;
+}
+.board-wrap.fallback-2d .board { display: grid; }
+.board-wrap.fallback-2d #threeStage { display: none; }
+
 .sq { display: grid; place-items: center; position: relative; cursor: pointer; touch-action: manipulation; }
 .sq.light { background: #e8d7be; }
 .sq.dark { background: #4a2e18; }
 .sq.selected { background: #ffd166 !important; }
 .sq.target:after { content:''; width:32%; height:32%; border-radius:50%; background:#2ecc71; }
 .sq.capture:after { content:''; width:42%; height:42%; border-radius:50%; background:#ff4757; }
-
-.sq.last-move-from {
-  background: rgba(255, 165, 2, 0.35) !important;
-  box-shadow: inset 0 0 10px rgba(255, 165, 2, 0.6);
-}
-.sq.last-move-to {
-  background: rgba(0, 242, 254, 0.35) !important;
-  box-shadow: inset 0 0 12px rgba(0, 242, 254, 0.8);
-  border: 2px dashed var(--neon-blue);
-}
-
+.sq.last-move-from { background: rgba(255, 165, 2, 0.35) !important; }
+.sq.last-move-to { background: rgba(0, 242, 254, 0.35) !important; border: 2px dashed var(--neon-blue); }
 .piece { width: 82%; height: 82%; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.7); display: grid; place-items: center; font-size: 1.15rem; position: relative; }
 .king:after { content:'♛'; font-size: clamp(13px,3.2vw,19px); position: absolute; bottom: 2px; right: 2px; color: #ffd166; }
 
-.arena-bottom-bar { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 520px; padding: 6px 10px; margin-bottom: 4px; }
-#clockPanel { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; }
-#clockRing { --progress: 100; width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; position: relative; background: conic-gradient(#2ecc71 calc(var(--progress)*1%), rgba(255,255,255,0.12) 0); }
+.arena-bottom-bar { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 520px; padding: 4px 10px; margin-bottom: 2px; z-index: 10; }
+#clockPanel { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
+#clockRing { --progress: 100; width: 50px; height: 50px; border-radius: 50%; display: grid; place-items: center; position: relative; background: conic-gradient(#2ecc71 calc(var(--progress)*1%), rgba(255,255,255,0.12) 0); }
 #clockRing:before { content: ''; position: absolute; inset: 5px; border-radius: 50%; background: #0b1f13; border: 1px solid rgba(255,255,255,0.2); }
-#turnClock { position: relative; z-index: 1; font-size: 1.15rem; font-weight: 800; color: #2ecc71; }
-#clockCaption { font-size: 0.75rem; color: #2ecc71; font-weight: 700; }
+#turnClock { position: relative; z-index: 1; font-size: 1.1rem; font-weight: 800; color: #2ecc71; }
+#clockCaption { font-size: 0.74rem; color: #2ecc71; font-weight: 700; }
 #clockRing.urgent #turnClock { color: var(--red); }
 
-.arena-circle-btn { width: 48px; height: 48px; border-radius: 50%; border: 2px solid #2ecc71; background: linear-gradient(135deg, #2ecc71, #27ae60); color: #0b1f13; font-size: 1.25rem; display: grid; place-items: center; cursor: pointer; position: relative; }
+.arena-circle-btn { width: 46px; height: 46px; border-radius: 50%; border: 2px solid #2ecc71; background: linear-gradient(135deg, #2ecc71, #27ae60); color: #0b1f13; font-size: 1.2rem; display: grid; place-items: center; cursor: pointer; position: relative; }
 .arena-circle-btn.close-btn { border-color: #ff6b81; background: linear-gradient(135deg, #ff4757, #c0392b); color: #fff; }
 .chat-badge {
   position: absolute; top: -4px; right: -4px; background: var(--red); color: #fff; font-size: 0.65rem;
@@ -193,13 +239,19 @@ body{
  </div>
 
  <div class="mid-voice-bar">
-  <button class="arena-voice-mic-btn" id="arenaVoiceRecordBtn" title="Press & Hold to Record Voice Note">
-   <i class="fa-solid fa-microphone"></i>
+  <div class="mid-voice-left">
+   <button class="arena-voice-mic-btn" id="arenaVoiceRecordBtn" title="Press & Hold to Record Voice Note">
+    <i class="fa-solid fa-microphone"></i>
+   </button>
+   <span class="mid-voice-label">කතා කිරීමට ඔබාගෙන සිටින්න</span>
+  </div>
+  <button type="button" class="cam-toggle-btn" id="camToggleBtn" title="Switch 3D Camera Angle">
+   <i class="fa-solid fa-cube"></i> <span id="camModeText">3D TILT</span>
   </button>
-  <span class="mid-voice-label">කතා කිරීමට ඔබාගෙන සිටින්න (Hold to Speak)</span>
  </div>
 
- <div class="board-wrap">
+ <div class="board-wrap" id="boardWrap">
+  <div id="threeStage" aria-label="3D Draughts Board"></div>
   <div class="board" id="board"></div>
  </div>
 
@@ -256,6 +308,7 @@ body{
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 'use strict';
 const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
@@ -273,28 +326,317 @@ let mediaRecorder = null;
 let audioChunks = [];
 let isRecording = false;
 
+/* Three.js 3D Arena State */
+let threeReady = false;
+let scene3D, camera3D, renderer3D, boardGroup3D, piecesGroup3D, markersGroup3D;
+let squareMeshes3D = [];
+let raycaster3D = null;
+let pointerDownPos = null;
+let is3DTiltView = true;
+let targetCamPos = new THREE.Vector3(0, 8.6, 6.4);
+let animatedPieceMeshes = [];
+
 const PIECE_DESIGNS=[
- {id:0,name:'මුතු සුදු (Default)',bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●',free:true},
- {id:1,name:'රන් ඔටුන්න',bg:'linear-gradient(135deg,#ffeaa7,#fdcb6e)',border:'#e1b12c',color:'#2d3436',icon:'★'},
- {id:2,name:'රුධිර රතු',bg:'radial-gradient(circle at 30% 30%,#ff7675,#d63031)',border:'#c0392b',color:'#fff',icon:'◆'},
- {id:3,name:'මරකත කොළ',bg:'radial-gradient(circle at 30% 30%,#55efc4,#00b894)',border:'#00a8ff',color:'#fff',icon:'▲'},
- {id:4,name:'නියෝන් නිල්',bg:'radial-gradient(circle at 30% 30%,#74b9ff,#0984e3)',border:'#00f2fe',color:'#fff',icon:'✦'},
- {id:5,name:'රාජකීය දම්',bg:'radial-gradient(circle at 30% 30%,#a29bfe,#6c5ce7)',border:'#fd79a8',color:'#fff',icon:'❖'},
- {id:6,name:'අඳුරු කාබන්',bg:'radial-gradient(circle at 30% 30%,#636e72,#2d3436)',border:'#b2bec3',color:'#ffd166',icon:'♠'},
- {id:7,name:'සූර්ය රන්',bg:'radial-gradient(circle at 30% 30%,#fab1a0,#e17055)',border:'#d63031',color:'#fff',icon:'☀'},
- {id:8,name:'මැජෙන්ටා රෝස',bg:'radial-gradient(circle at 30% 30%,#ff7979,#eb4d4b)',border:'#ff7979',color:'#fff',icon:'✿'},
- {id:9,name:'සැහැල්ලු සිල්වර්',bg:'radial-gradient(circle at 30% 30%,#dfe6e9,#b2bec3)',border:'#636e72',color:'#2d3436',icon:'⚙'},
- {id:10,name:'කොස්මික් වයලට්',bg:'radial-gradient(circle at 30% 30%,#8e44ad,#3498db)',border:'#9b59b6',color:'#fff',icon:'☄'},
- {id:11,name:'නියෝන් ලෙමන්',bg:'radial-gradient(circle at 30% 30%,#f1c40f,#f39c12)',border:'#f1c40f',color:'#111',icon:'⚡'},
- {id:12,name:'ටර්කියුයිස්',bg:'radial-gradient(circle at 30% 30%,#1abc9c,#16a085)',border:'#1abc9c',color:'#fff',icon:'🌊'},
- {id:13,name:'චොක්ලට් බ්‍රවුන්',bg:'radial-gradient(circle at 30% 30%,#d35400,#a04000)',border:'#e67e22',color:'#fff',icon:'☕'},
- {id:14,name:'රෝස් ගෝල්ඩ්',bg:'radial-gradient(circle at 30% 30%,#f5b041,#eb984e)',border:'#f39c12',color:'#fff',icon:'♕'},
- {id:15,name:'ගැඹුරු මිනිරන්',bg:'radial-gradient(circle at 30% 30%,#34495e,#2c3e50)',border:'#7f8c8d',color:'#ffd166',icon:'🛡'},
- {id:16,name:'අයිස් මින්ට්',bg:'radial-gradient(circle at 30% 30%,#a3e4d7,#48c9b0)',border:'#17a589',color:'#111',icon:'❄'},
- {id:17,name:'සැණකෙළි පර්පල්',bg:'radial-gradient(circle at 30% 30%,#d98880,#c0392b)',border:'#e74c3c',color:'#fff',icon:'🔮'},
- {id:18,name:'විදුලි ලෙමන්',bg:'radial-gradient(circle at 30% 30%,#f7dc6f,#f9e79f)',border:'#f1c40f',color:'#111',icon:'✨'},
- {id:19,name:'අමරණීය අඳුර',bg:'radial-gradient(circle at 30% 30%,#2c3e50,#000000)',border:'#ffd166',color:'#ffd166',icon:'♔'}
+ {id:0,name:'මුතු සුදු (Default)',bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●',hex:0xf8fafc,accentHex:0x94a3b8,free:true},
+ {id:1,name:'රන් ඔටුන්න',bg:'linear-gradient(135deg,#ffeaa7,#fdcb6e)',border:'#e1b12c',color:'#2d3436',icon:'★',hex:0xffd166,accentHex:0xff9f1c},
+ {id:2,name:'රුධිර රතු',bg:'radial-gradient(circle at 30% 30%,#ff7675,#d63031)',border:'#c0392b',color:'#fff',icon:'◆',hex:0xff4757,accentHex:0xc0392b},
+ {id:3,name:'මරකත කොළ',bg:'radial-gradient(circle at 30% 30%,#55efc4,#00b894)',border:'#00a8ff',color:'#fff',icon:'▲',hex:0x2ecc71,accentHex:0x00a8ff},
+ {id:4,name:'නියෝන් නිල්',bg:'radial-gradient(circle at 30% 30%,#74b9ff,#0984e3)',border:'#00f2fe',color:'#fff',icon:'✦',hex:0x00f2fe,accentHex:0x0984e3},
+ {id:5,name:'රාජකීය දම්',bg:'radial-gradient(circle at 30% 30%,#a29bfe,#6c5ce7)',border:'#fd79a8',color:'#fff',icon:'❖',hex:0x9b59b6,accentHex:0xfd79a8},
+ {id:6,name:'අඳුරු කාබන්',bg:'radial-gradient(circle at 30% 30%,#636e72,#2d3436)',border:'#b2bec3',color:'#ffd166',icon:'♠',hex:0x2d3436,accentHex:0xffd166},
+ {id:7,name:'සූර්ය රන්',bg:'radial-gradient(circle at 30% 30%,#fab1a0,#e17055)',border:'#d63031',color:'#fff',icon:'☀',hex:0xe17055,accentHex:0xffd166},
+ {id:8,name:'මැජෙන්ටා රෝස',bg:'radial-gradient(circle at 30% 30%,#ff7979,#eb4d4b)',border:'#ff7979',color:'#fff',icon:'✿',hex:0xff7979,accentHex:0xffd166},
+ {id:9,name:'සැහැල්ලු සිල්වර්',bg:'radial-gradient(circle at 30% 30%,#dfe6e9,#b2bec3)',border:'#636e72',color:'#2d3436',icon:'⚙',hex:0xcbd5e1,accentHex:0x475569},
+ {id:10,name:'කොස්මික් වයලට්',bg:'radial-gradient(circle at 30% 30%,#8e44ad,#3498db)',border:'#9b59b6',color:'#fff',icon:'☄',hex:0x8e44ad,accentHex:0x00f2fe},
+ {id:11,name:'නියෝන් ලෙමන්',bg:'radial-gradient(circle at 30% 30%,#f1c40f,#f39c12)',border:'#f1c40f',color:'#111',icon:'⚡',hex:0xf1c40f,accentHex:0x00f2fe},
+ {id:12,name:'ටර්කියුයිස්',bg:'radial-gradient(circle at 30% 30%,#1abc9c,#16a085)',border:'#1abc9c',color:'#fff',icon:'🌊',hex:0x1abc9c,accentHex:0x00f2fe},
+ {id:13,name:'චොක්ලට් බ්‍රවුන්',bg:'radial-gradient(circle at 30% 30%,#d35400,#a04000)',border:'#e67e22',color:'#fff',icon:'☕',hex:0xd35400,accentHex:0xffd166},
+ {id:14,name:'රෝස් ගෝල්ඩ්',bg:'radial-gradient(circle at 30% 30%,#f5b041,#eb984e)',border:'#f39c12',color:'#fff',icon:'♕',hex:0xf5b041,accentHex:0xffd166},
+ {id:15,name:'ගැඹුරු මිනිරන්',bg:'radial-gradient(circle at 30% 30%,#34495e,#2c3e50)',border:'#7f8c8d',color:'#ffd166',icon:'🛡',hex:0x34495e,accentHex:0xffd166},
+ {id:16,name:'අයිස් මින්ට්',bg:'radial-gradient(circle at 30% 30%,#a3e4d7,#48c9b0)',border:'#17a589',color:'#111',icon:'❄',hex:0x48c9b0,accentHex:0xffffff},
+ {id:17,name:'සැණකෙළි පර්පල්',bg:'radial-gradient(circle at 30% 30%,#d98880,#c0392b)',border:'#e74c3c',color:'#fff',icon:'🔮',hex:0xc0392b,accentHex:0x00f2fe},
+ {id:18,name:'විදුලි ලෙමන්',bg:'radial-gradient(circle at 30% 30%,#f7dc6f,#f9e79f)',border:'#f1c40f',color:'#111',icon:'✨',hex:0xf7dc6f,accentHex:0xff9f1c},
+ {id:19,name:'අමරණීය අඳුර',bg:'radial-gradient(circle at 30% 30%,#2c3e50,#000000)',border:'#ffd166',color:'#ffd166',icon:'♔',hex:0x111827,accentHex:0xffd166}
 ];
+
+function initThreeArena(){
+ const stage = $('threeStage');
+ const wrap = $('boardWrap');
+ if(!stage || typeof THREE === 'undefined'){
+  if(wrap) wrap.classList.add('fallback-2d');
+  return;
+ }
+
+ try{
+  const w = stage.clientWidth || 380;
+  const h = stage.clientHeight || 380;
+
+  scene3D = new THREE.Scene();
+  camera3D = new THREE.PerspectiveCamera(42, w / h, 0.1, 100);
+  camera3D.position.copy(targetCamPos);
+  camera3D.lookAt(0, 0, 0);
+
+  renderer3D = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer3D.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer3D.setSize(w, h);
+  renderer3D.shadowMap.enabled = true;
+  renderer3D.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer3D.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer3D.toneMappingExposure = 1.12;
+
+  stage.innerHTML = '';
+  stage.appendChild(renderer3D.domElement);
+
+  const ambient = new THREE.AmbientLight(0xdff9ec, 0.72);
+  scene3D.add(ambient);
+
+  const dirLight = new THREE.DirectionalLight(0xfff5d6, 1.15);
+  dirLight.position.set(5, 11, 6);
+  dirLight.castShadow = true;
+  dirLight.shadow.mapSize.width = 1024;
+  dirLight.shadow.mapSize.height = 1024;
+  scene3D.add(dirLight);
+
+  const rimLight = new THREE.PointLight(0x00f2fe, 0.75, 18);
+  rimLight.position.set(-5, 4, -5);
+  scene3D.add(rimLight);
+
+  const goldLight = new THREE.PointLight(0xffd166, 0.65, 18);
+  goldLight.position.set(5, 3, 5);
+  scene3D.add(goldLight);
+
+  boardGroup3D = new THREE.Group();
+  piecesGroup3D = new THREE.Group();
+  markersGroup3D = new THREE.Group();
+  scene3D.add(boardGroup3D, markersGroup3D, piecesGroup3D);
+
+  // Outer carved wooden & emerald rim
+  const frameGeo = new THREE.BoxGeometry(8.7, 0.42, 8.7);
+  const frameMat = new THREE.MeshStandardMaterial({
+   color: 0x0b2416,
+   roughness: 0.4,
+   metalness: 0.35
+  });
+  const frameMesh = new THREE.Mesh(frameGeo, frameMat);
+  frameMesh.position.y = -0.26;
+  frameMesh.receiveShadow = true;
+  boardGroup3D.add(frameMesh);
+
+  // 8x8 Squares (each 1.0 x 1.0 centered at [-3.5 .. +3.5])
+  const sqGeo = new THREE.BoxGeometry(0.98, 0.14, 0.98);
+  const lightMat = new THREE.MeshStandardMaterial({ color: 0xe8d7be, roughness: 0.55, metalness: 0.05 });
+  const darkMat = new THREE.MeshStandardMaterial({ color: 0x4a2e18, roughness: 0.6, metalness: 0.1 });
+
+  squareMeshes3D = [];
+  for(let r=0; r<8; r++){
+   for(let c=0; c<8; c++){
+    const isDark = (r + c) % 2 === 1;
+    const mesh = new THREE.Mesh(sqGeo, isDark ? darkMat.clone() : lightMat.clone());
+    mesh.position.set(c - 3.5, -0.02, r - 3.5);
+    mesh.receiveShadow = true;
+    mesh.userData = { r, c, baseColor: isDark ? 0x4a2e18 : 0xe8d7be };
+    boardGroup3D.add(mesh);
+    squareMeshes3D.push(mesh);
+   }
+  }
+
+  raycaster3D = new THREE.Raycaster();
+  stage.addEventListener('pointerdown', e => {
+   pointerDownPos = { x: e.clientX, y: e.clientY };
+  });
+  stage.addEventListener('pointerup', e => {
+   if(!pointerDownPos) return;
+   const dist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
+   pointerDownPos = null;
+   if(dist > 14) return;
+   handleThreeClick(e.clientX, e.clientY);
+  });
+
+  window.addEventListener('resize', resizeThreeArena);
+  threeReady = true;
+  syncThreeBoard();
+  animateThreeLoop();
+ }catch(err){
+  console.warn('Three.js fallback to 2D:', err);
+  if(wrap) wrap.classList.add('fallback-2d');
+ }
+}
+
+function resizeThreeArena(){
+ const stage = $('threeStage');
+ if(!threeReady || !renderer3D || !camera3D || !stage) return;
+ const w = stage.clientWidth || 380;
+ const h = stage.clientHeight || 380;
+ camera3D.aspect = w / h;
+ camera3D.updateProjectionMatrix();
+ renderer3D.setSize(w, h);
+}
+
+function handleThreeClick(clientX, clientY){
+ if(!threeReady || !renderer3D || !camera3D) return;
+ const rect = renderer3D.domElement.getBoundingClientRect();
+ if(!rect.width || !rect.height) return;
+ const ndc = new THREE.Vector2(
+  ((clientX - rect.left) / rect.width) * 2 - 1,
+  -((clientY - rect.top) / rect.height) * 2 + 1
+ );
+ raycaster3D.setFromCamera(ndc, camera3D);
+ const targets = [...squareMeshes3D, ...piecesGroup3D.children];
+ const hits = raycaster3D.intersectObjects(targets, true);
+ if(!hits.length) return;
+
+ for(const hit of hits){
+  let obj = hit.object;
+  while(obj){
+   if(obj.userData && typeof obj.userData.r === 'number' && typeof obj.userData.c === 'number'){
+    clickSquare(obj.userData.r, obj.userData.c);
+    return;
+   }
+   obj = obj.parent;
+  }
+ }
+}
+
+function clearGroup3D(grp){
+ if(!grp) return;
+ while(grp.children.length > 0){
+  const child = grp.children[0];
+  grp.remove(child);
+ }
+}
+
+function syncThreeBoard(){
+ if(!threeReady || !board || !board.length) return;
+
+ clearGroup3D(markersGroup3D);
+ clearGroup3D(piecesGroup3D);
+ animatedPieceMeshes = [];
+
+ const flip = single ? (userSide === -1) : (role === 'guest');
+ const toWorldX = c => (flip ? (7 - c) : c) - 3.5;
+ const toWorldZ = r => (flip ? (7 - r) : r) - 3.5;
+
+ // Reset & highlight squares
+ for(const sqMesh of squareMeshes3D){
+  const { r, c, baseColor } = sqMesh.userData;
+  sqMesh.material.color.setHex(baseColor);
+  sqMesh.material.emissive.setHex(0x000000);
+
+  if(lastMove){
+   if(lastMove.fromR === r && lastMove.fromC === c){
+    sqMesh.material.emissive.setHex(0x553800);
+   }
+   if(lastMove.toR === r && lastMove.toC === c){
+    sqMesh.material.emissive.setHex(0x004455);
+   }
+  }
+  if(selected && selected.r === r && selected.c === c){
+   sqMesh.material.color.setHex(0xffd166);
+   sqMesh.material.emissive.setHex(0x554000);
+  }
+ }
+
+ // Target & capture 3D markers
+ const markerGeo = new THREE.CylinderGeometry(0.22, 0.22, 0.08, 24);
+ for(const m of moves){
+  const isCap = !!m.capture;
+  const mat = new THREE.MeshStandardMaterial({
+   color: isCap ? 0xff4757 : 0x2ecc71,
+   emissive: isCap ? 0x550011 : 0x004418,
+   roughness: 0.3
+  });
+  const marker = new THREE.Mesh(markerGeo, mat);
+  marker.position.set(toWorldX(m.toC), 0.09, toWorldZ(m.toR));
+  marker.userData = { r: m.toR, c: m.toC };
+  markersGroup3D.add(marker);
+ }
+
+ // 3D Pieces
+ const cylGeo = new THREE.CylinderGeometry(0.36, 0.4, 0.24, 32);
+ const grooveGeo = new THREE.TorusGeometry(0.26, 0.03, 12, 28);
+ const crownGeo = new THREE.ConeGeometry(0.16, 0.22, 6);
+
+ for(let r=0; r<8; r++){
+  for(let c=0; c<8; c++){
+   const val = board[r][c];
+   if(!val) continue;
+
+   const isMyPiece = single ? (Math.sign(val) === userSide) : (role === 'host' ? Math.sign(val) === 1 : Math.sign(val) === -1);
+   const pieceDesignIndex = isMyPiece ? (user.pieceIndex || 0) : (window.opponentPieceIndex !== undefined ? window.opponentPieceIndex : 2);
+   const design = PIECE_DESIGNS[pieceDesignIndex] || PIECE_DESIGNS[0];
+
+   const pieceGroup = new THREE.Group();
+   const bodyMat = new THREE.MeshStandardMaterial({
+    color: design.hex,
+    roughness: 0.28,
+    metalness: 0.38
+   });
+   const bodyMesh = new THREE.Mesh(cylGeo, bodyMat);
+   bodyMesh.position.y = 0.17;
+   bodyMesh.castShadow = true;
+   bodyMesh.receiveShadow = true;
+   pieceGroup.add(bodyMesh);
+
+   const grooveMat = new THREE.MeshStandardMaterial({
+    color: design.accentHex,
+    roughness: 0.3,
+    metalness: 0.6
+   });
+   const grooveMesh = new THREE.Mesh(grooveGeo, grooveMat);
+   grooveMesh.rotation.x = Math.PI / 2;
+   grooveMesh.position.y = 0.295;
+   pieceGroup.add(grooveMesh);
+
+   if(Math.abs(val) === 2){
+    const crownMat = new THREE.MeshStandardMaterial({
+     color: 0xffd166,
+     emissive: 0x443000,
+     roughness: 0.2,
+     metalness: 0.85
+    });
+    const crownMesh = new THREE.Mesh(crownGeo, crownMat);
+    crownMesh.position.y = 0.41;
+    crownMesh.castShadow = true;
+    pieceGroup.add(crownMesh);
+   }
+
+   const isSel = !!(selected && selected.r === r && selected.c === c);
+   pieceGroup.position.set(toWorldX(c), isSel ? 0.16 : 0, toWorldZ(r));
+   pieceGroup.userData = { r, c, baseY: isSel ? 0.16 : 0, isSel };
+
+   piecesGroup3D.add(pieceGroup);
+   animatedPieceMeshes.push(pieceGroup);
+  }
+ }
+}
+
+function animateThreeLoop(){
+ if(!threeReady) return;
+ requestAnimationFrame(animateThreeLoop);
+
+ const t = performance.now() * 0.003;
+ camera3D.position.lerp(targetCamPos, 0.08);
+ camera3D.lookAt(0, 0, 0);
+
+ for(const grp of animatedPieceMeshes){
+  if(grp.userData && grp.userData.isSel){
+   grp.position.y = 0.18 + Math.sin(t * 2.4) * 0.05;
+  }
+ }
+
+ renderer3D.render(scene3D, camera3D);
+}
+
+$('camToggleBtn').onclick = () => {
+ is3DTiltView = !is3DTiltView;
+ if(is3DTiltView){
+  targetCamPos.set(0, 8.6, 6.4);
+  $('camModeText').textContent = '3D TILT';
+ } else {
+  targetCamPos.set(0, 11.4, 0.01);
+  $('camModeText').textContent = 'TOP 3D';
+ }
+};
 
 /* Self-Upgrading Planned Tactical AI Engine */
 function loadAiMasterState(){
@@ -404,15 +746,12 @@ function evaluateBoardForSide(b, aiSide, cfg){
    const isKing=Math.abs(val)===2;
    const pieceBase=isKing ? (100 * cfg.kingPriority) : 100;
 
-   // ඉදිරියට යන සැලසුම (forward advance toward king promotion)
    const adv=(side === -1) ? (r / 7) : ((7 - r) / 7);
    const advanceBonus=isKing ? 22 : (adv * 34 * cfg.aggression);
 
-   // මැද කොටු පාලනය (center control)
    const centerDist=Math.abs(3.5 - c) + Math.abs(3.5 - r);
    const centerBonus=Math.max(0, 7 - centerDist) * 5.5 * cfg.centerControl;
 
-   // පැති ආරක්ෂාව (edge safety)
    const edgeBonus=(c===0 || c===7) ? 12 : 0;
 
    const totalPiece=pieceBase + advanceBonus + centerBonus + edgeBonus;
@@ -492,7 +831,6 @@ function choosePlannedAiMove(legalMoves, aiSide){
   const afterBoard=simulateBoardMove(board, m);
   const futureVal=alphaBetaPlan(afterBoard, depth, -Infinity, Infinity, false, aiSide, cfg);
 
-  // ක්‍රීඩකයාට AI ගේ ඉත්තා කැපීමට ඇති අවස්ථා වළක්වා ගැනීම
   const humanNextMoves=allMoves(humanSide, afterBoard);
   let humanCaptureThreat=0;
   for(const hm of humanNextMoves){
@@ -818,6 +1156,10 @@ function allMoves(side,b=board){
 }
 
 function render(){
+ if(threeReady){
+  syncThreeBoard();
+  return;
+ }
  const el=$('board');el.innerHTML='';
  const flip=single?(userSide===-1):(role==='guest');
  for(let vr=0;vr<8;vr++){
@@ -1027,7 +1369,7 @@ function sendQuickChat(msg){
   }).catch(()=>{});
  } else {
   setTimeout(()=>{
-   const replies = [`Lv.${aiMasterState.level} plan active! 👑`, "No easy wins here! 🔥", "Calculated move! ⚡", "Watching your trap! 🛡️", "Your turn! 🎯"];
+   const replies = [`Lv.${aiMasterState.level} 3D plan active! 👑`, "No easy wins here! 🔥", "Calculated move! ⚡", "Watching your trap! 🛡️", "Your turn! 🎯"];
    const replyText = replies[Math.floor(Math.random()*replies.length)];
    appendChatMessage(`${aiNameLabel}: ${replyText}`, false);
    showOpponentThought(replyText);
@@ -1226,6 +1568,7 @@ $('rematch').onclick = () => {
  initBoard();
 };
 
+initThreeArena();
 initGameFromURL();
 </script>
 
