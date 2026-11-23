@@ -15,7 +15,7 @@ body{
   flex-direction:column;
   justify-content:center;
   align-items:center;
-  background: linear-gradient(rgba(10, 25, 15, 0.75), rgba(5, 15, 10, 0.85)), 
+  background: linear-gradient(rgba(10, 25, 15, 0.72), rgba(5, 15, 10, 0.86)), 
               url('https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?q=80&w=1920&auto=format&fit=crop') no-repeat center center/cover;
   color:#f8f9fa;
 }
@@ -28,17 +28,18 @@ body{
 
 .arena-top-header {
   display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; width: 100%; max-width: 520px;
-  background: rgba(10, 25, 15, 0.85); padding: 10px 14px; border-radius: 20px; border: 1.5px solid rgba(46, 204, 113, 0.4); box-shadow: 0 6px 20px rgba(0,0,0,0.6); margin-top: 6px;
-  backdrop-filter: blur(6px);
+  background: rgba(10, 25, 15, 0.88); padding: 10px 14px; border-radius: 20px; border: 1.5px solid rgba(255, 209, 102, 0.45); box-shadow: 0 8px 24px rgba(0,0,0,0.65); margin-top: 6px;
+  backdrop-filter: blur(8px);
 }
-.arena-player-card { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; position: relative; }
-.arena-avatar-box { width: 48px; height: 48px; border-radius: 50%; border: 2px solid #2ecc71; background: #0f2b1c; display: grid; place-items: center; font-size: 1.3rem; color: #2ecc71; overflow: hidden; }
-.arena-player-card.active .arena-avatar-box { border-color: #ffd166; box-shadow: 0 0 20px rgba(255, 209, 102, 0.8); transform: scale(1.08); }
-.arena-player-card b { font-size: 0.9rem; color: #fff; max-width: 105px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.arena-player-card { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; position: relative; transition: transform 0.2s ease; }
+.arena-avatar-box { width: 48px; height: 48px; border-radius: 50%; border: 2px solid #2ecc71; background: #0f2b1c; display: grid; place-items: center; font-size: 1.3rem; color: #2ecc71; overflow: hidden; box-shadow: inset 0 2px 6px rgba(255,255,255,0.22), 0 4px 12px rgba(0,0,0,0.6); transition: all 0.22s ease; }
+.arena-player-card.active .arena-avatar-box { border-color: #ffd166; box-shadow: 0 0 22px rgba(255, 209, 102, 0.85), inset 0 2px 8px rgba(255,255,255,0.35); transform: scale(1.08); }
+.arena-player-card.active b:before { content: '👑 '; font-size: 0.8rem; }
+.arena-player-card b { font-size: 0.9rem; color: #fff; max-width: 112px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .arena-player-card small { font-size: 0.72rem; color: #a0aec0; }
 
-.arena-coins-center { display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(46, 204, 113, 0.1); padding: 6px 16px; border-radius: 16px; border: 1px solid rgba(46, 204, 113, 0.3); }
-.arena-coins-center i { font-size: 1.3rem; color: #2ecc71; }
+.arena-coins-center { display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(145deg,rgba(255,209,102,0.16),rgba(46,204,113,0.12)); padding: 6px 16px; border-radius: 16px; border: 1px solid rgba(255,209,102,0.45); box-shadow: 0 0 14px rgba(255,209,102,0.15); }
+.arena-coins-center i { font-size: 1.3rem; color: #ffd166; filter: drop-shadow(0 0 6px rgba(255,209,102,0.6)); }
 .arena-coins-center b { font-size: 1.02rem; color: #fff; }
 
 .mid-voice-bar {
@@ -46,16 +47,16 @@ body{
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background: rgba(10, 25, 15, 0.6);
+  background: rgba(10, 25, 15, 0.68);
   padding: 6px 18px;
   border-radius: 30px;
-  border: 1px solid rgba(46, 204, 113, 0.3);
-  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 209, 102, 0.35);
+  backdrop-filter: blur(5px);
   margin: 4px 0;
 }
 .arena-voice-mic-btn {
   width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--red);
-  background: rgba(255, 71, 87, 0.2); color: var(--red); font-size: 1.1rem;
+  background: rgba(255, 71, 87, 0.22); color: var(--red); font-size: 1.1rem;
   display: grid; place-items: center; cursor: pointer; transition: all 0.2s;
 }
 .arena-voice-mic-btn.active-rec {
@@ -69,7 +70,7 @@ body{
 }
 .mid-voice-label {
   font-size: 0.78rem;
-  color: #a0aec0;
+  color: #cbd5e1;
   font-weight: 600;
 }
 
@@ -87,50 +88,76 @@ body{
 }
 
 @keyframes rgbGlow {
-  0% { border-color: #ff4757; box-shadow: 0 0 25px rgba(255, 71, 87, 0.8), inset 0 0 15px rgba(255, 71, 87, 0.5); }
-  25% { border-color: #2ecc71; box-shadow: 0 0 25px rgba(46, 204, 113, 0.8), inset 0 0 15px rgba(46, 204, 113, 0.5); }
-  50% { border-color: #00f2fe; box-shadow: 0 0 25px rgba(0, 242, 254, 0.8), inset 0 0 15px rgba(0, 242, 254, 0.5); }
-  75% { border-color: #ffd166; box-shadow: 0 0 25px rgba(255, 209, 102, 0.8), inset 0 0 15px rgba(255, 209, 102, 0.5); }
-  100% { border-color: #ff4757; box-shadow: 0 0 25px rgba(255, 71, 87, 0.8), inset 0 0 15px rgba(255, 71, 87, 0.5); }
+  0% { border-color: #ff4757; box-shadow: 0 0 25px rgba(255, 71, 87, 0.75), inset 0 0 16px rgba(255, 71, 87, 0.45); }
+  25% { border-color: #2ecc71; box-shadow: 0 0 25px rgba(46, 204, 113, 0.75), inset 0 0 16px rgba(46, 204, 113, 0.45); }
+  50% { border-color: #00f2fe; box-shadow: 0 0 25px rgba(0, 242, 254, 0.75), inset 0 0 16px rgba(0, 242, 254, 0.45); }
+  75% { border-color: #ffd166; box-shadow: 0 0 25px rgba(255, 209, 102, 0.85), inset 0 0 16px rgba(255, 209, 102, 0.5); }
+  100% { border-color: #ff4757; box-shadow: 0 0 25px rgba(255, 71, 87, 0.75), inset 0 0 16px rgba(255, 71, 87, 0.45); }
 }
 
 .board-wrap { 
   width: min(92vw, 54vh, 430px); aspect-ratio: 1; position: relative; margin: auto; 
-  background: linear-gradient(135deg, #163824, #0b1f13); padding: 12px; border-radius: 24px; 
-  border: 4px solid #2ecc71; animation: rgbGlow 6s linear infinite;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+  background: linear-gradient(135deg, #1b432b, #0b1f13); padding: 12px; border-radius: 24px; 
+  border: 4px solid #ffd166; animation: rgbGlow 6s linear infinite;
+  box-shadow: 0 16px 38px rgba(0,0,0,0.85);
 }
 
 .board { width: 100%; height: 100%; display: grid; grid-template-columns: repeat(8,1fr); grid-template-rows: repeat(8,1fr); border-radius: 12px; overflow: hidden; border: 2px solid #07140c; }
 .sq { display: grid; place-items: center; position: relative; cursor: pointer; touch-action: manipulation; }
-.sq.light { background: #e8d7be; }
-.sq.dark { background: #4a2e18; }
-.sq.selected { background: #ffd166 !important; }
-.sq.target:after { content:''; width:32%; height:32%; border-radius:50%; background:#2ecc71; }
-.sq.capture:after { content:''; width:42%; height:42%; border-radius:50%; background:#ff4757; }
+.sq.light { background: linear-gradient(145deg,#f3e5cc,#dec7a1); box-shadow: inset 0 1px 2px rgba(255,255,255,0.6); }
+.sq.dark { background: linear-gradient(145deg,#5a381e,#3c2310); box-shadow: inset 0 2px 5px rgba(0,0,0,0.55); }
+.sq.selected { background: linear-gradient(145deg,#ffe599,#ffd166) !important; box-shadow: inset 0 0 14px rgba(255,159,28,0.85); }
+.sq.target:after { content:''; width:34%; height:34%; border-radius:50%; background:radial-gradient(circle,#7dffb3,#2ecc71); box-shadow:0 0 10px rgba(46,204,113,0.9); animation:pulseDot 1.1s ease-in-out infinite; }
+.sq.capture:after { content:''; width:44%; height:44%; border-radius:50%; background:radial-gradient(circle,#ff8a95,#ff4757); box-shadow:0 0 12px rgba(255,71,87,0.95); animation:pulseDot 0.8s ease-in-out infinite; }
+@keyframes pulseDot{0%,100%{transform:scale(0.88);opacity:0.85}50%{transform:scale(1.12);opacity:1}}
 
 .sq.last-move-from {
-  background: rgba(255, 165, 2, 0.35) !important;
-  box-shadow: inset 0 0 10px rgba(255, 165, 2, 0.6);
+  background: rgba(255, 165, 2, 0.38) !important;
+  box-shadow: inset 0 0 12px rgba(255, 165, 2, 0.7);
 }
 .sq.last-move-to {
-  background: rgba(0, 242, 254, 0.35) !important;
-  box-shadow: inset 0 0 12px rgba(0, 242, 254, 0.8);
+  background: rgba(0, 242, 254, 0.36) !important;
+  box-shadow: inset 0 0 14px rgba(0, 242, 254, 0.85);
   border: 2px dashed var(--neon-blue);
 }
 
-.piece { width: 82%; height: 82%; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.7); display: grid; place-items: center; font-size: 1.15rem; position: relative; }
-.king:after { content:'♛'; font-size: clamp(13px,3.2vw,19px); position: absolute; bottom: 2px; right: 2px; color: #ffd166; }
+/* 3D Glossy Draughts Piece */
+.piece {
+ width: 82%; height: 82%; border-radius: 50%;
+ box-shadow: 0 5px 10px rgba(0,0,0,0.72), inset 0 3px 5px rgba(255,255,255,0.45), inset 0 -3px 5px rgba(0,0,0,0.45);
+ display: grid; place-items: center; font-size: 1.15rem; position: relative;
+ transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+.piece:before{
+ content:''; position:absolute; top:10%; left:18%; width:46%; height:24%;
+ border-radius:50%; background:rgba(255,255,255,0.35); transform:rotate(-18deg); pointer-events:none;
+}
+.sq.selected .piece{ transform: scale(1.08) translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,0.8), 0 0 14px rgba(255,209,102,0.85); }
+.king{ border-width: 2.5px !important; box-shadow: 0 6px 14px rgba(0,0,0,0.8), 0 0 12px rgba(255,209,102,0.65), inset 0 3px 6px rgba(255,255,255,0.5) !important; }
+.king:after { content:'♛'; font-size: clamp(13px,3.2vw,19px); position: absolute; bottom: 1px; right: 2px; color: #ffd166; filter: drop-shadow(0 1px 3px rgba(0,0,0,0.9)); }
+
+/* Capture Flame / Spark Burst Overlay */
+.fx-layer{position:absolute;inset:12px;pointer-events:none;overflow:hidden;border-radius:12px;z-index:15}
+.capture-ring{
+ position:absolute;width:48px;height:48px;margin:-24px 0 0 -24px;border-radius:50%;
+ border:3px solid var(--gold);box-shadow:0 0 18px #ff9f1c, inset 0 0 12px #ff4757;
+ animation:captureBurst 0.52s cubic-bezier(0.16,1,0.3,1) forwards;
+}
+@keyframes captureBurst{
+ 0%{transform:scale(0.35);opacity:1}
+ 70%{transform:scale(1.35);opacity:0.9}
+ 100%{transform:scale(1.75);opacity:0}
+}
 
 .arena-bottom-bar { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 520px; padding: 6px 10px; margin-bottom: 4px; }
 #clockPanel { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; }
-#clockRing { --progress: 100; width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; position: relative; background: conic-gradient(#2ecc71 calc(var(--progress)*1%), rgba(255,255,255,0.12) 0); }
+#clockRing { --progress: 100; width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; position: relative; background: conic-gradient(#2ecc71 calc(var(--progress)*1%), rgba(255,255,255,0.12) 0); box-shadow: 0 0 14px rgba(46,204,113,0.28); }
 #clockRing:before { content: ''; position: absolute; inset: 5px; border-radius: 50%; background: #0b1f13; border: 1px solid rgba(255,255,255,0.2); }
 #turnClock { position: relative; z-index: 1; font-size: 1.15rem; font-weight: 800; color: #2ecc71; }
 #clockCaption { font-size: 0.75rem; color: #2ecc71; font-weight: 700; }
 #clockRing.urgent #turnClock { color: var(--red); }
 
-.arena-circle-btn { width: 48px; height: 48px; border-radius: 50%; border: 2px solid #2ecc71; background: linear-gradient(135deg, #2ecc71, #27ae60); color: #0b1f13; font-size: 1.25rem; display: grid; place-items: center; cursor: pointer; position: relative; }
+.arena-circle-btn { width: 48px; height: 48px; border-radius: 50%; border: 2px solid #2ecc71; background: linear-gradient(135deg, #2ecc71, #27ae60); color: #0b1913; font-size: 1.25rem; display: grid; place-items: center; cursor: pointer; position: relative; box-shadow: 0 4px 14px rgba(0,0,0,0.5); }
 .arena-circle-btn.close-btn { border-color: #ff6b81; background: linear-gradient(135deg, #ff4757, #c0392b); color: #fff; }
 .chat-badge {
   position: absolute; top: -4px; right: -4px; background: var(--red); color: #fff; font-size: 0.65rem;
@@ -201,6 +228,7 @@ body{
 
  <div class="board-wrap">
   <div class="board" id="board"></div>
+  <div class="fx-layer" id="boardFxLayer" aria-hidden="true"></div>
  </div>
 
  <div class="arena-bottom-bar">
@@ -295,6 +323,20 @@ const PIECE_DESIGNS=[
  {id:18,name:'විදුලි ලෙමන්',bg:'radial-gradient(circle at 30% 30%,#f7dc6f,#f9e79f)',border:'#f1c40f',color:'#111',icon:'✨'},
  {id:19,name:'අමරණීය අඳුර',bg:'radial-gradient(circle at 30% 30%,#2c3e50,#000000)',border:'#ffd166',color:'#ffd166',icon:'♔'}
 ];
+
+function triggerCaptureBurst(r, c){
+ const layer=$('boardFxLayer');
+ if(!layer)return;
+ const flip=single?(userSide===-1):(role==='guest');
+ const vr=flip?(7-r):r;
+ const vc=flip?(7-c):c;
+ const ring=document.createElement('div');
+ ring.className='capture-ring';
+ ring.style.left=((vc + 0.5) * 12.5)+'%';
+ ring.style.top=((vr + 0.5) * 12.5)+'%';
+ layer.appendChild(ring);
+ setTimeout(()=>ring.remove(), 550);
+}
 
 /* Self-Upgrading Planned Tactical AI Engine */
 function loadAiMasterState(){
@@ -404,15 +446,12 @@ function evaluateBoardForSide(b, aiSide, cfg){
    const isKing=Math.abs(val)===2;
    const pieceBase=isKing ? (100 * cfg.kingPriority) : 100;
 
-   // ඉදිරියට යන සැලසුම (forward advance toward king promotion)
    const adv=(side === -1) ? (r / 7) : ((7 - r) / 7);
    const advanceBonus=isKing ? 22 : (adv * 34 * cfg.aggression);
 
-   // මැද කොටු පාලනය (center control)
    const centerDist=Math.abs(3.5 - c) + Math.abs(3.5 - r);
    const centerBonus=Math.max(0, 7 - centerDist) * 5.5 * cfg.centerControl;
 
-   // පැති ආරක්ෂාව (edge safety)
    const edgeBonus=(c===0 || c===7) ? 12 : 0;
 
    const totalPiece=pieceBase + advanceBonus + centerBonus + edgeBonus;
@@ -492,7 +531,6 @@ function choosePlannedAiMove(legalMoves, aiSide){
   const afterBoard=simulateBoardMove(board, m);
   const futureVal=alphaBetaPlan(afterBoard, depth, -Infinity, Infinity, false, aiSide, cfg);
 
-  // ක්‍රීඩකයාට AI ගේ ඉත්තා කැපීමට ඇති අවස්ථා වළක්වා ගැනීම
   const humanNextMoves=allMoves(humanSide, afterBoard);
   let humanCaptureThreat=0;
   for(const hm of humanNextMoves){
@@ -873,7 +911,10 @@ function clickSquare(r,c){
 
 function applyMove(b,m){
  const p=b[m.fromR][m.fromC];b[m.fromR][m.fromC]=0;b[m.toR][m.toC]=p;
- if(m.capture)b[m.capR][m.capC]=0;
+ if(m.capture){
+  b[m.capR][m.capC]=0;
+  triggerCaptureBurst(m.capR, m.capC);
+ }
  if(p===1&&m.toR===0)b[m.toR][m.toC]=2;
  if(p===-1&&m.toR===7)b[m.toR][m.toC]=-2;
  return p;
