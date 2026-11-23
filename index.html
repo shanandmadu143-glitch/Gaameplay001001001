@@ -120,6 +120,7 @@ main{flex:1;display:flex;flex-direction:column;justify-content:center;align-item
 .inbox-msg-list{display:flex;flex-direction:column;gap:8px;max-height:50dvh;overflow-y:auto;padding-right:2px}
 .inbox-msg-item{background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,255,255,0.09);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:4px;cursor:pointer}
 .inbox-msg-item.unread{border-color:rgba(255,209,102,0.55);background:rgba(255,209,102,0.08)}
+.inbox-msg-item.selected-reply{border-color:var(--neon-blue);background:rgba(0,242,254,0.08)}
 .inbox-msg-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .inbox-msg-from{font-weight:800;font-size:0.92rem;color:#fff;display:flex;align-items:center;gap:6px}
 .inbox-unread-dot{width:8px;height:8px;border-radius:50%;background:var(--neon-green)}
@@ -246,7 +247,7 @@ input:focus{border-color:var(--gold)}
    <div style="text-align:center;padding:20px;color:var(--dim)">Messages නොමැත.</div>
   </div>
   <div class="inbox-reply-row" id="homeReplyRow" style="display:none">
-   <input id="homeReplyInput" placeholder="පිළිතුර ලියන්න...">
+   <input id="homeReplyInput" maxlength="500" placeholder="පිළිතුර ලියන්න...">
    <button type="button" class="btn-gold" id="homeSendReplyBtn"><i class="fa-solid fa-paper-plane"></i></button>
   </div>
  </div>
@@ -373,6 +374,7 @@ let knownHomeMsgKeys=new Set();
 let isHomeInboxInitialLoad=true;
 let activeHomeReplyTarget=null;
 let homeNotifTimer=null;
+let isTrimmingInbox=false;
 
 let user={
  name:'',
@@ -464,6 +466,17 @@ function getMsgBytes(msgObj){
  return new TextEncoder().encode(JSON.stringify(msgObj || {})).length;
 }
 
+function toast(s, icon='fa-circle-info'){
+ const t=$('toast');
+ t.replaceChildren();
+ const iconEl=document.createElement('i');iconEl.className=`fa-solid ${icon}`;iconEl.style.color='var(--gold)';
+ const textEl=document.createElement('span');textEl.textContent=String(s);
+ t.append(iconEl,textEl);
+ t.classList.add('show');
+ setTimeout(()=>t.classList.remove('show'),3000);
+}
+function modal(id,on){$(id).classList.toggle('show',on);}
+
 function showHomeMessageNotification(msg){
  const banner=$('homeMsgNotif');
  $('homeMsgNotifTitle').textContent=`නව Message: ${msg.fromName || 'Player'}`;
@@ -471,6 +484,8 @@ function showHomeMessageNotification(msg){
  banner.classList.add('show');
  if(homeNotifTimer)clearTimeout(homeNotifTimer);
  homeNotifTimer=setTimeout(()=>banner.classList.remove('show'),4000);
+
+ toast(`${msg.fromName || 'Player'}: ${msg.text || ''}`,'fa-envelope');
 
  if('Notification' in window && Notification.permission === 'granted'){
   try{
@@ -485,60 +500,97 @@ if('Notification' in window && Notification.permission === 'default'){
 
 $('homeMsgNotif').onclick=()=>{
  $('homeMsgNotif').classList.remove('show');
- modal('homeInboxModal',true);
+ if(fbUser || user.uid){
+  modal('homeInboxModal',true);
+ }
 };
 
 async function enforce2MbInboxLimit(uid, items){
- let sorted=[...items].sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
- let totalBytes=sorted.reduce((sum,item)=>sum+getMsgBytes(item.data),0);
- while(totalBytes > MAX_INBOX_BYTES && sorted.length > 0){
-  const oldest=sorted.shift();
-  totalBytes-=getMsgBytes(oldest.data);
-  if(oldest && oldest.key && db){
-   await db.ref(`inbox_v6/${uid}/${oldest.key}`).remove().catch(()=>{});
+ if(isTrimmingInbox)return {sorted:items, totalBytes:items.reduce((s,i)=>s+getMsgBytes(i.data),0)};
+ isTrimmingInbox=true;
+ try{
+  let sorted=[...items].sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
+  let totalBytes=sorted.reduce((sum,item)=>sum+getMsgBytes(item.data),0);
+  while(totalBytes > MAX_INBOX_BYTES && sorted.length > 0){
+   const oldest=sorted.shift();
+   totalBytes-=getMsgBytes(oldest.data);
+   if(oldest && oldest.key && db){
+    await db.ref(`inbox_v6/${uid}/${oldest.key}`).remove().catch(()=>{});
+   }
   }
+  return {sorted, totalBytes};
+ }finally{
+  isTrimmingInbox=false;
  }
- return {sorted, totalBytes};
 }
 
 function renderHomeInbox(sortedItems, totalBytes){
  $('homeInboxStorage').textContent=`${formatMb(totalBytes)} MB / 2.00 MB`;
- const unreadCount=sortedItems.filter(m=>!m.data.read).length;
+ const unreadCount=sortedItems.filter(m=>m && m.data && !m.data.read).length;
  const badge=$('homeInboxBadge');
  badge.textContent=String(unreadCount);
  badge.classList.toggle('show', unreadCount > 0);
 
  const listEl=$('homeInboxList');
- listEl.innerHTML='';
+ listEl.replaceChildren();
  const newestFirst=[...sortedItems].reverse();
 
  if(!newestFirst.length){
-  listEl.innerHTML='<div style="text-align:center;padding:20px;color:var(--dim)">Messages නොමැත.</div>';
+  const empty=document.createElement('div');
+  empty.style.cssText='text-align:center;padding:20px;color:var(--dim)';
+  empty.textContent='Messages නොමැත (2MB සීමාව ඇතුළත).';
+  listEl.appendChild(empty);
   return;
  }
 
  newestFirst.forEach(item=>{
   const d=item.data||{};
-  const timeStr=d.timestamp ? new Date(d.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '';
+  const timeStr=d.timestamp ? new Date(Number(d.timestamp)).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '';
+
   const row=document.createElement('div');
-  row.className=`inbox-msg-item ${d.read ? '' : 'unread'}`;
-  row.innerHTML=`
-   <div class="inbox-msg-top">
-    <span class="inbox-msg-from">${!d.read ? '<span class="inbox-unread-dot"></span>' : ''}${d.fromName || 'Player'}</span>
-    <span class="inbox-msg-time">${timeStr}</span>
-   </div>
-   <div class="inbox-msg-text">${d.text || ''}</div>
-  `;
+  row.className=`inbox-msg-item ${d.read ? '' : 'unread'}${activeHomeReplyTarget && activeHomeReplyTarget.uid === d.fromUid ? ' selected-reply' : ''}`;
+
+  const top=document.createElement('div');
+  top.className='inbox-msg-top';
+
+  const fromSpan=document.createElement('span');
+  fromSpan.className='inbox-msg-from';
+  if(!d.read){
+   const dot=document.createElement('span');
+   dot.className='inbox-unread-dot';
+   fromSpan.appendChild(dot);
+  }
+  const fromIcon=document.createElement('i');
+  fromIcon.className='fa-solid fa-user-circle';
+  fromIcon.style.color='var(--gold)';
+  const fromNameText=document.createTextNode(' '+(d.fromName || 'Player'));
+  fromSpan.append(fromIcon,fromNameText);
+
+  const timeSpan=document.createElement('span');
+  timeSpan.className='inbox-msg-time';
+  timeSpan.textContent=timeStr;
+
+  top.append(fromSpan,timeSpan);
+
+  const bodyDiv=document.createElement('div');
+  bodyDiv.className='inbox-msg-text';
+  bodyDiv.textContent=String(d.text || '');
+
+  row.append(top,bodyDiv);
+
   row.onclick=async()=>{
-   if(!d.read && fbUser && db){
+   if(!d.read && fbUser && db && item.key){
     await db.ref(`inbox_v6/${fbUser.uid}/${item.key}/read`).set(true).catch(()=>{});
    }
    if(d.fromUid){
     activeHomeReplyTarget={uid:d.fromUid, name:d.fromName || 'Player'};
     $('homeReplyRow').style.display='flex';
     $('homeReplyInput').placeholder=`${activeHomeReplyTarget.name} වෙත reply කරන්න...`;
+    $('homeReplyInput').focus();
+    renderHomeInbox(sortedItems, totalBytes);
    }
   };
+
   listEl.appendChild(row);
  });
 }
@@ -557,13 +609,13 @@ function attachHomeInboxListener(uid){
   const raw=snap.val()||{};
   const entries=Object.keys(raw).map(key=>({
    key,
-   timestamp:Number(raw[key].timestamp)||0,
-   data:raw[key]
+   timestamp:Number(raw[key] && raw[key].timestamp)||0,
+   data:raw[key]||{}
   }));
 
   if(!isHomeInboxInitialLoad){
    entries.forEach(entry=>{
-    if(!knownHomeMsgKeys.has(entry.key) && entry.data.fromUid !== uid){
+    if(!knownHomeMsgKeys.has(entry.key) && entry.data.fromUid && entry.data.fromUid !== uid){
      showHomeMessageNotification(entry.data);
     }
    });
@@ -588,33 +640,36 @@ $('homeInboxFab').onclick=()=>{
 };
 $('closeHomeInboxBtn').onclick=()=>modal('homeInboxModal',false);
 
-$('homeSendReplyBtn').onclick=async()=>{
+async function sendHomeReply(){
  if(!fbUser || !activeHomeReplyTarget || !activeHomeReplyTarget.uid || !db)return;
  const txt=String($('homeReplyInput').value||'').trim();
- if(!txt)return;
- await db.ref('inbox_v6/'+activeHomeReplyTarget.uid).push().set({
-  fromUid:fbUser.uid,
-  fromName:user.name || 'Player',
-  toUid:activeHomeReplyTarget.uid,
-  toName:activeHomeReplyTarget.name,
-  text:txt,
-  read:false,
-  timestamp:Date.now()
- });
- $('homeReplyInput').value='';
- toast(`${activeHomeReplyTarget.name} වෙත පිළිතුර යවන ලදී!`,'fa-paper-plane');
-};
-
-function toast(s, icon='fa-circle-info'){
- const t=$('toast');
- t.replaceChildren();
- const iconEl=document.createElement('i');iconEl.className=`fa-solid ${icon}`;iconEl.style.color='var(--gold)';
- const textEl=document.createElement('span');textEl.textContent=String(s);
- t.append(iconEl,textEl);
- t.classList.add('show');
- setTimeout(()=>t.classList.remove('show'),3000);
+ if(!txt)return toast('කරුණාකර message එකක් ලියන්න.');
+ try{
+  await db.ref('inbox_v6/'+activeHomeReplyTarget.uid).push().set({
+   fromUid:fbUser.uid,
+   fromName:user.name || 'Player',
+   fromAvatar:user.avatarIcon || 'fa-user',
+   toUid:activeHomeReplyTarget.uid,
+   toName:activeHomeReplyTarget.name,
+   text:txt,
+   read:false,
+   timestamp:Date.now()
+  });
+  $('homeReplyInput').value='';
+  toast(`${activeHomeReplyTarget.name} වෙත පිළිතුර යවන ලදී!`,'fa-paper-plane');
+ }catch(e){
+  console.error('Reply error:',e);
+  toast('පිළිතුර යැවීමට නොහැකි විය.','fa-circle-exclamation');
+ }
 }
-function modal(id,on){$(id).classList.toggle('show',on);}
+
+$('homeSendReplyBtn').onclick=sendHomeReply;
+$('homeReplyInput').addEventListener('keydown',e=>{
+ if(e.key==='Enter'){
+  e.preventDefault();
+  sendHomeReply();
+ }
+});
 
 function smoothNavigate(url){
  if(isNavigating)return;
