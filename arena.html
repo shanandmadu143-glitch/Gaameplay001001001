@@ -114,7 +114,6 @@ body{
   border: 2px dashed var(--neon-blue);
 }
 
-/* Next-Level Embossed Piece & Royal King Crown */
 .piece {
  width: 82%; height: 82%; border-radius: 50%;
  box-shadow: 0 5px 9px rgba(0,0,0,0.72), inset 0 2px 4px rgba(255,255,255,0.5), inset 0 -2px 4px rgba(0,0,0,0.48);
@@ -265,7 +264,7 @@ body{
 </section>
 
 <audio id="remoteAudio" autoplay playsinline style="display:none;"></audio>
-<audio id="forestAmbient" src="https://cdn.pixabay.com/download/audio/2022/05/16/audio_db32c1b913.mp3?filename=forest-with-birds-and-wind-111456.mp3" preload="auto" loop style="display:none;"></audio>
+<audio id="forestAmbient" src="https://cdn.pixabay.com/download/audio/2022/05/16/audio_db32c1b913.mp3?filename=forest-with-birds-and-wind-111456.mp3" preload="none" loop style="display:none;"></audio>
 
 <div class="modal" id="overModal">
  <div class="modalbox" style="text-align:center">
@@ -558,18 +557,20 @@ window.DamMasterArenaAI={
 
 function playVoice(text) {
  if (!soundEnabled || !('speechSynthesis' in window)) return;
- window.speechSynthesis.cancel();
- const utterance = new SpeechSynthesisUtterance(text);
- utterance.lang = 'en-US';
- utterance.pitch = 0.3;
- utterance.rate = 0.95;
- utterance.volume = 1.0;
+ try{
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'en-US';
+  utterance.pitch = 0.3;
+  utterance.rate = 0.95;
+  utterance.volume = 1.0;
 
- const voices = window.speechSynthesis.getVoices();
- const robotVoice = voices.find(v => v.name.toLowerCase().includes('google us english') || v.name.toLowerCase().includes('david') || v.name.toLowerCase().includes('zira') || v.name.toLowerCase().includes('robot'));
- if (robotVoice) utterance.voice = robotVoice;
+  const voices = window.speechSynthesis.getVoices();
+  const robotVoice = voices.find(v => v.name.toLowerCase().includes('google us english') || v.name.toLowerCase().includes('david') || v.name.toLowerCase().includes('zira') || v.name.toLowerCase().includes('robot'));
+  if (robotVoice) utterance.voice = robotVoice;
 
- window.speechSynthesis.speak(utterance);
+  window.speechSynthesis.speak(utterance);
+ }catch(_){}
 }
 
 if ('speechSynthesis' in window) {
@@ -579,6 +580,7 @@ if ('speechSynthesis' in window) {
 function startForestAmbient() {
  const forestAudio = $('forestAmbient');
  if (forestAudio && soundEnabled) {
+  forestAudio.preload = 'auto';
   forestAudio.volume = 0.35;
   forestAudio.play().catch(() => {
    const unlockAudio = () => {
@@ -704,83 +706,11 @@ function toast(s, icon='fa-circle-info'){
 }
 function modal(id,on){$(id).classList.toggle('show',on);}
 
-try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);auth=firebase.auth();db=firebase.database();}catch(e){console.error(e);}
-
 function applyAvatarToBox(elementId, designIndex, customIcon){
  const el=$(elementId);if(!el)return;
  const design=PIECE_DESIGNS[designIndex]||PIECE_DESIGNS[0];
  el.style.background=design.bg;el.style.borderColor=design.border;el.style.color=design.color;
  el.innerHTML=customIcon ? `<i class="fa-solid ${customIcon}"></i>` : design.icon;
-}
-
-async function initGameFromURL(){
- const params = new URLSearchParams(window.location.search);
- let storedMulti = null;
- try { storedMulti = JSON.parse(sessionStorage.getItem('sinhala_draughts_multi_room') || 'null'); } catch(e){}
- let storedAiCfg = null;
- try { storedAiCfg = JSON.parse(sessionStorage.getItem('sinhala_draughts_ai_config') || 'null'); } catch(e){}
-
- gameMode = params.get('mode') || ((params.get('roomId') || (storedMulti && storedMulti.roomId)) ? 'multi' : 'single');
- const bet = Number(params.get('bet')) || (storedMulti && Number(storedMulti.bet)) || Number(sessionStorage.getItem('sinhala_draughts_bet')) || 0;
- window.currentBetPoints = bet;
- $('arenaBetDisplay').textContent = gameMode === 'freestyle' ? 'FREE' : bet;
-
- aiNameLabel = params.get('aiName') || (storedAiCfg && storedAiCfg.name) || 'දාම් Master';
-
- const saved = localStorage.getItem(KEY);
- if(saved) { try { user = Object.assign(user, JSON.parse(saved)); } catch(e){} }
-
- const startByMode = async () => {
-  if(gameMode === 'single' || gameMode === 'freestyle') {
-   single = true; role = null; roomId = null;
-   aiMasterState = loadAiMasterState();
-   $('p1name').textContent = user.name || 'ඔබ'; $('p1sub').textContent = 'Player';
-   $('p2name').textContent = aiNameLabel;
-   updateAiSubLabel();
-   applyAvatarToBox('p1AvatarBox', user.pieceIndex||0, user.avatarIcon||'fa-user');
-   applyAvatarToBox('p2AvatarBox', 2, 'fa-chess-king');
-   initBoard();
-  } else if(gameMode === 'multi') {
-   single = false;
-   role = params.get('role') || (storedMulti && storedMulti.role) || 'host';
-   roomId = params.get('roomId') || (storedMulti && storedMulti.roomId) || '';
-   const oppName = params.get('oppName') || (role === 'host' ? (storedMulti && storedMulti.guestName) : (storedMulti && storedMulti.hostName)) || (role === 'host' ? 'Guest' : 'Host');
-   setupMultiplayerGame(roomId, role, oppName, bet);
-  }
- };
-
- if(!auth || !db) {
-  await startByMode();
-  return;
- }
-
- let authResolved = false;
- auth.onAuthStateChanged(async u => {
-  if(u) {
-   fbUser = u;
-   try {
-    const snap = await db.ref('users_v6/'+u.uid).once('value');
-    if(snap.exists()) {
-     const d = snap.val();
-     if(d.name) user.name = d.name;
-     user.points = Number(d.points)||500;
-     user.wins = Number(d.wins)||0;
-     user.losses = Number(d.losses)||0;
-     user.pieceIndex = Number(d.pieceIndex)||0;
-     user.avatarIcon = d.avatarIcon||'fa-user';
-    }
-   } catch(e){}
-  }
-  if(!authResolved) {
-   authResolved = true;
-   await startByMode();
-  } else if(!single && roomId && db && fbUser) {
-   const patch = role === 'guest'
-    ? { guestUid: fbUser.uid, guestName: user.name || 'Guest', guestPieceIndex: user.pieceIndex || 0, status: 'active', matchStarted: true }
-    : { hostUid: fbUser.uid, hostName: user.name || 'Host', hostPieceIndex: user.pieceIndex || 0 };
-   db.ref('rooms_v6/' + roomId).update(patch).catch(()=>{});
-  }
- });
 }
 
 function createFreshBoard() {
@@ -799,21 +729,23 @@ function normalizeFirebaseBoard(rawBoard) {
  );
 }
 
-function initBoard(){
+function initBoard(skipVoice = false){
  clearInterval(turnClockTimer);
+ clearTimeout(aiTimer);
  board=createFreshBoard();
  turn=1;selected=null;moves=[];gameOver=false;processing=false;forcedContinuation=null;
  lastMove=null;
  if(single) userSide = nextStartingSide;
  render(); setTurnUI();
 
- startForestAmbient();
+ if(!skipVoice){
+  startForestAmbient();
+  setTimeout(() => {
+   playVoice("System online. Forest ambient active. Good luck!");
+  }, 600);
+ }
 
- setTimeout(() => {
-  playVoice("System online. Forest ambient active. Good luck!");
- }, 800);
-
- if(single && turn !== userSide) aiTimer = setTimeout(aiMove, 450);
+ if(single && turn !== userSide) aiTimer = setTimeout(aiMove, 380);
 }
 
 const inside=(r,c)=>r>=0&&r<8&&c>=0&&c<8;
@@ -1139,17 +1071,32 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
  forcedContinuation = null;
  lastMove = null;
 
- if(!db || !roomId) {
-  render();
-  setTurnUI();
-  return;
+ if(role === 'host') {
+  window.opponentPieceIndex = 2;
+  $('p1name').textContent = user.name || 'Host'; $('p1sub').textContent = 'Host';
+  $('p2name').textContent = opponentName || 'Guest'; $('p2sub').textContent = 'Guest';
+  applyAvatarToBox('p1AvatarBox', user.pieceIndex||0, user.avatarIcon||'fa-user');
+  applyAvatarToBox('p2AvatarBox', 0, 'fa-chess-knight');
+ } else {
+  window.opponentPieceIndex = 0;
+  $('p1name').textContent = opponentName || 'Host'; $('p1sub').textContent = 'Host';
+  $('p2name').textContent = user.name || 'Guest'; $('p2sub').textContent = 'Guest';
+  applyAvatarToBox('p1AvatarBox', 0, 'fa-user');
+  applyAvatarToBox('p2AvatarBox', user.pieceIndex||0, user.avatarIcon||'fa-user');
  }
 
- roomRef = db.ref('rooms_v6/' + roomId);
+ render();
+ setTurnUI();
 
- roomRef.once('value').then(snap => {
-  const data = snap.val();
-  if(data) {
+ if(!roomId) return;
+
+ const bindRoom = () => {
+  if(!db || roomRef) return;
+  roomRef = db.ref('rooms_v6/' + roomId);
+
+  roomRef.once('value').then(snap => {
+   const data = snap.val();
+   if(!data) return;
    if(data.bet) {
     window.currentBetPoints = Number(data.bet) || bet;
     $('arenaBetDisplay').textContent = window.currentBetPoints;
@@ -1163,8 +1110,8 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
 
    if(role === 'host') {
     window.opponentPieceIndex = data.guestPieceIndex !== undefined ? data.guestPieceIndex : 2;
-    $('p1name').textContent = user.name || data.hostName || 'Host'; $('p1sub').textContent = 'Host';
-    $('p2name').textContent = opponentName || data.guestName || 'Guest'; $('p2sub').textContent = 'Guest';
+    $('p1name').textContent = user.name || data.hostName || 'Host';
+    $('p2name').textContent = data.guestName || opponentName || 'Guest';
     applyAvatarToBox('p1AvatarBox', user.pieceIndex||0, user.avatarIcon||'fa-user');
     applyAvatarToBox('p2AvatarBox', data.guestPieceIndex||0, data.guestAvatar||'fa-chess-knight');
     if(!Array.isArray(data.board)) {
@@ -1179,8 +1126,8 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
     }
    } else {
     window.opponentPieceIndex = data.hostPieceIndex !== undefined ? data.hostPieceIndex : 0;
-    $('p1name').textContent = opponentName || data.hostName || 'Host'; $('p1sub').textContent = 'Host';
-    $('p2name').textContent = user.name || data.guestName || 'Guest'; $('p2sub').textContent = 'Guest';
+    $('p1name').textContent = data.hostName || opponentName || 'Host';
+    $('p2name').textContent = user.name || data.guestName || 'Guest';
     applyAvatarToBox('p1AvatarBox', data.hostPieceIndex||0, data.hostAvatar||'fa-user');
     applyAvatarToBox('p2AvatarBox', user.pieceIndex||0, user.avatarIcon||'fa-user');
     const guestPatch = {
@@ -1198,65 +1145,65 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
    }
    render();
    setTurnUI();
-  }
- });
+  }).catch(()=>{});
 
- if(roomValueHandler) { try { roomRef.off('value', roomValueHandler); } catch(e){} }
- roomValueHandler = snap => {
-  const data = snap.val();
-  if(!data) return;
+  if(roomValueHandler) { try { roomRef.off('value', roomValueHandler); } catch(e){} }
+  roomValueHandler = snap => {
+   const data = snap.val();
+   if(!data) return;
 
-  if(role === 'host') {
-   if(data.guestName) $('p2name').textContent = data.guestName;
-   if(data.guestPieceIndex !== undefined) window.opponentPieceIndex = data.guestPieceIndex;
-  } else {
-   if(data.hostName) $('p1name').textContent = data.hostName;
-   if(data.hostPieceIndex !== undefined) window.opponentPieceIndex = data.hostPieceIndex;
-  }
-
-  if(data.status === 'finished') {
-   if(!gameOver) finish(Number(data.winner), 'තරඟය අවසන් විය.');
-   return;
-  }
-
-  if(data.updatedBy && data.updatedBy === mySessionId) return;
-
-  const prevTurn = turn;
-  if(Array.isArray(data.board)) {
-   board = normalizeFirebaseBoard(data.board);
-  }
-  if(data.turn !== undefined) {
-   turn = Number(data.turn) === -1 ? -1 : 1;
-  }
-  forcedContinuation = data.forcedContinuation || null;
-  if(data.lastMove) lastMove = data.lastMove;
-
-  render();
-  if(prevTurn !== turn || !turnClockTimer) {
-   setTurnUI();
-  }
- };
- roomRef.on('value', roomValueHandler);
-
- if(chatAddedHandler) { try { roomRef.child('chats').off('child_added', chatAddedHandler); } catch(e){} }
- chatAddedHandler = snap => {
-  const c = snap.val();
-  if(c && c.senderId !== mySessionId) {
-   if(c.type === 'voice' && c.audioData) {
-    appendVoiceMessage(c.audioData, false);
-   } else if(c.message) {
-    appendChatMessage(`${c.sender}: ${c.message}`, false);
+   if(role === 'host') {
+    if(data.guestName) $('p2name').textContent = data.guestName;
+    if(data.guestPieceIndex !== undefined) window.opponentPieceIndex = data.guestPieceIndex;
+   } else {
+    if(data.hostName) $('p1name').textContent = data.hostName;
+    if(data.hostPieceIndex !== undefined) window.opponentPieceIndex = data.hostPieceIndex;
    }
-   showOpponentThought(c.message || '[Voice Message]');
-   if(!$('chatDrawer').classList.contains('open')) {
-    $('chatBadge').style.display = 'grid';
+
+   if(data.status === 'finished') {
+    if(!gameOver) finish(Number(data.winner), 'තරඟය අවසන් විය.');
+    return;
    }
-  }
+
+   if(data.updatedBy && data.updatedBy === mySessionId) return;
+
+   const prevTurn = turn;
+   if(Array.isArray(data.board)) {
+    board = normalizeFirebaseBoard(data.board);
+   }
+   if(data.turn !== undefined) {
+    turn = Number(data.turn) === -1 ? -1 : 1;
+   }
+   forcedContinuation = data.forcedContinuation || null;
+   if(data.lastMove) lastMove = data.lastMove;
+
+   render();
+   if(prevTurn !== turn || !turnClockTimer) {
+    setTurnUI();
+   }
+  };
+  roomRef.on('value', roomValueHandler);
+
+  if(chatAddedHandler) { try { roomRef.child('chats').off('child_added', chatAddedHandler); } catch(e){} }
+  chatAddedHandler = snap => {
+   const c = snap.val();
+   if(c && c.senderId !== mySessionId) {
+    if(c.type === 'voice' && c.audioData) {
+     appendVoiceMessage(c.audioData, false);
+    } else if(c.message) {
+     appendChatMessage(`${c.sender}: ${c.message}`, false);
+    }
+    showOpponentThought(c.message || '[Voice Message]');
+    if(!$('chatDrawer').classList.contains('open')) {
+     $('chatBadge').style.display = 'grid';
+    }
+   }
+  };
+  roomRef.child('chats').on('child_added', chatAddedHandler);
  };
- roomRef.child('chats').on('child_added', chatAddedHandler);
- render();
- setTurnUI();
- startForestAmbient();
+
+ if(db) bindRoom();
+ else window.addEventListener('firebaseReady', bindRoom, { once: true });
 }
 
 function syncMultiplayerState() {
@@ -1294,10 +1241,81 @@ $('rematch').onclick = () => {
  modal('overModal',false);
  if(gameMode==='multi') { leaveArena(); return; }
  nextStartingSide = -nextStartingSide;
- initBoard();
+ initBoard(false);
 };
 
-initGameFromURL();
+/* 0ms Instant Boot from URL + Local/Session Storage */
+(function instantStart(){
+ const params = new URLSearchParams(window.location.search);
+ let storedMulti = null;
+ try { storedMulti = JSON.parse(sessionStorage.getItem('sinhala_draughts_multi_room') || 'null'); } catch(e){}
+ let storedAiCfg = null;
+ try { storedAiCfg = JSON.parse(sessionStorage.getItem('sinhala_draughts_ai_config') || 'null'); } catch(e){}
+
+ const saved = localStorage.getItem(KEY);
+ if(saved) { try { user = Object.assign(user, JSON.parse(saved)); } catch(e){} }
+
+ gameMode = params.get('mode') || ((params.get('roomId') || (storedMulti && storedMulti.roomId)) ? 'multi' : 'single');
+ const bet = Number(params.get('bet')) || (storedMulti && Number(storedMulti.bet)) || Number(sessionStorage.getItem('sinhala_draughts_bet')) || 0;
+ window.currentBetPoints = bet;
+ $('arenaBetDisplay').textContent = gameMode === 'freestyle' ? 'FREE' : bet;
+
+ aiNameLabel = params.get('aiName') || (storedAiCfg && storedAiCfg.name) || 'දාම් Master';
+
+ if(gameMode === 'single' || gameMode === 'freestyle') {
+  single = true; role = null; roomId = null;
+  aiMasterState = loadAiMasterState();
+  $('p1name').textContent = user.name || 'ඔබ'; $('p1sub').textContent = 'Player';
+  $('p2name').textContent = aiNameLabel;
+  updateAiSubLabel();
+  applyAvatarToBox('p1AvatarBox', user.pieceIndex||0, user.avatarIcon||'fa-user');
+  applyAvatarToBox('p2AvatarBox', 2, 'fa-chess-king');
+  initBoard(true);
+ } else {
+  single = false;
+  role = params.get('role') || (storedMulti && storedMulti.role) || 'host';
+  roomId = params.get('roomId') || (storedMulti && storedMulti.roomId) || '';
+  const oppName = params.get('oppName') || (role === 'host' ? (storedMulti && storedMulti.guestName) : (storedMulti && storedMulti.hostName)) || (role === 'host' ? 'Guest' : 'Host');
+  setupMultiplayerGame(roomId, role, oppName, bet);
+ }
+
+ // Background Firebase sync without delaying 0ms game start
+ setTimeout(() => {
+  try{
+   if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
+   auth=firebase.auth();
+   db=firebase.database();
+   window.dispatchEvent(new Event('firebaseReady'));
+
+   auth.onAuthStateChanged(async u => {
+    if(!u) return;
+    fbUser = u;
+    try {
+     const snap = await db.ref('users_v6/'+u.uid).once('value');
+     if(snap.exists()) {
+      const d = snap.val();
+      if(d.name) user.name = d.name;
+      user.points = Number(d.points)||500;
+      user.wins = Number(d.wins)||0;
+      user.losses = Number(d.losses)||0;
+      user.pieceIndex = Number(d.pieceIndex)||0;
+      user.avatarIcon = d.avatarIcon||'fa-user';
+      applyAvatarToBox('p1AvatarBox', user.pieceIndex||0, user.avatarIcon||'fa-user');
+      if(single) $('p1name').textContent = user.name || 'ඔබ';
+      render();
+     }
+    } catch(_){}
+
+    if(!single && roomId && db) {
+     const patch = role === 'guest'
+      ? { guestUid: u.uid, guestName: user.name || 'Guest', guestPieceIndex: user.pieceIndex || 0, status: 'active', matchStarted: true }
+      : { hostUid: u.uid, hostName: user.name || 'Host', hostPieceIndex: user.pieceIndex || 0 };
+     db.ref('rooms_v6/' + roomId).update(patch).catch(()=>{});
+    }
+   });
+  }catch(e){console.error(e);}
+ }, 0);
+})();
 </script>
 
 <script src="./arena-multi-bridge.js"></script>
