@@ -406,11 +406,13 @@ let soundEnabled = true;
 let mediaRecorder = null;
 let audioChunks = [];
 let isRecording = false;
+let activeMicStream = null;
 
 /* 3D Pieces Overlay State (Board stays Flat 2D) */
 let pieces3DReady = false;
 let scene3DPieces, camera3DPieces, renderer3DPieces, piecesGroup3D;
 let animatedPieceMeshes = [];
+let slidingAnim = null;
 
 const PIECE_DESIGNS=[
  {id:0,name:'මුතු සුදු (Default)',bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●',hex:0xf8fafc,accentHex:0x94a3b8,emblem:'disc',free:true},
@@ -562,7 +564,6 @@ function init3DPiecesOverlay(){
   const h = overlay.clientHeight || 380;
 
   scene3DPieces = new THREE.Scene();
-  // Orthographic camera mapped cleanly to [-4..+4] across the 8x8 flat board
   const frustum = 4.0;
   const aspect = w / h;
   camera3DPieces = new THREE.OrthographicCamera(
@@ -652,9 +653,22 @@ function sync3DPieces(){
 
    const isSel = !!(selected && selected.r === r && selected.c === c);
    const pieceGroup = create3DPieceMesh(val, design, isSel);
-   pieceGroup.position.set(toWorldX(c), isSel ? 0.22 : 0, toWorldZ(r));
-   pieceGroup.userData = { r, c, isSel };
+   const targetX = toWorldX(c);
+   const targetZ = toWorldZ(r);
+   const targetY = isSel ? 0.22 : 0;
 
+   const isJustLanded = !!(slidingAnim && slidingAnim.toR === r && slidingAnim.toC === c);
+   if(isJustLanded){
+    pieceGroup.position.set(toWorldX(slidingAnim.fromC), 0.26, toWorldZ(slidingAnim.fromR));
+    slidingAnim.mesh = pieceGroup;
+    slidingAnim.targetX = targetX;
+    slidingAnim.targetY = targetY;
+    slidingAnim.targetZ = targetZ;
+   } else {
+    pieceGroup.position.set(targetX, targetY, targetZ);
+   }
+
+   pieceGroup.userData = { r, c, isSel };
    piecesGroup3D.add(pieceGroup);
    animatedPieceMeshes.push(pieceGroup);
   }
@@ -665,8 +679,21 @@ function animate3DPiecesLoop(){
  if(!pieces3DReady) return;
  requestAnimationFrame(animate3DPiecesLoop);
 
+ if(slidingAnim && slidingAnim.mesh){
+  slidingAnim.progress = Math.min(1, slidingAnim.progress + 0.14);
+  const tEase = 1 - Math.pow(1 - slidingAnim.progress, 3);
+  slidingAnim.mesh.position.x = THREE.MathUtils.lerp(slidingAnim.mesh.position.x, slidingAnim.targetX, tEase);
+  slidingAnim.mesh.position.z = THREE.MathUtils.lerp(slidingAnim.mesh.position.z, slidingAnim.targetZ, tEase);
+  slidingAnim.mesh.position.y = 0.24 * Math.sin(Math.PI * slidingAnim.progress) + slidingAnim.targetY * tEase;
+  if(slidingAnim.progress >= 1){
+   slidingAnim.mesh.position.set(slidingAnim.targetX, slidingAnim.targetY, slidingAnim.targetZ);
+   slidingAnim = null;
+  }
+ }
+
  const t = performance.now() * 0.003;
  for(const grp of animatedPieceMeshes){
+  if(slidingAnim && slidingAnim.mesh === grp) continue;
   if(grp.userData && grp.userData.isSel){
    grp.position.y = 0.24 + Math.sin(t * 2.5) * 0.06;
   }
@@ -928,18 +955,27 @@ function startForestAmbient() {
  }
 }
 
+function cleanupMicStream(){
+ if(activeMicStream){
+  try{ activeMicStream.getTracks().forEach(t => t.stop()); }catch(_){}
+  activeMicStream = null;
+ }
+}
+
 const voiceRecordBtn = $('arenaVoiceRecordBtn');
 if (voiceRecordBtn) {
  const startRec = async (e) => {
   e.preventDefault();
   if (isRecording) return;
   try {
+   cleanupMicStream();
    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+   activeMicStream = stream;
    mediaRecorder = new MediaRecorder(stream);
    audioChunks = [];
 
    mediaRecorder.ondataavailable = event => {
-    if (event.data.size > 0) audioChunks.push(event.data);
+    if (event.data && event.data.size > 0) audioChunks.push(event.data);
    };
 
    mediaRecorder.onstop = () => {
@@ -947,10 +983,11 @@ if (voiceRecordBtn) {
     const reader = new FileReader();
     reader.readAsDataURL(audioBlob);
     reader.onloadend = () => {
-     const base64Audio = reader.result;
-     sendVoiceMessage(base64Audio);
+     if(typeof reader.result === 'string'){
+      sendVoiceMessage(reader.result);
+     }
     };
-    stream.getTracks().forEach(track => track.stop());
+    cleanupMicStream();
    };
 
    mediaRecorder.start();
@@ -958,6 +995,9 @@ if (voiceRecordBtn) {
    voiceRecordBtn.classList.add('active-rec');
    toast('🎙️ Recording Voice Note...', 'fa-microphone');
   } catch (err) {
+   cleanupMicStream();
+   isRecording = false;
+   voiceRecordBtn.classList.remove('active-rec');
    toast('Microphone අවසරය අවශ්‍යයි.');
   }
  };
@@ -965,7 +1005,9 @@ if (voiceRecordBtn) {
  const stopRec = (e) => {
   e.preventDefault();
   if (!isRecording || !mediaRecorder) return;
-  mediaRecorder.stop();
+  try{
+   if(mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+  }catch(_){}
   isRecording = false;
   voiceRecordBtn.classList.remove('active-rec');
   toast('🎤 Voice Note යවන ලදී', 'fa-paper-plane');
@@ -974,8 +1016,8 @@ if (voiceRecordBtn) {
  voiceRecordBtn.addEventListener('mousedown', startRec);
  voiceRecordBtn.addEventListener('mouseup', stopRec);
  voiceRecordBtn.addEventListener('mouseleave', () => { if(isRecording) stopRec({preventDefault:()=>{}}); });
- voiceRecordBtn.addEventListener('touchstart', startRec);
- voiceRecordBtn.addEventListener('touchend', stopRec);
+ voiceRecordBtn.addEventListener('touchstart', startRec, { passive: false });
+ voiceRecordBtn.addEventListener('touchend', stopRec, { passive: false });
 }
 
 function sendVoiceMessage(audioDataUrl) {
@@ -1154,11 +1196,20 @@ function normalizeFirebaseBoard(rawBoard) {
  );
 }
 
+function scheduleAiTurn(delayMs=420){
+ clearTimeout(aiTimer);
+ if(!single || gameOver) return;
+ aiTimer = setTimeout(() => {
+  if(!gameOver && turn !== userSide) aiMove();
+ }, delayMs);
+}
+
 function initBoard(){
  clearInterval(turnClockTimer);
+ clearTimeout(aiTimer);
  board=createFreshBoard();
  turn=1;selected=null;moves=[];gameOver=false;processing=false;forcedContinuation=null;
- lastMove=null;
+ lastMove=null;slidingAnim=null;
  if(single) userSide = nextStartingSide;
  render(); setTurnUI();
 
@@ -1168,7 +1219,7 @@ function initBoard(){
   playVoice("System online. Forest ambient active. Good luck!");
  }, 800);
 
- if(single && turn !== userSide) aiTimer = setTimeout(aiMove, 450);
+ if(single && turn !== userSide) scheduleAiTurn(450);
 }
 
 const inside=(r,c)=>r>=0&&r<8&&c>=0&&c<8;
@@ -1285,6 +1336,7 @@ async function playMove(m){
  if(processing||gameOver)return;
  processing=true;
  lastMove = { fromR: m.fromR, fromC: m.fromC, toR: m.toR, toC: m.toC };
+ slidingAnim = { fromR: m.fromR, fromC: m.fromC, toR: m.toR, toC: m.toC, progress: 0, mesh: null };
 
  const moving=board[m.fromR][m.fromC];
  applyMove(board,m);selected=null;moves=[];
@@ -1294,7 +1346,7 @@ async function playMove(m){
  if(followUps.length){
   forcedContinuation={r:m.toR,c:m.toC};turn=Math.sign(landed);render();processing=false;setTurnUI();
   if(!single && roomRef) syncMultiplayerState();
-  if(single&&turn!==userSide)aiTimer=setTimeout(aiMove,400);
+  if(single&&turn!==userSide) scheduleAiTurn(400);
   return;
  }
 
@@ -1306,7 +1358,7 @@ async function playMove(m){
  }
  setTurnUI();
  if(!single && roomRef) syncMultiplayerState();
- if(single&&turn!==userSide)aiTimer=setTimeout(aiMove,420);
+ if(single&&turn!==userSide) scheduleAiTurn(420);
 }
 
 function setTurnUI(){
@@ -1327,7 +1379,7 @@ function startTurnClock(deadline){
   if(remaining<=0){
    clearInterval(turnClockTimer);
    if(single&&turn===userSide){
-    turn=-userSide;selected=null;moves=[];render();setTurnUI();aiTimer=setTimeout(aiMove,320);
+    turn=-userSide;selected=null;moves=[];render();setTurnUI();scheduleAiTurn(320);
    } else if(!single&&turn===userSide&&!gameOver){
     finish(-userSide,'ඔබගේ වාරයේ කාලය අවසන් විය.');
    }
@@ -1346,18 +1398,19 @@ function aiMove(){
  upgradeAiOnTurn();
  const m=choosePlannedAiMove(legal, aiSide) || legal[0];
  lastMove = { fromR: m.fromR, fromC: m.fromC, toR: m.toR, toC: m.toC };
+ slidingAnim = { fromR: m.fromR, fromC: m.fromC, toR: m.toR, toC: m.toC, progress: 0, mesh: null };
 
  const moving=board[m.fromR][m.fromC];
  applyMove(board,m);
  const landed=board[m.toR][m.toC];
  const followUps=m.capture&&Math.abs(landed)===Math.abs(moving)?pieceMoves(m.toR,m.toC).filter(x=>x.capture):[];
- if(followUps.length){forcedContinuation={r:m.toR,c:m.toC};turn=aiSide;render();setTurnUI();aiTimer=setTimeout(aiMove,380);return;}
+ if(followUps.length){forcedContinuation={r:m.toR,c:m.toC};turn=aiSide;render();setTurnUI();scheduleAiTurn(380);return;}
  forcedContinuation=null;render();turn=userSide;
  if(!allMoves(userSide).length)finish(aiSide,'ඔබට නීත්‍යානුකූල Move නොමැත.');else setTurnUI();
 }
 
 function finish(winner,message){
- if(gameOver)return;gameOver=true;clearInterval(aiTimer);clearInterval(turnClockTimer);
+ if(gameOver)return;gameOver=true;clearTimeout(aiTimer);clearInterval(turnClockTimer);
  const won=(winner===userSide);
  const bet=Number(window.currentBetPoints)||0;
 
@@ -1469,6 +1522,7 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
  processing = false;
  forcedContinuation = null;
  lastMove = null;
+ slidingAnim = null;
 
  if(!db || !roomId) {
   render();
@@ -1560,7 +1614,17 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
    turn = Number(data.turn) === -1 ? -1 : 1;
   }
   forcedContinuation = data.forcedContinuation || null;
-  if(data.lastMove) lastMove = data.lastMove;
+  if(data.lastMove){
+   lastMove = data.lastMove;
+   slidingAnim = {
+    fromR: data.lastMove.fromR,
+    fromC: data.lastMove.fromC,
+    toR: data.lastMove.toR,
+    toC: data.lastMove.toC,
+    progress: 0,
+    mesh: null
+   };
+  }
 
   render();
   if(prevTurn !== turn || !turnClockTimer) {
@@ -1605,6 +1669,7 @@ function syncMultiplayerState() {
 
 function leaveArena(){
  clearInterval(turnClockTimer);clearTimeout(aiTimer);
+ cleanupMicStream();
  const forestAudio = $('forestAmbient');
  if(forestAudio) forestAudio.pause();
  if(roomRef){
