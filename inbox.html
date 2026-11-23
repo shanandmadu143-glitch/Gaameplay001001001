@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Inbox - Sinhala Draughts Pro Gaming</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Gemunu+Libre:wght@400;600;700;800&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#05070e;--panel:rgba(14,20,38,.94);--gold:#ffd166;--neon-blue:#00f2fe;--neon-green:#2ecc71;--red:#ff4757;--dim:#a0aec0}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Gemunu Libre','Poppins',sans-serif;user-select:none;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;background:radial-gradient(circle at 50% 20%,#1a103c 0%,#080b18 60%,#03050a 100%);color:#f8f9fa;overflow:hidden}
+body{min-height:100dvh;display:flex;flex-direction:column;justify-content:center;align-items:center}
+
+.app{width:100%;height:100dvh;max-width:768px;margin:0 auto;padding:14px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+
+.inbox-header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 18px;background:linear-gradient(135deg,rgba(22,30,56,0.95),rgba(10,14,28,0.95));border:2px solid rgba(255,209,102,0.4);border-radius:22px;box-shadow:0 8px 25px rgba(0,0,0,0.6)}
+.inbox-header h1{font-size:1.2rem;color:var(--gold);font-weight:800;display:flex;align-items:center;gap:8px}
+.storage-pill{font-size:0.78rem;font-weight:700;padding:5px 11px;border-radius:999px;background:rgba(0,242,254,0.12);border:1px solid rgba(0,242,254,0.35);color:var(--neon-blue)}
+
+main{flex:1;min-height:0;width:100%;margin:10px 0;display:flex;flex-direction:column;overflow:hidden}
+.inbox-panel{flex:1;min-height:0;display:flex;flex-direction:column;gap:10px;padding:14px;background:linear-gradient(145deg,rgba(18,24,40,0.88),rgba(12,16,28,0.92));border:2px solid rgba(255,209,102,0.22);border-radius:24px;overflow-y:auto}
+
+.msg-card{background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,255,255,0.09);border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;cursor:pointer;transition:border-color 0.2s,background 0.2s}
+.msg-card.unread{border-color:rgba(255,209,102,0.55);background:rgba(255,209,102,0.07)}
+.msg-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.msg-sender{font-weight:800;color:#fff;font-size:0.98rem;display:flex;align-items:center;gap:8px}
+.unread-dot{width:9px;height:9px;border-radius:50%;background:var(--neon-green);box-shadow:0 0 8px var(--neon-green)}
+.msg-meta{font-size:0.74rem;color:var(--dim)}
+.msg-body{font-size:0.9rem;color:#e2e8f0;line-height:1.4;word-break:break-word}
+
+/* Popup Inbox Floating Icon ONLY inside inbox.html above bottom menu on the right */
+.popup-inbox-fab{
+ position:fixed;
+ right:20px;
+ bottom:96px;
+ width:56px;
+ height:56px;
+ border-radius:50%;
+ border:2px solid var(--gold);
+ background:linear-gradient(135deg,#ffe08a,#ffad62);
+ color:#111;
+ font-size:1.35rem;
+ display:grid;
+ place-items:center;
+ cursor:pointer;
+ z-index:90;
+ box-shadow:0 10px 24px rgba(0,0,0,0.65),0 0 18px rgba(255,209,102,0.35);
+ transition:transform 0.14s ease,box-shadow 0.14s ease;
+}
+.popup-inbox-fab:hover{transform:scale(1.06)}
+.popup-inbox-fab:active{transform:scale(0.94)}
+.fab-badge{
+ position:absolute;
+ top:-4px;
+ right:-4px;
+ min-width:21px;
+ height:21px;
+ padding:0 5px;
+ border-radius:999px;
+ background:var(--red);
+ color:#fff;
+ border:2px solid #0d1326;
+ font-size:0.72rem;
+ font-weight:800;
+ display:none;
+ place-items:center;
+}
+.fab-badge.show{display:grid}
+
+.bottom-nav{width:100%;min-height:66px;background:rgba(14,20,38,0.95);border:2px solid rgba(255,209,102,0.3);border-radius:24px;display:flex;align-items:center;justify-content:space-around;padding:6px 4px;backdrop-filter:blur(10px);box-shadow:0 10px 30px rgba(0,0,0,0.8)}
+.nav-item{background:none;border:0;color:#aab4c7;text-decoration:none;display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:0.72rem;font-weight:700;cursor:pointer}
+.nav-item i{font-size:1.3rem}
+.nav-item.active{color:var(--gold)}
+
+/* Incoming Message Notification Banner */
+.notif-banner{
+ position:fixed;
+ top:16px;
+ left:50%;
+ transform:translate(-50%,-150%);
+ width:min(92vw,440px);
+ background:linear-gradient(135deg,#17223b,#0c1324);
+ border:2px solid var(--neon-blue);
+ border-radius:18px;
+ padding:12px 16px;
+ display:flex;
+ align-items:center;
+ gap:12px;
+ z-index:200;
+ box-shadow:0 14px 32px rgba(0,0,0,0.75);
+ transition:transform 0.28s cubic-bezier(0.22,1,0.36,1);
+ cursor:pointer;
+}
+.notif-banner.show{transform:translate(-50%,0)}
+.notif-icon{width:38px;height:38px;border-radius:50%;background:rgba(0,242,254,0.16);border:1.5px solid var(--neon-blue);color:var(--neon-blue);display:grid;place-items:center;font-size:1.05rem;flex-shrink:0}
+.notif-content{flex:1;min-width:0}
+.notif-title{font-weight:800;font-size:0.92rem;color:#fff}
+.notif-text{font-size:0.82rem;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Popup Inbox Modal */
+.modal{position:fixed;inset:0;background:rgba(3,5,12,0.85);backdrop-filter:blur(8px);display:none;place-items:center;z-index:140;padding:15px}
+.modal.show{display:grid}
+.modalbox{width:min(100%,440px);max-height:82dvh;background:linear-gradient(145deg,#121828,#1b243f);border:2px solid var(--gold);border-radius:24px;padding:20px;display:flex;flex-direction:column;gap:12px;box-shadow:0 20px 40px rgba(0,0,0,0.85)}
+.modal-header{display:flex;align-items:center;justify-content:space-between}
+.modal-header h3{color:var(--gold);font-size:1.15rem;font-weight:800}
+.popup-msg-list{flex:1;min-height:140px;max-height:52dvh;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-right:2px}
+.btn{border:0;border-radius:12px;padding:10px 14px;cursor:pointer;font-weight:700;display:inline-flex;align-items:center;gap:6px;justify-content:center;background:rgba(255,255,255,0.1);color:white;border:1px solid rgba(255,255,255,0.2)}
+.btn-gold{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;border:0;border-radius:12px;padding:10px 14px;cursor:pointer;font-weight:700}
+.reply-row{display:flex;gap:8px}
+.reply-row input{flex:1;padding:10px 12px;border-radius:12px;border:1.5px solid rgba(255,209,102,0.35);background:rgba(0,0,0,0.45);color:#fff;outline:none}
+</style>
+</head>
+<body>
+<div class="notif-banner" id="notifBanner" role="alert">
+ <div class="notif-icon"><i class="fa-solid fa-bell"></i></div>
+ <div class="notif-content">
+  <div class="notif-title" id="notifTitle">නව Message එකක්</div>
+  <div class="notif-text" id="notifText"></div>
+ </div>
+</div>
+
+<div class="app">
+ <header class="inbox-header">
+  <h1><i class="fa-solid fa-inbox"></i> Inbox</h1>
+  <span class="storage-pill" id="storageUsageBadge">0.00 MB / 2.00 MB</span>
+ </header>
+
+ <main>
+  <section class="inbox-panel" id="inboxList">
+   <div style="text-align:center;padding:30px;color:var(--dim)">Messages පූරණය වෙමින්...</div>
+  </section>
+ </main>
+
+ <button type="button" class="popup-inbox-fab" id="popupInboxFab" title="Popup Inbox" aria-label="Popup Inbox විවෘත කරන්න">
+  <i class="fa-solid fa-envelope-open-text"></i>
+  <span class="fab-badge" id="fabUnreadBadge">0</span>
+ </button>
+
+ <footer class="bottom-nav">
+  <a class="nav-item" href="index.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
+  <a class="nav-item" href="friends.html"><i class="fa-solid fa-user-group"></i><span>Friends</span></a>
+  <a class="nav-item" href="profile.html"><i class="fa-solid fa-circle-user"></i><span>Profile</span></a>
+  <a class="nav-item active" href="inbox.html"><i class="fa-solid fa-inbox"></i><span>Inbox</span></a>
+  <a class="nav-item" href="shopandreward.html"><i class="fa-solid fa-cart-shopping"></i><span>Shop</span></a>
+ </footer>
+</div>
+
+<!-- Popup Inbox Modal -->
+<div class="modal" id="popupInboxModal">
+ <div class="modalbox">
+  <div class="modal-header">
+   <h3><i class="fa-solid fa-envelope"></i> Popup Inbox (Max 2MB)</h3>
+   <button type="button" class="btn" id="closePopupInboxBtn" style="padding:6px 10px"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="popup-msg-list" id="popupMsgList"></div>
+  <div class="reply-row" id="replyBox" style="display:none">
+   <input id="replyInput" placeholder="පිළිතුර ලියන්න...">
+   <button type="button" class="btn-gold" id="sendReplyBtn"><i class="fa-solid fa-paper-plane"></i></button>
+  </div>
+ </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script>
+'use strict';
+const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
+const MAX_INBOX_BYTES = 2 * 1024 * 1024; // 2 MB = 2,097,152 bytes
+const $ = id => document.getElementById(id);
+
+let auth, db, fbUser, currentUserName = 'Player';
+let messagesCache = [];
+let knownMsgKeys = new Set();
+let isInitialLoad = true;
+let activeReplyTarget = null;
+let notifTimer = null;
+
+try {
+ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+ auth = firebase.auth();
+ db = firebase.database();
+} catch (e) {
+ console.error('Firebase init error:', e);
+}
+
+function getMsgBytes(msgObj) {
+ return new TextEncoder().encode(JSON.stringify(msgObj || {})).length;
+}
+
+function formatMb(bytes) {
+ return (bytes / (1024 * 1024)).toFixed(2);
+}
+
+function showMessageNotification(msg) {
+ const banner = $('notifBanner');
+ $('notifTitle').textContent = `නව Message: ${msg.fromName || 'Player'}`;
+ $('notifText').textContent = msg.text || '';
+ banner.classList.add('show');
+ if (notifTimer) clearTimeout(notifTimer);
+ notifTimer = setTimeout(() => banner.classList.remove('show'), 4000);
+
+ if ('Notification' in window && Notification.permission === 'granted') {
+  try {
+   new Notification(`Message - ${msg.fromName || 'Player'}`, { body: msg.text || '' });
+  } catch (_) {}
+ }
+}
+
+if ('Notification' in window && Notification.permission === 'default') {
+ Notification.requestPermission().catch(() => {});
+}
+
+$('notifBanner').onclick = () => {
+ $('notifBanner').classList.remove('show');
+ $('popupInboxModal').classList.add('show');
+};
+
+async function enforce2MbLimit(uid, items) {
+ // items sorted oldest -> newest
+ let sorted = [...items].sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+ let totalBytes = sorted.reduce((sum, item) => sum + getMsgBytes(item.data), 0);
+
+ while (totalBytes > MAX_INBOX_BYTES && sorted.length > 0) {
+  const oldest = sorted.shift();
+  totalBytes -= getMsgBytes(oldest.data);
+  if (oldest && oldest.key) {
+   await db.ref(`inbox_v6/${uid}/${oldest.key}`).remove().catch(() => {});
+  }
+ }
+ return { sorted, totalBytes };
+}
+
+function renderMessages(sortedItems, totalBytes) {
+ $('storageUsageBadge').textContent = `${formatMb(totalBytes)} MB / 2.00 MB`;
+
+ const unreadCount = sortedItems.filter(m => !m.data.read).length;
+ const badge = $('fabUnreadBadge');
+ badge.textContent = String(unreadCount);
+ badge.classList.toggle('show', unreadCount > 0);
+
+ const listEl = $('inboxList');
+ const popupListEl = $('popupMsgList');
+ listEl.innerHTML = '';
+ popupListEl.innerHTML = '';
+
+ const displayNewestFirst = [...sortedItems].reverse();
+
+ if (!displayNewestFirst.length) {
+  const emptyHtml = '<div style="text-align:center;padding:24px;color:var(--dim)">Messages නොමැත (2MB සීමාව ඇතුළත).</div>';
+  listEl.innerHTML = emptyHtml;
+  popupListEl.innerHTML = emptyHtml;
+  return;
+ }
+
+ displayNewestFirst.forEach(item => {
+  const d = item.data || {};
+  const timeStr = d.timestamp ? new Date(d.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+
+  const buildCard = () => {
+   const card = document.createElement('div');
+   card.className = `msg-card ${d.read ? '' : 'unread'}`;
+   card.innerHTML = `
+    <div class="msg-top">
+     <span class="msg-sender">
+      ${!d.read ? '<span class="unread-dot"></span>' : ''}
+      <i class="fa-solid fa-user-circle" style="color:var(--gold)"></i>
+      ${d.fromName || 'Player'}
+     </span>
+     <span class="msg-meta">${timeStr}</span>
+    </div>
+    <div class="msg-body">${d.text || ''}</div>
+   `;
+   card.onclick = async () => {
+    if (!d.read && fbUser) {
+     await db.ref(`inbox_v6/${fbUser.uid}/${item.key}/read`).set(true).catch(() => {});
+    }
+    activeReplyTarget = { uid: d.fromUid, name: d.fromName || 'Player' };
+    $('replyBox').style.display = 'flex';
+    $('replyInput').placeholder = `${activeReplyTarget.name} වෙත reply කරන්න...`;
+    $('popupInboxModal').classList.add('show');
+   };
+   return card;
+  };
+
+  listEl.appendChild(buildCard());
+  popupListEl.appendChild(buildCard());
+ });
+}
+
+$('popupInboxFab').onclick = () => $('popupInboxModal').classList.add('show');
+$('closePopupInboxBtn').onclick = () => $('popupInboxModal').classList.remove('show');
+
+$('sendReplyBtn').onclick = async () => {
+ if (!fbUser || !activeReplyTarget || !activeReplyTarget.uid) return;
+ const txt = String($('replyInput').value || '').trim();
+ if (!txt) return;
+ await db.ref(`inbox_v6/${activeReplyTarget.uid}`).push().set({
+  fromUid: fbUser.uid,
+  fromName: currentUserName,
+  toUid: activeReplyTarget.uid,
+  toName: activeReplyTarget.name,
+  text: txt,
+  read: false,
+  timestamp: Date.now()
+ });
+ $('replyInput').value = '';
+};
+
+auth.onAuthStateChanged(async u => {
+ if (!u) {
+  window.location.href = 'index.html';
+  return;
+ }
+ fbUser = u;
+ const userSnap = await db.ref('users_v6/' + u.uid).once('value').catch(() => null);
+ if (userSnap && userSnap.val() && userSnap.val().name) {
+  currentUserName = userSnap.val().name;
+ }
+
+ db.ref('inbox_v6/' + u.uid).on('value', async snap => {
+  const raw = snap.val() || {};
+  const entries = Object.keys(raw).map(key => ({
+   key,
+   timestamp: Number(raw[key].timestamp) || 0,
+   data: raw[key]
+  }));
+
+  if (!isInitialLoad) {
+   entries.forEach(entry => {
+    if (!knownMsgKeys.has(entry.key) && entry.data.fromUid !== u.uid) {
+     showMessageNotification(entry.data);
+    }
+   });
+  }
+
+  knownMsgKeys = new Set(entries.map(e => e.key));
+  isInitialLoad = false;
+
+  const { sorted, totalBytes } = await enforce2MbLimit(u.uid, entries);
+  messagesCache = sorted;
+  renderMessages(sorted, totalBytes);
+ });
+});
+</script>
+</body>
+</html>
