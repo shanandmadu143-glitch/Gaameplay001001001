@@ -62,7 +62,6 @@ main{flex:1;display:flex;flex-direction:column;justify-content:center;align-item
 .mode-multi{background:linear-gradient(135deg,#0d7c48,#08a85c)}.mode-multi:after{content:'⚔️'}
 .mode-free{background:linear-gradient(135deg,#b36b00,#f19a00)}.mode-free:after{content:'🎯'}
 
-/* Home Popup Inbox Icon above bottom menu on the right */
 .home-inbox-fab{
   position:fixed;
   right:18px;
@@ -177,7 +176,7 @@ input:focus{border-color:var(--gold)}
 .btn-green{background:linear-gradient(135deg,#2ecc71,#20b863);color:#0b1910;box-shadow:0 4px 15px rgba(46,204,113,0.4)}
 .row{display:flex;gap:10px;align-items:center}
 
-#toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,120px);opacity:0;background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--gold);color:#f8f9fa;border-radius:30px;padding:10px 20px;z-index:150;transition:.25s ease;font-weight:600;display:flex;align-items:center;gap:8px;font-size:0.9rem}
+#toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,120px);opacity:0;background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--gold);color:#f8f9fa;border-radius:30px;padding:10px 20px;z-index:150;transition:.25s ease;font-weight:600;display:flex;align-items:center;gap:8px;font-size:0.9rem;max-width:92vw}
 #toast.show{transform:translate(-50%,0);opacity:1}
 
 @media (min-width: 600px) {
@@ -473,7 +472,7 @@ function toast(s, icon='fa-circle-info'){
  const textEl=document.createElement('span');textEl.textContent=String(s);
  t.append(iconEl,textEl);
  t.classList.add('show');
- setTimeout(()=>t.classList.remove('show'),3000);
+ setTimeout(()=>t.classList.remove('show'),3400);
 }
 function modal(id,on){$(id).classList.toggle('show',on);}
 
@@ -505,6 +504,23 @@ $('homeMsgNotif').onclick=()=>{
  }
 };
 
+function readLocalInbox(uid){
+ if(!uid)return [];
+ try{
+  const raw=JSON.parse(localStorage.getItem('sinhala_draughts_inbox_local_'+uid)||'[]');
+  return Array.isArray(raw) ? raw : [];
+ }catch(_){
+  return [];
+ }
+}
+
+function writeLocalInbox(uid, items){
+ if(!uid)return;
+ try{
+  localStorage.setItem('sinhala_draughts_inbox_local_'+uid, JSON.stringify(items));
+ }catch(_){}
+}
+
 async function enforce2MbInboxLimit(uid, items){
  if(isTrimmingInbox)return {sorted:items, totalBytes:items.reduce((s,i)=>s+getMsgBytes(i.data),0)};
  isTrimmingInbox=true;
@@ -514,8 +530,12 @@ async function enforce2MbInboxLimit(uid, items){
   while(totalBytes > MAX_INBOX_BYTES && sorted.length > 0){
    const oldest=sorted.shift();
    totalBytes-=getMsgBytes(oldest.data);
-   if(oldest && oldest.key && db){
-    await db.ref(`inbox_v6/${uid}/${oldest.key}`).remove().catch(()=>{});
+   if(oldest && oldest.key){
+    if(String(oldest.key).startsWith('local_')){
+     writeLocalInbox(uid, sorted.filter(x=>String(x.key).startsWith('local_')));
+    }else if(db){
+     await db.ref(`inbox_v6/${uid}/${oldest.key}`).remove().catch(()=>{});
+    }
    }
   }
   return {sorted, totalBytes};
@@ -579,8 +599,14 @@ function renderHomeInbox(sortedItems, totalBytes){
   row.append(top,bodyDiv);
 
   row.onclick=async()=>{
-   if(!d.read && fbUser && db && item.key){
-    await db.ref(`inbox_v6/${fbUser.uid}/${item.key}/read`).set(true).catch(()=>{});
+   const activeUid = (fbUser && fbUser.uid) || user.uid;
+   if(!d.read && activeUid && item.key){
+    if(String(item.key).startsWith('local_')){
+     const localList=readLocalInbox(activeUid).map(x=>x.key===item.key?{...x,data:{...x.data,read:true}}:x);
+     writeLocalInbox(activeUid,localList);
+    }else if(db){
+     await db.ref(`inbox_v6/${activeUid}/${item.key}/read`).set(true).catch(()=>{});
+    }
    }
    if(d.fromUid){
     activeHomeReplyTarget={uid:d.fromUid, name:d.fromName || 'Player'};
@@ -595,41 +621,63 @@ function renderHomeInbox(sortedItems, totalBytes){
  });
 }
 
+function mergeAndRefreshInbox(uid, dbRawObj){
+ const dbEntries=Object.keys(dbRawObj||{}).map(key=>({
+  key,
+  timestamp:Number(dbRawObj[key] && dbRawObj[key].timestamp)||0,
+  data:dbRawObj[key]||{}
+ }));
+ const localEntries=readLocalInbox(uid);
+ const combined=[...dbEntries, ...localEntries];
+
+ if(!isHomeInboxInitialLoad){
+  combined.forEach(entry=>{
+   if(!knownHomeMsgKeys.has(entry.key) && entry.data.fromUid && entry.data.fromUid !== uid){
+    showHomeMessageNotification(entry.data);
+   }
+  });
+ }
+ knownHomeMsgKeys=new Set(combined.map(e=>e.key));
+ isHomeInboxInitialLoad=false;
+
+ enforce2MbInboxLimit(uid, combined).then(({sorted, totalBytes})=>{
+  renderHomeInbox(sorted, totalBytes);
+ });
+}
+
+let latestDbInboxRaw={};
 function attachHomeInboxListener(uid){
- if(!db||!uid)return;
+ if(!uid)return;
  if(inboxRefListener){
   try{inboxRefListener.ref.off('value',inboxRefListener.fn);}catch(_){}
   inboxRefListener=null;
  }
  isHomeInboxInitialLoad=true;
  knownHomeMsgKeys=new Set();
+ latestDbInboxRaw={};
 
- const ref=db.ref('inbox_v6/'+uid);
- const fn=async snap=>{
-  const raw=snap.val()||{};
-  const entries=Object.keys(raw).map(key=>({
-   key,
-   timestamp:Number(raw[key] && raw[key].timestamp)||0,
-   data:raw[key]||{}
-  }));
+ mergeAndRefreshInbox(uid, latestDbInboxRaw);
 
-  if(!isHomeInboxInitialLoad){
-   entries.forEach(entry=>{
-    if(!knownHomeMsgKeys.has(entry.key) && entry.data.fromUid && entry.data.fromUid !== uid){
-     showHomeMessageNotification(entry.data);
-    }
-   });
-  }
-
-  knownHomeMsgKeys=new Set(entries.map(e=>e.key));
-  isHomeInboxInitialLoad=false;
-
-  const {sorted, totalBytes}=await enforce2MbInboxLimit(uid, entries);
-  renderHomeInbox(sorted, totalBytes);
- };
- ref.on('value',fn);
- inboxRefListener={ref,fn};
+ if(db){
+  const ref=db.ref('inbox_v6/'+uid);
+  const fn=snap=>{
+   latestDbInboxRaw=snap.val()||{};
+   mergeAndRefreshInbox(uid, latestDbInboxRaw);
+  };
+  ref.on('value',fn);
+  inboxRefListener={ref,fn};
+ }
 }
+
+try{
+ const bc=new BroadcastChannel('sinhala_draughts_inbox_channel');
+ bc.onmessage=ev=>{
+  const activeUid=(fbUser && fbUser.uid) || user.uid;
+  if(activeUid && ev && ev.data && ev.data.targetUid===activeUid){
+   mergeAndRefreshInbox(activeUid, latestDbInboxRaw);
+  }
+ };
+}catch(_){}
 
 $('homeInboxFab').onclick=()=>{
  if(!fbUser && !user.uid){
@@ -641,25 +689,37 @@ $('homeInboxFab').onclick=()=>{
 $('closeHomeInboxBtn').onclick=()=>modal('homeInboxModal',false);
 
 async function sendHomeReply(){
- if(!fbUser || !activeHomeReplyTarget || !activeHomeReplyTarget.uid || !db)return;
+ const senderUid=(fbUser && fbUser.uid) || user.uid;
+ if(!senderUid || !activeHomeReplyTarget || !activeHomeReplyTarget.uid)return;
  const txt=String($('homeReplyInput').value||'').trim();
  if(!txt)return toast('කරුණාකර message එකක් ලියන්න.');
+ const payload={
+  fromUid:senderUid,
+  fromName:user.name || 'Player',
+  fromAvatar:user.avatarIcon || 'fa-user',
+  toUid:activeHomeReplyTarget.uid,
+  toName:activeHomeReplyTarget.name,
+  text:txt,
+  read:false,
+  timestamp:Date.now()
+ };
  try{
-  await db.ref('inbox_v6/'+activeHomeReplyTarget.uid).push().set({
-   fromUid:fbUser.uid,
-   fromName:user.name || 'Player',
-   fromAvatar:user.avatarIcon || 'fa-user',
-   toUid:activeHomeReplyTarget.uid,
-   toName:activeHomeReplyTarget.name,
-   text:txt,
-   read:false,
-   timestamp:Date.now()
-  });
+  if(db){
+   await db.ref('inbox_v6/'+activeHomeReplyTarget.uid).push().set(payload);
+  }
+  const existingLocal=readLocalInbox(activeHomeReplyTarget.uid);
+  existingLocal.push({key:'local_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),timestamp:payload.timestamp,data:payload});
+  writeLocalInbox(activeHomeReplyTarget.uid,existingLocal);
+  try{
+   const ch=new BroadcastChannel('sinhala_draughts_inbox_channel');
+   ch.postMessage({targetUid:activeHomeReplyTarget.uid,payload});
+   ch.close();
+  }catch(_){}
   $('homeReplyInput').value='';
   toast(`${activeHomeReplyTarget.name} වෙත පිළිතුර යවන ලදී!`,'fa-paper-plane');
  }catch(e){
   console.error('Reply error:',e);
-  toast('පිළිතුර යැවීමට නොහැකි විය.','fa-circle-exclamation');
+  toast(`පිළිතුරු දෝෂය (${e.code||e.message||'Error'})`,'fa-circle-exclamation');
  }
 }
 
