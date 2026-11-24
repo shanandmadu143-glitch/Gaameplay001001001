@@ -342,6 +342,8 @@ let customPieces=[];
 let userRefListener=null;
 let inboxRefListener=null;
 let sentInboxRefListener=null;
+let incomingCallListenerRef=null;
+let incomingCallListenerFn=null;
 let firestoreApkListenerAttached=false;
 let latestApkMeta=null;
 let isDownloadingApk=false;
@@ -589,7 +591,6 @@ function openPeerChatThread(peerUid, peerName){
  $('homeChatThreadView').classList.add('active');
  $('homeReplyInput').placeholder=`${activeChatPeer.name} සමඟ කතා කරන්න...`;
 
- // Mark unread incoming messages from this peer as read
  if(fbUser && db){
   rawIncomingList.forEach(item=>{
    if(item.data && item.data.fromUid === peerUid && !item.data.read && item.key){
@@ -749,6 +750,41 @@ function attachInboxAndSentListeners(uid){
  };
  sentRef.on('value',sentFn);
  sentInboxRefListener={ref:sentRef,fn:sentFn};
+}
+
+function attachIncomingCallListener(myUid){
+ if(!db || !myUid)return;
+
+ if(incomingCallListenerRef && incomingCallListenerFn){
+  try{
+   incomingCallListenerRef.off('child_added', incomingCallListenerFn);
+  }catch(_){}
+  incomingCallListenerRef=null;
+  incomingCallListenerFn=null;
+ }
+
+ if(window.location.pathname.toLowerCase().endsWith('callfriend.html')){
+  return;
+ }
+
+ const pageLoadTime=Date.now() - 5000;
+ incomingCallListenerRef=db.ref('calls_v6/' + myUid);
+ incomingCallListenerFn=snap=>{
+  const call=snap.val();
+  if(!call || call.status !== 'calling' || !call.callId)return;
+  if(call.timestamp && Number(call.timestamp) < pageLoadTime)return;
+
+  const q=new URLSearchParams({
+   incoming:'1',
+   callId:call.callId,
+   uid:call.fromUid || '',
+   name:call.fromName || 'Player'
+  }).toString();
+
+  window.location.href=`Callfriend.html?${q}`;
+ };
+
+ incomingCallListenerRef.on('child_added', incomingCallListenerFn);
 }
 
 $('backToConvListBtn').onclick=showConversationListMode;
@@ -1156,6 +1192,11 @@ $('resetAppBtn').onclick=async()=>{
    try{sentInboxRefListener.ref.off('value',sentInboxRefListener.fn);}catch(_){}
    sentInboxRefListener=null;
   }
+  if(incomingCallListenerRef && incomingCallListenerFn){
+   try{incomingCallListenerRef.off('child_added',incomingCallListenerFn);}catch(_){}
+   incomingCallListenerRef=null;
+   incomingCallListenerFn=null;
+  }
   const savedInstalledVer=localStorage.getItem(INSTALLED_APK_VERSION_KEY);
   const savedInstalledCode=localStorage.getItem(INSTALLED_APK_CODE_KEY);
   localStorage.removeItem(KEY);
@@ -1261,6 +1302,7 @@ function attachLiveUserListener(uid){
     await loadSignedInUser();
     attachLiveUserListener(u.uid);
     attachInboxAndSentListeners(u.uid);
+    attachIncomingCallListener(u.uid);
 
     const userStatusRef = db.ref('status_v6/' + u.uid);
     db.ref('.info/connected').on('value', snapshot => {
@@ -1280,6 +1322,11 @@ function attachLiveUserListener(uid){
     if(sentInboxRefListener){
      try{sentInboxRefListener.ref.off('value',sentInboxRefListener.fn);}catch(e){}
      sentInboxRefListener=null;
+    }
+    if(incomingCallListenerRef && incomingCallListenerFn){
+     try{incomingCallListenerRef.off('child_added',incomingCallListenerFn);}catch(e){}
+     incomingCallListenerRef=null;
+     incomingCallListenerFn=null;
     }
     if(!user.uid){
      user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:0,unlockedPieces:[0],avatarIcon:'fa-user',unlockedAvatars:['fa-user'],eventSeasonStart:Date.now(),eventSeasonNumber:1,monthlyWonCoins:0,hasProPass:false,claimedEventRewards:[]};
