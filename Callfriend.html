@@ -9,12 +9,13 @@
 <style>
 :root{
   --bg:#05070e;
-  --card-bg:rgba(16,23,44,0.92);
   --gold:#ffd166;
   --neon-blue:#00f2fe;
   --neon-green:#2ecc71;
   --red:#ff4757;
-  --dim:#9fb0c8;
+  --dim:#a2b2ca;
+  --sat:env(safe-area-inset-top, 0px);
+  --sab:env(safe-area-inset-bottom, 0px);
 }
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Gemunu Libre','Poppins',sans-serif;user-select:none;-webkit-tap-highlight-color:transparent}
 html,body{
@@ -23,7 +24,8 @@ html,body{
   color:#f8fafc;overflow:hidden;display:flex;justify-content:center;align-items:center;
 }
 .call-wrap{
-  width:100%;height:100dvh;max-width:520px;padding:16px;
+  width:100%;height:100dvh;max-width:520px;
+  padding:calc(14px + var(--sat)) 16px calc(14px + var(--sab));
   display:flex;flex-direction:column;justify-content:space-between;align-items:center;
   gap:12px;position:relative;z-index:1;
 }
@@ -32,13 +34,14 @@ html,body{
 .call-header{
   width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;
   padding:11px 16px;border-radius:20px;
-  background:rgba(14,20,38,0.88);border:1.5px solid rgba(255,209,102,0.35);
-  box-shadow:0 8px 24px rgba(0,0,0,0.55);
+  background:rgba(14,20,38,0.9);border:1.5px solid rgba(255,209,102,0.38);
+  box-shadow:0 8px 24px rgba(0,0,0,0.55);flex-shrink:0;
 }
 .brand-title{display:flex;align-items:center;gap:8px;font-size:1.08rem;font-weight:800;color:var(--gold)}
 .badge-state{
-  font-size:0.78rem;font-weight:800;padding:4px 11px;border-radius:999px;
-  background:rgba(0,242,254,0.14);border:1px solid rgba(0,242,254,0.4);color:var(--neon-blue);
+  font-size:0.78rem;font-weight:800;padding:4px 12px;border-radius:999px;
+  background:rgba(0,242,254,0.14);border:1px solid rgba(0,242,254,0.42);color:var(--neon-blue);
+  white-space:nowrap;
 }
 .badge-state.live{
   background:rgba(46,204,113,0.18);border-color:rgba(46,204,113,0.55);color:var(--neon-green);
@@ -49,11 +52,12 @@ html,body{
 
 /* Main Call Surface */
 .call-surface{
-  width:100%;flex:1;max-height:610px;
-  background:linear-gradient(155deg,rgba(20,28,52,0.95),rgba(11,16,31,0.97));
+  width:100%;flex:1;min-height:0;max-height:620px;
+  background:linear-gradient(155deg,rgba(20,28,52,0.96),rgba(11,16,31,0.98));
   border:2px solid rgba(255,209,102,0.42);border-radius:30px;
-  padding:20px;
+  padding:20px 18px;
   display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+  gap:12px;
   box-shadow:0 22px 48px rgba(0,0,0,0.8),inset 0 1px 0 rgba(255,255,255,0.08);
   text-align:center;position:relative;overflow:hidden;
   transition:border-color 0.2s ease,box-shadow 0.2s ease;
@@ -76,13 +80,13 @@ body.ringing-only .hint-text{
 body.ringing-only .call-wrap{justify-content:center}
 body.ringing-only .call-surface{max-height:460px;justify-content:center;gap:28px}
 body.ringing-only .peer-block{margin-top:0;gap:16px}
-body.ringing-only .avatar-stage{width:120px;height:120px;font-size:3rem}
+body.ringing-only .avatar-stage{width:122px;height:122px;font-size:3rem}
 body.ringing-only .peer-title{font-size:1.85rem}
 
-/* Video Stage (Local or Remote cam on) */
+/* Video Stage */
 .video-stage{
-  width:100%;flex:1;min-height:220px;border-radius:22px;
-  background:rgba(4,7,16,0.92);border:1.5px solid rgba(0,242,254,0.35);
+  width:100%;flex:1;min-height:200px;border-radius:22px;
+  background:rgba(4,7,16,0.94);border:1.5px solid rgba(0,242,254,0.35);
   position:relative;overflow:hidden;display:none;
 }
 .video-stage.active{display:block}
@@ -97,7 +101,7 @@ body.ringing-only .peer-title{font-size:1.85rem}
 .remote-video-placeholder.hidden{display:none}
 #localVideo{
   position:absolute;right:12px;bottom:12px;
-  width:98px;height:132px;border-radius:16px;object-fit:cover;
+  width:96px;height:128px;border-radius:16px;object-fit:cover;
   border:2px solid var(--gold);background:#000;display:none;z-index:6;
   transform:scaleX(-1);box-shadow:0 10px 24px rgba(0,0,0,0.75);
 }
@@ -114,36 +118,34 @@ body.remote-fullscreen-video .hint-text{
   display:none !important;
 }
 body.remote-fullscreen-video .call-surface{
-  max-height:100dvh;width:100%;height:100%;border-radius:0;border:0;padding:0;
+  max-height:100dvh;width:100%;height:100%;border-radius:0;border:0;padding:0;gap:0;
 }
 body.remote-fullscreen-video .video-stage{
   width:100%;height:100%;min-height:100%;border-radius:0;border:0;
 }
 body.remote-fullscreen-video #localVideo{
-  right:16px;bottom:108px;width:106px;height:142px;z-index:12;
+  right:16px;bottom:calc(102px + var(--sab));width:104px;height:138px;z-index:12;
 }
 
-/* Floating Popup Controls on Top of Fullscreen Remote Video */
+/* Floating Popup Controls on Top of Fullscreen Opponent Video */
 .fs-popup-bar{
-  position:fixed;left:50%;bottom:22px;transform:translateX(-50%);
+  position:fixed;left:50%;bottom:calc(18px + var(--sab));transform:translateX(-50%);
   display:none;align-items:center;justify-content:center;gap:14px;
-  padding:10px 16px;border-radius:999px;
-  background:rgba(10,15,30,0.78);backdrop-filter:blur(12px);
-  border:1.5px solid rgba(255,255,255,0.18);
-  box-shadow:0 14px 34px rgba(0,0,0,0.75);z-index:30;
+  padding:10px 18px;border-radius:999px;
+  background:rgba(10,15,30,0.82);backdrop-filter:blur(12px);
+  border:1.5px solid rgba(255,255,255,0.2);
+  box-shadow:0 14px 34px rgba(0,0,0,0.78);z-index:30;
 }
-body.remote-fullscreen-video .fs-popup-bar{
-  display:flex;
-}
+body.remote-fullscreen-video .fs-popup-bar{display:flex}
 .fs-pop-btn{
-  width:50px;height:50px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.2);
-  background:rgba(255,255,255,0.1);color:#fff;font-size:1.15rem;
+  width:50px;height:50px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.22);
+  background:rgba(255,255,255,0.12);color:#fff;font-size:1.15rem;
   display:grid;place-items:center;cursor:pointer;
   transition:transform 0.12s ease,background 0.15s ease,border-color 0.15s ease;
 }
 .fs-pop-btn:active{transform:scale(0.92)}
-.fs-pop-btn.cam-on{background:rgba(46,204,113,0.25);border-color:var(--neon-green);color:var(--neon-green)}
-.fs-pop-btn.soft{background:rgba(255,209,102,0.22);border-color:var(--gold);color:var(--gold)}
+.fs-pop-btn.cam-on{background:rgba(46,204,113,0.26);border-color:var(--neon-green);color:var(--neon-green)}
+.fs-pop-btn.soft{background:rgba(255,209,102,0.24);border-color:var(--gold);color:var(--gold)}
 .fs-pop-btn.hangup{
   width:56px;height:56px;background:linear-gradient(135deg,#ff4757,#d63031);
   border-color:rgba(255,255,255,0.35);color:#fff;font-size:1.25rem;
@@ -151,19 +153,17 @@ body.remote-fullscreen-video .fs-popup-bar{
 }
 
 .fs-peer-tag{
-  position:fixed;top:16px;left:16px;display:none;align-items:center;gap:8px;
+  position:fixed;top:calc(14px + var(--sat));left:14px;display:none;align-items:center;gap:8px;
   padding:7px 14px;border-radius:999px;
-  background:rgba(10,15,30,0.72);backdrop-filter:blur(8px);
-  border:1px solid rgba(255,209,102,0.4);color:#fff;font-size:0.9rem;font-weight:800;
+  background:rgba(10,15,30,0.75);backdrop-filter:blur(8px);
+  border:1px solid rgba(255,209,102,0.42);color:#fff;font-size:0.9rem;font-weight:800;
   z-index:25;
 }
-body.remote-fullscreen-video .fs-peer-tag{
-  display:flex;
-}
+body.remote-fullscreen-video .fs-peer-tag{display:flex}
 
-.peer-block{display:flex;flex-direction:column;align-items:center;gap:8px;margin:8px 0}
+.peer-block{display:flex;flex-direction:column;align-items:center;gap:8px;margin:auto 0}
 .avatar-stage{
-  width:96px;height:96px;border-radius:50%;
+  width:98px;height:98px;border-radius:50%;
   display:grid;place-items:center;
   background:linear-gradient(135deg,#ffe29a,#ffaa2b);color:#141c33;
   font-size:2.4rem;border:3px solid var(--gold);
@@ -220,12 +220,12 @@ body.remote-fullscreen-video .fs-peer-tag{
 .incoming-panel.show{display:flex}
 
 /* Active Call Controls */
-.controls-panel{width:100%;display:flex;flex-direction:column;gap:10px}
+.controls-panel{width:100%;display:flex;flex-direction:column;gap:10px;flex-shrink:0}
 .tools-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .tool-btn{
   border:1.5px solid rgba(255,255,255,0.14);border-radius:16px;
   background:rgba(255,255,255,0.06);color:#f8fafc;
-  padding:11px 4px;display:flex;flex-direction:column;align-items:center;gap:4px;
+  min-height:60px;padding:9px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
   font-size:0.78rem;font-weight:700;cursor:pointer;transition:transform 0.12s,background 0.15s,border-color 0.15s;
 }
 .tool-btn:active{transform:scale(0.95)}
@@ -236,7 +236,7 @@ body.remote-fullscreen-video .fs-peer-tag{
 
 .main-actions{display:flex;gap:10px}
 .btn-accept,.btn-end{
-  flex:1;border:0;border-radius:18px;padding:13px 14px;
+  flex:1;border:0;border-radius:18px;min-height:48px;padding:12px 14px;
   font-size:1.05rem;font-weight:800;cursor:pointer;
   display:inline-flex;align-items:center;justify-content:center;gap:8px;
   transition:transform 0.12s ease;
@@ -245,13 +245,13 @@ body.remote-fullscreen-video .fs-peer-tag{
 .btn-accept{background:linear-gradient(135deg,#2ecc71,#1eb962);color:#06140c;box-shadow:0 8px 22px rgba(46,204,113,0.4)}
 .btn-end{background:linear-gradient(135deg,#ff4757,#d63031);color:#fff;box-shadow:0 8px 22px rgba(255,71,87,0.4)}
 
-.hint-text{font-size:0.76rem;color:var(--dim);text-align:center;line-height:1.35}
+.hint-text{font-size:0.76rem;color:var(--dim);text-align:center;line-height:1.35;flex-shrink:0}
 
 #toast{
-  position:fixed;bottom:88px;left:50%;transform:translate(-50%,120px);opacity:0;
+  position:fixed;bottom:calc(88px + var(--sab));left:50%;transform:translate(-50%,120px);opacity:0;
   background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--gold);
   color:#f8f9fa;border-radius:30px;padding:10px 18px;z-index:250;
-  transition:0.25s ease;font-weight:600;font-size:0.88rem;
+  transition:0.25s ease;font-weight:600;font-size:0.88rem;max-width:90vw;text-align:center;
 }
 #toast.show{transform:translate(-50%,0);opacity:1}
 </style>
@@ -437,6 +437,7 @@ let candNodeFn=null;
 let seenCandidateKeys=new Set();
 let pendingCandidates=[];
 let isMakingOffer=false;
+let pendingRenegotiate=false;
 
 let isMuted=false;
 let isCameraOn=false;
@@ -474,7 +475,6 @@ function syncCameraUiStates(){
  $('videoStage').classList.toggle('active', anyCamActive);
  $('peerBlock').style.display=isRemoteCamOn ? 'none' : 'flex';
 
- // When opponent turns on camera, show opponent full screen with floating popup controls
  document.body.classList.toggle('remote-fullscreen-video', isRemoteCamOn && !document.body.classList.contains('ringing-only'));
  $('fsPeerName').textContent=targetName;
 
@@ -490,7 +490,6 @@ function syncCameraUiStates(){
   ph.classList.remove('hidden');
  }
 
- // Self camera preview (visible both when only self cam is on, and PiP when both cams are on)
  const lv=$('localVideo');
  if(isCameraOn && cameraStream){
   lv.srcObject=cameraStream;
@@ -595,7 +594,11 @@ async function acquireMic(){
 }
 
 async function renegotiateOffer(){
- if(!pc || !db || !activeCallPath || isMakingOffer)return;
+ if(!pc || !db || !activeCallPath)return;
+ if(isMakingOffer || pc.signalingState !== 'stable'){
+  pendingRenegotiate=true;
+  return;
+ }
  try{
   isMakingOffer=true;
   const offer=await pc.createOffer({offerToReceiveAudio:true, offerToReceiveVideo:true});
@@ -606,6 +609,10 @@ async function renegotiateOffer(){
   console.warn('Renegotiation error:',e);
  }finally{
   isMakingOffer=false;
+  if(pendingRenegotiate && pc && pc.signalingState === 'stable'){
+   pendingRenegotiate=false;
+   renegotiateOffer();
+  }
  }
 }
 
@@ -693,6 +700,8 @@ function setupPeerConnection(path, role){
  }
  seenCandidateKeys=new Set();
  pendingCandidates=[];
+ isMakingOffer=false;
+ pendingRenegotiate=false;
 
  remoteStream=new MediaStream();
  const audioEl=$('remoteAudio');
@@ -715,25 +724,29 @@ function setupPeerConnection(path, role){
     if(!remoteStream.getTracks().some(x=>x.id===tr.id)){
      remoteStream.addTrack(tr);
     }
-    tr.onunmute=()=>{
-     syncCameraUiStates();
-    };
-    tr.onmute=()=>{
-     syncCameraUiStates();
-    };
-    tr.onended=()=>{
-     syncCameraUiStates();
-    };
+    tr.onunmute=()=>syncCameraUiStates();
+    tr.onmute=()=>syncCameraUiStates();
+    tr.onended=()=>syncCameraUiStates();
    });
   }else if(ev.track){
    if(!remoteStream.getTracks().some(x=>x.id===ev.track.id)){
     remoteStream.addTrack(ev.track);
    }
+   ev.track.onunmute=()=>syncCameraUiStates();
+   ev.track.onmute=()=>syncCameraUiStates();
+   ev.track.onended=()=>syncCameraUiStates();
   }
   $('remoteAudio').srcObject=remoteStream;
   unlockAndPlayRemoteAudio();
   syncCameraUiStates();
   enterLiveConversation();
+ };
+
+ pc.onsignalingstatechange=()=>{
+  if(pc && pc.signalingState === 'stable' && pendingRenegotiate){
+   pendingRenegotiate=false;
+   renegotiateOffer();
+  }
  };
 
  pc.onicecandidate=ev=>{
@@ -819,7 +832,7 @@ function attachCallWatcher(path, role){
     await flushIceQueue();
     unlockAndPlayRemoteAudio();
     setUiState(`${targetName} සමඟ සම්බන්ධ වෙමින්...`, 'Connecting', 'calling');
-   }else if(desc.type === 'offer'){
+   }else if(desc.type === 'offer' && pc.signalingState === 'stable'){
     await pc.setRemoteDescription(desc);
     await flushIceQueue();
     const ans=await pc.createAnswer();
@@ -828,7 +841,7 @@ function attachCallWatcher(path, role){
    }
   }
 
-  if(role === 'callee' && data.calleeOffer && pc){
+  if(role === 'callee' && data.calleeOffer && pc && pc.signalingState === 'stable'){
    const desc=new RTCSessionDescription(data.calleeOffer);
    if(desc.type === 'offer'){
     await pc.setRemoteDescription(desc);
