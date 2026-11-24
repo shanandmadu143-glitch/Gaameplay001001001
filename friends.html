@@ -37,6 +37,16 @@ body{min-height:100dvh;display:flex;justify-content:center;align-items:center}
   border:2px solid rgba(255,209,102,0.4);box-shadow:0 8px 24px rgba(0,0,0,0.6);
 }
 .top-header h1{font-size:1.25rem;color:var(--gold);font-weight:800;display:flex;align-items:center;gap:8px}
+.header-right{display:flex;align-items:center;gap:8px}
+.bet-chip{
+  display:none;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;
+  background:rgba(46,204,113,0.16);border:1.5px solid rgba(46,204,113,0.55);
+  font-weight:800;font-size:0.86rem;color:var(--neon-green);
+}
+.bet-chip.show{display:flex}
+.clear-bet-btn{
+  border:0;background:transparent;color:#fff;font-size:0.82rem;cursor:pointer;padding:0 2px;
+}
 .coin-chip{
   display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;
   background:rgba(5,8,18,0.85);border:1.5px solid rgba(255,209,102,0.4);
@@ -83,8 +93,11 @@ body{min-height:100dvh;display:flex;justify-content:center;align-items:center}
   border:0;border-radius:12px;padding:8px 12px;font-weight:800;font-size:0.84rem;
   background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;cursor:pointer;flex-shrink:0;
 }
+.btn-view.invite-mode{
+  background:linear-gradient(135deg,#2ecc71,#20b863);color:#08160d;
+  box-shadow:0 4px 14px rgba(46,204,113,0.35);
+}
 
-/* Incoming Call Notification Banner */
 .call-notif-banner{
   position:fixed;top:14px;left:50%;transform:translate(-50%,-180%);
   width:min(94vw,440px);
@@ -116,7 +129,6 @@ body{min-height:100dvh;display:flex;justify-content:center;align-items:center}
 .btn-notif-accept{background:linear-gradient(135deg,#2ecc71,#20b863);color:#08160d}
 .btn-notif-reject{background:linear-gradient(135deg,#ff4757,#d63031);color:#fff}
 
-/* Player Profile Modal */
 .modal{
   position:fixed;inset:0;background:rgba(3,5,12,0.86);backdrop-filter:blur(8px);
   display:none;place-items:center;z-index:140;padding:16px;
@@ -180,7 +192,6 @@ body{min-height:100dvh;display:flex;justify-content:center;align-items:center}
 </head>
 <body>
 
-<!-- Incoming Call Notification Banner -->
 <div class="call-notif-banner" id="incomingCallNotif" role="alert" aria-live="assertive">
  <div class="call-notif-top">
   <div class="call-notif-pulse"><i class="fa-solid fa-phone-volume"></i></div>
@@ -198,7 +209,14 @@ body{min-height:100dvh;display:flex;justify-content:center;align-items:center}
 <div class="app">
  <div class="top-header">
   <h1><i class="fa-solid fa-user-group"></i> ක්‍රීඩකයන් (Friends)</h1>
-  <div class="coin-chip"><i class="fa-solid fa-coins"></i><span id="myPoints">500</span></div>
+  <div class="header-right">
+   <div class="bet-chip" id="activeBetChip">
+    <i class="fa-solid fa-coins"></i>
+    <span>Bet: <strong id="activeBetVal">0</strong></span>
+    <button type="button" class="clear-bet-btn" id="clearBetModeBtn" title="Bet Mode ඉවත් කරන්න">✕</button>
+   </div>
+   <div class="coin-chip"><i class="fa-solid fa-coins"></i><span id="myPoints">500</span></div>
+  </div>
  </div>
 
  <div class="search-box">
@@ -219,7 +237,6 @@ body{min-height:100dvh;display:flex;justify-content:center;align-items:center}
  </footer>
 </div>
 
-<!-- Player Profile Modal -->
 <div class="modal" id="playerProfileModal">
  <div class="profile-card">
   <h2>ක්‍රීඩක ප්‍රොෆයිලය</h2>
@@ -251,6 +268,40 @@ body{min-height:100dvh;display:flex;justify-content:center;align-items:center}
 'use strict';
 const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
 const $=id=>document.getElementById(id);
+
+function getBetPointsFromContext(){
+ const params=new URLSearchParams(window.location.search);
+ const qBet=Number(params.get('bet'));
+ if(Number.isFinite(qBet) && qBet > 0){
+  sessionStorage.setItem('sinhala_draughts_bet',String(Math.floor(qBet)));
+  sessionStorage.setItem('sinhala_draughts_bet_active','1');
+  return Math.floor(qBet);
+ }
+ const active=sessionStorage.getItem('sinhala_draughts_bet_active')==='1';
+ const saved=Number(sessionStorage.getItem('sinhala_draughts_bet')||0);
+ return (active && Number.isFinite(saved) && saved > 0) ? Math.floor(saved) : 0;
+}
+
+let currentBetPoints=getBetPointsFromContext();
+
+function syncBetChipUI(){
+ const chip=$('activeBetChip');
+ if(currentBetPoints > 0){
+  $('activeBetVal').textContent=String(currentBetPoints);
+  chip.classList.add('show');
+ }else{
+  chip.classList.remove('show');
+ }
+}
+syncBetChipUI();
+
+$('clearBetModeBtn').onclick=()=>{
+ currentBetPoints=0;
+ sessionStorage.setItem('sinhala_draughts_bet_active','0');
+ syncBetChipUI();
+ renderFriendsList();
+ toast('Invite Mode ඉවත් කර Profile Mode වෙත මාරු විය.');
+};
 
 let auth,db,fbUser;
 let allProfiles={};
@@ -347,10 +398,86 @@ $('notifRejectCallBtn').onclick=async()=>{
  toast('Call එක ප්‍රතික්ෂේප කරන ලදී.');
 };
 
+async function sendGameInviteToFriend(uid, profileData, btnEl){
+ if(!fbUser || !db){
+  return toast('Invite යැවීමට ගිණුමට ඇතුළු වන්න.');
+ }
+ if(uid === fbUser.uid){
+  return toast('ඔබටම Invite යැවිය නොහැක.');
+ }
+ const betToUse=currentBetPoints > 0 ? currentBetPoints : 50;
+ const myName=fbUser.displayName || (fbUser.email||'').split('@')[0] || 'Host';
+ const guestName=profileData.name || 'Guest';
+ const roomId=`room_${fbUser.uid}_${uid}_${Date.now()}`;
+ const inviteId=`inv_${fbUser.uid}_${Date.now()}`;
+
+ if(btnEl) btnEl.disabled=true;
+
+ try{
+  await db.ref(`rooms_v6/${roomId}`).set({
+   roomId,
+   hostUid:fbUser.uid,
+   hostName:myName,
+   guestUid:uid,
+   guestName,
+   bet:betToUse,
+   status:'waiting',
+   matchStarted:false,
+   createdAt:Date.now()
+  });
+
+  await db.ref(`invites_v6/${uid}/${inviteId}`).set({
+   fromUid:fbUser.uid,
+   fromName:myName,
+   bet:betToUse,
+   roomId,
+   status:'pending',
+   createdAt:Date.now()
+  });
+
+  await db.ref('fcmPushQueue_v6').push({
+   targetUid:uid,
+   title:'ශ්‍රී ලංකීය දාම් - Multiplayer Invite',
+   body:`${myName} ඔබට ${betToUse} Coins ඔට්ටුවකට ආරාධනා කරයි!`,
+   url:`arena.html?mode=multi&bet=${encodeURIComponent(betToUse)}&roomId=${encodeURIComponent(roomId)}`,
+   roomId,
+   bet:betToUse,
+   createdAt:Date.now()
+  }).catch(()=>{});
+
+  sessionStorage.setItem('sinhala_draughts_bet',String(betToUse));
+  sessionStorage.setItem('sinhala_draughts_multi_room',JSON.stringify({
+   roomId,
+   role:'host',
+   bet:betToUse,
+   hostUid:fbUser.uid,
+   guestUid:uid,
+   hostName:myName,
+   guestName,
+   startedAt:Date.now()
+  }));
+
+  toast(`${guestName} වෙත Invite එක යවන ලදී!`);
+  const q=new URLSearchParams({
+   mode:'multi',
+   bet:String(betToUse),
+   roomId,
+   role:'host'
+  }).toString();
+  window.location.href=`arena.html?${q}`;
+ }catch(err){
+  console.error('Invite error:',err);
+  if(btnEl) btnEl.disabled=false;
+  toast('Invite යැවීමට නොහැකි විය.');
+ }
+}
+
 function renderFriendsList(){
  const q=String($('searchFriendInput').value||'').trim().toLowerCase();
  const listEl=$('friendsList');
  listEl.replaceChildren();
+
+ const isInviteMode=currentBetPoints > 0;
 
  const entries=Object.entries(allProfiles)
   .filter(([uid, p])=>p && uid !== (fbUser && fbUser.uid))
@@ -404,11 +531,16 @@ function renderFriendsList(){
 
   const viewBtn=document.createElement('button');
   viewBtn.type='button';
-  viewBtn.className='btn-view';
-  viewBtn.textContent='Profile';
+  viewBtn.className=isInviteMode ? 'btn-view invite-mode' : 'btn-view';
+  viewBtn.textContent=isInviteMode ? `Invite (${currentBetPoints})` : 'Profile';
+
   viewBtn.onclick=e=>{
    e.stopPropagation();
-   openPlayerProfileModal(uid, p, isOnline);
+   if(isInviteMode){
+    sendGameInviteToFriend(uid, p, viewBtn);
+   }else{
+    openPlayerProfileModal(uid, p, isOnline);
+   }
   };
 
   card.append(left,viewBtn);
