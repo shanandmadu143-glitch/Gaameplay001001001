@@ -173,7 +173,13 @@ html,body{
 'use strict';
 const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
 const $=id=>document.getElementById(id);
-const rtcConfig={iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'}]};
+const rtcConfig={
+ iceServers:[
+  {urls:'stun:stun.l.google.com:19302'},
+  {urls:'stun:stun1.l.google.com:19302'},
+  {urls:'stun:stun2.l.google.com:19302'}
+ ]
+};
 
 const params=new URLSearchParams(window.location.search);
 let targetUid=params.get('uid')||params.get('toUid')||'';
@@ -183,6 +189,7 @@ let isIncomingMode=params.get('incoming')==='1' || Boolean(incomingCallId);
 
 let auth,db,fbUser;
 let localStream=null;
+let remoteStream=null;
 let pc=null;
 let activeCallPath=null;
 let callListenerRef=null;
@@ -190,10 +197,11 @@ let callListenerFn=null;
 let candidatesListenerRef=null;
 let candidatesListenerFn=null;
 let isMuted=false;
-let isSpeakerBoosted=false;
+let isSpeakerBoosted=true;
 let timerInterval=null;
 let callSeconds=0;
 let isCallEnded=false;
+let isLiveConnected=false;
 let pendingRemoteCandidates=[];
 
 function toast(msg){
@@ -212,7 +220,7 @@ function setStatus(text, pillText, isConnected=false){
 }
 
 function startTimer(){
- stopTimer();
+ if(timerInterval)return;
  callSeconds=0;
  $('callTimerText').classList.add('active');
  $('callTimerText').textContent='00:00';
@@ -229,11 +237,40 @@ function stopTimer(){
   clearInterval(timerInterval);
   timerInterval=null;
  }
+ isLiveConnected=false;
  $('callTimerText').classList.remove('active');
 }
 
+function markCallConnected(){
+ if(isLiveConnected)return;
+ isLiveConnected=true;
+ $('peerAvatarRing').classList.remove('ringing');
+ setStatus(`${targetName} සමඟ සම්බන්ධ වී ඇත`, 'Live Call', true);
+ startTimer();
+ playRemoteAudioSafely();
+}
+
+function playRemoteAudioSafely(){
+ const audioEl=$('remoteAudio');
+ if(!audioEl)return;
+ audioEl.muted=false;
+ audioEl.volume=isSpeakerBoosted ? 1.0 : 0.7;
+ if(remoteStream && audioEl.srcObject !== remoteStream){
+  audioEl.srcObject=remoteStream;
+ }
+ const p=audioEl.play();
+ if(p && typeof p.catch==='function'){
+  p.catch(err=>{
+   console.warn('Audio play retry needed:',err);
+  });
+ }
+}
+
 async function ensureMicrophoneStream(){
- if(localStream)return localStream;
+ if(localStream){
+  localStream.getAudioTracks().forEach(t=>{t.enabled=!isMuted;});
+  return localStream;
+ }
  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
   throw new Error('මෙම browser/device එකේ Microphone සහාය නොමැත.');
  }
@@ -241,10 +278,12 @@ async function ensureMicrophoneStream(){
   audio:{
    echoCancellation:true,
    noiseSuppression:true,
-   autoGainControl:true
+   autoGainControl:true,
+   channelCount:1
   },
   video:false
  });
+ localStream.getAudioTracks().forEach(t=>{t.enabled=!isMuted;});
  return localStream;
 }
 
@@ -253,18 +292,33 @@ function createPeerConnection(signalPath, role){
   try{pc.close();}catch(_){}
   pc=null;
  }
+ remoteStream=new MediaStream();
+ const audioEl=$('remoteAudio');
+ audioEl.srcObject=remoteStream;
+ audioEl.autoplay=true;
+ audioEl.playsInline=true;
+
  pc=new RTCPeerConnection(rtcConfig);
 
  if(localStream){
-  localStream.getTracks().forEach(track=>pc.addTrack(track, localStream));
+  localStream.getTracks().forEach(track=>{
+   pc.addTrack(track, localStream);
+  });
  }
 
  pc.ontrack=event=>{
-  const audioEl=$('remoteAudio');
   if(event.streams && event.streams[0]){
-   audioEl.srcObject=event.streams[0];
-   audioEl.play().catch(()=>{});
+   event.streams[0].getTracks().forEach(tr=>{
+    if(!remoteStream.getTracks().some(existing=>existing.id===tr.id)){
+     remoteStream.addTrack(tr);
+    }
+   });
+   $('remoteAudio').srcObject=remoteStream;
+  }else if(event.track){
+   remoteStream.addTrack(event.track);
+   $('remoteAudio').srcObject=remoteStream;
   }
+  playRemoteAudioSafely();
  };
 
  pc.onicecandidate=event=>{
@@ -274,12 +328,19 @@ function createPeerConnection(signalPath, role){
   }
  };
 
+ pc.oniceconnectionstatechange=()=>{
+  if(!pc)return;
+  if(pc.iceConnectionState === 'connected' || pc.iceConnectionState === 'completed'){
+   markCallConnected();
+  }else if(pc.iceConnectionState === 'failed'){
+   setStatus('Network ICE සම්බන්ධතාවය අසාර්ථකයි', 'ICE Failed', false);
+  }
+ };
+
  pc.onconnectionstatechange=()=>{
   if(!pc)return;
   if(pc.connectionState === 'connected'){
-   $('peerAvatarRing').classList.remove('ringing');
-   setStatus(`${targetName} සමඟ සම්බන්ධ වී ඇත`, 'Live Call', true);
-   startTimer();
+   markCallConnected();
   }else if(pc.connectionState === 'disconnected' || pc.connectionState === 'failed'){
    setStatus('Call සම්බන්ධතාවය විසන්ධි විය', 'Disconnected', false);
   }
@@ -292,9 +353,9 @@ function createPeerConnection(signalPath, role){
  candidatesListenerRef=db.ref(`${signalPath}/${remoteBucket}`);
  candidatesListenerFn=async snap=>{
   const cData=snap.val();
-  if(!cData)return;
+  if(!cData || !pc)return;
   const cand=new RTCIceCandidate(cData);
-  if(pc && pc.remoteDescription && pc.remoteDescription.type){
+  if(pc.remoteDescription && pc.remoteDescription.type){
    await pc.addIceCandidate(cand).catch(()=>{});
   }else{
    pendingRemoteCandidates.push(cand);
@@ -306,7 +367,7 @@ function createPeerConnection(signalPath, role){
 }
 
 async function flushPendingCandidates(){
- if(!pc || !pc.remoteDescription)return;
+ if(!pc || !pc.remoteDescription || !pc.remoteDescription.type)return;
  while(pendingRemoteCandidates.length){
   const c=pendingRemoteCandidates.shift();
   await pc.addIceCandidate(c).catch(()=>{});
@@ -322,30 +383,30 @@ function listenToCallNode(signalPath, role){
   const data=snap.val();
   if(!data){
    if(!isCallEnded){
-    cleanupCall(false);
+    await cleanupCall(false);
     setStatus('Call එක අවසන් කරන ලදී', 'Ended', false);
    }
    return;
   }
 
-  if(data.fromName && !isIncomingMode){
-   targetName=data.toName || targetName;
+  if(role === 'caller' && data.toName){
+   targetName=data.toName;
    $('peerNameText').textContent=targetName;
-  }else if(data.fromName && isIncomingMode){
+  }else if(role === 'callee' && data.fromName){
    targetName=data.fromName;
-   targetUid=data.fromUid || targetUid;
    $('peerNameText').textContent=targetName;
   }
 
   if(data.status === 'rejected' || data.status === 'ended'){
-   cleanupCall(false);
+   await cleanupCall(false);
    setStatus(data.status === 'rejected' ? `${targetName} Call එක ප්‍රතික්ෂේප කළේය` : 'Call එක අවසන් විය', 'Ended', false);
    return;
   }
 
-  if(role === 'caller' && data.answer && pc && !pc.currentRemoteDescription){
+  if(role === 'caller' && data.answer && pc && (!pc.remoteDescription || !pc.remoteDescription.type)){
    await pc.setRemoteDescription(new RTCSessionDescription(data.answer));
    await flushPendingCandidates();
+   playRemoteAudioSafely();
    setStatus(`${targetName} සමඟ සම්බන්ධ වෙමින්...`, 'Connecting', false);
   }
  };
@@ -364,6 +425,7 @@ async function startOutgoingCall(){
 
  try{
   await ensureMicrophoneStream();
+  playRemoteAudioSafely();
   const callId='call_'+Date.now()+'_'+fbUser.uid.slice(0,6);
   activeCallPath=`calls_v6/${targetUid}/${callId}`;
 
@@ -420,6 +482,8 @@ $('acceptCallBtn').onclick=async()=>{
 
  try{
   await ensureMicrophoneStream();
+  playRemoteAudioSafely();
+
   const snap=await db.ref(activeCallPath).once('value');
   const callData=snap.val();
   if(!callData || !callData.offer){
@@ -449,7 +513,7 @@ $('declineCallBtn').onclick=async()=>{
  if(db && activeCallPath){
   await db.ref(activeCallPath).update({status:'rejected'}).catch(()=>{});
  }
- cleanupCall(true);
+ await cleanupCall(true);
  setStatus('Call එක ප්‍රතික්ෂේප කරන ලදී', 'Declined', false);
 };
 
@@ -465,15 +529,17 @@ $('muteBtn').onclick=()=>{
 $('speakerBtn').onclick=()=>{
  isSpeakerBoosted=!isSpeakerBoosted;
  const audioEl=$('remoteAudio');
- audioEl.volume=isSpeakerBoosted ? 1.0 : 0.75;
- $('speakerBtn').classList.toggle('active', isSpeakerBoosted);
- $('speakerLabel').textContent=isSpeakerBoosted ? 'Loud On' : 'Speaker';
- toast(isSpeakerBoosted ? 'Speaker Loud Mode සක්‍රීයයි' : 'Normal Audio Mode');
+ audioEl.muted=false;
+ audioEl.volume=isSpeakerBoosted ? 1.0 : 0.65;
+ audioEl.play().catch(()=>{});
+ $('speakerBtn').classList.toggle('active', !isSpeakerBoosted);
+ $('speakerLabel').textContent=isSpeakerBoosted ? 'Speaker' : 'Low Vol';
+ toast(isSpeakerBoosted ? 'Speaker Full Volume සක්‍රීයයි' : 'Low Volume Mode');
 };
 
-$('retryCallBtn').onclick=()=>{
+$('retryCallBtn').onclick=async()=>{
  isIncomingMode=false;
- cleanupCall(true);
+ await cleanupCall(true);
  startOutgoingCall();
 };
 
@@ -501,6 +567,11 @@ async function cleanupCall(removeRemoteNode){
   localStream.getTracks().forEach(t=>t.stop());
   localStream=null;
  }
+ if(remoteStream){
+  remoteStream.getTracks().forEach(t=>t.stop());
+  remoteStream=null;
+ }
+ $('remoteAudio').srcObject=null;
 
  if(removeRemoteNode && db && activeCallPath){
   await db.ref(activeCallPath).remove().catch(()=>{});
