@@ -326,20 +326,24 @@ function toast(msg){
  const t=$('toast');
  t.textContent=String(msg);
  t.classList.add('show');
- setTimeout(()=>t.classList.remove('show'),2800);
+ setTimeout(()=>t.classList.remove('show'),3200);
 }
 
-function getEffectiveUser(){
- if(fbUser)return fbUser;
- if(auth && auth.currentUser)return auth.currentUser;
- if(cachedLocalUser && cachedLocalUser.uid){
-  return {
-   uid:String(cachedLocalUser.uid),
-   displayName:cachedLocalUser.name || 'Host',
-   email:cachedLocalUser.email || ''
-  };
+async function ensureAuthenticatedUser(){
+ if(auth && auth.currentUser){
+  fbUser=auth.currentUser;
+  return fbUser;
  }
- return null;
+ if(auth && typeof auth.signInAnonymously === 'function'){
+  try{
+   const cred=await auth.signInAnonymously();
+   if(cred && cred.user){
+    fbUser=cred.user;
+    return fbUser;
+   }
+  }catch(_){}
+ }
+ return fbUser || null;
 }
 
 function playRingTone(){
@@ -412,7 +416,7 @@ $('notifAcceptCallBtn').onclick=()=>{
 };
 
 $('notifRejectCallBtn').onclick=async()=>{
- const activeUser=getEffectiveUser();
+ const activeUser=await ensureAuthenticatedUser();
  if(!pendingIncomingCall || !activeUser || !db)return;
  const call=pendingIncomingCall;
  hideIncomingCallNotification();
@@ -424,19 +428,23 @@ $('notifRejectCallBtn').onclick=async()=>{
 
 async function sendGameInviteToFriend(uid, profileData, btnEl){
  if(isSendingInvite)return;
- const activeUser=getEffectiveUser();
  if(!db){
   return toast('Database සම්බන්ධතාවය නොමැත.');
  }
- if(!activeUser || !activeUser.uid){
-  return toast('ගිණුමට ඇතුළු වී ඇත්දැයි පරීක්ෂා කරන්න.');
- }
- if(uid === activeUser.uid){
-  return toast('ඔබටම Invite යැවිය නොහැක.');
- }
-
  isSendingInvite=true;
  if(btnEl) btnEl.disabled=true;
+
+ const activeUser=await ensureAuthenticatedUser();
+ if(!activeUser || !activeUser.uid){
+  isSendingInvite=false;
+  if(btnEl) btnEl.disabled=false;
+  return toast('ගිණුමට ඇතුළු වී නොමැත. කරුණාකර Login වන්න.');
+ }
+ if(uid === activeUser.uid){
+  isSendingInvite=false;
+  if(btnEl) btnEl.disabled=false;
+  return toast('ඔබටම Invite යැවිය නොහැක.');
+ }
 
  const betToUse=currentBetPoints > 0 ? currentBetPoints : 50;
  const myName=(cachedLocalUser && cachedLocalUser.name) || activeUser.displayName || (activeUser.email||'').split('@')[0] || 'Host';
@@ -500,12 +508,12 @@ async function sendGameInviteToFriend(uid, profileData, btnEl){
   console.error('Invite error:',err);
   isSendingInvite=false;
   if(btnEl) btnEl.disabled=false;
-  toast(`Invite යැවීමට නොහැකි විය: ${err.message || err.code || 'Error'}`);
+  toast(`Invite යැවීමට නොහැකි විය: ${err.message || err.code || 'Permission denied'}`);
  }
 }
 
 function renderFriendsList(){
- const activeUser=getEffectiveUser();
+ const activeUser=fbUser || (auth && auth.currentUser) || null;
  const q=String($('searchFriendInput').value||'').trim().toLowerCase();
  const listEl=$('friendsList');
  listEl.replaceChildren();
@@ -619,7 +627,7 @@ $('modalCallBtn').onclick=()=>{
 };
 
 $('modalMessageBtn').onclick=async()=>{
- const activeUser=getEffectiveUser();
+ const activeUser=await ensureAuthenticatedUser();
  if(!selectedPlayer || !selectedPlayer.uid || !activeUser || !db){
   return toast('Message යැවීමට ගිණුමට ඇතුළු වන්න.');
  }
@@ -682,14 +690,14 @@ try{
 
  auth.onAuthStateChanged(async u=>{
   fbUser=u;
-  const activeUser=getEffectiveUser();
-  if(!activeUser){
+  if(!u){
+   await ensureAuthenticatedUser();
    return;
   }
 
-  attachCallNotificationListener(activeUser.uid);
+  attachCallNotificationListener(u.uid);
 
-  db.ref('users_v6/'+activeUser.uid+'/points').on('value',snap=>{
+  db.ref('users_v6/'+u.uid+'/points').on('value',snap=>{
    if(snap.exists()){
     $('myPoints').textContent=String(Number(snap.val())||0);
    }
