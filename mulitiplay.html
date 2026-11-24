@@ -21,6 +21,14 @@ body{min-height:100dvh;display:flex;flex-direction:column;align-items:center}
 
 .box{flex:1;overflow-y:auto;padding:16px;background:linear-gradient(145deg,rgba(18,24,40,0.88),rgba(12,16,28,0.92));border:2px solid rgba(255,209,102,0.22);border-radius:24px;display:flex;flex-direction:column;gap:12px;box-shadow:0 10px 30px rgba(0,0,0,0.5)}
 
+.bet-setup-card{background:rgba(255,209,102,0.07);border:1.5px solid rgba(255,209,102,0.35);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:10px}
+.bet-setup-top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.bet-setup-top label{font-size:0.88rem;font-weight:700;color:var(--gold)}
+.bet-input-row{display:flex;gap:8px;align-items:center}
+.quick-bets{display:flex;gap:6px;flex-wrap:wrap}
+.q-bet{background:rgba(255,255,255,0.08);border:1px solid rgba(255,209,102,0.3);color:#fff;border-radius:10px;padding:5px 10px;font-size:0.78rem;font-weight:700;cursor:pointer}
+.q-bet.active{background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;border-color:transparent}
+
 .search-row{display:flex;gap:8px;align-items:center}
 input{width:100%;padding:10px 13px;background:rgba(0,0,0,0.55);border:1.5px solid rgba(255,209,102,0.35);border-radius:12px;color:#fff;font-size:0.9rem;outline:none}
 input:focus{border-color:var(--gold)}
@@ -55,6 +63,24 @@ input:focus{border-color:var(--gold)}
  </div>
 
  <div class="box">
+  <div class="bet-setup-card">
+   <div class="bet-setup-top">
+    <label for="betPointInput"><i class="fa-solid fa-coins"></i> Bet Point ඇතුළත් කරන්න</label>
+    <div class="quick-bets">
+     <button type="button" class="q-bet" data-bet="50">50</button>
+     <button type="button" class="q-bet" data-bet="100">100</button>
+     <button type="button" class="q-bet" data-bet="250">250</button>
+     <button type="button" class="q-bet" data-bet="500">500</button>
+    </div>
+   </div>
+   <div class="bet-input-row">
+    <input type="number" id="betPointInput" min="10" step="10" placeholder="Bet points (උදා: 100)">
+    <button type="button" class="btn-gold" id="goFriendsInviteBtn" style="white-space:nowrap">
+     <i class="fa-solid fa-user-group"></i> Friends (Invite)
+    </button>
+   </div>
+  </div>
+
   <div class="search-row">
    <input type="text" id="searchPlayer" placeholder="සෙල්ලම් කිරීමට ක්‍රීඩකයාගේ නම සොයන්න...">
    <button class="btn" id="notifPermBtn" title="Enable Notification Bar"><i class="fa-solid fa-bell"></i></button>
@@ -92,10 +118,43 @@ const VAPID_PUBLIC_KEY="";
 
 const $=id=>document.getElementById(id),KEY='sinhala_draughts_v7_user';
 const params=new URLSearchParams(window.location.search);
-const bet=Math.max(10,Number(params.get('bet'))||Number(sessionStorage.getItem('sinhala_draughts_bet'))||50);
+let bet=Math.max(10,Number(params.get('bet'))||Number(sessionStorage.getItem('sinhala_draughts_bet'))||50);
 
-$('betVal').textContent=bet;
-sessionStorage.setItem('sinhala_draughts_bet',String(bet));
+function syncBetState(val, markActive=true){
+ const num=Math.max(10,Math.floor(Number(val)||50));
+ bet=num;
+ $('betVal').textContent=String(bet);
+ $('betPointInput').value=String(bet);
+ sessionStorage.setItem('sinhala_draughts_bet',String(bet));
+ if(markActive){
+  sessionStorage.setItem('sinhala_draughts_bet_active','1');
+ }
+ document.querySelectorAll('.q-bet').forEach(b=>{
+  b.classList.toggle('active',Number(b.dataset.bet)===bet);
+ });
+}
+
+syncBetState(bet,false);
+
+$('betPointInput').addEventListener('input',e=>{
+ const raw=Number(e.target.value);
+ if(raw>=10){
+  syncBetState(raw,true);
+ }
+});
+
+document.querySelectorAll('.q-bet').forEach(btn=>{
+ btn.onclick=()=>syncBetState(Number(btn.dataset.bet),true);
+});
+
+$('goFriendsInviteBtn').onclick=()=>{
+ const raw=Number($('betPointInput').value);
+ if(!Number.isFinite(raw)||raw<10){
+  return toast('කරුණාකර අවම Bet Points 10ක් ඇතුළත් කරන්න.');
+ }
+ syncBetState(raw,true);
+ go(`friends.html?bet=${encodeURIComponent(bet)}`);
+};
 
 let auth,db,messaging,fbUser;
 let myProfile={name:'ක්‍රීඩකයා',points:500};
@@ -279,6 +338,11 @@ function watchRoom(rId){
 async function sendInvite(targetPlayer,btn){
  if(!db||!fbUser)return toast('Invite යැවීමට පළමුව ගිණුමට ඇතුළු වන්න.');
  if(targetPlayer.uid===fbUser.uid)return toast('ඔබටම Invite යැවිය නොහැක.');
+
+ const inputBet=Number($('betPointInput').value);
+ if(Number.isFinite(inputBet)&&inputBet>=10){
+  syncBetState(inputBet,true);
+ }
 
  await ensureNotifAndToken();
  btn.disabled=true;
