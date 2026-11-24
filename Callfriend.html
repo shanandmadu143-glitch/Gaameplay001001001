@@ -23,9 +23,9 @@ html,body{
   color:#f8fafc;overflow:hidden;display:flex;justify-content:center;align-items:center;
 }
 .call-wrap{
-  width:100%;height:100dvh;max-width:500px;padding:16px;
+  width:100%;height:100dvh;max-width:520px;padding:16px;
   display:flex;flex-direction:column;justify-content:space-between;align-items:center;
-  gap:12px;
+  gap:12px;position:relative;z-index:1;
 }
 
 /* Header */
@@ -49,13 +49,18 @@ html,body{
 
 /* Main Call Surface */
 .call-surface{
-  width:100%;flex:1;max-height:600px;
+  width:100%;flex:1;max-height:610px;
   background:linear-gradient(155deg,rgba(20,28,52,0.95),rgba(11,16,31,0.97));
   border:2px solid rgba(255,209,102,0.42);border-radius:30px;
   padding:20px;
   display:flex;flex-direction:column;align-items:center;justify-content:space-between;
   box-shadow:0 22px 48px rgba(0,0,0,0.8),inset 0 1px 0 rgba(255,255,255,0.08);
   text-align:center;position:relative;overflow:hidden;
+  transition:border-color 0.2s ease,box-shadow 0.2s ease;
+}
+.call-surface.cam-active-mode{
+  border-color:rgba(0,242,254,0.65);
+  box-shadow:0 22px 52px rgba(0,0,0,0.88),0 0 28px rgba(0,242,254,0.2);
 }
 
 /* Ringing-only view before answering incoming call */
@@ -68,52 +73,95 @@ body.ringing-only .controls-panel,
 body.ringing-only .hint-text{
   display:none !important;
 }
-body.ringing-only .call-wrap{
-  justify-content:center;
-}
-body.ringing-only .call-surface{
-  max-height:460px;
-  justify-content:center;
-  gap:28px;
-}
-body.ringing-only .peer-block{
-  margin-top:0;
-  gap:16px;
-}
-body.ringing-only .avatar-stage{
-  width:120px;
-  height:120px;
-  font-size:3rem;
-}
-body.ringing-only .peer-title{
-  font-size:1.85rem;
-}
+body.ringing-only .call-wrap{justify-content:center}
+body.ringing-only .call-surface{max-height:460px;justify-content:center;gap:28px}
+body.ringing-only .peer-block{margin-top:0;gap:16px}
+body.ringing-only .avatar-stage{width:120px;height:120px;font-size:3rem}
+body.ringing-only .peer-title{font-size:1.85rem}
 
-/* Video Stage (Shown when remote or local camera is active) */
+/* Video Stage (Local or Remote cam on) */
 .video-stage{
-  width:100%;height:220px;border-radius:22px;
-  background:rgba(4,7,16,0.9);border:1.5px solid rgba(0,242,254,0.3);
+  width:100%;flex:1;min-height:220px;border-radius:22px;
+  background:rgba(4,7,16,0.92);border:1.5px solid rgba(0,242,254,0.35);
   position:relative;overflow:hidden;display:none;
 }
 .video-stage.active{display:block}
 #remoteVideo{
-  width:100%;height:100%;object-fit:cover;display:none;background:#050814;
+  width:100%;height:100%;object-fit:cover;display:none;background:#040710;
 }
 #remoteVideo.has-stream{display:block}
 .remote-video-placeholder{
   width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:6px;color:var(--dim);font-size:0.86rem;font-weight:700;
+  gap:8px;color:var(--dim);font-size:0.9rem;font-weight:700;padding:12px;
 }
 .remote-video-placeholder.hidden{display:none}
 #localVideo{
-  position:absolute;right:10px;bottom:10px;
-  width:88px;height:118px;border-radius:14px;object-fit:cover;
-  border:2px solid var(--gold);background:#000;display:none;z-index:4;
-  transform:scaleX(-1);
+  position:absolute;right:12px;bottom:12px;
+  width:98px;height:132px;border-radius:16px;object-fit:cover;
+  border:2px solid var(--gold);background:#000;display:none;z-index:6;
+  transform:scaleX(-1);box-shadow:0 10px 24px rgba(0,0,0,0.75);
 }
 #localVideo.show{display:block}
 
-.peer-block{display:flex;flex-direction:column;align-items:center;gap:8px}
+/* Full Screen Overlay Mode when Opponent Turns On Camera */
+body.remote-fullscreen-video .call-wrap{
+  max-width:100%;width:100vw;height:100dvh;padding:0;gap:0;
+}
+body.remote-fullscreen-video .call-header,
+body.remote-fullscreen-video .peer-block,
+body.remote-fullscreen-video .controls-panel,
+body.remote-fullscreen-video .hint-text{
+  display:none !important;
+}
+body.remote-fullscreen-video .call-surface{
+  max-height:100dvh;width:100%;height:100%;border-radius:0;border:0;padding:0;
+}
+body.remote-fullscreen-video .video-stage{
+  width:100%;height:100%;min-height:100%;border-radius:0;border:0;
+}
+body.remote-fullscreen-video #localVideo{
+  right:16px;bottom:108px;width:106px;height:142px;z-index:12;
+}
+
+/* Floating Popup Controls on Top of Fullscreen Remote Video */
+.fs-popup-bar{
+  position:fixed;left:50%;bottom:22px;transform:translateX(-50%);
+  display:none;align-items:center;justify-content:center;gap:14px;
+  padding:10px 16px;border-radius:999px;
+  background:rgba(10,15,30,0.78);backdrop-filter:blur(12px);
+  border:1.5px solid rgba(255,255,255,0.18);
+  box-shadow:0 14px 34px rgba(0,0,0,0.75);z-index:30;
+}
+body.remote-fullscreen-video .fs-popup-bar{
+  display:flex;
+}
+.fs-pop-btn{
+  width:50px;height:50px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.2);
+  background:rgba(255,255,255,0.1);color:#fff;font-size:1.15rem;
+  display:grid;place-items:center;cursor:pointer;
+  transition:transform 0.12s ease,background 0.15s ease,border-color 0.15s ease;
+}
+.fs-pop-btn:active{transform:scale(0.92)}
+.fs-pop-btn.cam-on{background:rgba(46,204,113,0.25);border-color:var(--neon-green);color:var(--neon-green)}
+.fs-pop-btn.soft{background:rgba(255,209,102,0.22);border-color:var(--gold);color:var(--gold)}
+.fs-pop-btn.hangup{
+  width:56px;height:56px;background:linear-gradient(135deg,#ff4757,#d63031);
+  border-color:rgba(255,255,255,0.35);color:#fff;font-size:1.25rem;
+  box-shadow:0 8px 22px rgba(255,71,87,0.5);
+}
+
+.fs-peer-tag{
+  position:fixed;top:16px;left:16px;display:none;align-items:center;gap:8px;
+  padding:7px 14px;border-radius:999px;
+  background:rgba(10,15,30,0.72);backdrop-filter:blur(8px);
+  border:1px solid rgba(255,209,102,0.4);color:#fff;font-size:0.9rem;font-weight:800;
+  z-index:25;
+}
+body.remote-fullscreen-video .fs-peer-tag{
+  display:flex;
+}
+
+.peer-block{display:flex;flex-direction:column;align-items:center;gap:8px;margin:8px 0}
 .avatar-stage{
   width:96px;height:96px;border-radius:50%;
   display:grid;place-items:center;
@@ -200,7 +248,7 @@ body.ringing-only .peer-title{
 .hint-text{font-size:0.76rem;color:var(--dim);text-align:center;line-height:1.35}
 
 #toast{
-  position:fixed;bottom:20px;left:50%;transform:translate(-50%,120px);opacity:0;
+  position:fixed;bottom:88px;left:50%;transform:translate(-50%,120px);opacity:0;
   background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--gold);
   color:#f8f9fa;border-radius:30px;padding:10px 18px;z-index:250;
   transition:0.25s ease;font-weight:600;font-size:0.88rem;
@@ -210,18 +258,23 @@ body.ringing-only .peer-title{
 </head>
 <body>
 
+<div class="fs-peer-tag" id="fsPeerTag">
+ <i class="fa-solid fa-video" style="color:var(--neon-green)"></i>
+ <span id="fsPeerName">ක්‍රීඩකයා</span>
+</div>
+
 <div class="call-wrap">
  <div class="call-header">
   <div class="brand-title"><i class="fa-solid fa-headset"></i> Voice & Video Call</div>
   <span class="badge-state" id="callBadge">සූදානම් වෙමින්...</span>
  </div>
 
- <div class="call-surface">
+ <div class="call-surface" id="callSurface">
   <div class="video-stage" id="videoStage">
    <video id="remoteVideo" autoplay playsinline></video>
    <div class="remote-video-placeholder" id="remoteVideoPlaceholder">
-    <i class="fa-solid fa-video-slash" style="font-size:1.5rem"></i>
-    <span>අනෙක් ක්‍රීඩකයාගේ Camera Off</span>
+    <i class="fa-solid fa-video" style="font-size:1.5rem;color:var(--neon-blue)"></i>
+    <span>ඔබගේ Camera On කර ඇත</span>
    </div>
    <video id="localVideo" autoplay playsinline muted></video>
   </div>
@@ -277,6 +330,13 @@ body.ringing-only .peer-title{
  <div class="hint-text">
   Call එක Voice ලෙස ආරම්භ වේ. කැමති නම් පමණක් Camera බොත්තම ඔබා Video Call කරන්න.
  </div>
+</div>
+
+<!-- Floating Popup Icons Over Fullscreen Opponent Video -->
+<div class="fs-popup-bar" id="fsPopupBar">
+ <button type="button" class="fs-pop-btn" id="fsSpeakerBtn" title="Speaker"><i class="fa-solid fa-volume-high"></i></button>
+ <button type="button" class="fs-pop-btn" id="fsCameraBtn" title="Camera"><i class="fa-solid fa-video" id="fsCameraIcon"></i></button>
+ <button type="button" class="fs-pop-btn hangup" id="fsHangupBtn" title="Call අවසන්"><i class="fa-solid fa-phone-slash"></i></button>
 </div>
 
 <audio id="remoteAudio" autoplay playsinline></audio>
@@ -341,6 +401,7 @@ function enterFullCallUi(callId){
 }
 
 function enterRingingOnlyUi(){
+ document.body.classList.remove('remote-fullscreen-video');
  document.body.classList.add('ringing-only');
  const panel=$('incomingPanel');
  if(panel){
@@ -379,6 +440,7 @@ let isMakingOffer=false;
 
 let isMuted=false;
 let isCameraOn=false;
+let isRemoteCamOn=false;
 let facingMode='user';
 let isLoudSpeaker=true;
 let isCallTerminated=false;
@@ -397,18 +459,28 @@ function toast(msg){
 function goToFriendsPage(){
  if(isRedirectingToFriends)return;
  isRedirectingToFriends=true;
+ document.body.classList.remove('remote-fullscreen-video');
  window.location.replace('friends.html');
 }
 
-function updateVideoStageVisibility(){
- const hasRemoteVideo=Boolean(remoteStream && remoteStream.getVideoTracks().some(t=>t.readyState==='live' && !t.muted));
- const showStage=isCameraOn || hasRemoteVideo;
- $('videoStage').classList.toggle('active', showStage);
- $('avatarStage').style.display=showStage ? 'none' : 'grid';
+function syncCameraUiStates(){
+ const hasLiveRemoteVideo=Boolean(
+  remoteStream && remoteStream.getVideoTracks().some(t=>t.readyState==='live' && !t.muted)
+ );
+ isRemoteCamOn=hasLiveRemoteVideo;
+
+ const anyCamActive=isCameraOn || isRemoteCamOn;
+ $('callSurface').classList.toggle('cam-active-mode', anyCamActive);
+ $('videoStage').classList.toggle('active', anyCamActive);
+ $('peerBlock').style.display=isRemoteCamOn ? 'none' : 'flex';
+
+ // When opponent turns on camera, show opponent full screen with floating popup controls
+ document.body.classList.toggle('remote-fullscreen-video', isRemoteCamOn && !document.body.classList.contains('ringing-only'));
+ $('fsPeerName').textContent=targetName;
 
  const rv=$('remoteVideo');
  const ph=$('remoteVideoPlaceholder');
- if(hasRemoteVideo){
+ if(isRemoteCamOn){
   rv.srcObject=remoteStream;
   rv.classList.add('has-stream');
   rv.play().catch(()=>{});
@@ -418,6 +490,7 @@ function updateVideoStageVisibility(){
   ph.classList.remove('hidden');
  }
 
+ // Self camera preview (visible both when only self cam is on, and PiP when both cams are on)
  const lv=$('localVideo');
  if(isCameraOn && cameraStream){
   lv.srcObject=cameraStream;
@@ -427,6 +500,11 @@ function updateVideoStageVisibility(){
   lv.classList.remove('show');
   lv.srcObject=null;
  }
+
+ $('cameraToggleBtn').classList.toggle('cam-on', isCameraOn);
+ $('cameraToggleText').textContent=isCameraOn ? 'Cam On' : 'Camera';
+ $('fsCameraBtn').classList.toggle('cam-on', isCameraOn);
+ $('fsCameraIcon').className=isCameraOn ? 'fa-solid fa-video' : 'fa-solid fa-video-slash';
 }
 
 function setUiState(statusText, badgeText, mode='connecting'){
@@ -492,6 +570,7 @@ function enterLiveConversation(){
  unlockAndPlayRemoteAudio();
  startCallTimer();
  setUiState(`${targetName} සමඟ සජීවීව කතා කරමින්...`, 'Live', 'live');
+ syncCameraUiStates();
 }
 
 async function acquireMic(){
@@ -546,9 +625,7 @@ async function stopCameraStream(notifyPeer=true){
    await renegotiateOffer();
   }
  }
- $('cameraToggleBtn').classList.remove('cam-on');
- $('cameraToggleText').textContent='Camera';
- updateVideoStageVisibility();
+ syncCameraUiStates();
 }
 
 async function startCameraStream(){
@@ -565,8 +642,7 @@ async function startCameraStream(){
    audio:false
   });
   isCameraOn=true;
-  $('cameraToggleBtn').classList.add('cam-on');
-  $('cameraToggleText').textContent='Cam On';
+  syncCameraUiStates();
 
   const vTrack=cameraStream.getVideoTracks()[0];
   if(pc && vTrack){
@@ -578,14 +654,12 @@ async function startCameraStream(){
    }
    await renegotiateOffer();
   }
-  updateVideoStageVisibility();
+  syncCameraUiStates();
   toast('Camera On කරන ලදී.');
  }catch(err){
   console.error('Camera start error:',err);
   isCameraOn=false;
-  $('cameraToggleBtn').classList.remove('cam-on');
-  $('cameraToggleText').textContent='Camera';
-  updateVideoStageVisibility();
+  syncCameraUiStates();
   toast('Camera අවසරය හෝ උපාංගය සොයාගත නොහැක.');
  }
 }
@@ -641,6 +715,15 @@ function setupPeerConnection(path, role){
     if(!remoteStream.getTracks().some(x=>x.id===tr.id)){
      remoteStream.addTrack(tr);
     }
+    tr.onunmute=()=>{
+     syncCameraUiStates();
+    };
+    tr.onmute=()=>{
+     syncCameraUiStates();
+    };
+    tr.onended=()=>{
+     syncCameraUiStates();
+    };
    });
   }else if(ev.track){
    if(!remoteStream.getTracks().some(x=>x.id===ev.track.id)){
@@ -649,7 +732,7 @@ function setupPeerConnection(path, role){
   }
   $('remoteAudio').srcObject=remoteStream;
   unlockAndPlayRemoteAudio();
-  updateVideoStageVisibility();
+  syncCameraUiStates();
   enterLiveConversation();
  };
 
@@ -716,9 +799,11 @@ function attachCallWatcher(path, role){
   if(role === 'caller' && data.toName){
    targetName=data.toName;
    $('peerNameLabel').textContent=targetName;
+   $('fsPeerName').textContent=targetName;
   }else if(role === 'callee' && data.fromName){
    targetName=data.fromName;
    $('peerNameLabel').textContent=targetName;
+   $('fsPeerName').textContent=targetName;
   }
 
   if(data.status === 'rejected' || data.status === 'ended'){
@@ -853,6 +938,7 @@ async function loadIncomingCallPrompt(){
  targetUid=data.fromUid || targetUid;
  targetName=data.fromName || targetName;
  $('peerNameLabel').textContent=targetName;
+ $('fsPeerName').textContent=targetName;
  attachCallWatcher(activeCallPath, 'callee');
 
  if(hasAcceptedIncoming || data.status === 'accepted'){
@@ -886,14 +972,35 @@ $('muteToggleBtn').onclick=()=>{
  $('muteToggleText').textContent=isMuted ? 'Unmute' : 'Mute';
 };
 
-$('cameraToggleBtn').onclick=async()=>{
+async function toggleCameraAction(){
  if(isCameraOn){
   await stopCameraStream(true);
   toast('Camera Off කරන ලදී.');
  }else{
   await startCameraStream();
  }
-};
+}
+
+function toggleSpeakerAction(){
+ isLoudSpeaker=!isLoudSpeaker;
+ unlockAndPlayRemoteAudio();
+ $('speakerToggleBtn').classList.toggle('soft', !isLoudSpeaker);
+ $('speakerToggleText').textContent=isLoudSpeaker ? 'Speaker' : 'Soft';
+ $('fsSpeakerBtn').classList.toggle('soft', !isLoudSpeaker);
+ toast(isLoudSpeaker ? 'Speaker Loud Mode' : 'Soft Volume Mode');
+}
+
+async function hangupCallAction(){
+ enterFullCallUi(incomingCallId);
+ if(db && activeCallPath){
+  await db.ref(activeCallPath).update({status:'ended'}).catch(()=>{});
+ }
+ await teardownCall(true);
+ goToFriendsPage();
+}
+
+$('cameraToggleBtn').onclick=toggleCameraAction;
+$('fsCameraBtn').onclick=toggleCameraAction;
 
 $('switchCamBtn').onclick=async()=>{
  facingMode = facingMode === 'user' ? 'environment' : 'user';
@@ -904,13 +1011,11 @@ $('switchCamBtn').onclick=async()=>{
  }
 };
 
-$('speakerToggleBtn').onclick=()=>{
- isLoudSpeaker=!isLoudSpeaker;
- unlockAndPlayRemoteAudio();
- $('speakerToggleBtn').classList.toggle('soft', !isLoudSpeaker);
- $('speakerToggleText').textContent=isLoudSpeaker ? 'Speaker' : 'Soft';
- toast(isLoudSpeaker ? 'Speaker Loud Mode' : 'Soft Volume Mode');
-};
+$('speakerToggleBtn').onclick=toggleSpeakerAction;
+$('fsSpeakerBtn').onclick=toggleSpeakerAction;
+
+$('endCallBtn').onclick=hangupCallAction;
+$('fsHangupBtn').onclick=hangupCallAction;
 
 async function teardownCall(deleteNode){
  isCallTerminated=true;
@@ -943,10 +1048,11 @@ async function teardownCall(deleteNode){
   remoteStream=null;
  }
  isCameraOn=false;
+ isRemoteCamOn=false;
  $('remoteAudio').srcObject=null;
  $('remoteVideo').srcObject=null;
  $('localVideo').srcObject=null;
- updateVideoStageVisibility();
+ syncCameraUiStates();
 
  if(deleteNode && db && activeCallPath){
   await db.ref(activeCallPath).remove().catch(()=>{});
@@ -954,20 +1060,12 @@ async function teardownCall(deleteNode){
  activeCallPath=null;
 }
 
-$('endCallBtn').onclick=async()=>{
- enterFullCallUi(incomingCallId);
- if(db && activeCallPath){
-  await db.ref(activeCallPath).update({status:'ended'}).catch(()=>{});
- }
- await teardownCall(true);
- goToFriendsPage();
-};
-
 window.addEventListener('beforeunload',()=>{
  teardownCall(false);
 });
 
 $('peerNameLabel').textContent=targetName;
+$('fsPeerName').textContent=targetName;
 
 try{
  if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
