@@ -25,32 +25,32 @@ html,body{
 body{min-height:100dvh;display:flex;justify-content:center;align-items:center}
 
 .app{
-  width:100%;height:100dvh;max-width:768px;margin:0 auto;padding:14px;
+  width:100%;height:100dvh;max-width:768px;margin:0 auto;padding:12px;
   display:flex;flex-direction:column;justify-content:space-between;gap:10px;
   position:relative;overflow:hidden;
 }
 
 .top-header{
-  display:flex;align-items:center;justify-content:space-between;gap:10px;
-  padding:12px 16px;border-radius:20px;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;
+  padding:10px 14px;border-radius:20px;
   background:linear-gradient(135deg,rgba(22,30,56,0.95),rgba(10,14,28,0.95));
   border:2px solid rgba(255,209,102,0.4);box-shadow:0 8px 24px rgba(0,0,0,0.6);
 }
-.top-header h1{font-size:1.25rem;color:var(--gold);font-weight:800;display:flex;align-items:center;gap:8px}
-.header-right{display:flex;align-items:center;gap:8px}
+.top-header h1{font-size:1.08rem;color:var(--gold);font-weight:800;display:flex;align-items:center;gap:7px;white-space:nowrap}
+.header-right{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .bet-chip{
-  display:none;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;
+  display:none;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;
   background:rgba(46,204,113,0.16);border:1.5px solid rgba(46,204,113,0.55);
-  font-weight:800;font-size:0.86rem;color:var(--neon-green);
+  font-weight:800;font-size:0.82rem;color:var(--neon-green);white-space:nowrap;
 }
 .bet-chip.show{display:flex}
 .clear-bet-btn{
   border:0;background:transparent;color:#fff;font-size:0.82rem;cursor:pointer;padding:0 2px;
 }
 .coin-chip{
-  display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;
+  display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;
   background:rgba(5,8,18,0.85);border:1.5px solid rgba(255,209,102,0.4);
-  font-weight:800;font-size:0.95rem;color:#fff;
+  font-weight:800;font-size:0.86rem;color:#fff;white-space:nowrap;
 }
 .coin-chip i{color:var(--gold)}
 
@@ -71,27 +71,27 @@ body{min-height:100dvh;display:flex;justify-content:center;align-items:center}
 }
 
 .friend-card{
-  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
   padding:12px 14px;border-radius:18px;
   background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,255,255,0.1);
   cursor:pointer;transition:transform 0.12s,border-color 0.15s,background 0.15s;
 }
 .friend-card:hover{border-color:var(--gold);background:rgba(255,255,255,0.08)}
 .friend-card:active{transform:scale(0.985)}
-.friend-left{display:flex;align-items:center;gap:12px;min-width:0}
+.friend-left{display:flex;align-items:center;gap:12px;min-width:0;flex:1}
 .friend-avatar{
-  width:48px;height:48px;border-radius:50%;display:grid;place-items:center;
+  width:46px;height:46px;border-radius:50%;display:grid;place-items:center;
   background:linear-gradient(135deg,#ffe08a,#ffb52e);color:#18213e;
-  font-size:1.3rem;border:2px solid var(--gold);flex-shrink:0;
+  font-size:1.25rem;border:2px solid var(--gold);flex-shrink:0;
 }
-.friend-info{min-width:0}
-.friend-name{font-size:1.05rem;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.friend-sub{font-size:0.8rem;color:var(--dim);display:flex;align-items:center;gap:8px;margin-top:2px}
+.friend-info{min-width:0;flex:1}
+.friend-name{font-size:1.02rem;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.friend-sub{font-size:0.78rem;color:var(--dim);display:flex;align-items:center;gap:8px;margin-top:2px;flex-wrap:wrap}
 .dot-online{color:var(--neon-green);font-weight:700}
 .dot-offline{color:#94a3b8;font-weight:700}
 .btn-view{
   border:0;border-radius:12px;padding:8px 12px;font-weight:800;font-size:0.84rem;
-  background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;cursor:pointer;flex-shrink:0;
+  background:linear-gradient(135deg,#ffe08a,#ffad62);color:#111;cursor:pointer;flex-shrink:0;white-space:nowrap;
 }
 .btn-view.invite-mode{
   background:linear-gradient(135deg,#2ecc71,#20b863);color:#08160d;
@@ -182,10 +182,10 @@ body{min-height:100dvh;display:flex;justify-content:center;align-items:center}
 .nav-item.active{color:var(--gold)}
 
 #toast{
-  position:fixed;bottom:20px;left:50%;transform:translate(-50%,120px);opacity:0;
+  position:fixed;bottom:84px;left:50%;transform:translate(-50%,120px);opacity:0;
   background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--gold);
   color:#f8f9fa;border-radius:30px;padding:10px 18px;z-index:220;
-  transition:0.25s ease;font-weight:600;font-size:0.88rem;
+  transition:0.25s ease;font-weight:600;font-size:0.88rem;max-width:90vw;text-align:center;
 }
 #toast.show{transform:translate(-50%,0);opacity:1}
 </style>
@@ -267,6 +267,7 @@ body{min-height:100dvh;display:flex;justify-content:center;align-items:center}
 <script>
 'use strict';
 const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
+const USER_KEY='sinhala_draughts_v7_user';
 const $=id=>document.getElementById(id);
 
 function getBetPointsFromContext(){
@@ -304,6 +305,14 @@ $('clearBetModeBtn').onclick=()=>{
 };
 
 let auth,db,fbUser;
+let cachedLocalUser=null;
+try{
+ cachedLocalUser=JSON.parse(localStorage.getItem(USER_KEY)||'null');
+ if(cachedLocalUser && Number.isFinite(Number(cachedLocalUser.points))){
+  $('myPoints').textContent=String(Number(cachedLocalUser.points));
+ }
+}catch(_){}
+
 let allProfiles={};
 let allStatuses={};
 let selectedPlayer=null;
@@ -311,12 +320,26 @@ let pendingIncomingCall=null;
 let callListenerRef=null;
 let callListenerFn=null;
 let ringtoneTimer=null;
+let isSendingInvite=false;
 
 function toast(msg){
  const t=$('toast');
  t.textContent=String(msg);
  t.classList.add('show');
  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+function getEffectiveUser(){
+ if(fbUser)return fbUser;
+ if(auth && auth.currentUser)return auth.currentUser;
+ if(cachedLocalUser && cachedLocalUser.uid){
+  return {
+   uid:String(cachedLocalUser.uid),
+   displayName:cachedLocalUser.name || 'Host',
+   email:cachedLocalUser.email || ''
+  };
+ }
+ return null;
 }
 
 function playRingTone(){
@@ -389,34 +412,42 @@ $('notifAcceptCallBtn').onclick=()=>{
 };
 
 $('notifRejectCallBtn').onclick=async()=>{
- if(!pendingIncomingCall || !fbUser || !db)return;
+ const activeUser=getEffectiveUser();
+ if(!pendingIncomingCall || !activeUser || !db)return;
  const call=pendingIncomingCall;
  hideIncomingCallNotification();
  if(call.callId){
-  await db.ref(`calls_v6/${fbUser.uid}/${call.callId}`).update({status:'rejected'}).catch(()=>{});
+  await db.ref(`calls_v6/${activeUser.uid}/${call.callId}`).update({status:'rejected'}).catch(()=>{});
  }
  toast('Call එක ප්‍රතික්ෂේප කරන ලදී.');
 };
 
 async function sendGameInviteToFriend(uid, profileData, btnEl){
- if(!fbUser || !db){
-  return toast('Invite යැවීමට ගිණුමට ඇතුළු වන්න.');
+ if(isSendingInvite)return;
+ const activeUser=getEffectiveUser();
+ if(!db){
+  return toast('Database සම්බන්ධතාවය නොමැත.');
  }
- if(uid === fbUser.uid){
+ if(!activeUser || !activeUser.uid){
+  return toast('ගිණුමට ඇතුළු වී ඇත්දැයි පරීක්ෂා කරන්න.');
+ }
+ if(uid === activeUser.uid){
   return toast('ඔබටම Invite යැවිය නොහැක.');
  }
- const betToUse=currentBetPoints > 0 ? currentBetPoints : 50;
- const myName=fbUser.displayName || (fbUser.email||'').split('@')[0] || 'Host';
- const guestName=profileData.name || 'Guest';
- const roomId=`room_${fbUser.uid}_${uid}_${Date.now()}`;
- const inviteId=`inv_${fbUser.uid}_${Date.now()}`;
 
+ isSendingInvite=true;
  if(btnEl) btnEl.disabled=true;
+
+ const betToUse=currentBetPoints > 0 ? currentBetPoints : 50;
+ const myName=(cachedLocalUser && cachedLocalUser.name) || activeUser.displayName || (activeUser.email||'').split('@')[0] || 'Host';
+ const guestName=profileData.name || 'Guest';
+ const roomId=`room_${activeUser.uid}_${uid}_${Date.now()}`;
+ const inviteId=`inv_${activeUser.uid}_${Date.now()}`;
 
  try{
   await db.ref(`rooms_v6/${roomId}`).set({
    roomId,
-   hostUid:fbUser.uid,
+   hostUid:activeUser.uid,
    hostName:myName,
    guestUid:uid,
    guestName,
@@ -427,7 +458,7 @@ async function sendGameInviteToFriend(uid, profileData, btnEl){
   });
 
   await db.ref(`invites_v6/${uid}/${inviteId}`).set({
-   fromUid:fbUser.uid,
+   fromUid:activeUser.uid,
    fromName:myName,
    bet:betToUse,
    roomId,
@@ -450,7 +481,7 @@ async function sendGameInviteToFriend(uid, profileData, btnEl){
    roomId,
    role:'host',
    bet:betToUse,
-   hostUid:fbUser.uid,
+   hostUid:activeUser.uid,
    guestUid:uid,
    hostName:myName,
    guestName,
@@ -467,12 +498,14 @@ async function sendGameInviteToFriend(uid, profileData, btnEl){
   window.location.href=`arena.html?${q}`;
  }catch(err){
   console.error('Invite error:',err);
+  isSendingInvite=false;
   if(btnEl) btnEl.disabled=false;
-  toast('Invite යැවීමට නොහැකි විය.');
+  toast(`Invite යැවීමට නොහැකි විය: ${err.message || err.code || 'Error'}`);
  }
 }
 
 function renderFriendsList(){
+ const activeUser=getEffectiveUser();
  const q=String($('searchFriendInput').value||'').trim().toLowerCase();
  const listEl=$('friendsList');
  listEl.replaceChildren();
@@ -480,7 +513,7 @@ function renderFriendsList(){
  const isInviteMode=currentBetPoints > 0;
 
  const entries=Object.entries(allProfiles)
-  .filter(([uid, p])=>p && uid !== (fbUser && fbUser.uid))
+  .filter(([uid, p])=>p && uid !== (activeUser && activeUser.uid))
   .filter(([uid, p])=>{
    if(!q)return true;
    return String(p.name||'').toLowerCase().includes(q);
@@ -586,16 +619,17 @@ $('modalCallBtn').onclick=()=>{
 };
 
 $('modalMessageBtn').onclick=async()=>{
- if(!selectedPlayer || !selectedPlayer.uid || !fbUser || !db){
+ const activeUser=getEffectiveUser();
+ if(!selectedPlayer || !selectedPlayer.uid || !activeUser || !db){
   return toast('Message යැවීමට ගිණුමට ඇතුළු වන්න.');
  }
  const text=window.prompt(`${selectedPlayer.name} වෙත යැවීමට Message එක ලියන්න:`);
  if(!text || !text.trim())return;
  const cleanText=text.trim().slice(0,500);
  const now=Date.now();
- const myName=fbUser.displayName || (fbUser.email||'').split('@')[0] || 'Player';
+ const myName=(cachedLocalUser && cachedLocalUser.name) || activeUser.displayName || (activeUser.email||'').split('@')[0] || 'Player';
  const payload={
-  fromUid:fbUser.uid,
+  fromUid:activeUser.uid,
   fromName:myName,
   fromAvatar:'fa-user',
   toUid:selectedPlayer.uid,
@@ -606,7 +640,7 @@ $('modalMessageBtn').onclick=async()=>{
  };
  try{
   await db.ref('inbox_v6/'+selectedPlayer.uid).push().set(payload);
-  await db.ref('sent_inbox_v6/'+fbUser.uid).push().set({...payload, read:true});
+  await db.ref('sent_inbox_v6/'+activeUser.uid).push().set({...payload, read:true});
   toast(`${selectedPlayer.name} වෙත Message එක යවන ලදී!`);
  }catch(e){
   toast('Message යැවීමට නොහැකි විය.');
@@ -636,30 +670,31 @@ try{
  auth=firebase.auth();
  db=firebase.database();
 
+ db.ref('publicProfiles_v6').on('value',snap=>{
+  allProfiles=snap.val()||{};
+  renderFriendsList();
+ });
+
+ db.ref('status_v6').on('value',snap=>{
+  allStatuses=snap.val()||{};
+  renderFriendsList();
+ });
+
  auth.onAuthStateChanged(async u=>{
   fbUser=u;
-  if(!u){
-   toast('කරුණාකර ගිණුමට ඇතුළු වන්න.');
+  const activeUser=getEffectiveUser();
+  if(!activeUser){
    return;
   }
 
-  attachCallNotificationListener(u.uid);
+  attachCallNotificationListener(activeUser.uid);
 
-  db.ref('users_v6/'+u.uid+'/points').on('value',snap=>{
+  db.ref('users_v6/'+activeUser.uid+'/points').on('value',snap=>{
    if(snap.exists()){
     $('myPoints').textContent=String(Number(snap.val())||0);
    }
   });
-
-  db.ref('publicProfiles_v6').on('value',snap=>{
-   allProfiles=snap.val()||{};
-   renderFriendsList();
-  });
-
-  db.ref('status_v6').on('value',snap=>{
-   allStatuses=snap.val()||{};
-   renderFriendsList();
-  });
+  renderFriendsList();
  });
 }catch(e){
  console.error('Friends init error:',e);
