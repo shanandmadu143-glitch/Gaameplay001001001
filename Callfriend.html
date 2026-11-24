@@ -110,7 +110,7 @@ html,body{
   50%{height:25px}
 }
 
-/* Incoming Call Panel (Shown ONLY before user accepts) */
+/* Incoming Call Prompt (Hidden immediately upon accept) */
 .incoming-panel{
   width:100%;display:none;flex-direction:column;gap:12px;
   background:rgba(0,242,254,0.08);border:1.5px solid rgba(0,242,254,0.38);
@@ -178,7 +178,7 @@ html,body{
    </div>
   </div>
 
-  <!-- Incoming Call UI (Disappears permanently once accepted) -->
+  <!-- Incoming Call Prompt -->
   <div class="incoming-panel" id="incomingPanel">
    <div class="incoming-heading">
     <i class="fa-solid fa-phone-arrow-down-left" style="color:var(--neon-green)"></i>
@@ -247,7 +247,34 @@ const params=new URLSearchParams(window.location.search);
 let targetUid=params.get('uid')||params.get('toUid')||'';
 let targetName=params.get('name')||params.get('toName')||'ක්‍රීඩකයා';
 let incomingCallId=params.get('callId')||'';
-let isIncomingFlow=params.get('incoming')==='1' || Boolean(incomingCallId);
+
+function wasCallAlreadyAccepted(callId){
+ if(!callId)return false;
+ try{
+  return sessionStorage.getItem('accepted_call_' + callId) === '1';
+ }catch(_){
+  return false;
+ }
+}
+
+function markCallAcceptedForever(callId){
+ hasAcceptedIncoming=true;
+ isIncomingFlow=false;
+ const panel=$('incomingPanel');
+ if(panel){
+  panel.classList.remove('show');
+  panel.style.display='none';
+ }
+ const idToStore=callId || incomingCallId;
+ if(idToStore){
+  try{
+   sessionStorage.setItem('accepted_call_' + idToStore, '1');
+  }catch(_){}
+ }
+}
+
+let hasAcceptedIncoming=wasCallAlreadyAccepted(incomingCallId);
+let isIncomingFlow=!hasAcceptedIncoming && (params.get('incoming')==='1' || Boolean(incomingCallId));
 
 let auth,db,fbUser;
 let localStream=null;
@@ -263,7 +290,6 @@ let pendingCandidates=[];
 
 let isMuted=false;
 let isLoudSpeaker=true;
-let hasAcceptedIncoming=false;
 let isCallTerminated=false;
 let isConnectedLive=false;
 let timerId=null;
@@ -292,12 +318,6 @@ function setUiState(statusText, badgeText, mode='connecting'){
  }else if(mode === 'ended'){
   $('callBadge').classList.add('ended');
  }
-}
-
-function hideIncomingUiForever(){
- hasAcceptedIncoming=true;
- isIncomingFlow=false;
- $('incomingPanel').classList.remove('show');
 }
 
 function startCallTimer(){
@@ -341,7 +361,7 @@ document.addEventListener('pointerdown',unlockAndPlayRemoteAudio,{passive:true})
 function enterLiveConversation(){
  if(isConnectedLive)return;
  isConnectedLive=true;
- hideIncomingUiForever();
+ markCallAcceptedForever(incomingCallId);
  unlockAndPlayRemoteAudio();
  startCallTimer();
  setUiState(`${targetName} සමඟ සජීවීව කතා කරමින්...`, 'Live', 'live');
@@ -515,7 +535,7 @@ async function beginOutgoingCall(){
   return setUiState('ක්‍රීඩක තොරතුරු හමු නොවීය', 'Error', 'ended');
  }
  isCallTerminated=false;
- hideIncomingUiForever();
+ markCallAcceptedForever('');
  setUiState(`${targetName} වෙත Call කරමින්...`, 'Calling', 'calling');
 
  try{
@@ -547,49 +567,25 @@ async function beginOutgoingCall(){
  }
 }
 
-async function loadIncomingCallPrompt(){
- if(!fbUser || !db || !incomingCallId)return;
- isCallTerminated=false;
- activeCallPath=`calls_v6/${fbUser.uid}/${incomingCallId}`;
-
- const snap=await db.ref(activeCallPath).once('value');
- const data=snap.val();
- if(!data || !data.offer){
-  hideIncomingUiForever();
-  setUiState('Incoming Call එක අවසන් වී ඇත', 'Ended', 'ended');
-  return;
- }
-
- targetUid=data.fromUid || targetUid;
- targetName=data.fromName || targetName;
- $('peerNameLabel').textContent=targetName;
-
- if(!hasAcceptedIncoming){
-  $('incomingPanel').classList.add('show');
-  setUiState(`${targetName} ඔබට Call කරයි...`, 'Incoming', 'calling');
- }
- attachCallWatcher(activeCallPath, 'callee');
-}
-
-$('acceptBtn').onclick=async()=>{
- if(!fbUser || !db || !activeCallPath)return;
-
- // Immediately hide incoming prompt so it never shows again after accepting
- hideIncomingUiForever();
- setUiState(`${targetName} සමඟ සම්බන්ධ වෙමින්...`, 'Connecting', 'calling');
+async function connectAsCalleeDirectly(callData){
+ markCallAcceptedForever(incomingCallId);
+ setUiState(`${targetName} සමඟ Call එකට සම්බන්ධ වෙමින්...`, 'Live', 'live');
 
  try{
   await acquireMic();
   unlockAndPlayRemoteAudio();
 
-  const snap=await db.ref(activeCallPath).once('value');
-  const callData=snap.val();
-  if(!callData || !callData.offer){
+  let data=callData;
+  if(!data || !data.offer){
+   const snap=await db.ref(activeCallPath).once('value');
+   data=snap.val();
+  }
+  if(!data || !data.offer){
    return setUiState('Call එක අවසන් වී ඇත', 'Ended', 'ended');
   }
 
   const conn=setupPeerConnection(activeCallPath, 'callee');
-  await conn.setRemoteDescription(new RTCSessionDescription(callData.offer));
+  await conn.setRemoteDescription(new RTCSessionDescription(data.offer));
   await flushIceQueue();
 
   const answer=await conn.createAnswer();
@@ -599,15 +595,50 @@ $('acceptBtn').onclick=async()=>{
    status:'accepted',
    answer:{type:answer.type, sdp:answer.sdp}
   });
+  startCallTimer();
  }catch(err){
-  console.error('Accept call failed:',err);
+  console.error('Connect callee failed:',err);
   setUiState('Call සම්බන්ධ කිරීම අසාර්ථකයි', 'Error', 'ended');
   toast(err.message || 'Microphone අවසරය අවශ්‍යයි.');
  }
+}
+
+async function loadIncomingCallPrompt(){
+ if(!fbUser || !db || !incomingCallId)return;
+ isCallTerminated=false;
+ activeCallPath=`calls_v6/${fbUser.uid}/${incomingCallId}`;
+
+ const snap=await db.ref(activeCallPath).once('value');
+ const data=snap.val();
+ if(!data || !data.offer){
+  markCallAcceptedForever(incomingCallId);
+  setUiState('Incoming Call එක අවසන් වී ඇත', 'Ended', 'ended');
+  return;
+ }
+
+ targetUid=data.fromUid || targetUid;
+ targetName=data.fromName || targetName;
+ $('peerNameLabel').textContent=targetName;
+ attachCallWatcher(activeCallPath, 'callee');
+
+ if(hasAcceptedIncoming || data.status === 'accepted'){
+  await connectAsCalleeDirectly(data);
+  return;
+ }
+
+ const panel=$('incomingPanel');
+ panel.style.display='flex';
+ panel.classList.add('show');
+ setUiState(`${targetName} ඔබට Call කරයි...`, 'Incoming', 'calling');
+}
+
+$('acceptBtn').onclick=async()=>{
+ if(!fbUser || !db || !activeCallPath)return;
+ await connectAsCalleeDirectly(null);
 };
 
 $('rejectBtn').onclick=async()=>{
- hideIncomingUiForever();
+ markCallAcceptedForever(incomingCallId);
  if(db && activeCallPath){
   await db.ref(activeCallPath).update({status:'rejected'}).catch(()=>{});
  }
@@ -673,7 +704,7 @@ async function teardownCall(deleteNode){
 }
 
 $('endCallBtn').onclick=async()=>{
- hideIncomingUiForever();
+ markCallAcceptedForever(incomingCallId);
  if(db && activeCallPath){
   await db.ref(activeCallPath).update({status:'ended'}).catch(()=>{});
  }
@@ -682,7 +713,7 @@ $('endCallBtn').onclick=async()=>{
 };
 
 $('goBackBtn').onclick=async()=>{
- hideIncomingUiForever();
+ markCallAcceptedForever(incomingCallId);
  if(db && activeCallPath){
   await db.ref(activeCallPath).update({status:'ended'}).catch(()=>{});
  }
@@ -699,6 +730,13 @@ window.addEventListener('beforeunload',()=>{
 });
 
 $('peerNameLabel').textContent=targetName;
+if(hasAcceptedIncoming){
+ const panel=$('incomingPanel');
+ if(panel){
+  panel.classList.remove('show');
+  panel.style.display='none';
+ }
+}
 
 try{
  if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
@@ -711,7 +749,7 @@ try{
    setUiState('කරුණාකර ගිණුමට ඇතුළු වන්න', 'Auth Required', 'ended');
    return;
   }
-  if(isIncomingFlow && incomingCallId){
+  if(incomingCallId){
    await loadIncomingCallPrompt();
   }else if(targetUid){
    await beginOutgoingCall();
