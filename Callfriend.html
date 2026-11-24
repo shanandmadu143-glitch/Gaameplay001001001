@@ -3,12 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>ශ්‍රී ලංකීය දාම් - Voice Call</title>
+<title>ශ්‍රී ලංකීය දාම් - Voice & Video Call</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Gemunu+Libre:wght@400;600;700;800&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#05070e;
+  --card-bg:rgba(16,23,44,0.92);
   --gold:#ffd166;
   --neon-blue:#00f2fe;
   --neon-green:#2ecc71;
@@ -48,13 +49,13 @@ html,body{
 
 /* Main Call Surface */
 .call-surface{
-  width:100%;flex:1;max-height:580px;
+  width:100%;flex:1;max-height:600px;
   background:linear-gradient(155deg,rgba(20,28,52,0.95),rgba(11,16,31,0.97));
   border:2px solid rgba(255,209,102,0.42);border-radius:30px;
-  padding:24px 20px;
+  padding:20px;
   display:flex;flex-direction:column;align-items:center;justify-content:space-between;
   box-shadow:0 22px 48px rgba(0,0,0,0.8),inset 0 1px 0 rgba(255,255,255,0.08);
-  text-align:center;
+  text-align:center;position:relative;overflow:hidden;
 }
 
 /* Ringing-only view before answering incoming call */
@@ -62,6 +63,7 @@ body.ringing-only .call-header,
 body.ringing-only .peer-sub,
 body.ringing-only .live-timer,
 body.ringing-only .wave-bars,
+body.ringing-only .video-stage,
 body.ringing-only .controls-panel,
 body.ringing-only .hint-text{
   display:none !important;
@@ -87,12 +89,36 @@ body.ringing-only .peer-title{
   font-size:1.85rem;
 }
 
-.peer-block{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:6px}
+/* Video Stage (Shown when remote or local camera is active) */
+.video-stage{
+  width:100%;height:220px;border-radius:22px;
+  background:rgba(4,7,16,0.9);border:1.5px solid rgba(0,242,254,0.3);
+  position:relative;overflow:hidden;display:none;
+}
+.video-stage.active{display:block}
+#remoteVideo{
+  width:100%;height:100%;object-fit:cover;display:none;background:#050814;
+}
+#remoteVideo.has-stream{display:block}
+.remote-video-placeholder{
+  width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:6px;color:var(--dim);font-size:0.86rem;font-weight:700;
+}
+.remote-video-placeholder.hidden{display:none}
+#localVideo{
+  position:absolute;right:10px;bottom:10px;
+  width:88px;height:118px;border-radius:14px;object-fit:cover;
+  border:2px solid var(--gold);background:#000;display:none;z-index:4;
+  transform:scaleX(-1);
+}
+#localVideo.show{display:block}
+
+.peer-block{display:flex;flex-direction:column;align-items:center;gap:8px}
 .avatar-stage{
-  width:104px;height:104px;border-radius:50%;
+  width:96px;height:96px;border-radius:50%;
   display:grid;place-items:center;
   background:linear-gradient(135deg,#ffe29a,#ffaa2b);color:#141c33;
-  font-size:2.6rem;border:3px solid var(--gold);
+  font-size:2.4rem;border:3px solid var(--gold);
   box-shadow:0 0 26px rgba(255,209,102,0.42);position:relative;
   transition:transform 0.2s ease,box-shadow 0.2s ease,border-color 0.2s ease;
 }
@@ -110,23 +136,23 @@ body.ringing-only .peer-title{
   100%{transform:scale(1.24);opacity:0}
 }
 
-.peer-title{font-size:1.6rem;font-weight:800;color:#ffffff;letter-spacing:0.3px}
-.peer-sub{font-size:1rem;font-weight:700;color:var(--neon-blue);min-height:24px}
+.peer-title{font-size:1.55rem;font-weight:800;color:#ffffff;letter-spacing:0.3px}
+.peer-sub{font-size:0.96rem;font-weight:700;color:var(--neon-blue);min-height:22px}
 .live-timer{
-  font-size:1.35rem;font-weight:800;color:var(--gold);
+  font-size:1.25rem;font-weight:800;color:var(--gold);
   background:rgba(255,209,102,0.1);border:1px solid rgba(255,209,102,0.3);
-  padding:3px 14px;border-radius:999px;display:none;
+  padding:2px 14px;border-radius:999px;display:none;
 }
 .live-timer.show{display:inline-block}
 
 /* Voice Wave Bars */
 .wave-bars{
-  display:flex;align-items:center;justify-content:center;gap:5px;height:26px;opacity:0.35;
+  display:flex;align-items:center;justify-content:center;gap:5px;height:24px;opacity:0.35;
   transition:opacity 0.2s ease;
 }
 .wave-bars.active{opacity:1}
 .wave-bars span{
-  width:5px;height:8px;border-radius:999px;
+  width:5px;height:7px;border-radius:999px;
   background:linear-gradient(180deg,var(--neon-green),var(--neon-blue));
 }
 .wave-bars.active span{animation:waveAnim 0.85s infinite ease-in-out}
@@ -136,7 +162,7 @@ body.ringing-only .peer-title{
 .wave-bars span:nth-child(5){animation-delay:0.48s}
 @keyframes waveAnim{
   0%,100%{height:7px}
-  50%{height:25px}
+  50%{height:23px}
 }
 
 /* Incoming Answer / Reject Box */
@@ -146,32 +172,32 @@ body.ringing-only .peer-title{
 .incoming-panel.show{display:flex}
 
 /* Active Call Controls */
-.controls-panel{width:100%;display:flex;flex-direction:column;gap:12px}
-.tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.controls-panel{width:100%;display:flex;flex-direction:column;gap:10px}
+.tools-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .tool-btn{
-  border:1.5px solid rgba(255,255,255,0.14);border-radius:18px;
+  border:1.5px solid rgba(255,255,255,0.14);border-radius:16px;
   background:rgba(255,255,255,0.06);color:#f8fafc;
-  padding:12px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;
-  font-size:0.82rem;font-weight:700;cursor:pointer;transition:transform 0.12s,background 0.15s,border-color 0.15s;
+  padding:11px 4px;display:flex;flex-direction:column;align-items:center;gap:4px;
+  font-size:0.78rem;font-weight:700;cursor:pointer;transition:transform 0.12s,background 0.15s,border-color 0.15s;
 }
 .tool-btn:active{transform:scale(0.95)}
 .tool-btn.muted{background:rgba(255,71,87,0.22);border-color:var(--red);color:#ffa8b0}
+.tool-btn.cam-on{background:rgba(46,204,113,0.2);border-color:var(--neon-green);color:var(--neon-green)}
 .tool-btn.soft{background:rgba(255,209,102,0.14);border-color:rgba(255,209,102,0.45);color:var(--gold)}
-.tool-btn i{font-size:1.25rem}
+.tool-btn i{font-size:1.18rem}
 
 .main-actions{display:flex;gap:10px}
-.btn-accept,.btn-end,.btn-back{
+.btn-accept,.btn-end{
   flex:1;border:0;border-radius:18px;padding:13px 14px;
   font-size:1.05rem;font-weight:800;cursor:pointer;
   display:inline-flex;align-items:center;justify-content:center;gap:8px;
   transition:transform 0.12s ease;
 }
-.btn-accept:active,.btn-end:active,.btn-back:active{transform:scale(0.96)}
+.btn-accept:active,.btn-end:active{transform:scale(0.96)}
 .btn-accept{background:linear-gradient(135deg,#2ecc71,#1eb962);color:#06140c;box-shadow:0 8px 22px rgba(46,204,113,0.4)}
 .btn-end{background:linear-gradient(135deg,#ff4757,#d63031);color:#fff;box-shadow:0 8px 22px rgba(255,71,87,0.4)}
-.btn-back{background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2)}
 
-.hint-text{font-size:0.78rem;color:var(--dim);text-align:center;line-height:1.4}
+.hint-text{font-size:0.76rem;color:var(--dim);text-align:center;line-height:1.35}
 
 #toast{
   position:fixed;bottom:20px;left:50%;transform:translate(-50%,120px);opacity:0;
@@ -186,12 +212,21 @@ body.ringing-only .peer-title{
 
 <div class="call-wrap">
  <div class="call-header">
-  <div class="brand-title"><i class="fa-solid fa-headset"></i> Voice Call</div>
+  <div class="brand-title"><i class="fa-solid fa-headset"></i> Voice & Video Call</div>
   <span class="badge-state" id="callBadge">සූදානම් වෙමින්...</span>
  </div>
 
  <div class="call-surface">
-  <div class="peer-block">
+  <div class="video-stage" id="videoStage">
+   <video id="remoteVideo" autoplay playsinline></video>
+   <div class="remote-video-placeholder" id="remoteVideoPlaceholder">
+    <i class="fa-solid fa-video-slash" style="font-size:1.5rem"></i>
+    <span>අනෙක් ක්‍රීඩකයාගේ Camera Off</span>
+   </div>
+   <video id="localVideo" autoplay playsinline muted></video>
+  </div>
+
+  <div class="peer-block" id="peerBlock">
    <div class="avatar-stage calling" id="avatarStage">
     <i class="fa-solid fa-user" id="peerIcon"></i>
    </div>
@@ -212,32 +247,35 @@ body.ringing-only .peer-title{
    </div>
   </div>
 
-  <!-- Full Active Call Controls -->
+  <!-- Active Call Controls -->
   <div class="controls-panel" id="activeControlsPanel">
    <div class="tools-grid">
     <button type="button" class="tool-btn" id="muteToggleBtn">
      <i class="fa-solid fa-microphone" id="muteToggleIcon"></i>
      <span id="muteToggleText">Mute</span>
     </button>
+    <button type="button" class="tool-btn" id="cameraToggleBtn">
+     <i class="fa-solid fa-video" id="cameraToggleIcon"></i>
+     <span id="cameraToggleText">Camera</span>
+    </button>
+    <button type="button" class="tool-btn" id="switchCamBtn">
+     <i class="fa-solid fa-camera-rotate"></i>
+     <span>Flip Cam</span>
+    </button>
     <button type="button" class="tool-btn" id="speakerToggleBtn">
      <i class="fa-solid fa-volume-high"></i>
      <span id="speakerToggleText">Speaker</span>
-    </button>
-    <button type="button" class="tool-btn" id="recallBtn">
-     <i class="fa-solid fa-rotate-right"></i>
-     <span>Re-Call</span>
     </button>
    </div>
 
    <div class="main-actions">
     <button type="button" class="btn-end" id="endCallBtn"><i class="fa-solid fa-phone-slash"></i> Call අවසන්</button>
-    <button type="button" class="btn-back" id="goBackBtn"><i class="fa-solid fa-arrow-left"></i> ආපසු</button>
    </div>
   </div>
  </div>
 
  <div class="hint-text">
-  සජීවීව කතා කිරීමට දෙදෙනාම Microphone අවසරය (Allow) ලබා දී තිබිය යුතුය.
+  Call එක Voice ලෙස ආරම්භ වේ. කැමති නම් පමණක් Camera බොත්තම ඔබා Video Call කරන්න.
  </div>
 </div>
 
@@ -326,8 +364,10 @@ if(isIncomingFlow){
 
 let auth,db,fbUser;
 let localStream=null;
+let cameraStream=null;
 let remoteStream=null;
 let pc=null;
+let currentRole='caller';
 let activeCallPath=null;
 let callNodeRef=null;
 let callNodeFn=null;
@@ -335,8 +375,11 @@ let candNodeRef=null;
 let candNodeFn=null;
 let seenCandidateKeys=new Set();
 let pendingCandidates=[];
+let isMakingOffer=false;
 
 let isMuted=false;
+let isCameraOn=false;
+let facingMode='user';
 let isLoudSpeaker=true;
 let isCallTerminated=false;
 let isConnectedLive=false;
@@ -355,6 +398,35 @@ function goToFriendsPage(){
  if(isRedirectingToFriends)return;
  isRedirectingToFriends=true;
  window.location.replace('friends.html');
+}
+
+function updateVideoStageVisibility(){
+ const hasRemoteVideo=Boolean(remoteStream && remoteStream.getVideoTracks().some(t=>t.readyState==='live' && !t.muted));
+ const showStage=isCameraOn || hasRemoteVideo;
+ $('videoStage').classList.toggle('active', showStage);
+ $('avatarStage').style.display=showStage ? 'none' : 'grid';
+
+ const rv=$('remoteVideo');
+ const ph=$('remoteVideoPlaceholder');
+ if(hasRemoteVideo){
+  rv.srcObject=remoteStream;
+  rv.classList.add('has-stream');
+  rv.play().catch(()=>{});
+  ph.classList.add('hidden');
+ }else{
+  rv.classList.remove('has-stream');
+  ph.classList.remove('hidden');
+ }
+
+ const lv=$('localVideo');
+ if(isCameraOn && cameraStream){
+  lv.srcObject=cameraStream;
+  lv.classList.add('show');
+  lv.play().catch(()=>{});
+ }else{
+  lv.classList.remove('show');
+  lv.srcObject=null;
+ }
 }
 
 function setUiState(statusText, badgeText, mode='connecting'){
@@ -443,6 +515,81 @@ async function acquireMic(){
  return localStream;
 }
 
+async function renegotiateOffer(){
+ if(!pc || !db || !activeCallPath || isMakingOffer)return;
+ try{
+  isMakingOffer=true;
+  const offer=await pc.createOffer({offerToReceiveAudio:true, offerToReceiveVideo:true});
+  await pc.setLocalDescription(offer);
+  const field=currentRole === 'caller' ? 'offer' : 'calleeOffer';
+  await db.ref(`${activeCallPath}/${field}`).set({type:offer.type, sdp:offer.sdp});
+ }catch(e){
+  console.warn('Renegotiation error:',e);
+ }finally{
+  isMakingOffer=false;
+ }
+}
+
+async function stopCameraStream(notifyPeer=true){
+ isCameraOn=false;
+ if(cameraStream){
+  cameraStream.getTracks().forEach(t=>t.stop());
+  cameraStream=null;
+ }
+ if(pc){
+  pc.getSenders().forEach(sender=>{
+   if(sender.track && sender.track.kind === 'video'){
+    pc.removeTrack(sender);
+   }
+  });
+  if(notifyPeer){
+   await renegotiateOffer();
+  }
+ }
+ $('cameraToggleBtn').classList.remove('cam-on');
+ $('cameraToggleText').textContent='Camera';
+ updateVideoStageVisibility();
+}
+
+async function startCameraStream(){
+ if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+  return toast('Camera සහාය නොමැත.');
+ }
+ try{
+  if(cameraStream){
+   cameraStream.getTracks().forEach(t=>t.stop());
+   cameraStream=null;
+  }
+  cameraStream=await navigator.mediaDevices.getUserMedia({
+   video:{facingMode},
+   audio:false
+  });
+  isCameraOn=true;
+  $('cameraToggleBtn').classList.add('cam-on');
+  $('cameraToggleText').textContent='Cam On';
+
+  const vTrack=cameraStream.getVideoTracks()[0];
+  if(pc && vTrack){
+   const existingVideoSender=pc.getSenders().find(s=>s.track && s.track.kind === 'video');
+   if(existingVideoSender){
+    await existingVideoSender.replaceTrack(vTrack);
+   }else{
+    pc.addTrack(vTrack, cameraStream);
+   }
+   await renegotiateOffer();
+  }
+  updateVideoStageVisibility();
+  toast('Camera On කරන ලදී.');
+ }catch(err){
+  console.error('Camera start error:',err);
+  isCameraOn=false;
+  $('cameraToggleBtn').classList.remove('cam-on');
+  $('cameraToggleText').textContent='Camera';
+  updateVideoStageVisibility();
+  toast('Camera අවසරය හෝ උපාංගය සොයාගත නොහැක.');
+ }
+}
+
 async function applyRemoteCandidate(key, rawCand){
  if(!rawCand || !pc)return;
  if(key && seenCandidateKeys.has(key))return;
@@ -465,6 +612,7 @@ async function flushIceQueue(){
 }
 
 function setupPeerConnection(path, role){
+ currentRole=role;
  if(pc){
   try{pc.close();}catch(_){}
   pc=null;
@@ -481,7 +629,10 @@ function setupPeerConnection(path, role){
  pc=new RTCPeerConnection(rtcConfig);
 
  if(localStream){
-  localStream.getTracks().forEach(track=>pc.addTrack(track, localStream));
+  localStream.getAudioTracks().forEach(track=>pc.addTrack(track, localStream));
+ }
+ if(isCameraOn && cameraStream){
+  cameraStream.getVideoTracks().forEach(track=>pc.addTrack(track, cameraStream));
  }
 
  pc.ontrack=ev=>{
@@ -498,6 +649,7 @@ function setupPeerConnection(path, role){
   }
   $('remoteAudio').srcObject=remoteStream;
   unlockAndPlayRemoteAudio();
+  updateVideoStageVisibility();
   enterLiveConversation();
  };
 
@@ -575,11 +727,36 @@ function attachCallWatcher(path, role){
    return;
   }
 
-  if(role === 'caller' && data.answer && pc && (!pc.remoteDescription || !pc.remoteDescription.type)){
-   await pc.setRemoteDescription(new RTCSessionDescription(data.answer));
+  if(role === 'caller' && data.answer && pc){
+   const desc=new RTCSessionDescription(data.answer);
+   if(desc.type === 'answer' && pc.signalingState === 'have-local-offer'){
+    await pc.setRemoteDescription(desc);
+    await flushIceQueue();
+    unlockAndPlayRemoteAudio();
+    setUiState(`${targetName} සමඟ සම්බන්ධ වෙමින්...`, 'Connecting', 'calling');
+   }else if(desc.type === 'offer'){
+    await pc.setRemoteDescription(desc);
+    await flushIceQueue();
+    const ans=await pc.createAnswer();
+    await pc.setLocalDescription(ans);
+    await db.ref(`${path}/answer`).set({type:ans.type, sdp:ans.sdp});
+   }
+  }
+
+  if(role === 'callee' && data.calleeOffer && pc){
+   const desc=new RTCSessionDescription(data.calleeOffer);
+   if(desc.type === 'offer'){
+    await pc.setRemoteDescription(desc);
+    await flushIceQueue();
+    const ans=await pc.createAnswer();
+    await pc.setLocalDescription(ans);
+    await db.ref(`${path}/calleeAnswer`).set({type:ans.type, sdp:ans.sdp});
+   }
+  }
+
+  if(role === 'caller' && data.calleeAnswer && pc && pc.signalingState === 'have-local-offer'){
+   await pc.setRemoteDescription(new RTCSessionDescription(data.calleeAnswer));
    await flushIceQueue();
-   unlockAndPlayRemoteAudio();
-   setUiState(`${targetName} සමඟ සම්බන්ධ වෙමින්...`, 'Connecting', 'calling');
   }
  };
  callNodeRef.on('value',callNodeFn);
@@ -600,7 +777,7 @@ async function beginOutgoingCall(){
   activeCallPath=`calls_v6/${targetUid}/${callId}`;
 
   const conn=setupPeerConnection(activeCallPath, 'caller');
-  const offer=await conn.createOffer({offerToReceiveAudio:true});
+  const offer=await conn.createOffer({offerToReceiveAudio:true, offerToReceiveVideo:true});
   await conn.setLocalDescription(offer);
 
   await db.ref(activeCallPath).set({
@@ -709,18 +886,30 @@ $('muteToggleBtn').onclick=()=>{
  $('muteToggleText').textContent=isMuted ? 'Unmute' : 'Mute';
 };
 
+$('cameraToggleBtn').onclick=async()=>{
+ if(isCameraOn){
+  await stopCameraStream(true);
+  toast('Camera Off කරන ලදී.');
+ }else{
+  await startCameraStream();
+ }
+};
+
+$('switchCamBtn').onclick=async()=>{
+ facingMode = facingMode === 'user' ? 'environment' : 'user';
+ if(isCameraOn){
+  await startCameraStream();
+ }else{
+  toast(facingMode === 'user' ? 'Front Camera තෝරා ඇත' : 'Back Camera තෝරා ඇත');
+ }
+};
+
 $('speakerToggleBtn').onclick=()=>{
  isLoudSpeaker=!isLoudSpeaker;
  unlockAndPlayRemoteAudio();
  $('speakerToggleBtn').classList.toggle('soft', !isLoudSpeaker);
  $('speakerToggleText').textContent=isLoudSpeaker ? 'Speaker' : 'Soft';
  toast(isLoudSpeaker ? 'Speaker Loud Mode' : 'Soft Volume Mode');
-};
-
-$('recallBtn').onclick=async()=>{
- if(!targetUid)return toast('ක්‍රීඩකයෙකු තෝරා නැත.');
- await teardownCall(true);
- beginOutgoingCall();
 };
 
 async function teardownCall(deleteNode){
@@ -745,11 +934,19 @@ async function teardownCall(deleteNode){
   localStream.getTracks().forEach(t=>t.stop());
   localStream=null;
  }
+ if(cameraStream){
+  cameraStream.getTracks().forEach(t=>t.stop());
+  cameraStream=null;
+ }
  if(remoteStream){
   remoteStream.getTracks().forEach(t=>t.stop());
   remoteStream=null;
  }
+ isCameraOn=false;
  $('remoteAudio').srcObject=null;
+ $('remoteVideo').srcObject=null;
+ $('localVideo').srcObject=null;
+ updateVideoStageVisibility();
 
  if(deleteNode && db && activeCallPath){
   await db.ref(activeCallPath).remove().catch(()=>{});
@@ -758,15 +955,6 @@ async function teardownCall(deleteNode){
 }
 
 $('endCallBtn').onclick=async()=>{
- enterFullCallUi(incomingCallId);
- if(db && activeCallPath){
-  await db.ref(activeCallPath).update({status:'ended'}).catch(()=>{});
- }
- await teardownCall(true);
- goToFriendsPage();
-};
-
-$('goBackBtn').onclick=async()=>{
  enterFullCallUi(incomingCallId);
  if(db && activeCallPath){
   await db.ref(activeCallPath).update({status:'ended'}).catch(()=>{});
