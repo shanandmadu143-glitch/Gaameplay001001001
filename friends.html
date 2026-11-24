@@ -364,6 +364,7 @@ let inviteListenerFn=null;
 let hostRoomWatchRef=null;
 let hostRoomWatchFn=null;
 let activeHostedRoomId=null;
+let activeInviteBtn=null;
 let ringtoneTimer=null;
 let ringAudioCtx=null;
 let toastTimer=null;
@@ -447,6 +448,10 @@ function enterMatchArena(roomId, betAmount, role, roomData){
 
 function stopHostRoomWatch(){
  activeHostedRoomId=null;
+ if(activeInviteBtn){
+  activeInviteBtn.disabled=false;
+  activeInviteBtn=null;
+ }
  $('hostWaitBanner').classList.remove('show');
  if(hostRoomWatchRef && hostRoomWatchFn){
   try{hostRoomWatchRef.off('value',hostRoomWatchFn);}catch(_){}
@@ -466,7 +471,9 @@ $('cancelHostWaitBtn').onclick=async()=>{
 
 function watchRoomUntilAccepted(rId, betAmount){
  if(!db || !rId)return;
- stopHostRoomWatch();
+ if(hostRoomWatchRef && hostRoomWatchFn){
+  try{hostRoomWatchRef.off('value',hostRoomWatchFn);}catch(_){}
+ }
  activeHostedRoomId=rId;
  $('hostWaitText').textContent=`${betAmount} Coins Bet සමඟ ප්‍රතිවාදියා Accept කරන තෙක් රැඳී සිටී...`;
  $('hostWaitBanner').classList.add('show');
@@ -646,7 +653,7 @@ $('notifRejectInviteBtn').onclick=async()=>{
 };
 
 async function sendGameInviteToFriend(uid, profileData, btnEl){
- if(isSendingInvite || isEnteringArena)return;
+ if(isSendingInvite || isEnteringArena || activeHostedRoomId)return;
  if(!db){
   return toast('Database සම්බන්ධතාවය නොමැත.');
  }
@@ -703,14 +710,15 @@ async function sendGameInviteToFriend(uid, profileData, btnEl){
    createdAt:Date.now()
   }).catch(()=>{});
 
+  activeInviteBtn=btnEl || null;
   toast(`${guestName} වෙත Invite එක යවන ලදී! Accept කරන තෙක් රැඳී සිටී...`);
   watchRoomUntilAccepted(roomId, betToUse);
  }catch(err){
   console.error('Invite error:',err);
+  if(btnEl) btnEl.disabled=false;
   toast(`Invite යැවීමට නොහැකි විය: ${err.message || err.code || 'Permission denied'}`);
  }finally{
   isSendingInvite=false;
-  if(btnEl && !activeHostedRoomId) btnEl.disabled=false;
  }
 }
 
