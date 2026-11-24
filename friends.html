@@ -481,7 +481,7 @@ function watchRoomUntilAccepted(rId, betAmount){
    return;
   }
   if(room.status==='accepted' || room.status==='active' || room.matchStarted===true){
-   $('hostWaitText').textContent='ප්‍රතිවාදියා Invite එක Accept කළේය! තරඟයට පිවිසෙමින්...';
+   $('hostWaitText').textContent='ප්‍රතිවාදියා Invite එක Accept කළේය! දෙදෙනාම තරඟයට පිවිසෙමින්...';
    enterMatchArena(rId, room.bet || betAmount, 'host', room);
   }
  };
@@ -578,7 +578,7 @@ function showIncomingInviteNotification(inviteKey, inviteData){
  pendingIncomingInvite={ key:inviteKey, ...inviteData };
  const invBet=Number(inviteData.bet)||50;
  $('incomingInviteTitle').textContent=`${inviteData.fromName || 'ක්‍රීඩකයා'} ගෙන් Invite එකක්!`;
- $('incomingInviteSub').textContent=`Bet: ${invBet} Coins — සෙල්ලම් කිරීමට Accept කරන්න`;
+ $('incomingInviteSub').textContent=`Bet: ${invBet} Coins — දෙදෙනාම සෙල්ලම් කිරීමට Accept කරන්න`;
  $('incomingInviteNotif').classList.add('show');
  startIncomingRingtone();
 }
@@ -614,9 +614,9 @@ $('notifAcceptInviteBtn').onclick=async()=>{
     status:'accepted',
     matchStarted:true,
     acceptedAt:Date.now()
-   }).catch(()=>{});
+   });
   }
-  toast('Invite එක Accept කරන ලදී! තරඟයට පිවිසෙමින්...');
+  toast('Invite එක Accept කරන ලදී! දෙදෙනාම තරඟයට පිවිසෙමින්...');
   enterMatchArena(inv.roomId, invBet, 'guest', {
    roomId:inv.roomId,
    bet:invBet,
@@ -626,7 +626,7 @@ $('notifAcceptInviteBtn').onclick=async()=>{
    guestName:myName
   });
  }catch(e){
-  toast('Invite එක Accept කිරීමට නොහැකි විය.');
+  toast(`Invite එක Accept කිරීමට නොහැකි විය: ${e.message || 'Error'}`);
  }
 };
 
@@ -707,9 +707,10 @@ async function sendGameInviteToFriend(uid, profileData, btnEl){
   watchRoomUntilAccepted(roomId, betToUse);
  }catch(err){
   console.error('Invite error:',err);
-  isSendingInvite=false;
-  if(btnEl) btnEl.disabled=false;
   toast(`Invite යැවීමට නොහැකි විය: ${err.message || err.code || 'Permission denied'}`);
+ }finally{
+  isSendingInvite=false;
+  if(btnEl && !activeHostedRoomId) btnEl.disabled=false;
  }
 }
 
