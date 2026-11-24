@@ -108,8 +108,8 @@ body{min-height:100dvh;display:flex;justify-content:center;align-items:center}
   background:linear-gradient(135deg,#2ecc71,#20b863);color:#08160d;
   box-shadow:0 4px 14px rgba(46,204,113,0.35);
 }
+.btn-view:disabled{opacity:0.6;cursor:not-allowed}
 
-/* Incoming Call & Invite Banner */
 .call-notif-banner{
   position:fixed;top:14px;left:50%;transform:translate(-50%,-220%);
   width:min(94vw,440px);
@@ -212,7 +212,6 @@ body{min-height:100dvh;display:flex;justify-content:center;align-items:center}
 </head>
 <body>
 
-<!-- Incoming Call Banner -->
 <div class="call-notif-banner" id="incomingCallNotif" role="alert" aria-live="assertive">
  <div class="call-notif-top">
   <div class="call-notif-pulse"><i class="fa-solid fa-phone-volume"></i></div>
@@ -227,7 +226,6 @@ body{min-height:100dvh;display:flex;justify-content:center;align-items:center}
  </div>
 </div>
 
-<!-- Incoming Game Invite Banner -->
 <div class="call-notif-banner invite-theme" id="incomingInviteNotif" role="alert" aria-live="assertive">
  <div class="call-notif-top">
   <div class="call-notif-pulse"><i class="fa-solid fa-swords"></i></div>
@@ -367,6 +365,8 @@ let hostRoomWatchRef=null;
 let hostRoomWatchFn=null;
 let activeHostedRoomId=null;
 let ringtoneTimer=null;
+let ringAudioCtx=null;
+let toastTimer=null;
 let isSendingInvite=false;
 let isEnteringArena=false;
 
@@ -374,7 +374,8 @@ function toast(msg){
  const t=$('toast');
  t.textContent=String(msg);
  t.classList.add('show');
- setTimeout(()=>t.classList.remove('show'),3200);
+ if(toastTimer)clearTimeout(toastTimer);
+ toastTimer=setTimeout(()=>t.classList.remove('show'),3200);
 }
 
 async function ensureAuthenticatedUser(){
@@ -394,14 +395,30 @@ async function ensureAuthenticatedUser(){
  return fbUser || null;
 }
 
-function enterMatchArena(roomId, betAmount, role, roomData){
- if(isEnteringArena)return;
- isEnteringArena=true;
+function cleanupListeners(){
+ if(callListenerRef && callListenerFn){
+  try{callListenerRef.off('child_added',callListenerFn);}catch(_){}
+  callListenerRef=null;
+  callListenerFn=null;
+ }
+ if(inviteListenerRef && inviteListenerFn){
+  try{inviteListenerRef.off('child_added',inviteListenerFn);}catch(_){}
+  inviteListenerRef=null;
+  inviteListenerFn=null;
+ }
  if(hostRoomWatchRef && hostRoomWatchFn){
   try{hostRoomWatchRef.off('value',hostRoomWatchFn);}catch(_){}
   hostRoomWatchRef=null;
   hostRoomWatchFn=null;
  }
+ stopIncomingRingtone();
+}
+
+function enterMatchArena(roomId, betAmount, role, roomData){
+ if(isEnteringArena)return;
+ isEnteringArena=true;
+ cleanupListeners();
+
  const activeUser=fbUser || (auth && auth.currentUser) || null;
  const safeBet=Math.max(10,Number(betAmount)||currentBetPoints||50);
  const myName=(cachedLocalUser && cachedLocalUser.name) || (activeUser && (activeUser.displayName || (activeUser.email||'').split('@')[0])) || 'Player';
@@ -475,16 +492,21 @@ function playRingTone(){
  try{
   const AudioCtx=window.AudioContext || window.webkitAudioContext;
   if(!AudioCtx)return;
-  const ctx=new AudioCtx();
-  const osc=ctx.createOscillator();
-  const gain=ctx.createGain();
+  if(!ringAudioCtx){
+   ringAudioCtx=new AudioCtx();
+  }
+  if(ringAudioCtx.state === 'suspended'){
+   ringAudioCtx.resume().catch(()=>{});
+  }
+  const osc=ringAudioCtx.createOscillator();
+  const gain=ringAudioCtx.createGain();
   osc.type='sine';
-  osc.frequency.setValueAtTime(740, ctx.currentTime);
-  gain.gain.setValueAtTime(0.08, ctx.currentTime);
+  osc.frequency.setValueAtTime(740, ringAudioCtx.currentTime);
+  gain.gain.setValueAtTime(0.08, ringAudioCtx.currentTime);
   osc.connect(gain);
-  gain.connect(ctx.destination);
+  gain.connect(ringAudioCtx.destination);
   osc.start();
-  osc.stop(ctx.currentTime + 0.25);
+  osc.stop(ringAudioCtx.currentTime + 0.25);
  }catch(_){}
 }
 
@@ -524,13 +546,14 @@ function showIncomingCallNotification(callData){
 function hideIncomingCallNotification(){
  pendingIncomingCall=null;
  $('incomingCallNotif').classList.remove('show');
- stopIncomingRingtone();
+ if(!pendingIncomingInvite)stopIncomingRingtone();
 }
 
 $('notifAcceptCallBtn').onclick=()=>{
  if(!pendingIncomingCall)return;
  const call=pendingIncomingCall;
  hideIncomingCallNotification();
+ cleanupListeners();
  const q=new URLSearchParams({
   incoming:'1',
   callId:call.callId || '',
@@ -563,7 +586,7 @@ function showIncomingInviteNotification(inviteKey, inviteData){
 function hideIncomingInviteNotification(){
  pendingIncomingInvite=null;
  $('incomingInviteNotif').classList.remove('show');
- stopIncomingRingtone();
+ if(!pendingIncomingCall)stopIncomingRingtone();
 }
 
 $('notifAcceptInviteBtn').onclick=async()=>{
@@ -623,7 +646,7 @@ $('notifRejectInviteBtn').onclick=async()=>{
 };
 
 async function sendGameInviteToFriend(uid, profileData, btnEl){
- if(isSendingInvite)return;
+ if(isSendingInvite || isEnteringArena)return;
  if(!db){
   return toast('Database සම්බන්ධතාවය නොමැත.');
  }
@@ -684,10 +707,9 @@ async function sendGameInviteToFriend(uid, profileData, btnEl){
   watchRoomUntilAccepted(roomId, betToUse);
  }catch(err){
   console.error('Invite error:',err);
-  toast(`Invite යැවීමට නොහැකි විය: ${err.message || err.code || 'Permission denied'}`);
- }finally{
   isSendingInvite=false;
   if(btnEl) btnEl.disabled=false;
+  toast(`Invite යැවීමට නොහැකි විය: ${err.message || err.code || 'Permission denied'}`);
  }
 }
 
@@ -798,6 +820,7 @@ $('modalCallBtn').onclick=()=>{
  if(!selectedPlayer || !selectedPlayer.uid){
   return toast('ක්‍රීඩකයෙකු තෝරා ගන්න.');
  }
+ cleanupListeners();
  const query=new URLSearchParams({
   uid:selectedPlayer.uid,
   name:selectedPlayer.name
@@ -835,6 +858,7 @@ $('modalMessageBtn').onclick=async()=>{
 };
 
 $('searchFriendInput').addEventListener('input',renderFriendsList);
+window.addEventListener('pagehide',cleanupListeners);
 
 function attachCallNotificationListener(myUid){
  if(!db || !myUid)return;
