@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>ශ්‍රී ලංකීය දාම් - Voice Call</title>
+<title>ශ්‍රී ලංකීය දාම් - Live Voice Call</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Gemunu+Libre:wght@400;600;700;800&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -58,6 +58,10 @@ html,body{
 .avatar-ring.ringing::after{
   content:'';position:absolute;inset:-9px;border-radius:50%;
   border:2px solid var(--neon-blue);animation:pulseRing 1.4s infinite ease-out;
+}
+.avatar-ring.speaking{
+  box-shadow:0 0 28px rgba(46,204,113,0.75);
+  border-color:var(--neon-green);
 }
 @keyframes pulseRing{
   0%{transform:scale(0.95);opacity:0.9}
@@ -115,7 +119,7 @@ html,body{
 <body>
 <div class="call-shell">
  <div class="top-bar">
-  <div class="top-title"><i class="fa-solid fa-phone-volume"></i> Voice Call</div>
+  <div class="top-title"><i class="fa-solid fa-phone-volume"></i> Live Voice Call</div>
   <span class="conn-pill" id="connStatusPill">සම්බන්ධ වෙමින්...</span>
  </div>
 
@@ -159,7 +163,7 @@ html,body{
  </div>
 
  <div class="tip-note" id="tipNote">
-  සැබෑ හඬ ඇසීමට දෙදෙනාම Microphone අවසරය (Allow) ලබා දී සිටිය යුතුය.
+  සජීවීව කතා කිරීමට දෙදෙනාම Microphone අවසරය (Allow) ලබා දී තිබිය යුතුය.
  </div>
 </div>
 
@@ -173,11 +177,18 @@ html,body{
 'use strict';
 const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
 const $=id=>document.getElementById(id);
+
 const rtcConfig={
  iceServers:[
   {urls:'stun:stun.l.google.com:19302'},
   {urls:'stun:stun1.l.google.com:19302'},
-  {urls:'stun:stun2.l.google.com:19302'}
+  {urls:'stun:stun2.l.google.com:19302'},
+  {urls:'stun:stun3.l.google.com:19302'},
+  {
+   urls:['turn:openrelay.metered.ca:80','turn:openrelay.metered.ca:443','turn:openrelay.metered.ca:443?transport=tcp'],
+   username:'openrelayproject',
+   credential:'openrelayproject'
+  }
  ]
 };
 
@@ -196,6 +207,7 @@ let callListenerRef=null;
 let callListenerFn=null;
 let candidatesListenerRef=null;
 let candidatesListenerFn=null;
+let addedCandidateIds=new Set();
 let isMuted=false;
 let isSpeakerBoosted=true;
 let timerInterval=null;
@@ -238,32 +250,36 @@ function stopTimer(){
   timerInterval=null;
  }
  isLiveConnected=false;
+ $('peerAvatarRing').classList.remove('speaking');
  $('callTimerText').classList.remove('active');
-}
-
-function markCallConnected(){
- if(isLiveConnected)return;
- isLiveConnected=true;
- $('peerAvatarRing').classList.remove('ringing');
- setStatus(`${targetName} සමඟ සම්බන්ධ වී ඇත`, 'Live Call', true);
- startTimer();
- playRemoteAudioSafely();
 }
 
 function playRemoteAudioSafely(){
  const audioEl=$('remoteAudio');
  if(!audioEl)return;
  audioEl.muted=false;
- audioEl.volume=isSpeakerBoosted ? 1.0 : 0.7;
+ audioEl.volume=isSpeakerBoosted ? 1.0 : 0.65;
  if(remoteStream && audioEl.srcObject !== remoteStream){
   audioEl.srcObject=remoteStream;
  }
  const p=audioEl.play();
  if(p && typeof p.catch==='function'){
-  p.catch(err=>{
-   console.warn('Audio play retry needed:',err);
-  });
+  p.catch(()=>{});
  }
+}
+
+document.addEventListener('click',()=>{
+ playRemoteAudioSafely();
+},{passive:true});
+
+function markCallConnected(){
+ if(isLiveConnected)return;
+ isLiveConnected=true;
+ $('peerAvatarRing').classList.remove('ringing');
+ $('peerAvatarRing').classList.add('speaking');
+ setStatus(`${targetName} සමඟ සජීවීව කතා කරමින්...`, 'Live Call', true);
+ startTimer();
+ playRemoteAudioSafely();
 }
 
 async function ensureMicrophoneStream(){
@@ -287,11 +303,27 @@ async function ensureMicrophoneStream(){
  return localStream;
 }
 
+async function handleIncomingCandidate(key, cData){
+ if(!cData || !pc)return;
+ if(key && addedCandidateIds.has(key))return;
+ if(key)addedCandidateIds.add(key);
+
+ const cand=new RTCIceCandidate(cData);
+ if(pc.remoteDescription && pc.remoteDescription.type){
+  await pc.addIceCandidate(cand).catch(()=>{});
+ }else{
+  pendingRemoteCandidates.push(cand);
+ }
+}
+
 function createPeerConnection(signalPath, role){
  if(pc){
   try{pc.close();}catch(_){}
   pc=null;
  }
+ addedCandidateIds=new Set();
+ pendingRemoteCandidates=[];
+
  remoteStream=new MediaStream();
  const audioEl=$('remoteAudio');
  audioEl.srcObject=remoteStream;
@@ -313,12 +345,14 @@ function createPeerConnection(signalPath, role){
      remoteStream.addTrack(tr);
     }
    });
-   $('remoteAudio').srcObject=remoteStream;
   }else if(event.track){
-   remoteStream.addTrack(event.track);
-   $('remoteAudio').srcObject=remoteStream;
+   if(!remoteStream.getTracks().some(existing=>existing.id===event.track.id)){
+    remoteStream.addTrack(event.track);
+   }
   }
+  $('remoteAudio').srcObject=remoteStream;
   playRemoteAudioSafely();
+  markCallConnected();
  };
 
  pc.onicecandidate=event=>{
@@ -351,17 +385,17 @@ function createPeerConnection(signalPath, role){
   try{candidatesListenerRef.off('child_added',candidatesListenerFn);}catch(_){}
  }
  candidatesListenerRef=db.ref(`${signalPath}/${remoteBucket}`);
- candidatesListenerFn=async snap=>{
-  const cData=snap.val();
-  if(!cData || !pc)return;
-  const cand=new RTCIceCandidate(cData);
-  if(pc.remoteDescription && pc.remoteDescription.type){
-   await pc.addIceCandidate(cand).catch(()=>{});
-  }else{
-   pendingRemoteCandidates.push(cand);
-  }
+ candidatesListenerFn=snap=>{
+  handleIncomingCandidate(snap.key, snap.val());
  };
  candidatesListenerRef.on('child_added',candidatesListenerFn);
+
+ candidatesListenerRef.once('value',async snap=>{
+  const existing=snap.val()||{};
+  for(const k of Object.keys(existing)){
+   await handleIncomingCandidate(k, existing[k]);
+  }
+ }).catch(()=>{});
 
  return pc;
 }
@@ -418,7 +452,6 @@ async function startOutgoingCall(){
   return toast('Call යැවීමට ක්‍රීඩක තොරතුරු නොමැත.');
  }
  isCallEnded=false;
- pendingRemoteCandidates=[];
  $('incomingCallBox').classList.remove('show');
  $('peerAvatarRing').classList.add('ringing');
  setStatus(`${targetName} වෙත Call එකක් යවන ලදී...`, 'Calling', false);
@@ -455,7 +488,6 @@ async function startOutgoingCall(){
 async function prepareIncomingCall(){
  if(!fbUser || !db || !incomingCallId)return;
  isCallEnded=false;
- pendingRemoteCandidates=[];
  activeCallPath=`calls_v6/${fbUser.uid}/${incomingCallId}`;
 
  const snap=await db.ref(activeCallPath).once('value');
