@@ -9,6 +9,7 @@
 <style>
 :root{
   --bg:#05070e;
+  --card-bg:rgba(16,23,44,0.92);
   --gold:#ffd166;
   --neon-blue:#00f2fe;
   --neon-green:#2ecc71;
@@ -438,10 +439,12 @@ let seenCandidateKeys=new Set();
 let pendingCandidates=[];
 let isMakingOffer=false;
 let pendingRenegotiate=false;
+let lastAppliedSdpKey='';
 
 let isMuted=false;
 let isCameraOn=false;
 let isRemoteCamOn=false;
+let remoteCamFlag=false;
 let facingMode='user';
 let isLoudSpeaker=true;
 let isCallTerminated=false;
@@ -466,7 +469,7 @@ function goToFriendsPage(){
 
 function syncCameraUiStates(){
  const hasLiveRemoteVideo=Boolean(
-  remoteStream && remoteStream.getVideoTracks().some(t=>t.readyState==='live' && !t.muted)
+  remoteCamFlag || (remoteStream && remoteStream.getVideoTracks().some(t=>t.readyState==='live' && !t.muted))
  );
  isRemoteCamOn=hasLiveRemoteVideo;
 
@@ -480,19 +483,27 @@ function syncCameraUiStates(){
 
  const rv=$('remoteVideo');
  const ph=$('remoteVideoPlaceholder');
- if(isRemoteCamOn){
-  rv.srcObject=remoteStream;
+ if(isRemoteCamOn && remoteStream && remoteStream.getVideoTracks().length > 0){
+  if(rv.srcObject !== remoteStream){
+   rv.srcObject=remoteStream;
+  }
   rv.classList.add('has-stream');
   rv.play().catch(()=>{});
   ph.classList.add('hidden');
+ }else if(isRemoteCamOn){
+  ph.classList.remove('hidden');
+  ph.querySelector('span').textContent=`${targetName} ගේ Camera සම්බන්ධ වෙමින්...`;
  }else{
   rv.classList.remove('has-stream');
   ph.classList.remove('hidden');
+  ph.querySelector('span').textContent='ඔබගේ Camera On කර ඇත';
  }
 
  const lv=$('localVideo');
  if(isCameraOn && cameraStream){
-  lv.srcObject=cameraStream;
+  if(lv.srcObject !== cameraStream){
+   lv.srcObject=cameraStream;
+  }
   lv.classList.add('show');
   lv.play().catch(()=>{});
  }else{
@@ -593,6 +604,12 @@ async function acquireMic(){
  return localStream;
 }
 
+async function publishCameraFlag(enabled){
+ if(!db || !activeCallPath)return;
+ const camField=currentRole === 'caller' ? 'callerCamOn' : 'calleeCamOn';
+ await db.ref(`${activeCallPath}/${camField}`).set(Boolean(enabled)).catch(()=>{});
+}
+
 async function renegotiateOffer(){
  if(!pc || !db || !activeCallPath)return;
  if(isMakingOffer || pc.signalingState !== 'stable'){
@@ -603,8 +620,12 @@ async function renegotiateOffer(){
   isMakingOffer=true;
   const offer=await pc.createOffer({offerToReceiveAudio:true, offerToReceiveVideo:true});
   await pc.setLocalDescription(offer);
-  const field=currentRole === 'caller' ? 'offer' : 'calleeOffer';
-  await db.ref(`${activeCallPath}/${field}`).set({type:offer.type, sdp:offer.sdp});
+  const sigKey=`${currentRole}_${Date.now()}_${Math.random().toString(36).slice(2,7)}`;
+  await db.ref(`${activeCallPath}/renegotiation`).set({
+   fromRole:currentRole,
+   seq:sigKey,
+   sdp:{type:offer.type, sdp:offer.sdp}
+  });
  }catch(e){
   console.warn('Renegotiation error:',e);
  }finally{
@@ -628,9 +649,10 @@ async function stopCameraStream(notifyPeer=true){
     pc.removeTrack(sender);
    }
   });
-  if(notifyPeer){
-   await renegotiateOffer();
-  }
+ }
+ await publishCameraFlag(false);
+ if(notifyPeer && pc){
+  await renegotiateOffer();
  }
  syncCameraUiStates();
 }
@@ -650,6 +672,7 @@ async function startCameraStream(){
   });
   isCameraOn=true;
   syncCameraUiStates();
+  await publishCameraFlag(true);
 
   const vTrack=cameraStream.getVideoTracks()[0];
   if(pc && vTrack){
@@ -666,6 +689,7 @@ async function startCameraStream(){
  }catch(err){
   console.error('Camera start error:',err);
   isCameraOn=false;
+  await publishCameraFlag(false);
   syncCameraUiStates();
   toast('Camera අවසරය හෝ උපාංගය සොයාගත නොහැක.');
  }
@@ -702,6 +726,7 @@ function setupPeerConnection(path, role){
  pendingCandidates=[];
  isMakingOffer=false;
  pendingRenegotiate=false;
+ lastAppliedSdpKey='';
 
  remoteStream=new MediaStream();
  const audioEl=$('remoteAudio');
@@ -819,42 +844,62 @@ function attachCallWatcher(path, role){
    $('fsPeerName').textContent=targetName;
   }
 
+  remoteCamFlag = role === 'caller' ? Boolean(data.calleeCamOn) : Boolean(data.callerCamOn);
+  syncCameraUiStates();
+
   if(data.status === 'rejected' || data.status === 'ended'){
    await teardownCall(false);
    goToFriendsPage();
    return;
   }
 
-  if(role === 'caller' && data.answer && pc){
-   const desc=new RTCSessionDescription(data.answer);
-   if(desc.type === 'answer' && pc.signalingState === 'have-local-offer'){
-    await pc.setRemoteDescription(desc);
+  if(role === 'caller' && data.answer && pc && (!pc.remoteDescription || !pc.remoteDescription.type)){
+   const ansKey='init_ans_' + (data.answer.sdp || '').length;
+   if(ansKey !== lastAppliedSdpKey && pc.signalingState === 'have-local-offer'){
+    lastAppliedSdpKey=ansKey;
+    await pc.setRemoteDescription(new RTCSessionDescription(data.answer));
     await flushIceQueue();
     unlockAndPlayRemoteAudio();
     setUiState(`${targetName} සමඟ සම්බන්ධ වෙමින්...`, 'Connecting', 'calling');
-   }else if(desc.type === 'offer' && pc.signalingState === 'stable'){
-    await pc.setRemoteDescription(desc);
-    await flushIceQueue();
-    const ans=await pc.createAnswer();
-    await pc.setLocalDescription(ans);
-    await db.ref(`${path}/answer`).set({type:ans.type, sdp:ans.sdp});
    }
   }
 
-  if(role === 'callee' && data.calleeOffer && pc && pc.signalingState === 'stable'){
-   const desc=new RTCSessionDescription(data.calleeOffer);
-   if(desc.type === 'offer'){
-    await pc.setRemoteDescription(desc);
-    await flushIceQueue();
-    const ans=await pc.createAnswer();
-    await pc.setLocalDescription(ans);
-    await db.ref(`${path}/calleeAnswer`).set({type:ans.type, sdp:ans.sdp});
+  // Handle renegotiation offers & answers cleanly for both caller and callee
+  const reneg=data.renegotiation;
+  if(reneg && reneg.sdp && reneg.fromRole && reneg.fromRole !== role && pc){
+   const offerKey=`reneg_offer_${reneg.seq || (reneg.sdp.sdp || '').length}`;
+   if(offerKey !== lastAppliedSdpKey && reneg.sdp.type === 'offer'){
+    if(pc.signalingState === 'have-local-offer'){
+     // Impulsive tie-break: caller yields to callee or vice versa by rolling back
+     if(role === 'callee'){
+      await pc.setLocalDescription({type:'rollback'});
+     }else{
+      return;
+     }
+    }
+    if(pc.signalingState === 'stable'){
+     lastAppliedSdpKey=offerKey;
+     await pc.setRemoteDescription(new RTCSessionDescription(reneg.sdp));
+     await flushIceQueue();
+     const ans=await pc.createAnswer();
+     await pc.setLocalDescription(ans);
+     await db.ref(`${path}/renegotiationAnswer`).set({
+      toRole:reneg.fromRole,
+      seq:reneg.seq || offerKey,
+      sdp:{type:ans.type, sdp:ans.sdp}
+     });
+    }
    }
   }
 
-  if(role === 'caller' && data.calleeAnswer && pc && pc.signalingState === 'have-local-offer'){
-   await pc.setRemoteDescription(new RTCSessionDescription(data.calleeAnswer));
-   await flushIceQueue();
+  const renegAns=data.renegotiationAnswer;
+  if(renegAns && renegAns.sdp && renegAns.toRole === role && pc && pc.signalingState === 'have-local-offer'){
+   const ansKey=`reneg_ans_${renegAns.seq || (renegAns.sdp.sdp || '').length}`;
+   if(ansKey !== lastAppliedSdpKey && renegAns.sdp.type === 'answer'){
+    lastAppliedSdpKey=ansKey;
+    await pc.setRemoteDescription(new RTCSessionDescription(renegAns.sdp));
+    await flushIceQueue();
+   }
   }
  };
  callNodeRef.on('value',callNodeFn);
@@ -885,6 +930,8 @@ async function beginOutgoingCall(){
    toUid:targetUid,
    toName:targetName,
    status:'calling',
+   callerCamOn:false,
+   calleeCamOn:false,
    offer:{type:offer.type, sdp:offer.sdp},
    timestamp:Date.now()
   });
@@ -926,6 +973,7 @@ async function connectAsCalleeDirectly(callData){
 
   await db.ref(activeCallPath).update({
    status:'accepted',
+   calleeCamOn:false,
    answer:{type:answer.type, sdp:answer.sdp}
   });
  }catch(err){
@@ -1006,7 +1054,7 @@ function toggleSpeakerAction(){
 async function hangupCallAction(){
  enterFullCallUi(incomingCallId);
  if(db && activeCallPath){
-  await db.ref(activeCallPath).update({status:'ended'}).catch(()=>{});
+  await db.ref(activeCallPath).update({status:'ended', callerCamOn:false, calleeCamOn:false}).catch(()=>{});
  }
  await teardownCall(true);
  goToFriendsPage();
@@ -1062,6 +1110,7 @@ async function teardownCall(deleteNode){
  }
  isCameraOn=false;
  isRemoteCamOn=false;
+ remoteCamFlag=false;
  $('remoteAudio').srcObject=null;
  $('remoteVideo').srcObject=null;
  $('localVideo').srcObject=null;
