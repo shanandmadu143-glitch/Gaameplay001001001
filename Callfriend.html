@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ශ්‍රී ලංකීය දාම් - Voice Call</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Gemunu+Libre:wght@400;600;700;800&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#05070e;
+  --panel:rgba(15,21,38,0.94);
+  --gold:#ffd166;
+  --neon-blue:#00f2fe;
+  --neon-green:#2ecc71;
+  --red:#ff4757;
+  --dim:#a0aec0;
+}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Gemunu Libre','Poppins',sans-serif;user-select:none;-webkit-tap-highlight-color:transparent}
+html,body{
+  width:100%;height:100%;
+  background:radial-gradient(circle at 50% 15%,#1a103c 0%,#080b18 60%,#03050a 100%);
+  color:#f8f9fa;overflow:hidden;display:flex;justify-content:center;align-items:center;
+}
+.call-shell{
+  width:100%;height:100dvh;max-width:520px;padding:18px;
+  display:flex;flex-direction:column;justify-content:space-between;align-items:center;
+  position:relative;
+}
+.top-bar{
+  width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:10px 14px;border-radius:18px;background:rgba(15,21,38,0.85);
+  border:1.5px solid rgba(255,209,102,0.3);
+}
+.top-title{font-size:1.05rem;font-weight:800;color:var(--gold);display:flex;align-items:center;gap:8px}
+.conn-pill{
+  font-size:0.76rem;font-weight:700;padding:4px 10px;border-radius:999px;
+  background:rgba(0,242,254,0.12);border:1px solid rgba(0,242,254,0.35);color:var(--neon-blue);
+}
+.conn-pill.connected{
+  background:rgba(46,204,113,0.16);border-color:rgba(46,204,113,0.45);color:var(--neon-green);
+}
+
+.call-card{
+  width:100%;background:linear-gradient(145deg,#121828,#1b243f);
+  border:2px solid rgba(255,209,102,0.45);border-radius:26px;
+  padding:26px 20px;display:flex;flex-direction:column;align-items:center;gap:14px;
+  box-shadow:0 18px 40px rgba(0,0,0,0.75);text-align:center;
+}
+.avatar-ring{
+  width:96px;height:96px;border-radius:50%;
+  display:grid;place-items:center;
+  background:linear-gradient(135deg,#ffe08a,#ffb52e);color:#18213e;
+  font-size:2.4rem;border:3px solid var(--gold);
+  box-shadow:0 0 24px rgba(255,209,102,0.45);
+  position:relative;
+}
+.avatar-ring.ringing::after{
+  content:'';position:absolute;inset:-9px;border-radius:50%;
+  border:2px solid var(--neon-blue);animation:pulseRing 1.4s infinite ease-out;
+}
+@keyframes pulseRing{
+  0%{transform:scale(0.95);opacity:0.9}
+  100%{transform:scale(1.22);opacity:0}
+}
+.peer-name{font-size:1.5rem;font-weight:800;color:#fff}
+.call-status-text{font-size:0.98rem;font-weight:700;color:var(--neon-blue);min-height:24px}
+.call-timer{font-size:1.25rem;font-weight:800;color:var(--gold);letter-spacing:1px;display:none}
+.call-timer.active{display:block}
+
+/* Incoming Call Box */
+.incoming-box{
+  width:100%;display:none;flex-direction:column;gap:12px;margin-top:6px;
+  background:rgba(0,242,254,0.08);border:1.5px solid rgba(0,242,254,0.35);
+  border-radius:18px;padding:14px;
+}
+.incoming-box.show{display:flex}
+.incoming-label{font-size:0.95rem;font-weight:700;color:#fff}
+
+/* Active Controls */
+.controls-grid{
+  width:100%;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px;
+}
+.ctrl-btn{
+  border:1.5px solid rgba(255,255,255,0.16);border-radius:16px;
+  background:rgba(255,255,255,0.06);color:#fff;padding:12px 8px;
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  font-size:0.82rem;font-weight:700;cursor:pointer;transition:transform 0.12s,background 0.15s;
+}
+.ctrl-btn:active{transform:scale(0.95)}
+.ctrl-btn.active{background:rgba(255,71,87,0.22);border-color:var(--red);color:#ff9aa2}
+.ctrl-btn i{font-size:1.25rem}
+
+.action-row{width:100%;display:flex;gap:12px;margin-top:10px}
+.btn-accept,.btn-hangup,.btn-back{
+  flex:1;border:0;border-radius:16px;padding:13px 16px;font-size:1rem;font-weight:800;
+  cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  transition:transform 0.12s ease;
+}
+.btn-accept:active,.btn-hangup:active,.btn-back:active{transform:scale(0.96)}
+.btn-accept{background:linear-gradient(135deg,#2ecc71,#20b863);color:#08160d;box-shadow:0 6px 20px rgba(46,204,113,0.4)}
+.btn-hangup{background:linear-gradient(135deg,#ff4757,#d63031);color:#fff;box-shadow:0 6px 20px rgba(255,71,87,0.4)}
+.btn-back{background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2)}
+
+.tip-note{font-size:0.78rem;color:var(--dim);text-align:center;line-height:1.4}
+#toast{
+  position:fixed;bottom:20px;left:50%;transform:translate(-50%,120px);opacity:0;
+  background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--gold);
+  color:#f8f9fa;border-radius:30px;padding:10px 18px;z-index:200;
+  transition:0.25s ease;font-weight:600;display:flex;align-items:center;gap:8px;font-size:0.88rem;
+}
+#toast.show{transform:translate(-50%,0);opacity:1}
+</style>
+</head>
+<body>
+<div class="call-shell">
+ <div class="top-bar">
+  <div class="top-title"><i class="fa-solid fa-phone-volume"></i> Voice Call</div>
+  <span class="conn-pill" id="connStatusPill">සම්බන්ධ වෙමින්...</span>
+ </div>
+
+ <div class="call-card">
+  <div class="avatar-ring ringing" id="peerAvatarRing">
+   <i class="fa-solid fa-user" id="peerAvatarIcon"></i>
+  </div>
+  <div class="peer-name" id="peerNameText">ක්‍රීඩකයා</div>
+  <div class="call-status-text" id="callStatusText">Call සූදානම් කරමින්...</div>
+  <div class="call-timer" id="callTimerText">00:00</div>
+
+  <!-- Incoming Call UI -->
+  <div class="incoming-box" id="incomingCallBox">
+   <div class="incoming-label"><i class="fa-solid fa-phone-arrow-down-left" style="color:var(--neon-green)"></i> ඔබට Voice Call එකක් පැමිණේ!</div>
+   <div class="action-row" style="margin-top:0">
+    <button type="button" class="btn-accept" id="acceptCallBtn"><i class="fa-solid fa-phone"></i> Call ගන්න</button>
+    <button type="button" class="btn-hangup" id="declineCallBtn"><i class="fa-solid fa-phone-slash"></i> Reject</button>
+   </div>
+  </div>
+
+  <!-- In-Call Controls -->
+  <div class="controls-grid" id="inCallControls">
+   <button type="button" class="ctrl-btn" id="muteBtn">
+    <i class="fa-solid fa-microphone" id="muteIcon"></i>
+    <span id="muteLabel">Mute</span>
+   </button>
+   <button type="button" class="ctrl-btn" id="speakerBtn">
+    <i class="fa-solid fa-volume-high"></i>
+    <span id="speakerLabel">Speaker</span>
+   </button>
+   <button type="button" class="ctrl-btn" id="retryCallBtn">
+    <i class="fa-solid fa-rotate"></i>
+    <span>Re-Call</span>
+   </button>
+  </div>
+
+  <div class="action-row">
+   <button type="button" class="btn-hangup" id="hangupBtn"><i class="fa-solid fa-phone-slash"></i> Call අවසන් කරන්න</button>
+   <button type="button" class="btn-back" id="backBtn"><i class="fa-solid fa-arrow-left"></i> ආපසු</button>
+  </div>
+ </div>
+
+ <div class="tip-note" id="tipNote">
+  සැබෑ හඬ ඇසීමට දෙදෙනාම Microphone අවසරය (Allow) ලබා දී සිටිය යුතුය.
+ </div>
+</div>
+
+<audio id="remoteAudio" autoplay playsinline></audio>
+<div id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script>
+'use strict';
+const firebaseConfig={apiKey:"AIzaSyBnGTuZKekAWA4vBUgfzZZ2CeO8wyR1HaI",authDomain:"bin-card-42614.firebaseapp.com",databaseURL:"https://bin-card-42614-default-rtdb.firebaseio.com",projectId:"bin-card-42614",storageBucket:"bin-card-42614.firebasestorage.app",messagingSenderId:"1063550230753",appId:"1:1063550230753:web:1ad8306405e709ac5b17a0"};
+const $=id=>document.getElementById(id);
+const rtcConfig={iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'}]};
+
+const params=new URLSearchParams(window.location.search);
+let targetUid=params.get('uid')||params.get('toUid')||'';
+let targetName=params.get('name')||params.get('toName')||'ක්‍රීඩකයා';
+let incomingCallId=params.get('callId')||'';
+let isIncomingMode=params.get('incoming')==='1' || Boolean(incomingCallId);
+
+let auth,db,fbUser;
+let localStream=null;
+let pc=null;
+let activeCallPath=null;
+let callListenerRef=null;
+let callListenerFn=null;
+let candidatesListenerRef=null;
+let candidatesListenerFn=null;
+let isMuted=false;
+let isSpeakerBoosted=false;
+let timerInterval=null;
+let callSeconds=0;
+let isCallEnded=false;
+let pendingRemoteCandidates=[];
+
+function toast(msg){
+ const t=$('toast');
+ t.textContent=String(msg);
+ t.classList.add('show');
+ setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+function setStatus(text, pillText, isConnected=false){
+ $('callStatusText').textContent=text;
+ if(pillText){
+  $('connStatusPill').textContent=pillText;
+  $('connStatusPill').classList.toggle('connected', isConnected);
+ }
+}
+
+function startTimer(){
+ stopTimer();
+ callSeconds=0;
+ $('callTimerText').classList.add('active');
+ $('callTimerText').textContent='00:00';
+ timerInterval=setInterval(()=>{
+  callSeconds+=1;
+  const mins=String(Math.floor(callSeconds/60)).padStart(2,'0');
+  const secs=String(callSeconds%60).padStart(2,'0');
+  $('callTimerText').textContent=`${mins}:${secs}`;
+ },1000);
+}
+
+function stopTimer(){
+ if(timerInterval){
+  clearInterval(timerInterval);
+  timerInterval=null;
+ }
+ $('callTimerText').classList.remove('active');
+}
+
+async function ensureMicrophoneStream(){
+ if(localStream)return localStream;
+ if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+  throw new Error('මෙම browser/device එකේ Microphone සහාය නොමැත.');
+ }
+ localStream=await navigator.mediaDevices.getUserMedia({
+  audio:{
+   echoCancellation:true,
+   noiseSuppression:true,
+   autoGainControl:true
+  },
+  video:false
+ });
+ return localStream;
+}
+
+function createPeerConnection(signalPath, role){
+ if(pc){
+  try{pc.close();}catch(_){}
+  pc=null;
+ }
+ pc=new RTCPeerConnection(rtcConfig);
+
+ if(localStream){
+  localStream.getTracks().forEach(track=>pc.addTrack(track, localStream));
+ }
+
+ pc.ontrack=event=>{
+  const audioEl=$('remoteAudio');
+  if(event.streams && event.streams[0]){
+   audioEl.srcObject=event.streams[0];
+   audioEl.play().catch(()=>{});
+  }
+ };
+
+ pc.onicecandidate=event=>{
+  if(event.candidate && db && signalPath){
+   const candBucket=role === 'caller' ? 'callerCandidates' : 'calleeCandidates';
+   db.ref(`${signalPath}/${candBucket}`).push(event.candidate.toJSON()).catch(()=>{});
+  }
+ };
+
+ pc.onconnectionstatechange=()=>{
+  if(!pc)return;
+  if(pc.connectionState === 'connected'){
+   $('peerAvatarRing').classList.remove('ringing');
+   setStatus(`${targetName} සමඟ සම්බන්ධ වී ඇත`, 'Live Call', true);
+   startTimer();
+  }else if(pc.connectionState === 'disconnected' || pc.connectionState === 'failed'){
+   setStatus('Call සම්බන්ධතාවය විසන්ධි විය', 'Disconnected', false);
+  }
+ };
+
+ const remoteBucket=role === 'caller' ? 'calleeCandidates' : 'callerCandidates';
+ if(candidatesListenerRef && candidatesListenerFn){
+  try{candidatesListenerRef.off('child_added',candidatesListenerFn);}catch(_){}
+ }
+ candidatesListenerRef=db.ref(`${signalPath}/${remoteBucket}`);
+ candidatesListenerFn=async snap=>{
+  const cData=snap.val();
+  if(!cData)return;
+  const cand=new RTCIceCandidate(cData);
+  if(pc && pc.remoteDescription && pc.remoteDescription.type){
+   await pc.addIceCandidate(cand).catch(()=>{});
+  }else{
+   pendingRemoteCandidates.push(cand);
+  }
+ };
+ candidatesListenerRef.on('child_added',candidatesListenerFn);
+
+ return pc;
+}
+
+async function flushPendingCandidates(){
+ if(!pc || !pc.remoteDescription)return;
+ while(pendingRemoteCandidates.length){
+  const c=pendingRemoteCandidates.shift();
+  await pc.addIceCandidate(c).catch(()=>{});
+ }
+}
+
+function listenToCallNode(signalPath, role){
+ if(callListenerRef && callListenerFn){
+  try{callListenerRef.off('value',callListenerFn);}catch(_){}
+ }
+ callListenerRef=db.ref(signalPath);
+ callListenerFn=async snap=>{
+  const data=snap.val();
+  if(!data){
+   if(!isCallEnded){
+    cleanupCall(false);
+    setStatus('Call එක අවසන් කරන ලදී', 'Ended', false);
+   }
+   return;
+  }
+
+  if(data.fromName && !isIncomingMode){
+   targetName=data.toName || targetName;
+   $('peerNameText').textContent=targetName;
+  }else if(data.fromName && isIncomingMode){
+   targetName=data.fromName;
+   targetUid=data.fromUid || targetUid;
+   $('peerNameText').textContent=targetName;
+  }
+
+  if(data.status === 'rejected' || data.status === 'ended'){
+   cleanupCall(false);
+   setStatus(data.status === 'rejected' ? `${targetName} Call එක ප්‍රතික්ෂේප කළේය` : 'Call එක අවසන් විය', 'Ended', false);
+   return;
+  }
+
+  if(role === 'caller' && data.answer && pc && !pc.currentRemoteDescription){
+   await pc.setRemoteDescription(new RTCSessionDescription(data.answer));
+   await flushPendingCandidates();
+   setStatus(`${targetName} සමඟ සම්බන්ධ වෙමින්...`, 'Connecting', false);
+  }
+ };
+ callListenerRef.on('value',callListenerFn);
+}
+
+async function startOutgoingCall(){
+ if(!fbUser || !db || !targetUid){
+  return toast('Call යැවීමට ක්‍රීඩක තොරතුරු නොමැත.');
+ }
+ isCallEnded=false;
+ pendingRemoteCandidates=[];
+ $('incomingCallBox').classList.remove('show');
+ $('peerAvatarRing').classList.add('ringing');
+ setStatus(`${targetName} වෙත Call එකක් යවන ලදී...`, 'Calling', false);
+
+ try{
+  await ensureMicrophoneStream();
+  const callId='call_'+Date.now()+'_'+fbUser.uid.slice(0,6);
+  activeCallPath=`calls_v6/${targetUid}/${callId}`;
+
+  const peerConn=createPeerConnection(activeCallPath, 'caller');
+  const offer=await peerConn.createOffer({offerToReceiveAudio:true});
+  await peerConn.setLocalDescription(offer);
+
+  await db.ref(activeCallPath).set({
+   callId,
+   fromUid:fbUser.uid,
+   fromName:fbUser.displayName || (fbUser.email||'').split('@')[0] || 'Player',
+   toUid:targetUid,
+   toName:targetName,
+   status:'calling',
+   offer:{type:offer.type, sdp:offer.sdp},
+   timestamp:Date.now()
+  });
+
+  listenToCallNode(activeCallPath, 'caller');
+ }catch(err){
+  console.error('Outgoing call error:',err);
+  setStatus('Microphone හෝ Call ආරම්භ කිරීම අසාර්ථකයි', 'Error', false);
+  toast(err.message || 'Call ආරම්භ කළ නොහැක.');
+ }
+}
+
+async function prepareIncomingCall(){
+ if(!fbUser || !db || !incomingCallId)return;
+ isCallEnded=false;
+ pendingRemoteCandidates=[];
+ activeCallPath=`calls_v6/${fbUser.uid}/${incomingCallId}`;
+
+ const snap=await db.ref(activeCallPath).once('value');
+ const callData=snap.val();
+ if(!callData || !callData.offer){
+  setStatus('Incoming Call එක හමු නොවීය', 'Unavailable', false);
+  $('incomingCallBox').classList.remove('show');
+  return;
+ }
+
+ targetUid=callData.fromUid || targetUid;
+ targetName=callData.fromName || targetName;
+ $('peerNameText').textContent=targetName;
+ $('peerAvatarRing').classList.add('ringing');
+ $('incomingCallBox').classList.add('show');
+ setStatus(`${targetName} ඔබට Call කරයි...`, 'Incoming', false);
+ listenToCallNode(activeCallPath, 'callee');
+}
+
+$('acceptCallBtn').onclick=async()=>{
+ if(!fbUser || !db || !activeCallPath)return;
+ $('incomingCallBox').classList.remove('show');
+ setStatus('සම්බන්ධ වෙමින්...', 'Connecting', false);
+
+ try{
+  await ensureMicrophoneStream();
+  const snap=await db.ref(activeCallPath).once('value');
+  const callData=snap.val();
+  if(!callData || !callData.offer){
+   return setStatus('Call එක අවසන් වී ඇත', 'Ended', false);
+  }
+
+  const peerConn=createPeerConnection(activeCallPath, 'callee');
+  await peerConn.setRemoteDescription(new RTCSessionDescription(callData.offer));
+  await flushPendingCandidates();
+
+  const answer=await peerConn.createAnswer();
+  await peerConn.setLocalDescription(answer);
+
+  await db.ref(activeCallPath).update({
+   status:'accepted',
+   answer:{type:answer.type, sdp:answer.sdp}
+  });
+ }catch(err){
+  console.error('Accept call error:',err);
+  setStatus('Call එක සම්බන්ධ කිරීමට නොහැකි විය', 'Error', false);
+  toast(err.message || 'Microphone අවසරය අවශ්‍යයි.');
+ }
+};
+
+$('declineCallBtn').onclick=async()=>{
+ $('incomingCallBox').classList.remove('show');
+ if(db && activeCallPath){
+  await db.ref(activeCallPath).update({status:'rejected'}).catch(()=>{});
+ }
+ cleanupCall(true);
+ setStatus('Call එක ප්‍රතික්ෂේප කරන ලදී', 'Declined', false);
+};
+
+$('muteBtn').onclick=()=>{
+ if(!localStream)return toast('Microphone තවම සක්‍රීය වී නැත.');
+ isMuted=!isMuted;
+ localStream.getAudioTracks().forEach(t=>{t.enabled=!isMuted;});
+ $('muteBtn').classList.toggle('active', isMuted);
+ $('muteIcon').className=isMuted ? 'fa-solid fa-microphone-slash' : 'fa-solid fa-microphone';
+ $('muteLabel').textContent=isMuted ? 'Unmute' : 'Mute';
+};
+
+$('speakerBtn').onclick=()=>{
+ isSpeakerBoosted=!isSpeakerBoosted;
+ const audioEl=$('remoteAudio');
+ audioEl.volume=isSpeakerBoosted ? 1.0 : 0.75;
+ $('speakerBtn').classList.toggle('active', isSpeakerBoosted);
+ $('speakerLabel').textContent=isSpeakerBoosted ? 'Loud On' : 'Speaker';
+ toast(isSpeakerBoosted ? 'Speaker Loud Mode සක්‍රීයයි' : 'Normal Audio Mode');
+};
+
+$('retryCallBtn').onclick=()=>{
+ isIncomingMode=false;
+ cleanupCall(true);
+ startOutgoingCall();
+};
+
+async function cleanupCall(removeRemoteNode){
+ isCallEnded=true;
+ stopTimer();
+ $('peerAvatarRing').classList.remove('ringing');
+
+ if(callListenerRef && callListenerFn){
+  try{callListenerRef.off('value',callListenerFn);}catch(_){}
+  callListenerRef=null;
+  callListenerFn=null;
+ }
+ if(candidatesListenerRef && candidatesListenerFn){
+  try{candidatesListenerRef.off('child_added',candidatesListenerFn);}catch(_){}
+  candidatesListenerRef=null;
+  candidatesListenerFn=null;
+ }
+
+ if(pc){
+  try{pc.close();}catch(_){}
+  pc=null;
+ }
+ if(localStream){
+  localStream.getTracks().forEach(t=>t.stop());
+  localStream=null;
+ }
+
+ if(removeRemoteNode && db && activeCallPath){
+  await db.ref(activeCallPath).remove().catch(()=>{});
+ }
+ activeCallPath=null;
+}
+
+$('hangupBtn').onclick=async()=>{
+ if(db && activeCallPath){
+  await db.ref(activeCallPath).update({status:'ended'}).catch(()=>{});
+ }
+ await cleanupCall(true);
+ setStatus('Call එක අවසන් කරන ලදී', 'Ended', false);
+};
+
+$('backBtn').onclick=async()=>{
+ if(db && activeCallPath){
+  await db.ref(activeCallPath).update({status:'ended'}).catch(()=>{});
+ }
+ await cleanupCall(true);
+ if(window.history.length > 1){
+  window.history.back();
+ }else{
+  window.location.href='index.html';
+ }
+};
+
+window.addEventListener('beforeunload',()=>{
+ cleanupCall(false);
+});
+
+$('peerNameText').textContent=targetName;
+
+try{
+ if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
+ auth=firebase.auth();
+ db=firebase.database();
+
+ auth.onAuthStateChanged(async u=>{
+  fbUser=u;
+  if(!u){
+   setStatus('කරුණාකර ගිණුමට ඇතුළු වන්න', 'Auth Required', false);
+   return;
+  }
+  if(isIncomingMode && incomingCallId){
+   await prepareIncomingCall();
+  }else if(targetUid){
+   await startOutgoingCall();
+  }else{
+   setStatus('Call කිරීමට ක්‍රීඩකයෙකු තෝරන්න', 'Ready', false);
+  }
+ });
+}catch(e){
+ console.error('Callfriend init error:',e);
+ setStatus('Firebase සම්බන්ධතාවය අසාර්ථකයි', 'Error', false);
+}
+</script>
+</body>
+</html>
