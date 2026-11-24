@@ -25,32 +25,32 @@ html,body{
 body{min-height:100dvh;display:flex;justify-content:center;align-items:center}
 
 .app{
-  width:100%;height:100dvh;max-width:768px;margin:0 auto;padding:12px;
+  width:100%;height:100dvh;max-width:768px;margin:0 auto;padding:14px;
   display:flex;flex-direction:column;justify-content:space-between;gap:10px;
   position:relative;overflow:hidden;
 }
 
 .top-header{
   display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;
-  padding:10px 14px;border-radius:20px;
+  padding:12px 16px;border-radius:20px;
   background:linear-gradient(135deg,rgba(22,30,56,0.95),rgba(10,14,28,0.95));
   border:2px solid rgba(255,209,102,0.4);box-shadow:0 8px 24px rgba(0,0,0,0.6);
 }
-.top-header h1{font-size:1.08rem;color:var(--gold);font-weight:800;display:flex;align-items:center;gap:7px;white-space:nowrap}
+.top-header h1{font-size:1.2rem;color:var(--gold);font-weight:800;display:flex;align-items:center;gap:8px;white-space:nowrap}
 .header-right{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .bet-chip{
   display:none;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;
   background:rgba(46,204,113,0.16);border:1.5px solid rgba(46,204,113,0.55);
-  font-weight:800;font-size:0.82rem;color:var(--neon-green);white-space:nowrap;
+  font-weight:800;font-size:0.84rem;color:var(--neon-green);white-space:nowrap;
 }
 .bet-chip.show{display:flex}
 .clear-bet-btn{
-  border:0;background:transparent;color:#fff;font-size:0.82rem;cursor:pointer;padding:0 2px;
+  border:0;background:transparent;color:#fff;font-size:0.84rem;cursor:pointer;padding:0 2px;
 }
 .coin-chip{
-  display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;
+  display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;
   background:rgba(5,8,18,0.85);border:1.5px solid rgba(255,209,102,0.4);
-  font-weight:800;font-size:0.86rem;color:#fff;white-space:nowrap;
+  font-weight:800;font-size:0.92rem;color:#fff;white-space:nowrap;
 }
 .coin-chip i{color:var(--gold)}
 
@@ -65,8 +65,8 @@ body{min-height:100dvh;display:flex;justify-content:center;align-items:center}
 
 .wait-banner{
   display:none;align-items:center;justify-content:space-between;gap:8px;
-  background:rgba(0,242,254,0.1);border:1.5px solid rgba(0,242,254,0.4);
-  border-radius:14px;padding:8px 12px;font-size:0.84rem;color:var(--neon-blue);font-weight:700;
+  background:rgba(0,242,254,0.12);border:1.5px solid rgba(0,242,254,0.45);
+  border-radius:14px;padding:9px 12px;font-size:0.86rem;color:var(--neon-blue);font-weight:700;
 }
 .wait-banner.show{display:flex}
 .btn-cancel-wait{
@@ -82,22 +82,22 @@ body{min-height:100dvh;display:flex;justify-content:center;align-items:center}
 }
 
 .friend-card{
-  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
   padding:12px 14px;border-radius:18px;
   background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,255,255,0.1);
   cursor:pointer;transition:transform 0.12s,border-color 0.15s,background 0.15s;
 }
 .friend-card:hover{border-color:var(--gold);background:rgba(255,255,255,0.08)}
 .friend-card:active{transform:scale(0.985)}
-.friend-left{display:flex;align-items:center;gap:12px;min-width:0;flex:1}
+.friend-left{display:flex;align-items:center;gap:12px;min-width:0}
 .friend-avatar{
-  width:46px;height:46px;border-radius:50%;display:grid;place-items:center;
+  width:48px;height:48px;border-radius:50%;display:grid;place-items:center;
   background:linear-gradient(135deg,#ffe08a,#ffb52e);color:#18213e;
-  font-size:1.25rem;border:2px solid var(--gold);flex-shrink:0;
+  font-size:1.3rem;border:2px solid var(--gold);flex-shrink:0;
 }
-.friend-info{min-width:0;flex:1}
-.friend-name{font-size:1.02rem;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.friend-sub{font-size:0.78rem;color:var(--dim);display:flex;align-items:center;gap:8px;margin-top:2px;flex-wrap:wrap}
+.friend-info{min-width:0}
+.friend-name{font-size:1.05rem;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.friend-sub{font-size:0.8rem;color:var(--dim);display:flex;align-items:center;gap:8px;margin-top:2px}
 .dot-online{color:var(--neon-green);font-weight:700}
 .dot-offline{color:#94a3b8;font-weight:700}
 .btn-view{
@@ -110,6 +110,7 @@ body{min-height:100dvh;display:flex;justify-content:center;align-items:center}
 }
 .btn-view:disabled{opacity:0.6;cursor:not-allowed}
 
+/* Incoming Call & Invite Notification Banner */
 .call-notif-banner{
   position:fixed;top:14px;left:50%;transform:translate(-50%,-220%);
   width:min(94vw,440px);
@@ -149,6 +150,7 @@ body{min-height:100dvh;display:flex;justify-content:center;align-items:center}
 .btn-notif-accept{background:linear-gradient(135deg,#2ecc71,#20b863);color:#08160d}
 .btn-notif-reject{background:linear-gradient(135deg,#ff4757,#d63031);color:#fff}
 
+/* Player Profile Modal */
 .modal{
   position:fixed;inset:0;background:rgba(3,5,12,0.86);backdrop-filter:blur(8px);
   display:none;place-items:center;z-index:140;padding:16px;
@@ -202,7 +204,7 @@ body{min-height:100dvh;display:flex;justify-content:center;align-items:center}
 .nav-item.active{color:var(--gold)}
 
 #toast{
-  position:fixed;bottom:84px;left:50%;transform:translate(-50%,120px);opacity:0;
+  position:fixed;bottom:20px;left:50%;transform:translate(-50%,120px);opacity:0;
   background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--gold);
   color:#f8f9fa;border-radius:30px;padding:10px 18px;z-index:220;
   transition:0.25s ease;font-weight:600;font-size:0.88rem;max-width:90vw;text-align:center;
@@ -212,6 +214,7 @@ body{min-height:100dvh;display:flex;justify-content:center;align-items:center}
 </head>
 <body>
 
+<!-- Incoming Call Notification Banner -->
 <div class="call-notif-banner" id="incomingCallNotif" role="alert" aria-live="assertive">
  <div class="call-notif-top">
   <div class="call-notif-pulse"><i class="fa-solid fa-phone-volume"></i></div>
@@ -226,9 +229,10 @@ body{min-height:100dvh;display:flex;justify-content:center;align-items:center}
  </div>
 </div>
 
+<!-- Incoming Multiplayer Invite Banner -->
 <div class="call-notif-banner invite-theme" id="incomingInviteNotif" role="alert" aria-live="assertive">
  <div class="call-notif-top">
-  <div class="call-notif-pulse"><i class="fa-solid fa-swords"></i></div>
+  <div class="call-notif-pulse"><i class="fa-solid fa-chess-board"></i></div>
   <div style="flex:1;min-width:0">
    <div class="call-notif-title" id="incomingInviteTitle">Multiplayer Invite</div>
    <div class="call-notif-sub" id="incomingInviteSub">ක්‍රීඩකයෙකු ඔබට තරඟයකට ආරාධනා කරයි...</div>
@@ -276,6 +280,7 @@ body{min-height:100dvh;display:flex;justify-content:center;align-items:center}
  </footer>
 </div>
 
+<!-- Player Profile Modal -->
 <div class="modal" id="playerProfileModal">
  <div class="profile-card">
   <h2>ක්‍රීඩක ප්‍රොෆයිලය</h2>
@@ -366,8 +371,6 @@ let hostRoomWatchFn=null;
 let activeHostedRoomId=null;
 let activeInviteBtn=null;
 let ringtoneTimer=null;
-let ringAudioCtx=null;
-let toastTimer=null;
 let isSendingInvite=false;
 let isEnteringArena=false;
 
@@ -375,8 +378,7 @@ function toast(msg){
  const t=$('toast');
  t.textContent=String(msg);
  t.classList.add('show');
- if(toastTimer)clearTimeout(toastTimer);
- toastTimer=setTimeout(()=>t.classList.remove('show'),3200);
+ setTimeout(()=>t.classList.remove('show'),3000);
 }
 
 async function ensureAuthenticatedUser(){
@@ -488,7 +490,7 @@ function watchRoomUntilAccepted(rId, betAmount){
    return;
   }
   if(room.status==='accepted' || room.status==='active' || room.matchStarted===true){
-   $('hostWaitText').textContent='ප්‍රතිවාදියා Invite එක Accept කළේය! දෙදෙනාම තරඟයට පිවිසෙමින්...';
+   $('hostWaitText').textContent='ප්‍රතිවාදියා Invite එක Accept කළේය! දෙදෙනාම එකවර තරඟයට පිවිසෙමින්...';
    enterMatchArena(rId, room.bet || betAmount, 'host', room);
   }
  };
@@ -499,21 +501,16 @@ function playRingTone(){
  try{
   const AudioCtx=window.AudioContext || window.webkitAudioContext;
   if(!AudioCtx)return;
-  if(!ringAudioCtx){
-   ringAudioCtx=new AudioCtx();
-  }
-  if(ringAudioCtx.state === 'suspended'){
-   ringAudioCtx.resume().catch(()=>{});
-  }
-  const osc=ringAudioCtx.createOscillator();
-  const gain=ringAudioCtx.createGain();
+  const ctx=new AudioCtx();
+  const osc=ctx.createOscillator();
+  const gain=ctx.createGain();
   osc.type='sine';
-  osc.frequency.setValueAtTime(740, ringAudioCtx.currentTime);
-  gain.gain.setValueAtTime(0.08, ringAudioCtx.currentTime);
+  osc.frequency.setValueAtTime(740, ctx.currentTime);
+  gain.gain.setValueAtTime(0.08, ctx.currentTime);
   osc.connect(gain);
-  gain.connect(ringAudioCtx.destination);
+  gain.connect(ctx.destination);
   osc.start();
-  osc.stop(ringAudioCtx.currentTime + 0.25);
+  osc.stop(ctx.currentTime + 0.25);
  }catch(_){}
 }
 
@@ -585,7 +582,7 @@ function showIncomingInviteNotification(inviteKey, inviteData){
  pendingIncomingInvite={ key:inviteKey, ...inviteData };
  const invBet=Number(inviteData.bet)||50;
  $('incomingInviteTitle').textContent=`${inviteData.fromName || 'ක්‍රීඩකයා'} ගෙන් Invite එකක්!`;
- $('incomingInviteSub').textContent=`Bet: ${invBet} Coins — දෙදෙනාම සෙල්ලම් කිරීමට Accept කරන්න`;
+ $('incomingInviteSub').textContent=`Bet: ${invBet} Coins — දෙදෙනාම එකවර සෙල්ලම් කිරීමට Accept කරන්න`;
  $('incomingInviteNotif').classList.add('show');
  startIncomingRingtone();
 }
@@ -654,9 +651,7 @@ $('notifRejectInviteBtn').onclick=async()=>{
 
 async function sendGameInviteToFriend(uid, profileData, btnEl){
  if(isSendingInvite || isEnteringArena || activeHostedRoomId)return;
- if(!db){
-  return toast('Database සම්බන්ධතාවය නොමැත.');
- }
+ if(!db)return toast('Database සම්බන්ධතාවය නොමැත.');
  isSendingInvite=true;
  if(btnEl) btnEl.disabled=true;
 
@@ -664,7 +659,7 @@ async function sendGameInviteToFriend(uid, profileData, btnEl){
  if(!activeUser || !activeUser.uid){
   isSendingInvite=false;
   if(btnEl) btnEl.disabled=false;
-  return toast('ගිණුමට ඇතුළු වී නොමැත. කරුණාකර Login වන්න.');
+  return toast('ගිණුමට ඇතුළු වී නොමැත.');
  }
  if(uid === activeUser.uid){
   isSendingInvite=false;
@@ -700,16 +695,6 @@ async function sendGameInviteToFriend(uid, profileData, btnEl){
    createdAt:Date.now()
   });
 
-  await db.ref('fcmPushQueue_v6').push({
-   targetUid:uid,
-   title:'ශ්‍රී ලංකීය දාම් - Multiplayer Invite',
-   body:`${myName} ඔබට ${betToUse} Coins ඔට්ටුවකට ආරාධනා කරයි!`,
-   url:`friends.html?bet=${encodeURIComponent(betToUse)}`,
-   roomId,
-   bet:betToUse,
-   createdAt:Date.now()
-  }).catch(()=>{});
-
   activeInviteBtn=btnEl || null;
   toast(`${guestName} වෙත Invite එක යවන ලදී! Accept කරන තෙක් රැඳී සිටී...`);
   watchRoomUntilAccepted(roomId, betToUse);
@@ -729,6 +714,7 @@ function renderFriendsList(){
  listEl.replaceChildren();
 
  const isInviteMode=currentBetPoints > 0;
+ const btnLabelBet=currentBetPoints > 0 ? currentBetPoints : 50;
 
  const entries=Object.entries(allProfiles)
   .filter(([uid, p])=>p && uid !== (activeUser && activeUser.uid))
@@ -783,7 +769,7 @@ function renderFriendsList(){
   const viewBtn=document.createElement('button');
   viewBtn.type='button';
   viewBtn.className=isInviteMode ? 'btn-view invite-mode' : 'btn-view';
-  viewBtn.textContent=isInviteMode ? `Invite (${currentBetPoints})` : 'Profile';
+  viewBtn.textContent=isInviteMode ? `Invite (${btnLabelBet})` : 'Profile';
 
   viewBtn.onclick=e=>{
    e.stopPropagation();
