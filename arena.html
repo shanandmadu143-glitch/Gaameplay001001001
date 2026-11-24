@@ -291,15 +291,17 @@ let auth,db,fbUser,user={name:'',points:500,wins:0,losses:0,uid:null,pieceIndex:
 let board=[],turn=1,selected=null,moves=[],single=true,roomId=null,roomRef=null,roomValueHandler=null,chatAddedHandler=null,role=null,gameOver=false,aiTimer=null,processing=false,turnClockTimer=null,turnDeadline=0,forcedContinuation=null;
 let userSide=1,nextStartingSide=1,gameMode='single';
 let lastMove = null;
-let thoughtBubbleTimeout = null;
 let mySessionId = 'player_' + Math.random().toString(36).substring(2, 9);
 let aiNameLabel = 'දාම් Master';
+let multiBoardInitialized = false;
 
 let soundEnabled = true;
 let mediaRecorder = null;
 let audioChunks = [];
 let isRecording = false;
 let boardCells = [];
+let toastTimer = null;
+let thoughtBubbleTimeout = null;
 
 const PIECE_DESIGNS=[
  {id:0,name:'මුතු සුදු (Default)',bg:'radial-gradient(circle at 30% 30%,#ffffff,#dfe6e9)',border:'#b2bec3',color:'#2d3436',icon:'●',free:true},
@@ -702,7 +704,8 @@ function toast(s, icon='fa-circle-info'){
  const textEl=document.createElement('span');textEl.textContent=String(s);
  t.append(iconEl,textEl);
  t.classList.add('show');
- setTimeout(()=>t.classList.remove('show'),3000);
+ if(toastTimer)clearTimeout(toastTimer);
+ toastTimer=setTimeout(()=>t.classList.remove('show'),3000);
 }
 function modal(id,on){$(id).classList.toggle('show',on);}
 
@@ -1070,6 +1073,7 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
  processing = false;
  forcedContinuation = null;
  lastMove = null;
+ multiBoardInitialized = false;
 
  if(role === 'host') {
   window.opponentPieceIndex = 2;
@@ -1103,6 +1107,7 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
    }
    if(Array.isArray(data.board)) {
     board = normalizeFirebaseBoard(data.board);
+    multiBoardInitialized = true;
    }
    if(data.turn !== undefined) {
     turn = Number(data.turn) === -1 ? -1 : 1;
@@ -1114,7 +1119,8 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
     $('p2name').textContent = data.guestName || opponentName || 'Guest';
     applyAvatarToBox('p1AvatarBox', user.pieceIndex||0, user.avatarIcon||'fa-user');
     applyAvatarToBox('p2AvatarBox', data.guestPieceIndex||0, data.guestAvatar||'fa-chess-knight');
-    if(!Array.isArray(data.board)) {
+    if(!Array.isArray(data.board) && !multiBoardInitialized) {
+     multiBoardInitialized = true;
      roomRef.update({
       board: board,
       turn: 1,
@@ -1137,10 +1143,6 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
      guestPieceIndex: user.pieceIndex || 0,
      guestJoinedAt: Date.now()
     };
-    if(!Array.isArray(data.board)) {
-     guestPatch.board = board;
-     guestPatch.turn = 1;
-    }
     roomRef.update(guestPatch).catch(()=>{});
    }
    render();
@@ -1170,6 +1172,7 @@ function setupMultiplayerGame(id, assignedRole, opponentName, bet) {
    const prevTurn = turn;
    if(Array.isArray(data.board)) {
     board = normalizeFirebaseBoard(data.board);
+    multiBoardInitialized = true;
    }
    if(data.turn !== undefined) {
     turn = Number(data.turn) === -1 ? -1 : 1;
@@ -1279,7 +1282,6 @@ $('rematch').onclick = () => {
   setupMultiplayerGame(roomId, role, oppName, bet);
  }
 
- // Background Firebase sync without delaying 0ms game start
  setTimeout(() => {
   try{
    if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
